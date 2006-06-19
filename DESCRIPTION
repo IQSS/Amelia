@@ -1,0 +1,10 @@
+Package: amelia
+Type: Package
+Title: Multiple Imputation by the bootstrap
+Version: 1.0
+Date: 2006-01-23
+Author: James Honaker and Matthew Blackwell
+Maintainer: Matthew Blackwell <mblackwe@ucla.edu>
+Description: More about what it does (maybe more than one line)
+License: What license is it under?
+Packaged: Fri May  5 16:55:03 2006; student
