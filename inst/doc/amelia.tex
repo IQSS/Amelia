@@ -1,8 +1,109 @@
 \documentclass[oneside,letterpaper,12pt]{book}
 %\usepackage[ae,hyper]{Rd}
+\usepackage{bibentry}
+\usepackage{upquote}
+\usepackage{graphicx}
+\usepackage{natbib}
+\usepackage[reqno]{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{verbatim}
+\usepackage{epsf}
+\usepackage{url}
+\usepackage{html}
+\usepackage{dcolumn}
+\usepackage{multirow}
+\usepackage{fullpage}
+\usepackage{lscape}
+\usepackage[all]{xy}
+% \usepackage[pdftex, bookmarksopen=true,bookmarksnumbered=true,
+%   linkcolor=webred]{hyperref}
+\bibpunct{(}{)}{;}{a}{}{,}
+\newcolumntype{.}{D{.}{.}{-1}}
+\newcolumntype{d}[1]{D{.}{.}{#1}}
+\htmladdtonavigation{
+  \htmladdnormallink{%
+    \htmladdimg{http://gking.harvard.edu/pics/home.gif}}
+  {http://gking.harvard.edu/}}
+\newcommand{\MatchIt}{{\sc MatchIt}}
+\newcommand{\hlink}{\htmladdnormallink}
+\newcommand{\Sref}[1]{Section~\ref{#1}}
+\newcommand{\fullrvers}{2.2.1}
+\newcommand{\rvers}{2.2}
+\newcommand{\rwvers}{R-2.2.1}
+%\renewcommand{\bibentry}{\citealt}
+
+\bodytext{ BACKGROUND="http://gking.harvard.edu/pics/temple.jpg"}
+\setcounter{tocdepth}{2}
+
+\title{Zelig: Everyone's Statistical Software\thanks{The current
+    version of this software is available at
+    \texttt{http://gking.harvard.edu/zelig/}, free of charge and
+    open-source (under the terms of the GNU GPL, v. 2).}}
+\author{Kosuke
+  Imai\thanks{Assistant Professor, Department of Politics, Princeton
+    University (Corwin Hall, Department of Politics, Princeton
+    University, Princeton NJ 08544; \texttt{http://www.princeton.edu/\~{}kimai},
+    \texttt{KImai@Princeton.Edu}).}
+\and %
+Gary King\thanks{David Florence Professor of Government, Harvard
+  University (Institute for Quantitative Social Sciences, 1737 Cambridge 
+Street, Harvard University, Cambridge MA 02138;
+  \texttt{http://GKing.Harvard.Edu}, \texttt{King@Harvard.Edu}, (617)
+  495-2027).}
+\and %
+Olivia Lau\thanks{Ph.D.\ Candidate, Department of Government, Harvard
+  University (1737 Cambridge Street, Cambridge MA 02138;
+  \texttt{http://www.people.fas.harvard.edu/\~\,olau},
+  \texttt{OLau@Fas.Harvard.Edu}).}}
+
+% rbuild: replace 'Version ' '\\' Version
+\date{Version \\ \today}
 
 \begin{document}
-this is to try
+\maketitle
+\begin{rawhtml}
+  <p>
+  [Also available is a downloadable <a href="/zelig/docs/zelig.pdf">PDF</a>
+  version of this entire document]
+\end{rawhtml}
+
+\tableofcontents
+
+\nobibliography*
+
+
+
+
+
+\part[User's Guide]{User's Guide}
+\part{Advanced Zelig Uses}
+\part{Reference Manual}
+
+\appendix
+
+\part[Appendices]{Appendices}
+
+%\input{distributions}
+
+\chapter{What's New?  What's Next?}
+
+\section{What's New:  Zelig Release Notes}\label{release.notes}
+
+Releases listed as ``stable releases'' have been tested against prior
+versions of Zelig for consistency and accuracy.  Testing distributions
+may contain bugs, but are usually replaced by stable releases within a
+few days. 
+
+\section{What's Next?}
+
+We have several plans for expanding and improving Zelig.  Major
+changes slated for Version 3.0 (and beyond) include:  
+
+\bibliographystyle{asa}
+\bibliography{gk,gkpubs}
+
 \end{document}
 
 %%% Local Variables: 
