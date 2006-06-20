@@ -3,7 +3,7 @@
 
 \title{AMELIA: Mutliple Imputation of Incomplete Multivariate Data}
 \description{
-  Runs the bootstrap EM algorithm on incomplete data and creates 
+  Runs the bootstrap EM algorithm on incomplete data and creates
   imputed datasets.  
 }
 \usage{
@@ -130,7 +130,7 @@ amelia(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,ts=NULL,cs=NULL,casep
   
   You can give Amelia your informational priors about the data in a number
   of ways.  If you have information about the way in which two cases 
-  interact, you case use the \code{casepri} setting.  If you have a prior
+  interact, you can use the \code{casepri} setting.  If you have a prior
   belief about the values of a single observation or group of observations,
   you can set them in one of two ways.  First, you can set a mean and 
   standard deviation for the observation (this assumes a normal distribution)

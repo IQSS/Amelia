@@ -1,9 +1,9 @@
 \name{amelia-package}
 \alias{amelia-package}
 \docType{package}
-\title{Multiple Impuation of Incomplete Multivariate Data}
-\description{Uses a bootstrap EM algorithm to impute missing values
-  from a dataset and produce multiple output datasets for analysis.}
+\title{Amelia II: A Program for Missing Data}
+\description{Uses a bootstrap+EM algorithm to impute missing values
+  from a dataset and produces multiple output datasets for analysis.}
 \details{
 \tabular{ll}{
 Package: \tab amelia\cr
@@ -15,14 +15,14 @@ License: \tab See Manual\cr
 You can use the package in one of two ways:  either by invoking the 
 \code{ameliagui()} command and running the program from a graphical 
 interface or by loading in your data and then running the \code{amelia}
-function on the data.  Both methods are documented in the Amelia manual.
+function on the data.
 
 If you use the GUI in Windows, makes sure that you run R under a Single
 Window Interface (SDI) as it will try to grab focus from the GUI if
 you don't.
 }
 \author{
-James Honaker and Matthew Blackwell
+James Honaker, Matthew Blackwell, Gary King
 }
 \references{
 King, Gary; James Honaker, Anne Joseph, and Kenneth Scheve. \"Analyzing 

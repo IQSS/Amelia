@@ -22,7 +22,7 @@
 \alias{impfill}
 \title{Internal Amelia functions}
 \description{Internal or currently undocumented functions in Amelia}
-\author{James Honaker and Matthew Blackwell}
+\author{James Honaker, Matthew Blackwell, Gary King}
 \alias{ameliagui}
 \alias{amelia.prep}
 \alias{compare.density}

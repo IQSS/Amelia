@@ -1,6 +1,4 @@
 amcheck                 Internal Amelia functions
-amelia                  AMELIA: Mutliple Imputation of Incomplete
-                        Multivariate Data
-amelia-package          Multiple Impuation of Incomplete Multivariate
-                        Data
+amelia                  AMELIA II: A Program for Missing Data
+amelia-package          Multiple Impuation of Incomplete Multivariate Data
 amelia.gui              Interactive GUI for Amelia

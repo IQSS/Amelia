@@ -1,5 +1,5 @@
-Zelig: Everyone's Statistical Software (Zelig)
-Copyright (C) 2004.  Kosuke Imai, Gary King and Olivia Lau.
+Amelia II: A Program for Missing Data (Amelia)
+Copyright (C) 2006. James Honaker, Matthew Blackwell, and Gary King
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,11 +17,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 Please contact:
 
-Kosuke Imai
-Corwin Hall 041                 
-Department of Politics   
-Princeton University                
-Princeton, NJ 08544            
-Email: kimai@princeton.edu   
+James Honaker
+tercer@ucla.edu
 
 With any problems or questions.
