@@ -1,0 +1,117 @@
+\documentclass[12pt]{article}
+\usepackage{natbib}
+\usepackage{url}
+\usepackage{html}
+\usepackage{fullpage}
+\newcommand{\hlink}{\htmladdnormallink}
+
+\title{Zelig: Everyone's Statistical Software\thanks{The current
+    version of this software is available at
+    \texttt{http://gking.harvard.edu/zelig/}.}}
+\author{Kosuke
+  Imai\thanks{Department of Politics, Princeton
+  University (Corwin Hall, Department of Politics, Princeton
+  University, Princeton NJ 08544; \texttt{KImai@Princeton.Edu}).}
+\and %
+Gary King\thanks{Department of Government, Harvard
+  University, (Center for Basic Research in the Social Sciences, 34
+  Kirkland Street, Harvard University, Cambridge MA 02138; \texttt{King@Harvard.Edu}.}
+\and %
+Olivia Lau\thanks{Department of Government, Harvard University (Littauer Hall, North Yard, Cambridge MA 02138;
+  \texttt{OLau@Fas.Harvard.Edu}).}}
+
+\date{Version 1.0 \\\today}
+   
+\begin{document}
+\maketitle
+
+A growing proportion of statisticians and methodologists in political
+science and other disciplines are converging on R, an extremely
+powerful statistics package and programming language.  As an open
+source project, R is freely accessible to anyone who wishes to use it
+or contribute routines.  With thousands of contributors who have
+created hundreds of packaged routines, R can deal with nearly any
+statistical problem.  Although R's accessibility is one of its
+strengths, it also reflects the enormous diversity in approaches to
+statistic analysis across scholarly fields, and thus creates a virtual
+babel of competing functions and inconsistent syntax.
+
+To address these problems, we have created Zelig, a program that
+simplifies R by creating a single, unified syntax for a large and
+growing fraction of the models and methods that social scientists use.
+Zelig literally \emph{is} ``everyone's statistical software'' because
+Zelig's unified framework incorporates everyone else's (R) code.  We
+hope it will \emph{become} ``everyone's statistical software'' for
+applied data analysis.  Zelig makes R accessible for beginners, and
+adds functionality to R which even advanced users may appreciate.
+For many researchers, Zelig and R may well be the last statistical
+tools they ever need to learn.
+
+This short course introduces Zelig and R.  In addition to reviewing
+command syntax and data manipulation procedures, the course
+demonstrates practical applications in the context of applied
+research in every subfield of political science.  These demonstrations
+will include:
+\begin{itemize}
+\item Many standard statistical models, such as the bivariate logit,
+  bivariate probit, exponential, gamma, logit, log-normal, least
+  squares, multinomial logit, negative binomial, normal (Gaussian),
+  ordinal logit, ordinal probit, Poisson, probit, rare events logit,
+  and Weibull regression models;
+\item Making statistical procedures easy to understand and interpret
+  by calculating quantities of real interest, such as expected values,
+  predicted values, first differences, risk ratios, and average
+  treatment effects (following the logic of \hlink{Clarify}{http://gking.harvard.edu/stats.shtml\#clarify}; see
+  \hlink{King, Tomz, and Wittenberg, 2000}{http://gking.harvard.edu/files/abs/making-abs.shtml}\nocite{KinTomWit00});
+\item Bootstrapping to compute estimation uncertainty;
+\item Presenting results using easy and flexible statistical graphics;
+\item Running multiple analyses simultaneously by strata; 
+\item Incorporating
+  \hlink{MatchIt}{http://gking.harvard.edu/matchit}'s nonparametric
+  matching methods as a preprocessing step for causal inference;
+\item Performing conditional prediction and making in-sample causal inferences; 
+\item Analyzing multiply imputed datasets created by
+  \hlink{Amelia}{http://gking.harvard.edu/stats.shtml\#amelia} (see
+  \hlink{King, Honaker, Joseph, and Scheve,
+    2001}{http://gking.harvard.edu/files/abs/evil-abs.shtml})\nocite{KinHonJos01}
+  and other programs; and
+\item Outputting replication data sets and data structures so that you
+  (and if you wish, anyone else) will be able to replicate the results
+  of your analysis (see \hlink{King,
+  1995}{http://gking.harvard.edu/files/abs/replication-abs.shtml}).\nocite{King95}
+\end{itemize}
+
+Zelig is a flexible program.  It can easily expand, and several
+contributors are currently working to include their packages in Zelig.
+As Zelig grows, you will have access to an increasing range of methods
+and models.  We will conclude by explaining how you may add your
+models and methods to the Zelig framework.
+
+% \bibliographystyle{/home/king/c/gkbibtex/polisci}
+% \bibliography{/home/king/c/gkbibtex/gk}
+\bibliographystyle{polisci}
+\bibliography{gk,gkpubs}
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,766 @@
+\documentclass[oneside,letterpaper,12pt]{article}
+
+\usepackage{natbib}
+\usepackage[reqno]{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{verbatim}
+\usepackage{url}
+\usepackage{html}
+\usepackage{fullpage}
+\usepackage[all]{xy}
+\bibpunct{(}{)}{;}{a}{}{,}
+\newcommand{\hlink}{\htmladdnormallink}
+\newcommand{\Sref}[1]{Section~\ref{#1}}
+
+\title{Specifications for {\tt model.*()} commands} 
+\author{Olivia Lau}
+
+\begin{document}
+
+\maketitle
+
+\section{Notation}  
+
+This section describes the mathematical components of the models
+supported by Zelig, using whenever possible the classification and
+notation of \cite{King89}.  Most models have a \emph{stochastic
+component} (probability density given certain parameters) and a
+\emph{systematic component} (deterministic functional form that
+specifies how one or more of the parameters varies over $i$ as a
+function of the explanatory variables $x_i$).
+
+Let $Y_i$ be a random outcome variable, realized as $i = 1, \dots,n$
+observations $y_i$.  For the probability density $f(\cdot)$ with
+systematic component $\theta_i$ varying over $i$ and a vector of scalar ancillary
+parameters $\alpha$ (constant over $i$), the stochastic component is
+given by
+\begin{equation*}
+Y_i \sim f(y_i \mid \theta_i, \alpha).
+\end{equation*}
+
+For a functional form $g(\cdot)$, the systematic component is:  
+\begin{equation*}
+\theta_i = g(x_i \beta).
+\end{equation*}
+The quantity $x_i \beta$ is sometimes referred to as the ``linear
+predictor'', or $\eta_i$.  
+
+\section{Managing Statistical Model Inputs}
+
+Most statistical models require a matrix of explanatory variables and
+a matrix of dependent variables.  Rather than have users create
+matrices themselves, R has a convenient user interface to create
+matrices of response and explanatory variables on the fly.  Users
+simply specify a {\tt formula} in the form of 
+\verb|dependent ~ explanatory variables|, and developers use the
+following functions to transform the formula into the appropriate
+matrices.  Let {\tt mydata} be a data frame.  
+\begin{verbatim}
+> formula <- y ~ x1 + x2                   # User input
+> D <- model.frame(formula, data = mydata) # Subset & list-wise deletion
+> X <- model.matrix(formula, data = D)     # Creates X matrix
+> Y <- model.response(D)                   # Creates Y matrix
+\end{verbatim}
+where 
+\begin{itemize}
+\item {\tt D} is a subset of {\tt mydata} that contains only the
+variables specified in the formula ({\tt y}, {\tt x1}, and {\tt x2})
+with list-wise deletion performed on the subset data frame; 
+\item {\tt X} is a matrix that contains a column of 1's (if an
+interecept is selected), and the explanatory variables {\tt x1} and
+{\tt x2} from {\tt D}; and
+\item {\tt Y} is a matrix containing the dependent variable(s) from
+{\tt D}.  
+\end{itemize}  
+Depending on the model, {\tt Y} may be a column vector, matrix, or
+other data structure.
+
+\subsection{Multivariate models}  
+
+Most common models have one systematic component.  For $n$
+observations, the systematic component varies over observations $i =
+1, \dots, n$.  In the case of logistic regression, the systematic
+component is $Pr(Y=1|X) = \pi_i = 1 / (1 + \exp(-x_i \beta))$.  In the
+case of least squares, the systematic component is the conditional
+expectation $E(Y|X) = \mu_i = x_i \beta$ ($\sigma^2$, which does not
+vary over observations, is an ancillary parameter and not estimated as
+a function of covariates).
+
+In some cases, however, your model may have more than one systematic
+component.  In the case of seemingly unrelated regression ({\sc sur}),
+let's say that we have two dependent variables ($Y_1$, $Y_2$)
+distributed according to a bivariate Normal distribution:
+\begin{equation*}
+\left( \begin{array}{c} Y_1 \\ Y_2 \end{array} \right) \; \sim \; 
+\textrm{Normal}\left( \left(\begin{array}{c} \mu_1 \\ \mu_2 \end{array} \right), 
+\left(\begin{array}{cc} \sigma_{11} & \rho \\ \rho & \sigma_{22} 
+\end{array} \right) \right)
+\end{equation*} 
+where $\sigma_{11}, \sigma_{22} > 0$ and $-1 < \rho < 1$ are ancillary
+parameters, and $\mu_1$ and $\mu_2$ are systematic components with
+elements $\mu_{ki}$ for $k = (1,2)$ and $i = 1, \dots, n$.  For each
+systematic component:
+\begin{eqnarray*}
+\mu_{1i} &=& x_{1i}' \beta_1 \\
+\mu_{2i} &=& x_{2i}' \beta_2.
+\end{eqnarray*}
+Since not all systematic components are linear, we can generalize this
+by defining the linear predictor as an $n \times J$ matrix (where $J$,
+the number of equations, is 2 in this case) where each $\eta_{ij} =
+x_{ij}' \beta_j$.  
+
+Since {\sc sur} users may choose different explanatory variables for
+$\mu_1$ and $\mu_2$, the model requires \emph{two} formulas rather
+than one.  For example,
+\begin{verbatim}
+formulae <- list(mu1 = y1 ~ x1 + x2,
+                 mu2 = y2 ~ x2 + x3)
+D <- model.frame(formulae, data = mydata)
+X <- model.matrix(formulae, data = D)
+Y <- model.response(D)
+\end{verbatim}
+From the perspective of the programmer, the same framework works for
+both single and multiple equation models!\footnote{For those
+interested: Since {\tt formulae} is a list of class {\tt c("multiple",
+"list")} calls to the generic functions {\tt model.frame()} and {\tt
+model.matrix()} are actually handled by the class-specific functions
+{\tt model.frame.multiple()} and {\tt model.matrix.multiple()}.}  And
+similarly, {\tt D}, {\tt X} , and {\tt Y} are analogous to their
+single equation counterparts above:
+\begin{itemize}
+\item  {\tt D} is the subset of {\tt mydata} containing the variables
+{\tt y1}, {\tt y2}, {\tt x1}, {\tt x2}, and {\tt x3} with list-wise
+deletion performed on the subset; 
+\item {\tt X} is a matrix corresponding to the explanatory variables,
+in one of three forms: 
+\begin{enumerate}
+\item ``compact'' $X$ and matrix $\beta$ is the most
+memory-efficient configuration. In this example, {\tt
+model.matrix(\dots, shape = "compact")} produces an $n \times v$
+matrix, where $v$ is the number of unique variables (4 in this
+case)\footnote{Why 4? In addition to the intercept term (a variable
+which is the same in either equation, and so counts only as one
+variable), the \emph{unique} variables are $x_1$, $x_2$, and $x_3$.} 
+in all of the equations.  Let $x_1$ be an $n \times 1$ vector
+representing variable {\tt x1}, $x_2$ {\tt x2}, and so forth.
+\begin{eqnarray*}
+X = (1 \; x_1 \; x_2 \; x_3) & & \beta = \left(
+\begin{array}{cc}
+\beta_0^{\mu_1}       & \beta_0^{\mu_2} \\
+\beta_1^{\mu_1}       & 0 \\
+\beta_2^{\mu_1}       & \beta_2^{\mu_2} \\
+0                     & \beta_3^{\mu_2}
+\end{array} \right) 
+\end{eqnarray*}
+where $\beta_0^j$ are the intercept terms for equation $j = \{\mu_1,
+\mu_2\}$, and $\beta_1^j$ is the parameter for $x_1$ in equation $j$.
+To find the linear predictor, $\eta = X \beta$.  
+
+\item ``array'' $X$ and vector $\beta$ is the most
+computationally-efficient configuration.  Choosing {\tt
+model.matrix(\dots, shape = "array")} produces an $n \times K
+\times J$ array where $J$ is the total number of equations and $K$
+is the total number of parameters across all the equations.  If a
+variable is not in a certain equation, it is observed as a vector of
+0s.  With this option, each $i = 1, \dots, n$ $X_i$ matrix becomes:
+\begin{equation*}
+\left( \begin{array}{cccccc}
+1 & 0 & x_{i1} & x_{i2} & 0      & 0 \\
+0 & 1 & 0      & 0      & x_{i2} & x_{i3} 
+\end{array} \right) 
+\end{equation*}
+Correspondingly, $\beta$ is a vector with elements
+\begin{equation*}
+(\beta_0^{\mu_1} \; \beta_0^{\mu_2} \; \beta_1^{\mu_1} \;
+\beta_2^{\mu_1} \; \beta_2^{\mu_2} \; \beta_3^{\mu_2})\prime
+\end{equation*}
+To find the linear predictor $\eta$, we employ a computational trick
+and we vectorize over equations (the third dimension) to
+multiply $X$ $(n \times 6 \times 2)$ and $\beta$ $(6 \times 1)$:
+\begin{verbatim}
+eta <- apply(X, 3, `%*%', beta)
+\end{verbatim}
+such that {\tt eta} is an $n \times 2$ matrix as expected.  
+
+\item A ``stacked'' matrix of $X$ and vector $\beta$ is probably the most
+intuitive configuration.  Choosing {\tt model.matrix(\dots, shape =
+"stacked")} yields a $(Jon \times K)$ matrix.  Again, let $x_1$ be an
+$n \times 1$ vector representing variable {\tt x1}, $x_2$ {\tt x2},
+and so forth.  Then
+\begin{equation*}
+X = \left (\begin{array}{cccccc}
+1 & 0 & x_1 & x_2 & 0   & 0  \\ 
+0 & 1 & 0   & 0   & x_2 & x_3
+\end{array} \right) 
+\end{equation*}
+and $\beta$ is a vector as in (2) above.  Since $X$ is $(2n \times 6)$
+and $\beta$ is $(6 \times 1)$, the resulting linear predictor $\eta$
+is also stacked into a $(2n \times 1)$ matrix.  Although difficult to
+manipulate (since observations are indexed by $i$ and $2i$ for each $i
+= 1, \dots, n$ rather than just $i$), we allow this option for those
+with an econometrics background, for whom it may be more intuitive.  
+\end{enumerate}
+  
+\item {\tt Y} is an $n \times J$  matrix (where $J=2$ here) with
+columns ({\tt y1}, {\tt y2}) corresponding to the outcome variables on
+the left-hand sides of the formulas.
+\end{itemize}
+
+\subsubsection{Example: Constraints (same variable) across equations}
+
+Rather than the vanilla example above, let us consider a more
+interesting example where parameter effects are constrained across
+equations.  (e.g., the same parameter has the same effect in both
+equations.)  Let the model specification be:  
+\begin{verbatim}
+formulae <- list(mu1 = y1 ~ x1 + tag(x3, "x3"), 
+                 mu2 = y2 ~ x2 + tag(x3, "x3"))
+\end{verbatim}
+where {\tt tag()} is a special function that constrains variables to
+have the same effect across equations.  Thus, the coefficient for {\tt
+x3} in equation {\tt mu1} is constrained to be equal to the
+coefficient for {\tt x3} in equation {\tt mu2}.  
+
+In order to consider constraints across equations, the structure of
+both $X$ and $\beta$ matter.  There are three possible forms for the
+pair:  
+\begin{enumerate}
+
+\item  Choosing {\tt model.matrix(\dots, shape = "compact")} (the
+default) produces an $n \times v$ matrix, where $v$ is the number of
+unique variables (4 in this case)\footnote{Why 4? In addition to the
+intercept term (a variable which is the same in either equation, and
+so counts only as one variable), the \emph{unique} variables are
+$x_1$, $x_2$, and $x_3$.} in all of the equations.  Let $x_1$
+be an $n \times 1$ vector representing variable {\tt x1}, $x_2$ {\tt
+x2}, and so forth.
+\begin{eqnarray*}
+X = (1 \; x_1 \; x_2 \; x_3) & & \beta = \left(
+\begin{array}{cc}
+\beta_0^{\mu_1}       & \beta_0^{\mu_2} \\
+\beta_1^{\mu_1}       & 0 \\
+0                     & \beta_2^{\mu_2} \\
+\beta_3               & \beta_3
+\end{array} \right) 
+\end{eqnarray*}
+where $\beta_0^j$ are the intercept terms for equation $j = \{\mu_1,
+\mu_2\}$, and $\beta_1^j$ is the parameter for $x_1$ in equation $j$.
+Note that the $\beta_3$ parameter is used twice to implement the
+constraint.  To find the linear predictor, $\eta = X \beta$.  
+
+\item Choosing {\tt model.matrix(\dots, shape = "array")} produces an
+$n \times K \times J$ array where $J$ is the total number of equations
+and $K$ is the total number of parameters across all the equations.
+Since some parameter values may be constrained across equations, $K
+\leq \sum_{j=1}^J k_j$.  If a variable is not in a certain equation,
+it is observed as a vector of 0s.  With this option, each $i = 1,
+\dots, n$ $X_i$ matrix becomes:
+\begin{equation*}
+\left( \begin{array}{ccccc}
+1 & 0 & x_{i1} & 0       & x_{i3}  \\
+0 & 1 & 0      & x_{i2}  & x_{i3} 
+\end{array} \right) 
+\end{equation*}
+Correspondingly, $\beta$ is a vector with elements
+\begin{equation*}
+(\beta_0^{\mu_1} \; \beta_0^{\mu_2} \; \beta_1^{\mu_1} \;
+\beta_2^{\mu_2} \; \beta_3)'
+\end{equation*}
+And to find the linear predictor, we again vectorize over equations
+(the third dimension) to multiply $X$ $(n \times 5 \times 2)$ and
+$\beta$ $(5 \times 1)$:
+\begin{verbatim}
+eta <- apply(X, 3, `%*%', beta)
+\end{verbatim}  
+and {\tt eta} is $n \times 2$, as we expect.  
+
+\item Choosing {\tt model.matrix(\dots, shape = "stacked")} yields a
+$(Jn \times v_t)$ matrix.  Again, let $x_1$ be an $n \times 1$ vector
+representing variable {\tt x1}, $x_2$ {\tt x2}, and so forth.  Then
+\begin{equation*}
+X = \left (\begin{array}{ccccc}
+1 & 0 & x_1 & 0 & x_3  \\ 
+0 & 1 & 0   & x_2   & x_3 
+\end{array} \right) 
+\end{equation*}
+and $\beta$ is a vector as in (2) above.  Since $X$ is $(2n \times 5)$
+and $\beta$ is $(5 \times 1)$, the resulting linear predictor $\eta$
+is also stacked into a $(2n \times 1)$ matrix.  
+\end{enumerate}
+
+\subsubsection{Example:  Constraints (different variables) across equations}
+
+Finally, let us consider the case in which parameter effects are
+constrained across different variables in different equations.  Let
+the model specification be:
+\begin{verbatim}
+formulae <- list(mu1 = y1 ~ x1 + x2 + tag(x3, "land"), 
+                 mu2 = y2 ~ x3 + tag(x4, "land"))
+\end{verbatim}
+where {\tt tag()} is a special function that constrains variables to
+have the same effect across equations.  Thus, the coefficient for {\tt
+x3} in equation {\tt mu1} is constrained to be equal to the
+coefficient for {\tt x4} in equation {\tt mu2}, and this effect is
+identified as the ``land'' effect in both equations.  
+
+In order to consider constraints across equations, the structure of
+both $X$ and $\beta$ matter.  There are three possible forms for the
+pair:  
+\begin{enumerate}
+
+\item  Choosing {\tt model.matrix(\dots, shape = "compact")} (the
+default) produces an $n \times v$ matrix, where $v$ is the number of
+unique variables (5 in this case)\footnote{Why 5? In addition to the
+intercept term (a variable which is the same in either equation, and
+so counts only as one variable), the \emph{unique} variables are
+$x_1$, $x_2$, $x_3$, and $x_4$.} in all of the equations.  Let $x_1$
+be an $n \times 1$ vector representing variable {\tt x1}, $x_2$ {\tt
+x2}, and so forth.
+\begin{eqnarray*}
+X = (1 \; x_1 \; x_2 \; x_3 \; x_4) & & \beta = \left(
+\begin{array}{cc}
+\beta_0^{\mu_1}       & \beta_0^{\mu_2} \\
+\beta_1^{\mu_1}       & 0 \\
+\beta_2^{\mu_1}       & 0 \\
+\beta_{\textrm{land}} & \beta_3^{\mu_2} \\
+0                     & \beta_{\textrm{land}}
+\end{array} \right) 
+\end{eqnarray*}
+where $\beta_0^j$ are the intercept terms for equation $j = \{\mu_1,
+\mu_2\}$, and $\beta_1^j$ is the parameter for $x_1$ in equation $j$.
+Note that the $\beta_{\textrm{land}}$ parameter is used twice to
+implement the constraint.  Since $X$ is $(n \times 5)$ and $\beta$ is
+$(5 \times 2)$, $X\beta = \eta$ is $n \times 2$, which corresponds to
+the dimensions of matrix $Y$.  To find the linear predictor, $\eta = X
+\beta$.  
+
+\item Choosing {\tt model.matrix(\dots, shape = "array")} produces an $n \times K
+\times J$ array where $J$ is the total number of equations and $K$
+is the total number of parameters across all the equations.  Since
+some parameter values may be constrained across equations, $K \leq
+\sum_{j=1}^J k_j$.  If a variable is not in a certain equation, it is
+observed as a vector of 0s.  With this option, each $i = 1, \dots, n$
+$X_i$ matrix becomes:
+\begin{equation*}
+\left( \begin{array}{ccccccc}
+1 & 0 & x_{i1} & x_{i2} & 0      & x_{i3} \\
+0 & 1 & 0      & 0      & x_{i3} & x_{i4}
+\end{array} \right) 
+\end{equation*}
+Correspondingly, $\beta$ is a vector with elements
+\begin{equation*}
+(\beta_0^{\mu_1} \; \beta_0^{\mu_2} \; \beta_1^{\mu_1} \;
+\beta_2^{\mu_1} \; \beta_3^{\mu_2} \; \beta_{\textrm{land}})'
+\end{equation*}
+In this case, we vectorize over equations (the third dimension) to
+multiply $X$ $(n \times 6 \times 2)$ and $\beta$ $(6 \times 1)$ 
+\begin{verbatim}  
+eta <- apply(X, 3, '%*%', beta)
+\end{verbatim}  
+to get a $(n \times 2)$ matrix.  
+
+\item Choosing {\tt model.matrix(\dots, shape = "stacked")} yields a
+$(Jn \times K)$ matrix.  Again, let $x_1$ be an $n \times 1$ vector
+representing variable {\tt x1}, $x_2$ {\tt x2}, and so forth.  Then
+\begin{equation*}
+X = \left (\begin{array}{cccccc}
+1 & 0 & x_1 & x_2 & 0   & x_3  \\ 
+0 & 1 & 0   & 0   & x_3 & x_4
+\end{array} \right) 
+\end{equation*}
+and $\beta$ is a vector as in (2) above.  Since $X$ is $(2n \times 6)$
+and $\beta$ is $(6 \times 1)$, the resulting linear predictor $\eta$
+is also stacked into a $(2n \times 1)$ matrix.  
+\end{enumerate}
+
+\section{A short-hand for multiple equation models}  
+
+As you may have noticed, the multiple equation versions for {\tt
+model.matrix()} and {\tt model.frame()} depend on the first input
+being a \emph{list} of formulas, rather than a single formula.  In
+some cases, however, a user may want to use one formula for multiple
+response variables.  In order to provide a short-hand for users and
+preserve the convenient {\tt model.*()} interface for users, we
+provide a way to parse formulas (via {\tt parse.formula()}) into the
+required list format.  
+
+Let's say that a model takes two dependent variables and has no other
+ancillary parameters.  If the right hand side is the same across both
+equations, then the user may choose two methods for entering
+the formula:  
+\begin{enumerate}
+\item As a list of formulas:  
+\begin{verbatim}
+formula <- list(mu1 = y1 ~ x1 + x2, 
+                mu2 = y2 ~ x1 + x2)
+\end{verbatim} 
+\item As a single formula with two responses: 
+\begin{verbatim}
+formula <- cbind(y1, y2) ~ x1 + x2
+\end{verbatim}   
+\item Or for a factor response variable (with three levels): 
+\begin{verbatim}
+formula <- as.factor(y) ~ x1 + x2
+\end{verbatim}
+\end{enumerate}
+If the user chooses the latter, then {\tt parse.formula()} needs to
+expand {\tt cbind(y1, y2)} (or {\tt as.factor(y)}) into two separate
+formulas.
+
+\subsection{Factor response variables}  
+
+Some models (e.g., multinomial response models) take one factor
+variable as the response and allow different sets of explanatory
+variables for each factor level.  To accommodate this, we have created
+a method for identifying factor levels within a dependent variable
+using the {\tt id()} function.  Let {\tt Y} be a factor variable with
+pre-existing levels \{apples, bananas, oranges\}.  
+
+If the user wishes to use the same formula across all levels, he would
+use \\ \verb|formula <- as.factor(Y) ~ X| as given above.  If the user
+wishes to use different a different formula for each level, however,
+he would use
+\begin{verbatim}
+formula <- list(id(Y, "apples") ~ X1,               # User input
+                id(Y, "oranges") ~ X2) 
+fml <- parse.formula(formula)                       # Developer input
+\end{verbatim}  
+The resulting {\tt fml} list should look like:  
+\begin{verbatim}  
+$apples
+  apples ~ X1
+$oranges
+  oranges ~ X2
+\end{verbatim}
+The {\tt bananas} level is omitted (and is hence the base case).  
+For $J$ equations, there must be $J + 1$ levels.
+
+In addition, the output from {\tt model.frame.multiple()} should have
+a matrix of dependent variables (rather than a factor vector) as the
+first element.  Normally, {\tt model.frame.default()} would organize
+the output as:  
+\begin{verbatim}
+Y        X1   X2
+apples   5    12
+oranges  2    15
+apples   4    10
+bananas  10   2
+...
+\end{verbatim}  
+In contrast, the {\tt model.frame.multiple()} output should be:  
+\begin{verbatim}
+apples     bananas   oranges    X1    X2
+1          0         0          5     12
+0          0         1          2     15
+1          0         0          4     10
+0          1         0          10    2
+...
+\end{verbatim}  
+with the first three columns (in this case) coded as the response
+attribute (such that {\tt model.response()} returns the first three
+columns as a matrix).  Note that the order of the first three columns
+corresponds to the order in which the user entered the {\tt id()}
+levels, with the omitted level coming last.  The terms attribute of
+the {\tt model.frame.output()} should include information that
+identifies the response factor levels (I think that this is called
+simply ``levels'' in the current R output, but you should check) in
+the correct order.  
+
+\subsection{From user input to what developers need}  
+
+Our method for parsing inputs follows the statistical notation given
+in \cite{King89}.  The {\tt parse.formula()} function takes the
+following inputs:
+\begin{itemize}
+
+\item {\tt formula}: The user-input formula, either as a single
+formula object or list of formula objects.  
+
+\item {\tt model}: A character string specifying the name of the
+model.  
+
+\item {\tt data = NULL}: An optional data frame if the response
+variable is a factor.  
+
+\end{itemize}
+
+The {\tt parse.formula()} function will dispatch to {\tt
+check.mymodel()} (where {\tt mymodel} is the string given in the {\tt
+model} argument) to find the type of formula input that the model
+takes.  The {\tt check.mymodel()} function takes no arguments and
+returns a list of model parameters.  Each parameter is itself a list with
+the following information:  
+\begin{itemize}
+\item {\tt DepVar}:  logical value ({\tt TRUE} / {\tt FALSE})
+indicating whether the equation requires a dependent variable.  
+\item {\tt ExpVar}:  logical value ({\tt TRUE} / {\tt FALSE})
+indicating whether the equation allows explanatory variables.  
+\item {\tt NumEqn}: the number of equations allowed for this
+particular stochastic component.  This argument must be greater than
+zero, and may be either an integer (when the number of equations is
+known) or a vector of two integers (when the number of equations must
+fall in a certain range).  If the maximum number of equations is
+unrestricted, use {\tt Inf} for the upper bound.  
+\end{itemize}  
+The following items are optional for each parameter: 
+\begin{itemize}
+\item {\tt DepVarClass} (optional): a character string or vector of
+character strings that indicates the class required for the dependent
+variable.  Available options include {\tt "numeric"}, {\tt "integer"},
+{\tt "factor"}. 
+\item {\tt DepVarRange} (optional): If the dependent variable is
+constrained to fall into a specific range (e.g., $y > 0$), specify it
+here as a numeric vector of length 2.  
+\end{itemize}
+If either {\tt DepVarClass} or {\tt DepVarRange} are missing, {\tt
+parse.formula()} will ignore it in error checking.  
+
+An example for a Normal regression model:  
+\begin{verbatim}
+check.mymodel <- function(){
+  mu <- sigma2 <- list()
+  mu$DepVar <- TRUE
+  mu$DepVarClass <- c("numeric")
+  mu$ExpVar <- TRUE
+  mu$NumEqn <- 1
+  sigma2$DepVar <- FALSE
+  sigma2$ExpVar <- FALSE
+  sigma2$NumEqn <- 1
+  out <- list(mu = mu, sigma2 = sigma2)
+}
+\end{verbatim} %$
+
+\subsection{Systematic and ancillary parameters}  
+
+In this context, the model's systematic and ancillary parameters are
+determined by a combination of the developer's choices in {\tt
+check.mymodel()} and the formulas entered by the users.  The
+relationship between the statistical notation and the {\tt
+check.mymodel()} function is as follows:  
+\begin{itemize}  
+\item If a parameter has {\tt DepVar = TRUE} and {\tt ExpVar = TRUE}, then it
+corresponds to a systematic component.  If a formula does not specify
+a name for a set of equations, {\tt parse.formula()} should assume
+that all formulas refer to systematic components.  If the number of
+dependent variables given by the user in the formula list does not
+correspond to the range given in {\tt NumEqn}, {\tt parse.formula()}
+should return an error.  If {\tt NumEqn} is a vector rather than a
+scalar (e.g., the number of equations for a given parameter is not
+fixed), then {\tt parse.formula()} should name each formula in the
+output using {\tt paste(parameter, i)}, where {\tt i} is the $i$th
+element of the list.  In the special case where the response variable
+is a factor, {\tt parse.formula()} should evaluate the number of
+levels given in the data for the specified response variable(s) and
+label the equations accordingly.  
+
+\item If a parameter has {\tt DepVar = TRUE} and {\tt ExpVar = FALSE},
+it corresponds to a formula with {\verb Y ~ 1} (where {\tt Y} is the
+dependent variable given in the formula).   
+\item  If a parameter has {\tt DepVar = FALSE} and {\tt ExpVar = TRUE},
+it should be considered optional: that is, if the user does not
+specify a formula for that parameter, it should default to an
+intercept term only (no warning message).  
+\item If a parameter has {\tt DepVar = FALSE} and {\tt ExpVar = FALSE},
+it is an ancillary parameter and can only be an intercept term.  The
+user should never specify an actual formula for these parameters. (If
+a formula is specified, {\t parse.formula()} should give a warning and
+then discard the user-specified formula.)
+\end{itemize}
+
+\section{Setting starting values and extracting parameters} 
+
+Given the terms output from either {\tt model.matrix.*()} or {\tt
+model.frame.*()} (where the {\tt *} denotes the use of \emph{either}
+{\tt *.default()} or {\tt *.multiple()}), the next task is to set
+starting values for parameters.  Starting values are almost always a
+named {\bf vector} of numeric values that correspond to the parameters
+being estimated.  The names should take the format:  
+\begin{verbatim}
+"(Intercept):mu1"   "(Intercept):mu2"   "x1:mu1"   "x2:mu2"
+\end{verbatim}
+And in the case of a factor response variable:  
+\begin{verbatim}
+"(Intercept):apple"  "(Intercept):orange"  " x1:apple"   "x1:orange"
+\end{verbatim} 
+And in the case of constraints, the name is the same as the {\tt
+tag()}.  Hence if {\tt tag(x2, "land")} the parameter name is {\tt
+"land"}.  
+
+In the case of ancillary parameters (any formula that consists of an
+intercept term only, and has {\tt DepVar = FALSE}), these parameters
+always come at the end of the parameter vector and take names that
+correspond to their equation label.  Hence, if
+\begin{verbatim}
+[...snip...]
+$sigma11
+  ~ 1
+$sigma22
+  ~ 1
+$rho
+  ~ 1
+\end{verbatim} %$
+the parameter names are {\tt c("sigma11", "sigma22", "rho")}.
+Although the parameter names for constrained parameters and ancillary
+variables look very similar (no {\tt *:eqn} to identify the equation),
+you will need to figure out a method for distinguishing between them
+since the constrained parameters will enter the $\beta$ data
+structure, while the ancillary parameters will not.  
+
+Using this vector of named parameters, {\tt set.start()} will
+construct a vector of starting values (0 by default), and {\tt
+put.start()} will allow developers to select particular starting
+values for particular equations. 
+
+The order of these parameter names matters quite a bit.  Whatever the
+order of the starting values, the $X$ data structure must have columns
+that correspond to the appropriate parameter values.  Whether the
+developer choose matrix or vector $\beta$, the order of parameters
+must be consistent across both structures.  If these two conditions
+are met, then the point estimates obtained through optimization (or
+another estimation method) will correspond to the starting values. 
+
+\section{Summary of inputs and outputs}
+
+Having described the statistical framework, this section describes
+specific inputs and outputs.  
+
+\begin{itemize}
+
+\item {\tt parse.formula(formula, model, data = NULL)} where {\tt
+formula} is the list of formula input by the user, {\tt model} is a
+character string with the name of the model, and {\tt data} is an
+optional data frame for models that require a factor response
+variable.  
+
+{\tt parse.formula()} will evaluate a function called {\tt
+check.model()} (where {\tt model} is the name of the model as given in
+the input to {\tt parse.formula()}), which will return a list of
+parameters (as described above).  {\tt parse.formula()} needs to
+evaluate the parameter list in the following ways:  
+\begin{itemize}
+\item The class of the output should be {\tt ("multiple", "list")},
+but have no other attributes.    
+
+\item If there are some parameters that have {\tt ExpVar = TRUE} and
+{\tt DepVar = TRUE}, \emph{and} other parameters that have {\tt ExpVar
+= TRUE} and {\tt DepVar = FALSE}, \emph{and} the user does not use the
+defaults for the latter, all user-input equations must have labels.
+If the formula entries are not unambiguous, then {\tt parse.formula()}
+should return an error.  
+
+\item If there is more than one parameter for which {\tt ExpVar =
+TRUE} and {\tt DepVar = TRUE}, then the user-specified equations must
+have labels to match those parameters.  Else {\tt parse.formula()}
+should return an error.  
+\end{itemize}
+
+\item {\tt model.frame.multiple(fml, data = NULL)}, where {\tt fml}
+is the output from {\tt parse.formula()} and {\tt data} is a data
+frame containing the variables specified in {\tt fml}.  The output
+should be a data frame containing \emph{only} the variables specified
+in {\tt fml} with list wise deletion applied to the subset, and a terms
+attribute.  
+
+\item {\tt model.matrix.multiple(fml, data = NULL, shape = "compact",
+eqn = NULL)}, \\where {\tt fml} is the output from {\tt
+parse.formula()}, {\tt data} is the data frame output by \\{\tt
+model.matrix.multiple()} \emph{or} a matrix with the appropriate
+column names, {\tt shape} is a character string consisting of either
+{\tt "compact"} (default), {\tt "array"}, or {\tt "stacked"} as
+described above, and {\tt eqn} is a character string identifying the
+equations from which to construct the matrix (if {\tt NULL}, the
+default, it should assume that all systematic components (for which
+{\tt ExpVar = TRUE}).  The output should be a matrix (or array) with a
+terms attribute identical to the terms attribute from the {\tt
+model.frame.multiple()} output, except that response should be 0
+rather than 1 (since no response is included in {\tt model.matrix.*()}
+output.
+
+\item {\tt parse.par(par, terms, shape = "matrix", eqn = NULL)} where
+{\tt par} is the vector to be reshaped, {\tt terms} are the terms from
+either {\tt model.frame.*()} or {\tt model.matrix.*()} output, {\tt
+shape} is a character string (either {\tt "matrix"} or {\tt "vector"})
+that identifies the type of output structure, and {\tt eqn} is a
+character string (or strings) that identify the equations for which
+you would like to construct $\beta$.  Things to note:  
+
+\begin{itemize}
+\item By default, {\tt eqn = NULL}, such that all systematic
+components are selected.  (Systematic components have {\tt ExpVar =
+TRUE}.)  
+
+\item If an ancillary parameter is specified in {\tt eqn}, it is
+always returned as a vector (ignoring {\tt shape}).  (Ancillary
+parameters are all parameters that have intercept only formulas.)  
+\end{itemize}  
+
+\item {\tt set.start(start.val = NULL, terms)} where {\tt start.val}
+is a vector of starting values (defaulting to {\tt NULL} if the user
+does not specify any), and {\tt terms} are the output from either {\tt
+model.matrix.*()} or {\tt model.frame.*()}.  If {\tt start.val = NULL},
+the starting values should be all 0s.  The output is a vector with
+elements named according to the model parameters.  
+
+\item {\tt put.start(start.val, value, eqn = NULL)}, where {\tt
+start.val} is the output from {\tt set.start()}, {\tt value} are the
+replacement values, and {\tt eqn} is a character string (or strings)
+specifying the equations to replace.  If {\tt eqn = NULL} (the
+default), all of {\tt start.val} is replaced.  If {\tt value} is
+shorter than {\tt start.val}, {\tt put.start()} should recycle {\tt
+value}.  The output is a vector with elements named according to the
+model parameters.  
+
+\end{itemize} 
+
+\subsection{Computational notes}  
+
+\begin{itemize}
+\item The {\tt set.start()}, {\tt put.start()}, and {\tt parse.par()}
+functions should work for single equation models (that use {\tt
+model.frame.default()} and {\tt model.matrix.default()}) in addition
+to multiple equation models (which use {\tt model.*.multiple()}).  
+
+\item {\tt model.matrix.multiple()}, {\tt parse.par()}, and {\tt
+set.start()} must work from the same set of parameters, in exactly the
+right order, irrespective of whether the user chooses compact, array,
+or stacked for {\tt model.matrix.multiple()}, {\tt
+model.matrix.default()} or matrix or vector for {\tt parse.par()}.
+Things to note:
+\begin{itemize}  
+\item In all cases, the name of the parameter must correspond to the
+appropriate dimension on the matrix of explanatory variables.  
+
+\item The parameter names assigned to the {\tt set.start()} output
+must also correspond to the parameter names in {\tt parse.par(\dots,
+shape = "vector")} (in order to ensure that the parameters also
+correspond to the appropriate dimension of the matrix of explanatory
+variables).  
+\end{itemize}
+
+\item The terms output by {\tt model.matrix.multiple()} and {\tt
+model.frame.multiple()} should be identical with the exception that
+the {\tt response} attribute on the {\tt model.matrix.*()} terms be 0
+rather than 1.  
+
+\item In some cases a user may want intercept terms in certain
+formulas, but not others.  {\tt model.matrix.*()} must be able to
+distinguish between those cases and create the appropriate $X$ matrix
+or array.  
+
+\item Since some developers may inadvertently use {\tt
+model.*.default()} or {\tt model.*.frame()} default rather than the
+{\tt *.multiple()} versions, the method for creating the parameter
+vector has to be external to those functions.  (see {\tt
+make.parameters()} for a start) In other words, you need to modify
+{\tt make.parameters()} to recognize factor variables, identify the
+levels in the factor, and create additional parameters for those
+variables.  Keep in mind that explanatory factor variables are
+identified by the user, not the developer.
+
+\end{itemize} 
+
+\bibliographystyle{asa} 
+\bibliography{gk,gkpubs}
+\end{document}

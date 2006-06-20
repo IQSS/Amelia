@@ -1,0 +1,751 @@
+\chapter{Statistical Commands}
+
+\section{Zelig Commands}\label{s:commands}
+  
+\subsection{Quick Overview}\label{overview}
+  
+For any statistical model, Zelig does its work with a combination of
+three commands.  
+
+\begin{figure}[h!]
+\caption{Main Zelig commands (solid arrows) and some options (dashed arrows)}
+\label{3steps}
+\begin{center}
+\begin{displaymath}
+\SelectTips{eu}{12} \UseTips 
+\xymatrix@!C{\quad {\rm Imputation}
+\ar@{-->}[dr] & & {\rm Matching} \ar@{-->}[dl] \\ 
+ & *+[F-:<10pt>]{{\tt zelig()}} \ar@{->}[d] \ar@{-->}[r] &
+{\tt summary()}\\ 
+ & *+[F-:<10pt>]{{\tt setx()}}  \ar@{-->}[r] \ar@{->}[d] & {\tt whatif()}\\ 
+& *+[F-:<10pt>]{{\tt sim()}} \ar@{-->}[dr] \ar@{-->}[dl] & \\
+{\tt summary()} & &{\tt plot()} } 
+\end{displaymath}
+\end{center}
+\end{figure}
+
+\begin{enumerate}
+\item Use \texttt{zelig()} to run the chosen statistical model on a
+given data set, with a specific set of variables.  For standard
+likelihood models, for example, this step estimates the coefficients,
+other model parameters, and a variance-covariance matrix.  In
+addition, you may choose from a variety of options:
+\begin{itemize} 
+\item Pre-processing:  Prior to calling {\tt zelig()}, you may
+  choose from a variety of data pre-processing commands (matching or
+  multiple imputation, for example) to make your statistical
+  inferences more accurate. 
+\item Summarize model: After calling {\tt zelig()}, you may summarize
+the regression output using {\tt summary()}.  
+\end{itemize}
+\item Use \texttt{setx()} to set each of the explanatory variables to
+  chosen (actual or counterfactual) values in preparation for
+  calculating quantities of interest.  After calling {\tt setx()}, you
+  may use \hlink{WhatIf}{/whatif/} to evaluate these choices by
+  determining whether they involve interpolation (i.e., are inside the
+  convex hull of the observed data) or extrapolation, as well as how
+  far these counterfactuals are from the data.  Counterfactuals chosen
+  in \texttt{setx()} that involve extrapolation far from the data can
+  generate considerably more model dependence (see \cite{KinZen06a},
+  \cite{KinZen06b}, \cite{StoKinZen05}).
+\item Use \texttt{sim()} to draw simulations of your quantity of
+  interest (such as a predicted value, predicted probability, risk
+  ratio, or first difference) from the model.  (These simulations may
+  be drawn using an asymptotic normal approximation (the default),
+  bootstrapping, or other methods when available, such as directly
+  from a Bayesian posterior.)  After calling {\tt sim()}, use any of
+the following to summarize the simulations:
+\begin{itemize}
+\item The {\tt summary()} function gives a numerical display. For
+multiple {\tt setx()} values, {\tt summary()} lets you summarize
+simulations by choosing one or a subset of observations.
+\item If the {\tt setx()} values consist of only one observation, {\tt
+plot()} produces density plots for each quantity of interest.  
+\end{itemize}
+\end{enumerate}
+Whenever possible, we use {\tt z.out} as the {\tt zelig()} output
+object, \texttt{x.out} as the \texttt{setx()} output object, and {\tt
+s.out} as the {\tt sim()} output object, but you may choose other
+names.
+
+\subsection{Examples}
+
+\begin{itemize}
+\item Use the \texttt{turnout} data set included with Zelig to
+  estimate a logit model of an individual's probability of voting as
+  function of race and age. Simulate the predicted probability of
+  voting for a white individual, with age held at its mean:
+\begin{verbatim}
+> data(turnout)
+> z.out <- zelig(vote ~ race + age, model = "logit", data = turnout)
+> x.out <- setx(z.out, race = "white")
+> s.out <- sim(z.out, x = x.out)
+> summary(s.out)
+\end{verbatim} 
+\item Compute a first difference and risk ratio, changing education
+  from 12 to 16 years, with other variables held at their means in the
+  data:
+\begin{verbatim}
+> data(turnout)
+> z.out <- zelig(vote ~ race + educate, model = "logit", data = turnout)
+> x.low <- setx(z.out, educate = 12)
+> x.high <- setx(z.out, educate = 16)
+> s.out <- sim(z.out, x = x.low, x1 = x.high)
+> summary(s.out)                                     # Numerical summary.
+> plot(s.out)                                        # Graphical summary.
+\end{verbatim}
+\item Calculate expected values for every observation in your
+  data set:
+\begin{verbatim}
+> data(turnout)
+> z.out <- zelig(vote ~ race + educate, model = "logit", data = turnout)
+> x.out <- setx(z.out, fn = NULL)
+> s.out <- sim(z.out, x = x.out)
+> summary(s.out)
+\end{verbatim} 
+
+\item Use five multiply imputed data sets from \cite{SchSla01} in an
+  ordered logit model:
+\begin{verbatim}
+> data(immi1, immi2, immi3, immi4, immi5)
+> z.out <- zelig(as.factor(ipip) ~ wage1992 + prtyid + ideol,
+                 model = "ologit",
+                 data = list(immi1, immi2, immi3, immi4, immi5))
+\end{verbatim}
+
+\item Use the nearest propensity score matching via {\it MatchIt}
+  package, and then calculate the conditional average treatment effect
+  of the job training program based on the linear regression model:
+\begin{verbatim}
+> library(MatchIt)
+> data(lalonde)
+> m.out <- matchit(treat ~ re74 + re75 + educ + black + hispan + age, 
+                   data = lalonde, method = "nearest")
+> m.data <- match.data(m.out)
+> z.out <- zelig(re78 ~ treat + distance + re74 + re75 + educ + black +
+                 hispan + age, data = m.data, model = "ls")
+> x.out0 <- setx(z.out, fn = NULL, treat = 0)
+> x.out1 <- setx(z.out, fn = NULL, treat = 1)
+> s.out <- sim(z.out, x=x.out0, x1=x.out1)
+> summary(s.out)
+\end{verbatim}
+
+\end{itemize}
+
+\subsection{Details}
+
+\begin{enumerate}
+\item {\tt z.out <- zelig(formula, model, data, by = NULL, \dots)}
+ 
+  The {\tt zelig()} command estimates a selected statistical model
+  given the specified data.  You may name the output object
+  (\texttt{z.out} above) anything you desire.  You must include three
+  required arguments, in the following order:
+
+  \begin{enumerate}
+
+  \item \texttt{formula} takes the form {\tt y \~\, x1 + x2}, where
+    {\tt y} is the dependent variable and {\tt x1} and {\tt x2} are
+    the explanatory variables, and {\tt y}, {\tt x1}, and {\tt x2} are
+    contained in the same dataset.  The {\tt +} symbol means
+    ``inclusion'' not ``addition.''  You may include interaction terms
+    in the form of {\tt x1*x2} without having to compute them in prior
+    steps or include the main effects separately.  For example, R
+    treats the formula {\tt y \~\, x1*x2} as {\tt y \~\, x1 + x2 +
+      x1*x2}.  To prevent R from automatically including the separate
+    main effect terms, use the {\tt I()} function, thus: {\tt y \~\,
+      I(x1 * x2)}.
+
+  \item \texttt{model} lets you choose which statistical model to run.
+    You must put the name of the model in quotation marks, in the form
+    {\tt model = "ls"}, for example.  See \Sref{s:models} for a list
+    of currently supported models.
+
+  \item \texttt{data} specifies the data frame containing the
+    variables called in the formula, in the form {\tt data = mydata}.
+    Alternatively, you may input multiply imputed datasets in the form
+    {\tt data = list(data1, data2, \dots)}.\footnote{Multiple
+      imputation is a method of dealing with missing values in your
+      data which is more powerful than the usual list-wise deletion
+      approach.  You can create multiply imputed datasets with a
+      program such as
+      \hlink{Amelia}{http://gking.harvard.edu/stats.shtml\#amelia};
+      see \hlink{King, Honaker, Joseph, Scheve
+        (2000)}{http://gking.harvard.edu/files/abs/evil-abs.shtml}.
+    \label{mi}}  If you are working with matched data created using
+  \hlink{MatchIt}{http://gking.harvard.edu/matchit/}, you may create a
+  data frame within the {\tt zelig()} statement by using {\tt data =
+    match.data(\dots)}.  In all cases, the data frame or MatchIt
+  object must have been previously loaded into the working memory.
+  
+\item {\tt by} (an optional argument which is by default {\tt NULL})
+  allows you to choose a factor variable (see \Sref{factors}) in the
+  data frame as a subsetting variable.  For each of the unique
+  strata defined in the {\tt by} variable, {\tt zelig()} does a
+  separate run of the specified model.  The variable chosen should
+  \emph{not} be in the formula, because there will be no variance in
+  the {\tt by} variable in the subsets.  If you have one data set for
+  all 191 countries in the UN, for example, you may use the {\tt by}
+  option to run the same model 191 times, once on each country, all
+  with a single {\tt zelig()} statement.  You may also use the {\tt
+    by} option to run models on
+  \hlink{MatchIt}{http://gking.harvard.edu/matchit/} subclasses.
+  
+\item The output object, {\tt z.out}, contains all of the options
+  chosen, including the name of the data set.  Because data sets may
+  be large, Zelig does not store the full data set, but only the name
+  of the dataset.  Every time you use a Zelig function, it looks for
+  the dataset with the appropriate name in working memory.  (Thus, it
+  is critical that you do \emph{not} change the name of your data set,
+  or perform any additional operations on your selected variables
+  between calling {\tt zelig()} and {\tt setx()}, or between {\tt
+    setx()} and {\tt sim()}.)
+  
+\item If you would like to view the regression output at this
+  intermediate step, type {\tt summary(z.out)} to return the
+  coefficients, standard errors, $t$-statistics and $p$-values.  We
+  recommend instead that you calculate quantities of interest;
+  creating {\tt z.out} is only the first of three steps in this task.
+  \end{enumerate}
+  
+\item {\tt x.out <- setx(z.out, fn = list(numeric = mean, ordered =
+    median, others = mode), data = NULL, cond = FALSE, \dots)}
+ 
+  The {\tt setx()} command lets you choose values for the explanatory
+  variables, with which {\tt sim()} will simulate quantities of
+  interest.  There are two types of {\tt setx()} procedures:
+\begin{itemize}
+\item You may perform the usual \emph{unconditional} prediction (by
+  default, {\tt cond = FALSE}), by explicitly choosing the values of
+  each explanatory variable yourself or letting {\tt setx()} compute
+  them, either from the data used to create {\tt z.out} or from a new
+  data set specified in the optional {\tt data} argument.  You may
+  also compute predictions for all observed values of your explanatory
+  variables using {\tt fn = NULL}.
+  
+\item Alternatively, for advanced uses, you may perform
+  \emph{conditional} prediction ({\tt cond = TRUE}), which predicts
+  certain quantities of interest by conditioning on the observed value
+  of the dependent variable.  In a simple linear regression model,
+  this procedure is not particularly interesting, since the
+  conditional prediction is merely the observed value of the dependent
+  variable for that observation.  However, conditional prediction is
+  extremely useful for other models and methods, including the
+  following:
+  \begin{itemize}
+  \item In a matched sampling design, the sample average treatment
+    effect for the treated can be estimated by computing the
+    difference between the observed dependent variable for the treated
+    group and their expected or predicted values of the dependent
+    variable under no treatment \citep{HoImaKin05}.
+  \item With censored data, conditional prediction will ensure that
+    all predicted values are greater than the censored observed
+    values \citep{KinAltBur90}.  
+  \item In ecological inference models, conditional prediction
+    guarantees that the predicted values are on the tomography line
+    and thus restricted to the known bounds
+    \citep{King97,AdoKinHer03}.
+  \item The conditional prediction in many linear random effects (or
+  Bayesian hierarchical) models is a weighted average of the
+  unconditional prediction and the value of the dependent variable for
+  that observation, with the weight being an estimable function of the
+  accuracy of the unconditional prediction \citep[see][]{GelKin94a}.
+  When the unconditional prediction is highly certain, the weight on
+  the value of the dependent variable for this observation is very
+  small, hence reducing inefficiency; when the unconditional
+  prediction is highly uncertain, the relative weight on the
+  unconditional prediction is very small, hence reducing bias.
+  Although the simple weighted average expression no longer holds in
+  nonlinear models, the general logic still holds and the mean square
+  error of the measurement is typically reduced
+  \citep[see][]{KinMurSal04}.
+  \end{itemize}
+  In these and other models, conditioning on the observed value of the
+  dependent variable can vastly increase the accuracy of prediction
+  and measurement.  
+\end{itemize}
+  
+  The {\tt setx()} arguments for \textbf{unconditional} prediction are
+  as follows:
+
+   \begin{enumerate}
+
+   \item {\tt z.out}, the {\tt zelig()} output object, must be
+     included first.
+
+   \item You can set particular explanatory variables to specified
+   values.  For example:
+\begin{verbatim}
+> z.out <- zelig(vote ~ age + race, model = "logit", data = turnout)
+> x.out <- setx(z.out, age = 30)
+\end{verbatim}
+   \texttt{setx()} sets the variables \emph{not} explicitly listed to
+   their mean if numeric, and their median if ordered factors, and
+   their mode if unordered factors, logical values, or character
+   strings.  Alternatively, you may specify one explanatory variable
+   as a range of values, creating one observation for every unique
+   value in the range of values:\footnote{If you allow more than one variable to 
+vary at a time, you risk confounding the predictive effect of the variables in 
+question.} \begin{verbatim}
+> x.out <- setx(z.out, age = 18:95)   
+\end{verbatim}
+   This creates 78 observations with with age set to 18 in the first
+   observation, 19 in the second observation, up to 95 in the 78th
+   observation.  The other variables are set to their default values,
+   but this may be changed by setting {\tt fn}, as described next.
+   
+ \item Optionally, \texttt{fn} is a list which lets you to choose a different
+   function to apply to explanatory variables of class
+  \begin{itemize} 
+    \item {\tt numeric}, which is {\tt mean} by default,
+    \item {\tt ordered} factor, which is {\tt median} by default, and
+    \item {\tt other} variables, which consist of logical variables,
+      character string, and unordered factors, and are set to their
+      {\tt mode} by default.
+  \end{itemize}
+  While any function may be applied to numeric variables, {\tt mean}
+  will default to median for ordered factors, and mode is the only
+  available option for other types of variables. In the special case,
+  {\tt fn = NULL}, {\tt setx()} returns all of the observations.
+   
+ \item You cannot perform other math operations within the {\tt fn}
+   argument, but can use the output from one call of {\tt setx} to
+   create new values for the explanatory variables.  For example, to
+   set the explanatory variables to one standard deviation below their
+   mean:
+\begin{verbatim}
+> X.sd <- setx(z.out, fn = list(numeric = sd))     
+> X.mean <- setx(z.out, fn = list(numeric = mean)) 
+> x.out <- X.mean - X.sd           
+\end{verbatim}
+   
+ \item Optionally, \texttt{data} identifies a new data frame (rather
+   than the one used to create {\tt z.out}) from which the {\tt
+     setx()} values are calculated.  You can use this argument to set
+   values of the explanatory variables for hold-out or out-of-sample
+   fit tests.
+ \item The {\tt cond} is always {\tt FALSE} for unconditional
+   prediction.
+ \end{enumerate}
+   
+ If you wish to calculate risk ratios or first differences, call {\tt
+   setx()} a second time to create an additional set of the values for
+ the explanatory variables.  For example, continuing from the example
+ above, you may create an alternative set of explanatory variables
+ values one standard deviation above their mean:
+\begin{verbatim}
+> x.alt <- X.mean + X.sd
+\end{verbatim}
+ 
+ The required arguments for \textbf{conditional} prediction are as
+ follows:
+ \begin{enumerate}
+ \item {\tt z.out}, the {\tt zelig()} output object, must be included
+   first.
+   
+ \item {\tt fn}, which equals {\tt NULL} to indicate that all of the
+   observations are selected.  You may only perform conditional
+   inference on actual observations, not the mean of observations or
+   any other function applied to the observations.  Thus, if {\tt fn}
+   is missing, but {\tt cond = TRUE}, {\tt setx()} coerces {\tt fn =
+     NULL}.
+
+ \item {\tt data}, the data for conditional prediction.  
+   
+ \item {\tt cond}, which equals {\tt TRUE} for conditional prediction.
+ \end{enumerate}
+ Additional arguments, such as any of the variable names, are ignored
+ in conditional prediction since the actual values of that observation
+ are used.
+ 
+\item {\tt s.out <- sim(z.out, x = x.out, x1 = NULL, num = c(1000,
+    100), bootstrap = FALSE, bootfn = NULL, \dots)}
+ 
+  The {\tt sim()} command simulates quantities of interest given the
+  output objects from \texttt{zelig()} and \texttt{setx()}.  This
+  procedure uses only the assumptions of the statistical model.  The
+  {\tt sim()} command performs either unconditional or conditional
+  prediction depending on the options chosen in {\tt setx()}.
+  
+  The arguments are as follows for \textbf{unconditional} prediction:
+  \begin{enumerate}
+  \item {\tt z.out}, the model output from {\tt zelig()}.
+  \item {\tt x}, the output from the {\tt setx()} procedure performed
+    on the model output.
+  \item Optionally, you may calculate first differences by specifying
+    {\tt x1}, an additional {\tt setx()} object.  For example, using
+    the {\tt x.out} and {\tt x.alt}, you may generate first
+    differences using:
+\begin{verbatim}
+> s.out <- sim(z.out, x = x.out, x1 = x.alt)
+\end{verbatim}
+    
+  \item By default, the number of simulations, {\tt num}, equals 1000
+    (or 100 simulations if bootstrap is selected), but this may be
+    decreased to increase computational speed, or increased for
+    additional precision.
+    
+  \item Zelig simulates parameters from classical \emph{maximum
+      likelihood} models using asymptotic normal approximation to the
+    log-likelihood.  This is the same assumption as used for
+    frequentist hypothesis testing (which is of course equivalent to
+    the asymptotic approximation of a Bayesian posterior with improper
+    uniform priors).  See \hlink{King, Tomz, and Wittenberg
+      (2000)}{http://gking.harvard.edu/files/abs/making-abs.shtml}.
+    For \emph{Bayesian models}, Zelig simulates quantities of interest
+    from the posterior density, whenever possible.  For \emph{robust
+      Bayesian models}, simulations are drawn from the identified
+    class of Bayesian posteriors.
+  
+  \item Alternatively, you may set {\tt bootstrap = TRUE} to simulate
+    parameters using bootstrapped data sets.  If your dataset is
+    large, bootstrap procedures will usually be more memory intensive
+    and time-consuming than simulation using asymptotic normal
+    approximation.  The type of bootstrapping (including the sampling
+    method) is determined by the optional argument {\tt bootfn},
+    described below.
+  
+  \item If {\tt bootstrap = TRUE} is selected, {\tt sim()} will
+    bootstrap parameters using the default {\tt bootfn}, which
+    re-samples from the data frame with replacement to create a
+    sampled data frame of the same number of observations, and then
+    re-runs {\tt zelig()} (inside {\tt sim()}) to create one set of
+    bootstrapped parameters.  Alternatively, you may create a function
+    outside the {\tt sim()} procedure to handle different bootstrap
+    procedures.  Please consult {\tt help(boot)} for more
+    details.\footnote{If you choose to create your own {\tt bootfn},
+      it must include the the following three arguments: {\tt data},
+      the original data frame; one of the sampling methods described
+      in {\tt help(boot)}; and {\tt object}, the original {\tt
+        zelig()} output object.  The alternative bootstrapping
+      function must sample the data, fit the model, and extract the
+      model-specific parameters.}
+  \end{enumerate}
+  
+  For \textbf{conditional} prediction, {\tt sim()} takes only two
+  required arguments:
+  \begin{enumerate}
+  \item {\tt z.out}, the model output from {\tt zelig()}.
+  \item {\tt x}, the conditional output from {\tt setx()}.  
+  \item Optionally, for duration models, {\tt cond.data}, which is the
+    {\tt data} argument from {\tt setx()}.  For models for duration
+    dependent variables (see \Sref{duration}), {\tt sim()} must impute
+    the uncensored dependent variables before calculating the average
+    treatment effect.  Inputting the {\tt cond.data} allows {\tt
+      sim()} to generate appropriate values.
+  \end{enumerate}
+  Additional arguments are ignored or generate error messages.  
+
+\end{enumerate}
+
+\subsubsection*{Presenting Results}
+\begin{enumerate}
+\item Use {\tt summary(s.out)} to print a summary of your simulated
+  quantities.  You may specify the number of significant digits as:
+\begin{verbatim}
+> print(summary(s.out), digits = 2)   
+\end{verbatim}
+\item Alternatively, you can plot your results using
+  \texttt{plot(s.out)}.
+\item You can also use \texttt{names(s.out)} to see the names and a
+  description of the elements in this object and the {\tt \$} operator
+  to extract particular results.  For most models, these are: {\tt
+    s.out\$qi\$pr} (for predicted values), {\tt s.out\$qi\$ev} (for
+  expected values), and {\tt s.out\$qi\$fd} (for first differences in
+  expected values).  For the logit, probit, multinomial logit, ordinal
+  logit, and ordinal probit models, quantities of interest also
+  include {\tt s.out\$qi\$rr} (the risk ratio).
+\end{enumerate} 
+
+\section{Supported Models}\label{s:models}
+
+We list here all models impelmented in Zelig, organized by the nature
+of the dependent variable(s) to be predicted, explained, or described.
+
+\begin{enumerate}
+\item {\bf Continuous Unbounded} dependent variables can take any
+real value in the range $(-\infty, \infty)$. While most of these
+models take a continuous dependent variable, Bayesian factor analysis takes multiple
+continuous dependent variables.  
+
+   \begin{enumerate}
+   \item {\tt "ls"}: The {\it linear least-squares} (see \Sref{ls})
+     calculates the coefficients that minimize the sum of squared
+     residuals.  This is the usual method of computing linear
+     regression coefficients, and returns unbiased estimates of
+     $\beta$ and $\sigma^2$ (conditional on the specified model).
+   \item {\tt "normal"}: The {\it Normal} (see \Sref{normal}) model
+     computes the maximum-likelihood estimator for a Normal
+     stochastic component and linear systematic component.  The
+     coefficients are identical to \texttt{ls}, but the
+     maximum likelihood estimator for $\sigma^2$ is consistent
+     but biased.
+   \item {\tt "normal.bayes"}:  The {\it Bayesian Normal} regression
+model (\Sref{normal.bayes}) is similar to maximum likelihood Gaussian
+regression, but makes valid small sample inferences via draws from the
+exact posterior and also allows for priors.  
+
+
+  \item {\tt "tobit"}:  The {\it tobit} regression model (see 
+  \Sref{tobit}) is a Normal distribution with left-censored observations.
+
+  \item {\tt "tobit.bayes"}: The {\it Bayesian tobit} distribution
+  (see \Sref{tobit.bayes}) is a Normal distribution that has either
+  left and/or right censored observations.  
+
+   \item {\tt "factor.bayes"}: The {\it Bayesian factor analysis} model (see
+\Sref{factor.bayes}) estimates multiple observed continuous dependent variables
+as a function of latent explanatory variables.  
+
+   \end{enumerate}
+ \item {\bf Dichotomous} dependent variables consist of two discrete
+values, usually $(0,1)$.  
+   \begin{enumerate}
+   \item {\tt "logit"}: {\it Logistic regression} (see \Sref{logit})
+     specifies $\Pr(Y=1)$ to be a(n inverse) logistic transformation
+     of a linear function of a set of explanatory variables.
+   \item {\tt "relogit"}: The {\it rare events logistic} regression
+     option (see \Sref{relogit}) estimates the same model as the
+     logit, but corrects for bias due to rare events (when one of the
+     outcomes is much more prevalent than the other).  It also
+     optionally uses prior correction to correct for choice-based
+     (case-control) sampling designs.
+   \item {\tt "logit.bayes"}: {\it Bayesian logistic regression} (see
+\Sref{logit.bayes}) is similar to maximum likelihood logistic
+regression, but makes valid small sample inferences via draws from the
+exact posterior and also allows for priors.  
+   \item {\tt "probit"}: {\it Probit regression} (see \Sref{probit})
+     Specifies $\Pr(Y=1)$ to be a(n inverse) CDF normal transformation
+     as a linear function of a set of explanatory variables.
+   \item {\tt "probit.bayes"}: {\it Bayesian probit} regression (see
+\Sref{probit.bayes}) is similar to maximum likelihood probit
+regression, but makes valid small sample inferences via draws from the
+exact posterior and also allows for priors. 
+   \item {\tt "blogit"}: The {\it bivariate logistic} model (see
+     \Sref{blogit}) models $\Pr(Y_{i1} = y_1, Y_{i2} = y_2)$ for
+$(y_1, y_2) = {(0,0), (0,1), (1,0), (1,1)}$ according 
+to a bivariate logistic density.
+   \item {\tt "bprobit"}: The {\it bivariate probit} model (see
+     \Sref{bprobit}) models $\Pr(Y_{i1} = y_1, Y_{i2} = y_2)$ for
+$(y_1, y_2) = {(0,0), (0,1), (1,0), (1,1)}$ according to a bivariate normal density.  
+   \item {\tt "irt1d"}: The {\it one-dimensional item response} model
+(see \Sref{irt1d}) takes multiple dichotomous dependent variables and models
+them as a function of \emph{one} latent (unobserved) explanatory variable.  
+   \item {\tt "irtkd"}:  The {\it k-dimensional item response} model
+(see \Sref{irtkd}) takes multiple dichotomous dependent variables and models
+them as a function of $k$ latent (unobserved) explanatory variables.  
+\end{enumerate} 
+ \item {\bf  Ordinal} are used to model
+   ordered, discrete dependent variables.  The values of the outcome
+   variables (such as kill, punch, tap, bump) are ordered, but the
+   distance between any two successive categories is not known
+   exactly.  Each dependent variable may be thought of as linear, with
+one continuous, unobserved dependent variable observed through a mechanism
+   that only returns the ordinal choice.
+   \begin{enumerate}
+   \item {\tt "ologit"}: The {\it ordinal logistic} model (see
+     \Sref{ologit}) specifies the stochastic component of the
+     unobserved variable to be a standard logistic distribution.
+   \item {\tt "oprobit"}: The {\it ordinal probit} distribution (see
+     \Sref{oprobit}) specifies the stochastic component of the
+     unobserved variable to be standardized normal.
+      \item {\tt "oprobit.bayes"}: {\it Bayesian ordinal probit} model
+(see \Sref{oprobit.bayes}) is similar to ordinal probit
+regression, but makes valid small sample inferences via draws from the
+exact posterior and also allows for priors.  
+     \item {\tt "factor.ord"}: {\it Bayesian ordered factor analysis}
+(see \Sref{factor.ord}) models observed, ordinal dependent variables
+as a function of latent explanatory variables.  
+   \end{enumerate}
+ \item {\bf Multinomial} dependent variables are unordered, discrete
+   categorical responses.  For example, you could model an
+   individual's choice among brands of orange juice or among
+   candidates in an election.
+    \begin{enumerate}
+    \item {\tt "mlogit"}: The {\it multinomial logistic} model (see
+      \Sref{mlogit}) specifies categorical responses distributed
+      according to the multinomial stochastic component and logistic
+      systematic component.
+    \item {\tt "mlogit.bayes"}: {\it Bayesian multinomial logistic} regression (see
+\Sref{mlogit.bayes}) is similar to maximum likelihood multinomial logistic
+regression, but makes valid small sample inferences via draws from the
+exact posterior and also allows for priors. 
+% \item {\tt "mprobit"}: The {\it multinomial probit} model (see
+%      \Sref{mprobit}) specifies categorical responses distributed
+%      according to the multinomial stochastic component and Normal
+%      systematic component.
+    \end{enumerate}
+  \item {\bf Count} dependent variables are non-negative integer
+values, such as the number of presidential vetoes or the number of
+photons that hit a detector. 
+    \begin{enumerate}
+    \item {\tt "poisson"}: The {\it Poisson} model (see
+      \Sref{poisson}) specifies the expected number of events that
+      occur in a given observation period to be an exponential
+      function of the explanatory variables.  The Poisson stochastic
+      component has the property that, $\lambda = \textrm{E}(Y_i|X_i)
+      = \textrm{V}(Y_i|X_i)$.
+    \item {\tt "poisson.bayes"}: {\it Bayesian Poisson} regression (see
+\Sref{poisson.bayes}) is similar to maximum likelihood Poisson
+regression, but makes valid small sample inferences via draws from the
+exact posterior and also allows for priors. 
+    \item {\tt "negbin"}: The {\it negative binomial} model (see
+      \Sref{negbin}) has the same systematic component as the Poisson,
+      but allows event counts to be over-dispersed, such that
+      $\textrm{V}(Y_i|X_i) > \textrm{E}(Y_i|X_i)$.
+    \end{enumerate}
+
+  \item {\bf Continuous Bounded}\label{duration} dependent variables
+that are continuous only over a certain range, usually $(0, \infty)$.
+In addition, some models (exponential, lognormal, and
+Weibull) are also censored for values greater than some censoring
+point, such that the dependent variable has some units fully observed
+and others that are only partially observed (censored).  
+
+ \begin{enumerate}
+
+   \item {\tt "gamma"}: The {\it Gamma} model (see \Sref{gamma}) for
+     positively-valued, continuous dependent variables that are fully
+observed (no censoring).  
+
+   \item {\tt "exp"}: The {\it exponential} model (see \Sref{exp}) for
+   right-censored dependent variables assumes that the hazard function
+   is constant over time.  For some variables, this may be an unrealistic
+   assumption as subjects are more or less likely to fail the longer
+   they have been exposed to the explanatory variables.
+
+  \item {\tt "weibull"}: The {\it Weibull} model (see \Sref{weibull})
+  for right-censored dependent variables relaxes the
+  assumption of constant hazard by including an additional scale
+  parameter $\alpha$: If $\alpha > 1$, the risk of failure increases
+  the longer the subject has survived; if $\alpha < 1$, the risk of
+  failure decreases the longer the subject has survived.  While {\tt
+  zelig()} estimates $\alpha$ by default, you may optionally fix
+  $\alpha$ at any value greater than 0.  Fixing $\alpha = 1$ results
+  in an exponential model.
+
+  \item {\tt "lognorm"}: The {\it log-normal} model (see
+  \Sref{lognorm}) for right-censored duration dependent variables
+  specifies the hazard function non-monotonically, with increasing
+  hazard over part of the observation period and decreasing hazard
+  over another.
+
+\end{enumerate}
+
+\item {\bf Mixed} dependent variables include models that take more
+than one dependent variable, where the dependent variables come from
+two or more of categories above.  (They do not need
+to be of a homogeneous type.)
+\begin{enumerate}
+\item The {\it Bayesian mixed factor analysis} model, in contrast to the Bayesian factor
+analysis model and ordinal factor analysis model, can model both types
+of dependent variables as a function of latent explanatory variables.
+\end{enumerate}
+
+%  \item {\bf Models for Contingency Tables}
+%     \begin{enumerate}
+%     \item {\tt "mloglm"}: Use a {\it multinomial log-linear} model (see
+%       \Sref{mloglm}) to estimate log-linear models for contingency
+%       tables.  These models use raw counts in tables as the dependent
+%       variable and apply a Poisson regression model.  Many of the rich
+%       set of models that result are asymptotically equavlent to
+%       multinomial logit models.  
+%     \end{enumerate}
+\end{enumerate}
+
+\section{Replication Procedures} 
+
+A large part of any statistical analysis is documenting your work such
+that given the same data, anyone may replicate your results.  In
+addition, many journals require the creation and dissemination of
+``replication data sets'' in order that others may replicate your
+results (see \hlink{King,
+1995}{http://gking.harvard.edu/data.shtml\#repl}\nocite{King95}).
+Whether you wish to create replication materials for your own records,
+or contribute data to others as a companion to your published work,
+Zelig makes this process easy.
+
+\subsection{Saving Replication Materials}
+
+Let {\tt mydata} be your final data set, {\tt z.out} be your {\tt
+  zelig()} output, and {\tt s.out} your {\tt sim()} output.  To save
+all of this in one file, type:
+\begin{verbatim}
+> save(mydata, z.out, s.out, file = "replication.RData")
+\end{verbatim}
+This creates the file replication.RData in your working directory.
+You may compress this file using zip or gzip tools.
+
+If you have run several specifications, all of these estimates may be
+saved in one .RData file.  Even if you only created quantities of
+interest from one of these models, you may still save all the
+specifications in one file.  For example:
+\begin{verbatim}
+> save(mydata, z.out1, z.out2, s.out, file = "replication.RData")
+\end{verbatim}
+
+Although the .RData format can contain data sets as well as output
+objects, it is not the most space-efficient way of saving large data
+sets.  In an uncompressed format, ASCII text files take up less space
+than data in .RData format.  (When compressed, text-formatted data is
+still smaller than .RData-formatted data.)  Thus, if you have more
+than 100,000 observations, you may wish to save the data set
+separately from the Zelig output objects.  To do this, use the {\tt
+  write.table()} command.  For example, if {\tt mydata} is a data
+frame in your workspace, use {\tt write.table(mydata, file =
+  "mydata.tab")} to save this as a tab-delimited ASCII text file.  You
+may specify other delimiters as well; see {\tt
+  help.zelig("write.table")} for options.
+
+\subsection{Replicating Analyses}
+
+If the data set and analyses are all saved in one .RData file, located
+in your working directory, you may simply type:
+\begin{verbatim}
+> load("replication.RData")                   # Loads the replication file.  
+> z.rep <- repl(z.out)                        # To replicate the model only. 
+> s.rep <- repl(s.out)                        # To replicate the model and 
+                                              #  quantities of interest.  
+\end{verbatim}
+By default, {\tt repl()} uses the same options used to create the
+original output object.  Thus, if the original {\tt s.out} object used
+bootstrapping with 245 simulations, the {\tt s.rep} object will
+similarly have 245 bootstrapped simulations.  In addition, you may use
+the {\tt prev} option when replicating quantities of interest to reuse
+rather than recreate simulated parameters.  Type {\tt
+  help.zelig("repl")} to view the complete list of options for
+{\tt repl()}.
+
+If the data were saved in a text file, use {\tt read.table()} to load
+the data, and then replicate the analysis:
+\begin{verbatim}
+> dat <- read.table("mydata.tab", header = TRUE)  # Where `dat' is the same
+> load("replication.RData")                       #   as the name used in 
+> z.rep <- repl(z.out)                            #   `z.out'.
+> s.rep <- repl(s.out)  
+\end{verbatim}
+If you have problems loading the data, please refer to \Sref{load.data}.
+
+Finally, you may use the {\tt identical()} command to ensure that the
+replicated regression output is in every way identical to the original
+{\tt zelig()} output.\footnote{The {\tt identical()} command checks
+  that numeric values are identical to the maximum number of decimal
+  places (usually 16), and also checks that the the two objects have
+  the same class (numeric, character, integer, logical, or factor).
+  Refer to {\tt help(identical)} for more information.}  For example:
+\begin{verbatim}
+> identical(z.out$coef, z.rep$coef)              # Checks the coefficients.
+\end{verbatim}
+Simulated quantities of interest will vary from the original
+quantities if parameters are re-simulated or re-sampled.  If you wish to
+use {\tt identical()} to verify that the quantities of interest are
+identical, you may use
+\begin{verbatim}
+# Re-use the parameters simulated (and stored) in the original sim() output.
+> s.rep <- repl(s.out, prev = s.out$par) 
+
+# Check that the expected values are identical.  You may do this for each qi.
+> identical(s.out$qi$ev, s.rep$qi$ev) 
+\end{verbatim} %$
+
+
