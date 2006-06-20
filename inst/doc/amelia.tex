@@ -73,19 +73,34 @@ Olivia Lau\thanks{Ph.D.\ Candidate, Department of Government, Harvard
 
 \nobibliography*
 
+%\include{acknowledgments}
 
-
-
+%\input{intro}
 
 \part[User's Guide]{User's Guide}
+
+%\input{install}
+%\input{syntax}
+%\input{Zcommands}
+%\input{graphs}
+
 \part{Advanced Zelig Uses}
+
+%\input{advancedR}
+%\input{newModels}
+%\input{addingModels}
+
 \part{Reference Manual}
+
+%\input{refman}
 
 \appendix
 
 \part[Appendices]{Appendices}
 
 %\input{distributions}
+
+%\input{faq}
 
 \chapter{What's New?  What's Next?}
 
@@ -96,10 +111,186 @@ versions of Zelig for consistency and accuracy.  Testing distributions
 may contain bugs, but are usually replaced by stable releases within a
 few days. 
 
+\begin{itemize} 
+
+\item {\bf 2.5-4} (March 16, 2006): Stable release for R 2.0.0-2.2.1.  Fixed bug 
+related to windows build.  First-level dependencies are the same as in version 
+2.5-1.
+
+\item {\bf 2.5-3} (March 9, 2006): Stable release for R 2.0.0-2.2.1.  Fixed bugs 
+related to VDC GUI.  First level dependencies are the same as in version 2.5-1.  
+
+\item {\bf 2.5-2} (February 3, 2006): Stable release for R 2.0.0-2.2.1.  Fixed bugs 
+related to VDC GUI.  First level dependencies are the same as in version 2.5-1.
+
+\item {\bf 2.5-1} (January 31, 2006): Stable release 
+for R 2.0.0-2.2.1.  Added methods for multiple equation models.  Added
+tobit regression.  Fixed bugs related to robust estimation and upgrade of sandwich and 
+zoo packages.  Revised {\tt setx()} to use environments.  Added 
+{\tt current.packages()} to retrieve version of packages upon which Zelig 
+depends.  First level version compatibilities (at time of release) 
+are as follows: \newline
+\begin{tabular}{ll}\label{table.compat}
+     MASS       & 7.2-24 \\
+     boot       & 1.2-24 \\
+     VGAM       & 0.6-7 \\
+     mvtnorm    & 0.7-2 \\ 
+     survival   & 2.20  \\
+     sandwich   & 1.1-0 \\
+     zoo        & 1.0-4 \\
+     MCMCpack   & 0.6-6 \\
+     coda       & 0.10-3 \\
+\end{tabular}
+
+\item \textbf{2.4-7} (December 10, 2005): Stable release for R 
+2.0.0-2.2.2.  Fixed the environment of {\tt eval()} called within {\tt
+  setx.default()} (Thanks to Micah Altman).
+
+\item \textbf{2.4-6} (October 27, 2005): Stable release for R 
+2.0.0-2.2.2.  Fixed bug related to simulation for Bayesian Normal regression.
+
+\item \textbf{2.4-5} (October 18, 2005): Stable release for R 2.0.0-2.2.0.  
+Fixed installation instructions.  
+
+\item \textbf{2.4-4} (September 29, 2005): Stable release for R 
+2.0.0-2.2.0.  Fixed {\tt help.zelig()} links.  
+
+\item \textbf{2.4-3} (September 29, 2005): Stable release for R
+2.0.0-2.2.0.  Revised {\tt matchit()} documentation.  
+
+\item \textbf{2.4-2} (August 30, 2005): Stable release for R 2.0.0-2.1.1.  
+  Fixed bug in {\tt setx()} related to {\tt as.factor()} and {\tt I()}.  
+Streamlined {\tt qi.survreg()}.  
+
+\item \textbf{2.4-1} (August 15, 2005): Stable release for R 2.0.0-2.1.1.  Added the
+  following Bayesian models: factor analysis, mixed factor analysis,
+  ordinal factor analysis, unidimensional item response theory,
+  k-dimensional item response theory, logit, multinomial logit,
+  normal, ordinal probit, Poisson, and tobit.  Also fixed minor bug in
+formula (long variable names coerced to list).  
+
+\item \textbf{2.3-2} (August 5, 2005): Stable release for R 2.0.0-2.1.1.  
+Fixed bug in simulation procedure for lognormal model. 
+
+\item \textbf{2.3-1} (August 4, 2005): Stable release for R 2.0.0-2.1.1.  
+Fixed documentation errors related to model parameterization and code bugs 
+related to first differences and conditional prediction for exponential, 
+lognormal, and Weibull models.  (reported by Alison Post)
+
+\item \textbf{2.2-4} (July 30, 2005):  Stable release for R
+2.0.0-2.1.1.  Revised relogit, adding option for weighting in addition
+to prior correction.  (reported by Martin Pl\"oderl)
+
+\item \textbf{2.2-3} (July 24, 2005): Stable release for R 2.0.0-2.1.1.  
+Fixed bug associated with robust standard errors for negative binomial.  
+
+\item \textbf{2.2-2} (July 13, 2005): Stable release for R 2.0.0-2.1.1.  
+Fixed bug in setx().  (reported by Ying Lu)
+
+\item \textbf{2.2-1} (July 11, 2005):  Stable release for R 2.0.0-2.1.0.  
+Revised ordinal probit to use MASS library.  Added robust standard errors 
+for the following regression models: exponential, gamma, logit, lognormal, 
+least squares, negative binomial, normal (Gaussian), poisson, probit, and 
+weibull.
+
+\item \textbf{2.1-4} (May 22, 2005):  Stable release for R 1.9.1-2.1.0.  Revised help.zelig()
+  to deal with CRAN build of Windows version.  Added recode of slots to lists    
+  in NAMESPACE.  Revised {\tt install.R} script to deal with changes to {\tt install.packages()}.  (reported by Dan Powers and 
+Ying Lu)
+
+\item \textbf{2.1-3} (May 9, 2005):  Stable release for R 1.9.1-2.1.0.  
+Revised param.lm() function to work with bootstrap simulation.  (reported 
+by Jens Hainmueller)
+
+\item \textbf{2.1-2} (April 14, 2005):  Stable release for R 1.9.1-2.1.0.  
+Revised summary.zelig(). 
+\item \textbf{2.1-1} (April 7, 2005):  Stable release for R 1.9.1-2.1.0.  
+Fixed bugs in 
+  NAMESPACE and summary.vglm().
+\item \textbf{2.0-14} (April 5, 2005): Stable release for R
+  1.9.1-2.0.1. Added {\tt summary.vglm()} to ensure the compatibility with VGAM 0.6-2.
+\item \textbf{2.0-13} (March 11, 2005): Stable release for R 1.9.1-2.0.1.  
+Fixed bugs in {\tt NAMESPACE} and R-help file for {\tt rocplot()}.  
+\item \textbf{2.0-12} (February 20, 2005): Stable release for R 
+1.9.1-2.0.1.  Added {\tt plot = TRUE} option to {\tt rocplot()}.  
+\item \textbf{2.0-11} (January 14, 2005): Stable release for R 1.9.1-2.0.1.  
+Changed class name for subsettted models from {\tt "multiple"} to {\tt 
+"strata"}, and modified affected functions.  
+\item \textbf{2.0-10} (January 5, 2005): Stable release for R 1.9.1 and R 
+2.0.0.  Fixed bug in ordinal logit simulation procedure.  (reported by Ian 
+Yohai)
+\item \textbf{2.0-9} (October 21, 2004): Stable release for R 1.9.1 
+\emph{and} R 2.0.0 (Linux and Windows).  Fixed bug in NAMESPACE file.  
+\item \textbf{2.0-8} (October 18, 2004): Stable release for R 1.9.1 
+\emph{and} R 2.0.0 (Linux only).  Revised for submission to CRAN.  
+\item \textbf{2.0-7} (October 14, 2004): Stable release for R 1.9.1 \emph{and} R 2.0.0 (Linux 
+only).  Fixed bugs in {\tt summary.zelig()},  NAMESPACE, and assorted bugs related to new R 
+release.  Revised syntax for multiple equation models.  
+\item \textbf{2.0-6} (October 4, 2004): Stable release for R 1.9.1.
+Fixed problem with NAMESPACE.  
+\item \textbf{2.0-5} (September 25, 2004): Stable release for R 1.9.1.  
+Changed installation procedure to source {\tt install.R} from Zelig 
+website.
+\item \textbf{2.0-4} (September 22, 2004): Stable release for R 1.9.1.  Fixed 
+typo in installation directions, implemented NAMESPACE, rationalized {\tt 
+summary.zelig()}, and tweaked documentation for least squares.  
+\item \textbf{2.0-3} (September 1, 2004): Stable release for 
+R 1.9.1.  Fixed bug in conditional prediction for survival models.  
+\item \textbf{2.0-2} (August 25, 2004): Stable release for R 1.9.1.  
+Removed predicted values from {\tt ls}.  
+\item \textbf{2.0-1b} (July 16, 2004): Stable release for R 1.9.1.  MD5
+  checksum problem fixed.  Revised {\tt plot.zelig()} command to be a
+  generic function with methods assigned by the model.  Revised entire
+  architecture to accept multiply imputed data sets with strata.
+  Added functions to simplify adding models.  Completely restructured
+  reference manual.  Fixed bugs related to conditional prediction in
+  setx and summarizing strata in summary.zelig.
+ \item \textbf{1.1-2} (June 24, 2004): Stable release for R 1.9.1 (MD5
+  checksum problem not fixed, but does not seem to cause problems).
+  Fixed bug in {\tt help.zelig()}.  (reported by Michael L. Levitan)
+\item \textbf{1.1-1} (June 14, 2004): Stable release for R 1.9.0.
+  Revised {\tt zelig()} procedure to use {\tt zelig2model()} wrappers,
+  revised {\tt help.zelig()} to use a data file with extension {\tt
+    .url.tab}, and revised {\tt setx()} procedure to take a list of
+  {\tt fn} to apply to variables, and such that {\tt fn = NULL}
+  returns the entire {\tt model.matrix()}.
+ \item \textbf{1.0-8} (May 27, 2004): Stable release for R 1.9.0.
+   Fixed bug in simulation procedure for survival models.  (reported
+   by Elizabeth Stuart) 
+ \item \textbf{1.0-7} (May 26, 2004): Stable release for R 1.9.0. Fixed 
+   bug in relogit simulation procedure.  (reported by Tom Vanwellingham)
+ \item \textbf{1.0-6} (May 11, 2004):  Stable release for R 1.9.0.  
+   Fixed bug in setx.default, which had previously failed to ignore 
+   extraneous variables in data frame.  (reported by Steve Purpura) 
+ \item \textbf{1.0-5} (May 7, 2004): Replaced relogit procedure with 
+   memory-efficient version. (reported by Tom Vanwellingham)
+ \item \textbf{1.0-4} (April 19, 2004):  Stable release for R 1.9.0.  
+   Added vcov.lm method; changed print for summary.relogit. 
+ \item \textbf{1.0-2} (April 16, 2004): Testing distribution for R 1.9.0. 
+ \item \textbf{1.0-1} (March, 23, 2004): Stable release for R 1.8.1. 
+\end{itemize}
+
 \section{What's Next?}
 
 We have several plans for expanding and improving Zelig.  Major
 changes slated for Version 3.0 (and beyond) include:  
+
+\begin{itemize}
+\item Hierarchical and multi-level models
+\item Ecological inference models
+\item GEE models
+\item Neural network models
+\item Average treatment effects for everyone (treated and control
+units)
+\item Cross-validation
+\item Time-series cross-sectional models (via {\tt nlme})
+\item ARIMA models
+\item Generalized boosted regression model (via {\tt gbm})
+\item Saving random seeds to ensure exact replication
+\end{itemize}
+
+If you have suggestions, or packages that you would like to contribute
+to Zelig, please email our listserv at \hlink{zelig@latte.harvard.edu}{mailto:zelig@latte.harvard.edu}
 
 \bibliographystyle{asa}
 \bibliography{gk,gkpubs}
