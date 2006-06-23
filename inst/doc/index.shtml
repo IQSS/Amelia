@@ -1,0 +1,102 @@
+<html>
+<head>
+<title>Amelia Software Website</title>
+<script language='Javascript' src='/gking.js'></script></HEAD>
+
+<BODY><script language="Javascript">displayHeader()</script>
+
+<h1>Amelia II: A Program for Missing Data</h1>
+
+<a
+href="http://www.polisci.ucla.edu/menu/people/faculty/james_honaker.htm">James
+Honaker</a>, <a href="">Matthew Blackwell</a>, <a href="/">Gary King</a>,
+
+<br /><br />
+<!-- rbuild: replace 'Version:' '</b>' version -->
+<b>Version:1.0</b> Beta
+
+<table border='0' cellpadding='0' cellspacing='8'><tr><td valign='top'
+width='200'> <p !style="float:left; width: 300; margin: 1.5em;"> <img
+src="/amelia/gallery19.jpg" width="300" /> <br /><small>
+Amelia is named after this famous missing person.</small></p>
+
+</td><td valign='top'>
+
+<p>Amelia II "multiply imputes" missing data in a single cross-section
+  (such as a survey) or from a time-series-cross-sectional data set
+  (such as collected by years for each of several countries).  Amelia
+  II implements a bootstrapping-based algorithm that gives essentially
+  the same answers as IP or EMis, is faster than existing approaches
+  and, unlike Amelia I and other statistically rigorous imputation
+  software, virtually never crashes (but please let us know if you
+  find to the contrary!).  The program also generalizes existing
+  approaches by allowing for trends in time
+  across observations within a cross-sectional unit, as well as 
+  priors that allow experts to incorporate beliefs they have about
+  the values of particular missing cells in their data.  Amelia II
+  also includes a useful diagnostic of the fit of multiple imputation
+  models.  The program works from the R command line or via a
+  graphical user interface that does not require users to know R.
+
+ <p> Multiple imputation involves imputing <em>m</em> values for each missing
+  cell in your data matrix and creating <em>m</em> "completed" data sets.
+  (Across these completed data sets, the observed values are the same,
+  but the missing values are filled in with different imputations that
+  reflect our uncertainty about the missing data.)  After imputation,
+  Amelia will then save the <em>m</em> data
+  sets.  You then apply whatever statistical method you would have used
+  if there had been no missing values to each of the <em>m</em> data sets,
+  and use a simple procedure to
+  combine the results.  Under normal circumstances, you
+  only need to impute once and can then analyze the <em>m</em> imputed
+  data  sets as many times and for as many purposes as you wish.  The
+  advantage of Amelia is that it combines the comparative speed and
+  ease-of-use of our algorithm with the power of multiple
+  imputation, to let you focus on your substantive research questions
+  rather than spending time developing complex application-specific
+  models for nonresponse in each new data set.  Unless the rate of
+  missingness is exceptionally high, <em>m=5</em> (the program
+  default) will usually be adequate.  Other methods of dealing with
+  missing data, such as listwise deletion, mean substitution, or
+  single imputation, are in common circumstances biased, inefficient,
+  or both.  <p>
+  <ul>
+    <li>Documentation:  <a href="/amelia/docs/">Read on-line</a> or <a
+	href="/amelia/docs/amelia.pdf">Download PDF</a></li>
+	
+    <li><a href="/amelia/docs/Installation.html">Installation</a>, <a
+	href="/amelia/docs/Frequently_Asked_Quest.html">Frequently Asked
+	Questions</a></li>
+
+    <li>To automatically combine multiply imputed data sets, in R see <a
+	href="/zelig">Zelig</a>; or in Stata see <a
+	href="/stats.shtml#clarify">Clarify</a>, or Ken
+	Scheve's <a href="/amelia/amelia1/docs/mi.zip">MI program</a>.</li>
+
+    <li>Gary King, James Honaker, Anne Joseph, and Kenneth
+    Scheve. <span class="bg">Analyzing Incomplete Political Science
+    Data: An Alternative Algorithm for Multiple Imputation</span>,
+    <i>American Political Science Review</i>, Vol. 95, No. 1 (March,
+    2001): Pp. 49-69. (<span class="bg">Article:</span> <a
+    href="/files/evil.pdf">PDF</a> | <span class="bg">Abstract:</span>
+    <a href="/files/abs/evil-abs.shtml">HTML</a>)</li>
+
+	
+    <li>Amelia Mailing List: <a
+	href="http://lists.hmdc.harvard.edu/index.cgi?info=amelia"
+	target="gkingext">[Un]Subscribe</a>, or <a
+	href="http://lists.hmdc.harvard.edu/lists/amelia/"
+	target="gkingext">Browse/Search Archives</a></li>
+	
+    <li><a href="/amelia/" target="ChangeDetectionWiz"
+	onClick="doChangeDetectionPopup()"> Track Amelia changes</a></li>
+  </ul>
+  
+</td>
+</tr>
+</table>    
+    
+   
+
+<script language="Javascript">displayFooter()</script></BODY>
+</html>
