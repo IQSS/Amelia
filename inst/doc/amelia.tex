@@ -2,6 +2,7 @@
 \usepackage{html}
 \usepackage{dcolumn}
 \usepackage{longtable}
+\usepackage{natbib} 
 \usepackage{vmargin}
 \topmargin=0in
 \usepackage{graphicx}
@@ -390,7 +391,7 @@ transformations.  In general nominal and log transform variables must
 be declared to \Amelia, whereas ordinal (including dichotomous)
 variables often need not be, as described below.  (For harder cases,
 see Schafer, 1997, for specialized MCMC-based imputation models for
-discrete variables.)
+discrete variables.)\nocite{KinHonJos01}
 
 Although these transformations are taken internally on these variables
 to better fit the data to the multivariate normal assumptions of the
@@ -991,5 +992,8 @@ amelia function.  This allows you to check the likelihood surface
   multiple start values that are drawn randomly.
 \end{enumerate}
 
+\bibliographystyle{apsr}
+\bibsep=0in
+\bibliography{gk.bib,gkpubs.bib}
 \end{document}
 
