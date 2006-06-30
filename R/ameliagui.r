@@ -3,127 +3,10 @@
 ##  mb 23/01/06 - function to be included in amelia package.
 ##  05/05/06 mb - catches unexpected amelia errors
 ##  09/05/06 mb - cleaned up diags menu, added overimpute button
+##  22/06/06 mb - checks added to session loading.
+##  26/06/06 mb - session saving/loading now mirrors amelia output.  
 
 ameliagui<-function() {
-
-
-# Define an S3 generic function and a method to convert an R list to a Tcl list.
-##array variable functions##
-tclArrayVar <- function(Rarray=NULL)
-{
-    if (!is.null(Rarray) && !is.vector(Rarray) && length(dim(Rarray))!=2)
-      stop("Array must be one-dimensional or two-dimensional.")
-    require(tcltk)
-    #n <- evalq(TclVarCount <- TclVarCount + 1, .TkRoot$env)
-    #name <- paste("::RTcl", n,sep = "")
-    name<-"Priors"
-    l <- list(env = new.env(),nrow=0,ncol=0,ndim=0)
-    assign(name, NULL, envir = l$env)
-    #reg.finalizer(l$env, function(env) tkcmd("unset", ls(env)))
-    class(l) <- "tclArrayVar"
-    if (is.null(Rarray))
-    {
-      ndim <- 2
-      .Tcl(paste("set ",name,"(0,0) \"\"",sep=""))
-    }
-    else
-    {
-      if (is.vector(Rarray))
-      {
-        ndim <- 1
-        Rarray <- as.data.frame(Rarray)
-      }
-      else
-        ndim <- 2
-      for (i in (1:nrow(Rarray)))
-        if (ndim==2)
-          for (j in (1:ncol(Rarray)))
-            .Tcl(paste("set ",name,"(",i,",",j,") \"",paste(Rarray[i,j]),"\"",sep=""))
-        else
-          .Tcl(paste("set ",name,"(",i,",",1,") \"",paste(Rarray[i,1]),"\"",sep=""))
-      if (!is.null(rownames(Rarray)))
-        for (i in (1:nrow(Rarray)))
-          .Tcl(paste("set ",name,"(",i,",",0,") \"",rownames(Rarray)[i],"\"",sep=""))
-      else
-        for (i in (1:nrow(Rarray)))
-          .Tcl(paste("set ",name,"(",i,",",0,") \"\"",sep=""))
-      if (!is.null(colnames(Rarray)))
-        for (j in (1:ncol(Rarray)))
-          .Tcl(paste("set ",name,"(",0,",",j,") \"",colnames(Rarray)[j],"\"",sep=""))
-      else
-        for (j in (1:ncol(Rarray)))
-          .Tcl(paste("set ",name,"(",0,",",j,") \"\"",sep=""))
-      l$nrow <- nrow(Rarray)
-      l$ncol <- ncol(Rarray)
-    }
-    l$ndim <- ndim
-    l
-}
-
-fill.names<-function(l,Rarray) {
-  if (!is.null(rownames(Rarray)))
-    for (i in (1:nrow(Rarray)))
-      tcl("set",paste("Priors","(",i,",",0,")",sep=""),paste(rownames(Rarray)[i]))
-  if (!is.null(colnames(Rarray)))
-    for (j in (1:ncol(Rarray)))
-      tcl("set",paste("Priors","(",0,",",j,")",sep=""),paste(colnames(Rarray)[j]))
-}
-
-
-print.tclArrayVar <- function(tclArray,height=-1,width=-1)
-{
-  require(tcltk)
-  tt <- tktoplevel()
-  tclRequire("Tktable")
-  tclArrayName <- ls(tclArray$env)
-  tkwm.title(tt,tclArrayName)
-  table1 <- tkwidget(tt,"table",rows=paste(tclArray$nrow+1),cols=paste(tclArray$ncol+1),titlerows="1",titlecols="1",
-                     height=paste(height+1),width=paste(width+1),
-                     xscrollcommand=function(...) tkset(xscr,...),yscrollcommand=function(...) tkset(yscr,...))
-  xscr <-tkscrollbar(tt,orient="horizontal", command=function(...)tkxview(table1,...))
-  yscr <- tkscrollbar(tt,command=function(...)tkyview(table1,...))
-
-  tkgrid(table1,yscr)
-  tkgrid.configure(yscr,sticky="nsw")
-  tkgrid(xscr,sticky="new")
-  tkconfigure(table1,variable=tclArrayName,background="white",selectmode="extended")
-  for (i in 1:nrow(rshow)) {
-    for (j in 1:ncol(rshow)) {
-      if (tclArray[i,j]!="MISS") {
-        tkcmd(table1,"tag","configure","obs",state="disabled")
-	}
-    }
-  }
-}
-
-assign("[.tclArrayVar",
-function(object, i, j=NULL) {
-  require(tcltk)
-  if (is.null(j) && object$ndim!=1)
-    stop("Object is not a one-dimensional Tcl array")
-  if (!is.null(j) && object$ndim!=2)
-    stop("Object is not a two-dimensional Tcl array")
-  if (object$ndim==1)
-    j <- 1
-  tclArrayName <- ls(object$env)
-  tclvalue(paste(tclArrayName,"(",i,",",j,")",sep=""))
-})
-
-assign("[<-.tclArrayVar",
-function(object, i, j=NULL,value) {
-  require(tcltk)
-  if (is.null(j) && object$ndim!=1)
-    stop("Object is not a one-dimensional Tcl array")
-  if (!is.null(j) && object$ndim!=2)
-    stop("Object is not a two-dimensional Tcl array")
-  if (object$ndim==1)
-    j <- 1
-  tclArrayName <- ls(object$env)
-  tcl("set",paste("Priors","(",i,",",j,")",sep=""),value)
-  if (i>object$nrow) object$nrow <- i
-  return(object)
-})
-
 
 main.close<-function() {
 	qvalue<-tkmessageBox(message="Are you sure you want to exit Amelia?",
@@ -157,11 +40,13 @@ get.filename<-function(entry) {
   tkinsert(input.entry,"end",am.filename)
 }
 
-load.data <- function() {
-  if (!is.null(amelia.data)) {
-    sure<-tkmessageBox(message="If you load another dataset, your current settings will be erased.  Are you sure you want to load the new data?",icon="question",type="yesno")    
-    if (tclvalue(sure) == "no") 
-      return(NULL)
+load.data <- function(session=F) {
+  if (!session) {
+    if (!is.null(amelia.data)) {
+      sure<-tkmessageBox(message="If you load another dataset, your current settings will be erased.  Are you sure you want to load the new data?",icon="question",type="yesno")    
+      if (tclvalue(sure) == "no") 
+        return(NULL)
+    }
   } 
   if (is.null(am.filename))
     am.filename <<- tclvalue(inname)
@@ -210,7 +95,6 @@ load.data <- function() {
   amelia.lags<<-matrix(0,nrow=ncol(amelia.data),ncol=1)
   future.lags<<-matrix(0,nrow=ncol(amelia.data),ncol=1)
   num.poly<<-tclVar("1")
-  polytime<<-tclVar("1")
   intercs<<-tclVar("1")
   store.pri <<- NULL
   obs.prior <<- NULL
@@ -255,103 +139,215 @@ packr<-function(x) {
 
 
 save.session <-function() {
-	if (!exists("amelia.list") || is.null(amelia.list$amelia.output.file) ||
-		nchar(amelia.list$amelia.output.file) == 0)
-		save.session.as()
+  if (is.null(amelia.data)) {
+    tkmessageBox(message="You must load a dataset before you can save a session.", icon="error", type="ok")  
+    return(NULL)
+  }  
+  file.select <- tclvalue(tkgetSaveFile(filetypes="{{R files} {.R}} {{All files} *}"))
+  if (exists("amelia.list")) {
+    amelia.list$amelia.args$am.filename <- am.filename
+    amelia.list$amelia.args$varmin <- varmin
+    amelia.list$amelia.args$varmax <- varmax
+    amelia.list$amelia.args$output.select <- output.select
+    dump("amelia.list", file.select)
+    return(NULL)
+  } 
+  amelia.list<-list()
 	outname1 <- tclvalue(outname)
 	outnum1 <- as.numeric(tclvalue(outnum))
 	empri1 <- as.numeric(tclvalue(empri))
-	amelia.list$outname <- outname1
-	amelia.list$outnum <- outnum1
-	amelia.list$empri <- empri1
-	amelia.list$am.filename <- am.filename
-	amelia.list$tsvar <- tsvar
-	amelia.list$csvar <- csvar
-	amelia.list$idmat <- idmat
-	amelia.list$transmat <- transmat
-	amelia.list$store.pri <- store.pri
-	amelia.list$lags <- amelia.lags
-	amelia.list$leads <- future.lags
-	amelia.list$polytime <- as.numeric(tclvalue(polytime))
-	amelia.list$numpoly <- as.numeric(tclvalue(num.poly))
-	amelia.list$intercs <- as.numeric(tclvalue(intercs))
-	amelia.list$amelia.lags <- amelia.lags
-	amelia.list$future.lags <- future.lags
-	amelia.list$output.select <- output.select
-	if (!is.null(obs.prior)) {
-    amelia.list$obs.prior<-matrix(NA,ncol=ncol(amelia.data),nrow=nrow(amelia.data))
-    for (i in 1:nrow(amelia.data))
-      for (j in 1:ncol(amelia.data))
-        amelia.list$obs.prior[i,j] <- obs.prior[i,j]
-    colnames(amelia.list$obs.prior)<-colnames(amelia.data)
-    rownames(amelia.list$obs.prior)<-rownames(amelia.data)
+	amelia.list$amelia.args<-list()
+	amelia.list$amelia.args$outname <- outname1
+	amelia.list$amelia.args$m <- outnum1
+	amelia.list$amelia.args$empri <- empri1
+	amelia.list$amelia.args$ts <- tsvar
+	amelia.list$amelia.args$cs <- csvar
+	amelia.list$amelia.args$am.filename <- am.filename
+  amelia.list$amelia.args$idvars <- c()
+	amelia.list$amelia.args$ords <- c()
+	amelia.list$amelia.args$noms <- c()
+	amelia.list$amelia.args$logs <- c()
+	amelia.list$amelia.args$sqrts <- c()
+	amelia.list$amelia.args$lgstc <- c()
+	amelia.list$amelia.args$lags <- c()
+	amelia.list$amelia.args$leads <- c()
+  
+  for (i in 1:length(idmat)) {
+    if (idmat[i] == 1)
+      amelia.list$amelia.args$idvars <- c(amelia.list$amelia.args$idvars,i)
+    if (transmat[i] == 1)
+      amelia.list$amelia.args$ords <- c(amelia.list$amelia.args$ords,i)
+    if (transmat[i] == 2)
+      amelia.list$amelia.args$noms <- c(amelia.list$amelia.args$noms,i)
+    if (transmat[i] == 3)
+      amelia.list$amelia.args$logs <- c(amelia.list$amelia.args$logs,i)
+    if (transmat[i] == 4)
+      amelia.list$amelia.args$sqrts <- c(amelia.list$amelia.args$sqrts,i)
+    if (transmat[i] == 5)
+      amelia.list$amelia.args$lgstc <- c(amelia.list$amelia.args$lgstc,i)      
+    if (amelia.lags[[i]] == 1)
+      amelia.list$amelia.args$lags<-c(amelia.list$amelia.args$lags,i)
+    if (future.lags[[i]] == 1)
+      amelia.list$amelia.args$leads <- c(amelia.list$amelia.args$leads, i)
   }
   
+  amelia.list$amelia.args$casepri <- store.pri
+	amelia.list$amelia.args$polytime <- as.numeric(tclvalue(num.poly))
+	amelia.list$amelia.args$intercs <- as.numeric(tclvalue(intercs))
+
+	amelia.list$amelia.args$output.select <- output.select
+  amelia.list$amelia.args$varmin <- varmin
+  amelia.list$amelia.args$varmax <- varmax
+  amelia.list$amelia.args$mins <- matrix(NA, nrow = nrow(amelia.data), ncol = ncol(amelia.data))
+  amelia.list$amelia.args$maxs <- matrix(NA, nrow = nrow(amelia.data), ncol = ncol(amelia.data))
+  amelia.list$amelia.args$conf <- matrix(NA, nrow = nrow(amelia.data), ncol = ncol(amelia.data))
+  amelia.list$amelia.args$means <- matrix(NA, nrow = nrow(amelia.data), ncol = ncol(amelia.data))
+  amelia.list$amelia.args$sds <- matrix(NA, nrow = nrow(amelia.data), ncol = ncol(amelia.data))
   
-
-
-	dump("amelia.list", amelia.list$amelia.output.file)
+  if (all(!is.null(varmin),!is.null(varmax))) {
+    for (i in 1:ncol(amelia.data)) {
+      if (all(!is.na(varmin[i]),!is.na(varmax[i]))) {
+        amelia.list$amelia.args$mins[,i]<-varmin[i]
+        amelia.list$amelia.args$maxs[,i]<-varmax[i]
+        amelia.list$amelia.args$conf[,i]<-.95
+      }
+    }
+  }
+  if (!is.null(r)) {  
+    for (i in 1:nrow(amelia.data)) {
+      for (j in 1:ncol(amelia.data))  {
+        if (all(r[i,j] != "MISS",r[i,j] != "--",j!=tsvar,j!=csvar)) {
+          numholder <- strsplit(r[i,j],split = ",")
+          if (length(numholder[[1]]) == 3) {
+            amelia.list$amelia.args$mins[i,j] <- numholder[[1]][1]
+            amelia.list$amelia.args$maxs[i,j] <- numholder[[1]][2]
+            amelia.list$amelia.args$conf[i,j] <- numholder[[1]][3]
+          } else {
+            if (length(numholder[[1]]) == 2) {
+              amelia.list$amelia.args$means[i,j] <- numholder[[1]][1]
+              amelia.list$amelia.args$sds[i,j] <- numholder[[1]][2]
+            } else {
+              obserror <- tkmessageBox(message="There is an error in the observational priors.  Would like to save without them?.",icon="error",type="yesno")
+              if (tclvalue(obserror) == "no") {
+                tkmessageBox(message="Your session has not been saved.", icon="error", type="ok")
+                return(NULL)
+              }
+            }
+          }
+        }
+      }
+    }
+    storage.mode(amelia.list$amelia.args$mins) <- "numeric"
+    storage.mode(amelia.list$amelia.args$maxs) <- "numeric"
+    storage.mode(amelia.list$amelia.args$conf) <- "numeric"
+    storage.mode(amelia.list$amelia.args$means) <- "numeric"
+    storage.mode(amelia.list$amelia.args$sds) <- "numeric"
+  }
+  
+  if (all(is.na(amelia.list$amelia.args$mins)))
+    amelia.list$amelia.args$mins<-NULL
+  if (all(is.na(amelia.list$amelia.args$maxs)))
+    amelia.list$amelia.args$maxs<-NULL
+  if (all(is.na(amelia.list$amelia.args$conf)))
+    amelia.list$amelia.args$conf<-NULL
+  if (all(is.na(amelia.list$amelia.args$means)))
+    amelia.list$amelia.args$means<-NULL
+  if (all(is.na(amelia.list$amelia.args$sds)))
+    amelia.list$amelia.args$sds<-NULL
+  
+	dump("amelia.list", file.select)
+	return(NULL)
 }
 
-save.session.as <- function() {
-	file.select <<- tclvalue(tkgetSaveFile(defaultextension = ".R"))
-	if (nchar(file.select) > 0) {
-		amelia.list$amelia.output.file <<- file.select
-		save.session()
-	}
-}
-
-load.session <- function() {
-	file.select <<- tclvalue(tkgetOpenFile(defaultextension = ".r"))
-	if (nchar(file.select) > 0) {
-		source(file = file.select)
-		am.filename <<- amelia.list$am.filename
-		if (!is.null(am.filename)) {
-			tkconfigure(statusbar.lab1b, text = am.filename, foreground = "blue")
-      tkdelete(input.entry,0,"end")
-      tkinsert(input.entry,"end",am.filename)
-      load.data()
-    }
-    inname <<- amelia.list$filename
+load.session <- function() { 
+  file.select <- tclvalue(tkgetOpenFile(filetypes=
+          "{{R files} {.R}} {{All files} *}"))
+	if (nchar(file.select) <= 0)
+    return(NULL)
+  session.test <- file(file.select)
+  first.line <- readLines(session.test)[1]
+  close(session.test)
+  
+	if (first.line != "\"amelia.list\" <-") {
+    tkmessageBox(message="Not an Amelia session file.  Try again.",icon="error",type="ok")
+    return(NULL)
+  }
+  trysession<-try(source(file = file.select),silent=T)
+ 	
+  if (inherits(trysession,"try-error")) {
+    tkmessageBox(message="Error loading session.  This is not a valid session file.",icon="error",type="ok")
+    return(NULL)
+  }
+  if (!file.exists(amelia.list$amelia.args$am.filename)) {
+    tkmessageBox(message=paste("Dataset file not found at:",amelia.list$amelia.args$am.filename,"Cannot load session.",sep="\n"),icon="error",type="ok")
+    return(NULL)
+  }
     
-    if (!is.null(amelia.data)) {
-		  tsvar <<- amelia.list$tsvar
-		  csvar <<- amelia.list$csvar
-		  idmat <<- amelia.list$idmat
-		  transmat <<- amelia.list$transmat
-		  polytime <<- tclVar(amelia.list$polytime)
-      num.poly <<- tclVar(amelia.list$numpoly)
-      intercs <<- tclVar(amelia.list$intercs)
-      amelia.lags <<- amelia.list$amelia.lags
-      future.lags <<- amelia.list$future.lags
-      
-      empri<<-tclVar(amelia.list$empri)
-		  store.pri <<- amelia.list$store.pri
-      r <<- amelia.list$obs.prior
-      if (!is.null(r)) {
-        colnames(r)<<-colnames(amelia.data)
-        rownames(r)<<-rownames(amelia.data)
-      }
-      if ((tsvar != 0) && (csvar != 0)) {
-        tkconfigure(options.tscs,state="active")
-      }
-      tkselect(options.tsvar,tsvar)
-      tkselect(options.csvar,csvar)
-      set.tsvar()
-      set.csvar()
-    }
-    output.select <<- amelia.list$output.select
-    tkselect(output.drop.box, output.select)
-    outname<<-tclVar(amelia.list$outname)
-    outnum<<-tclVar(amelia.list$outnum)
-    tkdelete(output.entry,0,"end")
-    tkinsert(output.entry,"end",tclvalue(outname))
-    tkdelete(output.num,0,"end")
-    tkinsert(output.num,"end", tclvalue(outnum))
+  tclvalue(inname)<<-amelia.list$amelia.args$am.filename  
+  load.data(session=T)
+  tsvar <<- amelia.list$amelia.args$ts
+  csvar <<- amelia.list$amelia.args$cs
+  for (i in amelia.list$amelia.args$idvars)
+    idmat[i]<<-1
+  for (i in amelia.list$amelia.args$logs)
+    transmat[i]<<-3  
+  for (i in amelia.list$amelia.args$ords)
+    transmat[i]<<-1
+  for (i in amelia.list$amelia.args$noms)
+    transmat[i]<<-2
+  for (i in amelia.list$amelia.args$sqrts)
+    transmat[i]<<-4
+  for (i in amelia.list$amelia.args$lgstc)
+    transmat[i]<<-5
+  for (i in amelia.list$amelia.args$lags)
+    amelia.lags[[i]] <<- 1
+  for (i in amelia.list$amelia.args$leads)
+    future.lags[[i]] <<- 1
 
-  } 
+  num.poly <<- tclVar(amelia.list$amelia.args$polytime)
+  intercs <<- tclVar(amelia.list$amelia.args$intercs)
       
+  empri <<- tclVar(amelia.list$amelia.args$empri)
+  store.pri <<- amelia.list$amelia.args$casepri
+  r <<- matrix(NA,nrow=nrow(amelia.data),ncol=ncol(amelia.data))
+  for (i in 1:nrow(amelia.data)) {
+    for (j in 1:ncol(amelia.data)) {
+      if (!is.na(amelia.data[i,j])) {
+        r[i,j] <<- "--"
+      } else {
+        r[i,j] <<- "MISS"
+        if (!is.null(amelia.list$amelia.args$means))
+          if (!is.na(amelia.list$amelia.args$means[i,j]))
+            r[i,j] <<- paste(amelia.list$amelia.args$means[i,j],amelia.list$amelia.args$sds[i,j],sep=",")
+        if (!is.null(amelia.list$amelia.args$mins))
+          if (!is.na(amelia.list$amelia.args$mins[i,j]))
+            r[i,j] <<- paste(amelia.list$amelia.args$mins[i,j],amelia.list$amelia.args$maxs[i,j],amelia.list$amelia.args$conf[i,j],sep=",") 
+      }
+    }
+  }
+  colnames(r)<<-colnames(amelia.data)
+  rownames(r)<<-rownames(amelia.data)
+  if ((tsvar != 0) && (csvar != 0)) {
+    tkconfigure(options.tscs,state="active")
+  }
+  tkselect(options.tsvar,tsvar)
+  tkselect(options.csvar,csvar)
+  set.tsvar()
+  set.csvar()
+  if (!is.null(amelia.list$amelia.args$casepri))
+    tkconfigure(options.csvar, state="disabled")
+  output.select <<- amelia.list$amelia.args$output.select
+  tkselect(output.drop.box, output.select)
+  outname<<-tclVar(amelia.list$amelia.args$outname)
+  outnum<<-tclVar(amelia.list$amelia.args$m)
+  tkdelete(output.entry,0,"end")
+  tkinsert(output.entry,"end",tclvalue(outname))
+  tkdelete(output.num,0,"end")
+  tkinsert(output.num,"end", tclvalue(outnum))
+  if (names(amelia.list)[1] == "m1")
+    tkconfigure(output.diag, state = "active")
     
+  return(NULL)
 }
 
 
@@ -368,22 +364,16 @@ run.amelia <- function() {
   
   intercs<-as.logical(as.numeric(tclvalue(intercs)))
   num.poly<-as.numeric(tclvalue(num.poly))
-  tspoly<-as.numeric(tclvalue(polytime))
   
   if (tsvar == 0) {
     num.poly<-NULL
     tsvar <-NULL
-    tspoly<-0
   }
   if (csvar == 0) {
     csvar <-NULL
     intercs<-FALSE
   }
   
-  if (tspoly == 0) {
-    intercs<-FALSE
-    num.poly<-NULL
-  }
 
   for (i in 1:ncol(amelia.data))
     if (idmat[i] == 1)
@@ -470,28 +460,29 @@ run.amelia <- function() {
     sds<-NULL
   
   
-  amelia.out <<- try(amelia(amelia.data, m = as.numeric(tclvalue(outnum)),
+  amelia.list <<- try(amelia(amelia.data, m = as.numeric(tclvalue(outnum)),
         p2s = FALSE, idvars = id, casepri = store.pri, ts = tsvar, cs = csvar,
         mins=mins,maxs=maxs,conf=conf,means=means,sds=sds, lags = amlags,
         empri = as.numeric(tclvalue(empri)), intercs = intercs, leads = amfut, 
         polytime = num.poly, frontend=TRUE, logs=logs, sqrts=sqrts, lgstc=lgstc,
         ords=ord,write.out=F),silent=T)
   
-  if (inherits(amelia.out,"try-error")) {
+  if (inherits(amelia.list,"try-error")) {
     tkinsert(run.text,"end","\nThere was an unexpected error in the execution of Amelia.  \nDouble check all inputs for errors and take note of the error message:\n\n")
-    tkinsert(run.text,"end",paste(amelia.out))
+    tkinsert(run.text,"end",paste(amelia.list))
     return(NULL)
   }
   
-  if (amelia.out$code!=1) {
+  if (amelia.list$code!=1) {
     tkinsert(run.text,"end","\n")
-    tkinsert(run.text,"end",paste("Amelia Error Code:",amelia.out[[1]],"\n",amelia.out[[2]]))
+    tkinsert(run.text,"end",paste("Amelia Error Code:",amelia.list[[1]],"\n",amelia.list[[2]]))
     tkinsert(run.text,"end","\n\nYou have recieved an error.  You can close this window and reset\n various options to correct the error.")
   }
   else {
     tkinsert(run.text,"end","\nAmelia has run successfully.  You can close this window and \nuse the diagnostics button to see how your imputations ran.")
     tkconfigure(output.diag, state = "active")
-    amelia.save(amelia.out,tclvalue(outname),as.numeric(tclvalue(outnum)))
+    tksee(run.text,"end")
+    amelia.save(amelia.list,tclvalue(outname),as.numeric(tclvalue(outnum)))
   }
 }
 
@@ -522,7 +513,6 @@ tclRequire("BWidget")
 if (.Platform$OS.type == "windows") 
   tclRequire("Tktable")
 
-amelia.list <<- list()
 outname <<- tclVar("outdata")
 outnum <<- tclVar("5")
 empri <<- tclVar("0")
@@ -545,9 +535,8 @@ main.menu.file<-tkmenu(main.menu, tearoff=0)
 main.menu.help<-tkmenu(main.menu, tearoff=0)
 tkadd(main.menu.file,"command",label="Load Session",command=function()load.session())
 tkadd(main.menu.file,"command",label="Save Session",command=function()save.session())
-tkadd(main.menu.file,"command",label="Save Session As...",command=function()save.session.as())
 tkadd(main.menu.file,"command",label="Exit Amelia",command=function()main.close())
-tkadd(main.menu.help,"command",label="About",command=function()tkmessageBox(title="Amelia For Windows",message="James Honaker, Gary King, & Kenneth Scheve\n2005",icon="info",type="ok"))
+tkadd(main.menu.help,"command",label="About",command=function()tkmessageBox(title="Amelia For Windows",message="James Honaker, Gary King, & Matthew Blackwell\n2005",icon="info",type="ok"))
 tkadd(main.menu,"cascade",label="File",menu=main.menu.file)
 tkadd(main.menu,"cascade",label="Help",menu=main.menu.help)
 tkconfigure(gui,menu=main.menu)
@@ -1107,7 +1096,6 @@ gui.tscs.setup<-function() {
   tscs.save<-function() {
     temp.lags[[tscs.var]]<<-as.numeric(tclvalue(lags))
     temp.leads[[tscs.var]]<<-as.numeric(tclvalue(leads))
-    polytime<<-temp.poly
     num.poly<<-temp.num
     intercs<<-temp.inter
     amelia.lags<<-temp.lags
@@ -1116,7 +1104,6 @@ gui.tscs.setup<-function() {
   }
   
   
-  temp.poly<<-tclVar(tclvalue(polytime))
   temp.num<<-tclVar(tclvalue(num.poly))
   temp.inter<<-tclVar(tclvalue(intercs))
   temp.lags<<-amelia.lags
@@ -1140,8 +1127,7 @@ gui.tscs.setup<-function() {
     command = function()browseURL("http://gking.harvard.edu/amelia/amelia1/docs/"))
   
   
-  poly.time<-tkcheckbutton(gui.top, text="Use polynomials of time?",
-    variable=temp.poly)
+  poly.time<-tklabel(gui.top, text="Polynomials of time?")
   poly.time0<-tkradiobutton(gui.top, text = "0", variable = temp.num, 
     value = "0")
   poly.time1<-tkradiobutton(gui.top, text = "1", variable = temp.num, 
@@ -1924,12 +1910,12 @@ gui.diag.setup <- function() {
 	tkselection.set(diag.list,(diag.sel.var-1))
 	tkbind(diag.list,"<Button-1>",function(y)select.var(y))
   diag.but.compare <- tkbutton(diag.var, text="Compare",
-  	command = function() compare.density(data=amelia.data,output=amelia.out,
+  	command = function() compare.density(data=amelia.data,output=amelia.list,
                           var=diag.sel.var,frontend=T))
   if (is.factor(amelia.data[,diag.sel.var]))
     tkconfigure(diag.but.compare, state="disabled")
   diag.overimp <- tkbutton(diag.var,text="Overimpute",state="normal",
-    command = function() overimpute(data=amelia.data,output=amelia.out,
+    command = function() overimpute(data=amelia.data,output=amelia.list,
                                     var=diag.sel.var,frontend=T))
   diag.disp<-tkframe(tt, relief = "groove", borderwidth = 2)
   dimvalue<-tclVar("1")
@@ -1939,7 +1925,7 @@ gui.diag.setup <- function() {
   disp.imps<-tkentry(diag.disp,width="5",textvariable=disp.imps.tcl)
   disp.but<-tkbutton(diag.disp,text="Overdisperse",state="normal",
     command = function() disperse(data=amelia.data,m=as.numeric(tclvalue(disp.imps.tcl)),
-    dims=as.numeric(tclvalue(dimvalue)),frontend=T,output=amelia.out))
+    dims=as.numeric(tclvalue(dimvalue)),frontend=T,output=amelia.list))
   tkgrid(tklabel(diag.disp, text="Overdispersed Starting Values", 
     font="Arial 12 bold"),row=1, column=1, columnspan=2,padx=3,pady=5)
   tkgrid(tklabel(diag.disp,text="Number of dispersions: "),row=2,column=1,

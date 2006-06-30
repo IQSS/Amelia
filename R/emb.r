@@ -28,7 +28,8 @@
 ## 29/04/06 jh - changed screen output for "p2s", ivector and icap in "indxs", revised "diff" convergence monitor to upper triangular
 ## 01/05/06 mb - removed "rbind" calls in emfred, impute.
 ## 01/06/06 mb - added "allthetas" option to emarch for overdispersion diagnostic
-## 15/06/05 jh - merged with priors version changing all EM and impute procs, modified how lists are generated in indxs("icap") and amelia("impdata"). 
+## 15/06/06 jh - merged with priors version changing all EM and impute procs, modified how lists are generated in indxs("icap") and amelia("impdata"). 
+## 27/06/06 mb - added arglist argument to load in output from amelia or the gui. 
 
 ## Draw from a multivariate normal distribution 
 ##   n: number of draws 
@@ -535,7 +536,7 @@ if (returntype=="theta"){
 amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,ts=NULL,cs=NULL,casepri=NULL,means=NULL,
                   sds=NULL,mins=NULL,maxs=NULL,conf=NULL,empri=NULL,tolerance=0.00001,polytime=NULL,startvals=0,
                   lags=NULL, leads=NULL, intercs=FALSE,archive=TRUE,sqrts=NULL,lgstc=NULL,noms=NULL,incheck=T,
-                  ords=NULL,collect=FALSE,outname="outdata",write.out=TRUE) {
+                  ords=NULL,collect=FALSE,outname="outdata",write.out=TRUE,arglist=NULL) {
 
   #Generates the Amelia Output window for the frontend
   if (frontend) {
@@ -555,7 +556,6 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,ts=NULL,cs=
     flush.console()
   }
              
-  impdata<-vector(mode="list",(2*m))
   code<-1   
   
   prepped<-amelia.prep(data=data,m=m,idvars=idvars,means=means,sds=sds,mins=mins,
@@ -564,12 +564,13 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,ts=NULL,cs=
                         lags=lags,leads=leads,logs=logs,sqrts=sqrts,lgstc=lgstc,
                         p2s=p2s,frontend=frontend,archive=archive,intercs=intercs,
                         noms=noms,startvals=startvals,ords=ords,incheck=incheck,
-                        collect=collect,outname=outname,write.out=write.out)
+                        collect=collect,outname=outname,write.out=write.out,arglist=arglist)
   
   if (prepped$code!=1) {
     cat("Amelia Error Code: ",prepped$code,"\n",prepped$message,"\n")
     return(list(code=prepped$code,message=prepped$message))
   }
+  impdata<-vector(mode="list",(2*m))
   for (i in 1:m){
     
     if (p2s==2) {
@@ -585,7 +586,7 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,ts=NULL,cs=
     flush.console()
 
     thetanew<-emarch(x.stacked$x,p2s=p2s,thetaold=NULL,tolerance=tolerance,startvals=startvals,x.stacked$mu.priors,x.stacked$sd.priors,empri=empri,frontend=frontend,collect=collect)
-        
+     
     if (archive){
       prepped$archv[[paste("iter.hist",i,sep="")]]<-thetanew$iter.hist
     }

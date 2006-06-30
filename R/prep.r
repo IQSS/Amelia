@@ -8,6 +8,8 @@
 ## 04/05/06 mb moved parameter vs. observation check to the end of prep. 
 ## 18/05/06 mb 'ords' unsubset fixed to have range of original values
 ## 15/06/06 jh revised "generatepriors"
+## 26/06/06 mb fixed archive to work with session loading.
+## 27/06/06 mb amelia.prep accepts, checks, and processes 'arglist'
 
 nametonumber<-function(x,ts,cs,idvars,noms,ords,logs,sqrts,lgstc,lags,leads) {
   listconvert<-function(opt) {
@@ -429,9 +431,40 @@ return(list(mu.priors=mu.priors,sd.priors=sd.priors))
 amelia.prep <- function(data,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,
                         tolerance,casepri,polytime,lags,leads,logs,sqrts,
                         lgstc,p2s,frontend,archive,intercs,noms,startvals,
-                        ords,incheck,collect=F,outname="outdata",write.out=F,var=NULL) {
+                        ords,incheck,collect=F,outname="outdata",write.out=F,arglist,var=NULL) {
 
   code<-1
+  if (!identical(arglist,NULL)) {
+    if (!is.list(arglist) || identical(arglist$amelia.args,NULL)) {
+      error.code<-37
+      error.mess<-paste("The argument list you provided is invalid.")
+      return(list(code=error.code,message=error.mess))
+    }
+    m<-arglist$amelia.args$m
+    idvars<-arglist$amelia.args$idvars
+    means<-arglist$amelia.args$means
+    sds<-arglist$amelia.args$sds
+    mins<-arglist$amelia.args$mins
+    maxs<-arglist$amelia.args$maxs
+    conf<-arglist$amelia.args$conf
+    empri<-arglist$amelia.args$empri
+    ts<-arglist$amelia.args$ts
+    cs<-arglist$amelia.args$cs
+    tolerance<-arglist$amelia.args$tolerance
+    casepri<-arglist$amelia.args$casepri
+    polytime<-arglist$amelia.args$polytime
+    lags<-arglist$amelia.args$lags
+    leads<-arglist$amelia.args$leads
+    logs<-arglist$amelia.args$logs
+    sqrts<-arglist$amelia.args$sqrts
+    lgstc<-arglist$amelia.args$lgstc
+    intercs<-arglist$amelia.args$intercs
+    noms<-arglist$amelia.args$noms
+    startvals<-arglist$amelia.args$startvals
+    ords<-arglist$amelia.args$ords
+  }
+  
+  
   numopts<-nametonumber(x=data,ts=ts,cs=cs,idvars=idvars,noms=noms,ords=ords,
                         logs=logs,sqrts=sqrts,lgstc=lgstc,lags=lags,leads=leads)
   if (numopts$code == 1) {
@@ -462,7 +495,7 @@ amelia.prep <- function(data,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,
     archv<-list(m=m,idvars=numopts$idvars,logs=numopts$logs,ts=numopts$ts,cs=numopts$cs,casepri=casepri,
     sds=sds,mins=mins,maxs=maxs,conf=conf,empri=empri,tolerance=tolerance,
     polytime=polytime,lags=numopts$lags,leads=numopts$leads,intercs=intercs,sqrts=numopts$sqrts,
-    lgstc=numopts$lgstc,noms=numopts$noms,ords=numopts$ords)
+    lgstc=numopts$lgstc,noms=numopts$noms,ords=numopts$ords,outname=outname)
   } else {
     archv<-NULL
   }
