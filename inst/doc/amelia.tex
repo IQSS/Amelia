@@ -36,21 +36,35 @@
 \section{Introduction}
 \label{sec:intro}
 
-This manual presents a quick introduction to the ${\mathfrak Amelia}$
-multiple imputation package.  Our software remedies the discrepancy
-between the way social scientists analyze data with missing values and
-the recommendations of the statistics community. With a few notable
-exceptions, statisticians and methodologists have agreed on a widely
-applicable approach to many missing data problems based on the concept
-of ``multiple imputation,'' yet most social scientists still use
-listwise deletion (deleting all cases with at least one missing cell)
-to make inferences in the presence of missing data. This practice is
-always inefficient and often biased. Unfortunately, many of the
-existing multiple imputation methods are unfit for handling the common
-problems of social science data and can be difficult to use even for
-experts.  ${\mathfrak Amelia}$ combines a fast, efficient algorithm
-for multiple imputation with a set of features designed for social
-science data.
+This manual presents a brief introduction to the ${\mathfrak Amelia}$
+multiple imputation package.  We wrote the first version of Amelia to
+remedy the discrepancy between the way social scientists analyzed data
+with missing values and the recommendations of the statistics
+community.  With a few notable exceptions, statisticians and
+methodologists have agreed on a widely applicable approach to many
+missing data problems based on the concept of ``multiple imputation,''
+yet at the time most social scientists still used listwise deletion
+(deleting all observations with at least one missing cell) to make
+inferences in the presence of missing data. This practice is always
+inefficient and often biased.  Unfortunately, many of the multiple
+imputation methods that had been used previously were unfit for
+handling the common problems of social science data and were often
+difficult to use, even for experts.  
+
+A key reason multiple imputation had not been used frequenly in the
+social sciences is because the intention was for producers of large
+public use data sets to conduct the imputation for the analyst, but
+this paradigm did not help those who collected, merged, or processed
+their own data.  The contribution of the work that led to ${\mathfrak
+  Amelia}$ was the EMis algorithm that produced imputations much more
+easily and considerably faster than existing MCMC-based methods.  This
+made it possible to write ${\mathfrak Amelia}$ so that scholars can
+impute their own data, rather than waiting for others to do it for
+them.
+
+
+${\mathfrak Amelia}$ II 
+
 
 \section{What ${\mathfrak Amelia}$ Does}
 \label{sec:what}
@@ -765,7 +779,7 @@ amelia function.  This allows you to check the likelihood surface
 \subsection{Step 1 - Input}
 \label{sec:step1}
 \begin{figure}[ht]
-  \centering \includegraphics[scale=.75]{step1}
+  \centering \includegraphics[scale=.75]{step1.png}
   \caption{Detail for step 1 on the front page of AmeliaView.}
 \end{figure}
 \begin{enumerate}
@@ -801,7 +815,7 @@ amelia function.  This allows you to check the likelihood surface
 \subsection{Step 2 - Options}
 \label{sec:step2}
 \begin{figure}[ht]
-  \centering \includegraphics[scale=.75]{step2}
+  \centering \includegraphics[scale=.75]{step2.png}
   \caption{Detail for step 2 on the front page of AmeliaView.}
 \end{figure}
 \begin{enumerate}
@@ -823,7 +837,7 @@ amelia function.  This allows you to check the likelihood surface
 \subsubsection{Variables Dialog}
 \label{sec:vardiag}
 \begin{figure}[ht]
-  \centering \includegraphics[scale=.75]{varopts}
+  \centering \includegraphics[scale=.75]{varopts.png}
   \caption{Detail for Variable Options dialog.}
 \end{figure}
 \begin{enumerate}
@@ -842,7 +856,7 @@ amelia function.  This allows you to check the likelihood surface
 \subsubsection{Time Series Cross Sectional Dialog}
 \label{sec:tscsdiag}
 \begin{figure}[ht]
-  \centering \includegraphics[scale=.75]{tscs}
+  \centering \includegraphics[scale=.75]{tscs.png}
   \caption{Detail for Time-Series-Cross-Section Options dialog.}
 \end{figure}
 \begin{enumerate}
@@ -865,7 +879,7 @@ amelia function.  This allows you to check the likelihood surface
 \subsubsection{Priors Dialog}
 \label{sec:pridiag}
 \begin{figure}[ht]
-  \centering \includegraphics[scale=.75]{priors}
+  \centering \includegraphics[scale=.75]{priors.png}
   \caption{Detail for Priors Options dialog.}
 \end{figure}
 \begin{enumerate}
@@ -889,7 +903,7 @@ amelia function.  This allows you to check the likelihood surface
 \subsubsection{Case Priors \textbf{NOT CURRENTLY IMPLEMENTED}}
 \label{sec:refcasepri}
 \begin{figure}[ht]
-  \includegraphics[scale=.75]{case}
+  \includegraphics[scale=.75]{case.png}
 \caption{Detail for Case Priors dialog.}
 \end{figure}
 \begin{enumerate}
@@ -914,7 +928,7 @@ amelia function.  This allows you to check the likelihood surface
 \subsubsection{Observational Priors \textbf{NOT CURRENTLY IMPLEMENTED}}
 \label{sec:refobspri}
 \begin{figure}[h]
-  \includegraphics[scale=.75]{obspri}
+  \includegraphics[scale=.75]{obspri.png}
 \caption{Detail for Observational Priors dialog}
 \end{figure}
 \begin{enumerate}
@@ -932,7 +946,7 @@ amelia function.  This allows you to check the likelihood surface
 
 
 \begin{figure}[ht]
-  \centering \includegraphics[scale=.75]{step3}
+  \centering \includegraphics[scale=.75]{step3.png}
   \caption{Detail for step 3 on the front page of AmeliaView.}
 \end{figure}
 \begin{enumerate}
