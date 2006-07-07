@@ -9,7 +9,8 @@
 
 <a
 href="http://www.polisci.ucla.edu/menu/people/faculty/james_honaker.htm">James
-Honaker</a>, <a href="">Matthew Blackwell</a>, <a href="/">Gary King</a>,
+Honaker</a>, <a href="/">Gary King</a>, <a href="">Matthew
+Blackwell</a>
 
 <br /><br />
 <!-- rbuild: replace 'Version:' '</b>' version -->
@@ -61,16 +62,15 @@ Amelia is named after this famous missing person.</small></p>
   single imputation, are in common circumstances biased, inefficient,
   or both.  <p>
   <ul>
-    <li>Documentation:  <a href="/amelia/docs/">Read on-line</a> or <a
-	href="/amelia/docs/amelia.pdf">Download PDF</a></li>
+    <li>Documentation: <a href="/amelia/docs/amelia.pdf">PDF</a></li>
 	
     <li><a href="/amelia/docs/Installation.html">Installation</a>, <a
 	href="/amelia/docs/Frequently_Asked_Quest.html">Frequently Asked
 	Questions</a></li>
 
-    <li>To automatically combine multiply imputed data sets, in R see <a
-	href="/zelig">Zelig</a>; or in Stata see <a
-	href="/stats.shtml#clarify">Clarify</a>, or Ken
+    <li>To automatically combine multiply imputed data sets: in R see <a
+	href="/zelig">Zelig</a>; In Stata see <a
+	href="/stats.shtml#clarify">Clarify</a> or Ken
 	Scheve's <a href="/amelia/amelia1/docs/mi.zip">MI program</a>.</li>
 
     <li>Gary King, James Honaker, Anne Joseph, and Kenneth
