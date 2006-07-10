@@ -64,10 +64,6 @@ Amelia is named after this famous missing person.</small></p>
   <ul>
     <li>Documentation: <a href="/amelia/docs/amelia.pdf">PDF</a></li>
 	
-    <li><a href="/amelia/docs/Installation.html">Installation</a>, <a
-	href="/amelia/docs/Frequently_Asked_Quest.html">Frequently Asked
-	Questions</a></li>
-
     <li>To automatically combine multiply imputed data sets: in R see <a
 	href="/zelig">Zelig</a>; In Stata see <a
 	href="/stats.shtml#clarify">Clarify</a> or Ken
