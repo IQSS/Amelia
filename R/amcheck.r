@@ -4,6 +4,7 @@
 ##
 ## 21/10/05 - now converts variables names to column numbers, stops if variable doesn't exist; returns codes and messages, doesn't stop execution
 ## 04/05/06 mb - moved parameter vs. obs check to prep, checks outname
+## 10/07/06 mb - fixed handling of variance checks with no fully observed rows.
 
 
 
@@ -37,7 +38,7 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
                   "possible column numbers or is not an integer.")
       return(list(2,mess))
     }
-    return(0)
+    return(0) 
   }
   
   #Checks for errors in logical variables
@@ -555,10 +556,20 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
       return(list(code=error.code,mess=error.mess))
     }
   } else {
-    if (any(diag(var(x,na.rm=T))==0)) {
-      error.code<-43
-      error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
-      return(list(code=error.code,mess=error.mess))
+    if (length(na.omit(x)) > 0) {
+      if (any(diag(var(x,na.rm=T))==0)) {
+        error.code<-43
+        error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
+        return(list(code=error.code,mess=error.mess))
+      }
+    } else {
+      for (i in 1:ncol(x)) {
+        if (var(x[,i],na.rm=T) == 0) {
+          error.code<-43
+          error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
+          return(list(code=error.code,mess=error.mess))
+        }
+      }
     }
   }
     
