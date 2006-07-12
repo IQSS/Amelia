@@ -23,7 +23,7 @@
 \bodytext{ BACKGROUND="http://gking.harvard.edu/pics/temple.jpg"}
 \setcounter{tocdepth}{3}
 
-\title{${\mathfrak Amelia II}$: A Program for Missing Data}
+\title{${\mathfrak Amelia}$ II: A Program for Missing Data}
 
 \author{James Honaker, Gary King, and Matthew Blackwell}
 
@@ -37,31 +37,32 @@
 \label{sec:intro}
 
 This manual presents a brief introduction to the ${\mathfrak Amelia}$
-multiple imputation package.  We wrote the first version of Amelia to
-remedy the discrepancy between the way social scientists analyzed data
-with missing values and the recommendations of the statistics
-community.  With a few notable exceptions, statisticians and
-methodologists have agreed on a widely applicable approach to many
-missing data problems based on the concept of ``multiple imputation,''
-yet at the time most social scientists still used listwise deletion
-(deleting all observations with at least one missing cell) to make
-inferences in the presence of missing data. This practice is always
-inefficient and often biased.  Unfortunately, many of the multiple
-imputation methods that had been used previously were unfit for
-handling the common problems of social science data and were often
-difficult to use, even for experts.  
+II software package fo multiple imputation.  We wrote the first
+version of Amelia to remedy the discrepancy between the way social
+scientists analyzed data with missing values and the recommendations
+of the statistics community.  With a few notable exceptions,
+statisticians and methodologists have agreed on the advantages of the
+concept of ``multiple imputation,'' yet at the time most social
+scientists had still used listwise deletion (deleting all observations
+with at least one missing cell) or other ad hoc techniques like best
+guess or mean imputation to make inferences in the presence of missing
+data.  These practices are know inefficient and often biased.
+Unfortunately, many of the multiple imputation methods that had been
+used previously were unfit for handling the common problems of social
+science data and were often difficult to use, even for experts.
 
 A key reason multiple imputation had not been used frequenly in the
-social sciences is because the intention was for producers of large
-public use data sets to conduct the imputation for the analyst, but
+social sciences is because it was developed so that producers of large
+public use data sets could conduct the imputation for the analyst, but
 this paradigm did not help those who collected, merged, or processed
-their own data.  The contribution of the work that led to ${\mathfrak
-  Amelia}$ was the EMis algorithm that produced imputations much more
-easily and considerably faster than existing MCMC-based methods.  This
-made it possible to write ${\mathfrak Amelia}$ so that scholars can
-impute their own data, rather than waiting for others to do it for
-them.
-
+their own data.  Before \citet*{KinHonJos01}, a small number of public
+use data sets had been imputed, but very few researchers had imputed a
+data set.  The contribution of the work that led to the first version
+of ${\mathfrak Amelia}$ was the EMis algorithm that produced
+imputations requiring less expertise to use and with more speed than
+existing MCMC-based methods.  This made it possible to write
+${\mathfrak Amelia}$ so that scholars can impute their own data,
+rather than waiting for others to do it for them.
 
 ${\mathfrak Amelia}$ II 
 
