@@ -11,6 +11,7 @@
 \usepackage{amssymb}
 %\newcommand{\Amelia}{${\mathfrak{A}melia}$}
 \newcommand{\Amelia}{\ensuremath{\mathfrak Amelia} }
+\newcommand{\AmeliaII}{\ensuremath{\mathfrak Amelia~II} }
 \usepackage{vmargin}
 \topmargin=0in
 
@@ -36,39 +37,45 @@
 \section{Introduction}
 \label{sec:intro}
 
-This manual presents a brief introduction to the ${\mathfrak Amelia}$
-II software package fo multiple imputation.  We wrote the first
-version of Amelia to remedy the discrepancy between the way social
-scientists analyzed data with missing values and the recommendations
-of the statistics community.  With a few notable exceptions,
-statisticians and methodologists have agreed on the advantages of the
-concept of ``multiple imputation,'' yet at the time most social
-scientists had still used listwise deletion (deleting all observations
-with at least one missing cell) or other ad hoc techniques like best
-guess or mean imputation to make inferences in the presence of missing
-data.  These practices are know inefficient and often biased.
-Unfortunately, many of the multiple imputation methods that had been
-used previously were unfit for handling the common problems of social
-science data and were often difficult to use, even for experts.
+This manual presents a brief introduction to the \AmeliaII software
+package for multiple imputation.  We wrote the first version of Amelia
+to remedy the discrepancy between the way social scientists then
+analyzed data with missing values and the recommendations of the
+statistics community.  With a few notable exceptions, statisticians
+and methodologists had agreed on the advantages of the concept of
+``multiple imputation'' as a general-purpose approach to data with
+missing values; yet at the time most social scientists had still used
+listwise deletion (deleting all observations with at least one missing
+cell) or other ad hoc techniques like best guess or mean imputation to
+make inferences in the presence of missing data.  These practices are
+known to be inefficient and often biased.  Unfortunately, many of the
+multiple imputation methods that had been used previously were unfit
+for handling the common problems of social science data and were often
+difficult to use, even for experts.
 
 A key reason multiple imputation had not been used frequenly in the
 social sciences is because it was developed so that producers of large
-public use data sets could conduct the imputation for the analyst, but
+public-use data sets could conduct the imputation for the analyst, but
 this paradigm did not help those who collected, merged, or processed
 their own data.  Before \citet*{KinHonJos01}, a small number of public
 use data sets had been imputed, but very few researchers had imputed a
-data set.  The contribution of the work that led to the first version
-of ${\mathfrak Amelia}$ was the EMis algorithm that produced
-imputations requiring less expertise to use and with more speed than
-existing MCMC-based methods.  This made it possible to write
-${\mathfrak Amelia}$ so that scholars can impute their own data,
-rather than waiting for others to do it for them.
+data set or used multiple imputation.  The contribution of the work
+that led to the first version of \Amelia was the EMis algorithm that
+produced imputations requiring less expertise to use and with more
+speed than existing MCMC-based methods.  This made it possible to
+write \AmeliaII so that scholars can impute their own data, rather
+than waiting for others to do it for them.  The boostrapping-based EMB
+algorithm included in \AmeliaII can impute many more variables, with
+many more observations.  It also has features to make valid and
+accurate imputations for time series cross-sectional data.
 
-${\mathfrak Amelia}$ II 
-
+This software implements the ideas developed in \citet*{KinHonJos01}
+and \citet*{HonKin06}.  Please read these in conjunction with this
+manual.
 
 \section{What ${\mathfrak Amelia}$ Does}
 \label{sec:what}
+
 Multiple imputation involves imputing $m$ values for each missing cell
 in your data matrix and creating $m$ ``completed'' data sets.  (Across
 these completed data sets, the observed values are the same, but the
@@ -77,24 +84,30 @@ the uncertainty about the missing data.)  After imputation with our
 algorithm, you can apply whatever statistical method you would have
 used if there had been no missing values to each of the $m$ data sets,
 and use a simple procedure, described in the next paragraph, to
-combine the results.  (If you use the Stata package for statistical
-analysis, you may be interested in our MI procedures, or the CLARIFY
-package, both of which can combine the results automatically.)  Under
-normal circumstances, you only need to impute once and can then
-analyze the $m$ imputed data sets as many times and for as many
-purposes as you wish.  The advantage of ${\mathfrak Amelia}$ is that
-it combines the comparative speed and ease-of-use of our algorithm
-with the power of multiple imputation, to let you focus on your
-substantive research questions rather than spending time developing
-complex application-specific models for nonresponse in each new data
-set.  Unless the rate of missingness is exceptionally high, $m = 5$
-(the program default) is probably adequate.
+combine the results.  (You can combine the results automatically by
+doing your data analyses within Zelig, or within Clarify for Stata;
+see \url{http://gking.harvard.edu/stats.shtml}.)  Under normal
+circumstances, you only need to impute once and can then analyze the
+$m$ imputed data sets as many times and for as many purposes as you
+wish.  The advantage of \AmeliaII is that it combines the comparative
+speed and ease-of-use of our algorithm with the power of multiple
+imputation, to let you focus on your substantive research questions
+rather than spending time developing complex application-specific
+models for nonresponse in each new data set.  Unless the rate of
+missingness is very high, $m = 5$ (the program default) is probably
+adequate.
 
 In order to combine the results across $m$ data sets, first decide on
 the quantity of interest to compute, such as univariate mean,
 regression coefficient, predicted probability, or first difference.
-The multiple imputation estimate of this parameter, $\bar{q}$, is the
-average of the $m$ separate estimates, $q_j$ $(j=1,...,m)$:
+Then, the easiest way is to draw $1/m$ simulations of $q$ from each of
+the $m$ data sets, combine them into one set of $m$ simulations, and
+then to use the standard simulation-based methods of intepretation
+common for single data sets \citep{KinTomWit00}.
+
+Alternatively, you can combine directly and use as the multiple
+imputation estimate of this parameter, $\bar{q}$, the average of the
+$m$ separate estimates, $q_j$ $(j=1,...,m)$:
 \begin{equation}
   \bar{q}=\frac{1}{m}\sum^{m}_{j=1}q_j.  
 \end{equation}
@@ -112,61 +125,76 @@ multiple imputation point estimate is the square root of
 SE(q)^2=\frac{1}{m}\sum^{m}_{j=1}SE(q_j)^2+S^{2}_{j}(1+1/m).
 \end{equation}
 
-If, instead of point estimates and standard errors, simulations of $q$
-are desired (as would be used to compute quantities of interest
-directly; see King, Tomz, and Wittenberg 2000), use each completed
-data set to create $1/m$ of the needed number of simulations and then
-combine them all into one set of simulations.
-
-Users should see especially Pp. 57-58 of our article for a variety of
-practical suggestions in making imputations, such as what variables to
-include in the imputation stage, how to keep imputations within
-logically possible ranges, etc.
+Users should see especially Pp. 57-58 of \citet{KinHonJos01} for a
+variety of practical suggestions in making imputations, such as what
+variables to include in the imputation stage, how to keep imputations
+within logically possible ranges, etc.
 
 \section{Versions of ${\mathfrak Amelia}$}
 \label{sec:versions}
 Two versions of \Amelia are available, each with its own advantages
-and drawbacks.  First, \Amelia exists as a package, or collection of
+and drawbacks.  First, \AmeliaII exists as a package, or collection of
 functions, for the R statistical software package.  Users can utilize
-their knowledge of the R language to run \Amelia at the command line
-or to create scripts that will run \Amelia and preserve the commands
+their knowledge of the R language to run \AmeliaII at the command line
+or to create scripts that will run \AmeliaII and preserve the commands
 for future use.  Alternatively, AmeliaView, an interactive Graphical
 User Interface (GUI), allows users to set options and run \Amelia
 without any knowledge of the R programming language.  AmeliaView
-enables users to set all of the \Amelia options and, thus, empowers
+enables users to set all of the \AmeliaII options and, thus, empowers
 those with limited or no coding experience to create expert level
 imputations.
 
-Both versions of \Amelia are available on the Windows and Linux
-platforms and \Amelia for R runs in any environment that R can.  All
+Both versions of \AmeliaII are available on the Windows and Linux
+platforms and \AmeliaII for R runs in any environment that R can.  All
 versions of ${\mathfrak Amelia}$ require the R software, which is
 freely available at \url{http://www.r-project.org/}.
 
-%While the underlying mechanics of ${\mathfrak Amelia}$ consist of only a few functions, there are a number of ways to access these functions to produce imputations.  At its most basic, ${\mathfrak Amelia}$ is a library for the R statistical software package that makes the ${\mathfrak Amelia}$ routine available in the R environment.  In addition,  a Graphical User Interface (GUI) can access the same routine without the need for direct user coding.  In Windows, ${\mathfrak Amelia}$ allows the user to bypass the use of R completely by detaching the GUI from R. In Linux, ${\mathfrak Amelia}$ can run from the command line or from the GUI, yet both require use of R.  Currently, there we do not support a MacOS version of ${\mathfrak Amelia}$, yet we hope to change this in the near future.  All versions of ${\mathfrak Amelia}$ require the R software, which is freely available at \url{http://www.r-project.org/}.  It compiles and runs on a wide variety of platforms including UNIX, Windows, and MacOS.  This manual will focus on the GUI version of ${\mathfrak Amelia}$, although many of the ideas presented apply equally to the command-line version.  For help with the syntax of the command-line version, please refer to the help files included with the ${\mathfrak Amelia}$ library.  These can be accessed at the R command prompt by typing
+%While the underlying mechanics of ${\mathfrak Amelia}$ consist of only
+%a few functions, there are a number of ways to access these functions
+%to produce imputations.  At its most basic, ${\mathfrak Amelia}$ is a
+%library for the R statistical software package that makes the
+%${\mathfrak Amelia}$ routine available in the R environment.  In
+%addition, a Graphical User Interface (GUI) can access the same routine
+%without the need for direct user coding.  In Windows, ${\mathfrak
+%  Amelia}$ allows the user to bypass the use of R completely by
+%detaching the GUI from R. In Linux, ${\mathfrak Amelia}$ can run from
+%the command line or from the GUI, yet both require use of R.
+%Currently, there we do not support a MacOS version of ${\mathfrak
+%  Amelia}$, yet we hope to change this in the near future.  All
+%versions of ${\mathfrak Amelia}$ require the R software, which is
+%freely available at \url{http://www.r-project.org/}.  It compiles and
+%runs on a wide variety of platforms including UNIX, Windows, and
+%MacOS.  This manual will focus on the GUI version of ${\mathfrak
+%  Amelia}$, although many of the ideas presented apply equally to the
+%command-line version.  For help with the syntax of the command-line
+%version, please refer to the help files included with the ${\mathfrak
+%  Amelia}$ library.  These can be accessed at the R command prompt by
+%typing
 %  \begin{verbatim}
 %  > help(``amelia'') .
 %  \end{verbatim}
-%In what follows we will describe the how a user would use the GUI version, but follow this with syntax to create the same procedure from the command-line version.  
+%In what follows we will describe the how a user would use the GUI
+%version, but follow this with syntax to create the same procedure from
+%the command-line version.
 
 \section{Installation and Updates}
 \label{sec:install}
 
-Before installing ${\mathfrak Amelia}$, you must have installed R
-version 2.1.0 or higher, which is freely available at
-\url{http://www.r-project.org/}.  ${\mathfrak Amelia}$ cannot run
-without R properly installed.
-\subsection{Windows - AmeliaView}
+Before installing \AmeliaII, you must have installed R version 2.1.0
+or higher, which is freely available at
+\url{http://www.r-project.org/}.  
+\subsection{Windows --- AmeliaView}
 \label{sec:win-install}
 To install AmeliaView in the Windows environment, simply download the
 installer \texttt{setup.exe} from
-\url{http://gking.harvard.edu/stats.shtml} and run it.  The installer
-will ask you to choose a location to install ${\mathfrak Amelia}$.  If
-you have installed $R$ with the default options, ${\mathfrak Amelia}$
-will automatically find the location of R.  If the installer cannot
-find R, it will ask you to locate the directory of the most current
-version of R.  Make sure you choose the directory name that includes
-the version number of R (e.g. C:/Program Files/R/R-2.2.0) and contains
-a subdirectory named \texttt{bin}.  The installer will also put
+\url{http://gking.harvard.edu/amelia} and run it.  The installer will
+ask you to choose a location to install ${\mathfrak Amelia}$.  If you
+have installed $R$ with the default options, ${\mathfrak Amelia}$ will
+automatically find the location of R.  If the installer cannot find R,
+it will ask you to locate the directory of the most current version of
+R.  Make sure you choose the directory name that includes the version
+number of R (e.g. C:/Program Files/R/R-2.2.0) and contains a
+subdirectory named \texttt{bin}.  The installer will also put
 shortcuts on your Desktop and Start Menu.
 
 \subsection{Windows - \Amelia for R}
