@@ -187,7 +187,7 @@ or higher, which is freely available at
 \label{sec:win-install}
 To install AmeliaView in the Windows environment, simply download the
 installer \texttt{setup.exe} from
-\url{http://gking.harvard.edu/amelia} and run it.  The installer will
+\url{http://gking.harvard.edu/amelia/} and run it.  The installer will
 ask you to choose a location to install ${\mathfrak Amelia}$.  If you
 have installed $R$ with the default options, ${\mathfrak Amelia}$ will
 automatically find the location of R.  If the installer cannot find R,
@@ -197,7 +197,7 @@ number of R (e.g. C:/Program Files/R/R-2.2.0) and contains a
 subdirectory named \texttt{bin}.  The installer will also put
 shortcuts on your Desktop and Start Menu.
 
-\subsection{Windows - \Amelia for R}
+\subsection{Windows --- \AmeliaII for R}
 
 Users familiar with the $R$ language, and who intend to use \Amelia
 primarily as a function within other $R$ code can install all the
@@ -247,9 +247,6 @@ with the call:
   > ameliagui()
   \end{verbatim}
 
-
-
-
 \section{Program Overview}
 \label{sec:overview}
 
@@ -257,7 +254,7 @@ with the call:
 \label{sec:guioverview}
 Built around the core of the R library, AmeliaView has a graphic
 interface for users to input data, set options, create the imputed
-datasets, and run diagnostics.  The structure of the program moves
+data sets, and run diagnostics.  The structure of the program moves
 logically through these steps.  In Windows, this can be accessed from
 the desktop shortcut created by the installer.  In Linux, accessing
 the GUI requires calling a function from within R\footnote{AmeliaView
@@ -551,7 +548,8 @@ serves to waste memory and slow down the imputation procedure.
 %For James
 
 
-\subsection{Ridge Priors for High Missingness, Small \emph{n}'s, or Large Correlations}
+\subsection{Empirical (Ridge) Priors for High Missingness, 
+  Small \emph{n}'s, or Large Correlations}
 \label{sec:prior}
 When the data to be analyzed contain a high degree of missingness or
 very strong correlations among the variables, or when the number of
@@ -598,7 +596,7 @@ necessary.
 
 \section{Diagnostics}
 \label{sec:diag}
-\Amelia currently provides one three diagnostic tools to inspect the
+\Amelia currently provides three diagnostic tools to inspect the
 imputations that are created.  These routines \texttt{compare},
 \texttt{overimpute} and \texttt{overdisperse} graphically investigate
 the distribution of the imputations, the fit of the imputation model,
@@ -619,10 +617,17 @@ imputations compares to the density of observed data. Some discussion
 of these graphs can be found in Gelman et al (2005).  Minimally, these
 graphs can be used to check that the mean imputation falls within
 known bounds, when such bounds exist in certain variables or settings.
-
 \begin{figure}[htp!]\label{f:oi}
   \centering \includegraphics[scale=.8]{comp.pdf}
-  \caption{ Two examples of the compare diagnostic graph.  In the left graph all the imputations, the density of which is shown in black, are contained within the range of the observed data for this variable (in red).  In the right graph some of the mean imputed values are larger than the largest observed value.  This may be reasonable (if for example, high income respondents to a survey do not report their income) or may be a warning to change the imputation model, if for example the data has strong bounds and these imputations fall well outside these bounds.}
+  \caption{ Two examples of the compare diagnostic graph.  In the left
+    graph all the imputations, the density of which is shown in black,
+    are contained within the range of the observed data for this
+    variable (in red).  In the right graph some of the mean imputed
+    values are larger than the largest observed value.  This may be
+    reasonable (if for example, high income respondents to a survey do
+    not report their income) or may be a warning to change the
+    imputation model, if for example the data has strong bounds and
+    these imputations fall well outside these bounds.}
 \end{figure}
 
 
@@ -673,7 +678,17 @@ confidently predict the true value of the observation.
 
 \begin{figure}[htp!]\label{f:oi}
   \centering \includegraphics[scale=.8]{overimp.pdf}
-  \caption{ An example of the overimpute diagnostic graph.  Here ninety percent confidence intervals are constructed that detail where an observed value would have been imputed had it been missing from the dataset, given the imputation model.  The dots represent the mean imputation.  Around ninety percent of these confidence intervals contain the $y=x$ line, which means that the true observed value falls within this range.  The color of the line (as coded in the legend) represents the fraction of missing observations in the pattern of missingness for that observation.  The yellow lines have more information (observed covariates) from which to impute the variable, and thus much tighter bounds.}
+  \caption{ An example of the overimpute diagnostic graph.  Here
+    ninety percent confidence intervals are constructed that detail
+    where an observed value would have been imputed had it been
+    missing from the dataset, given the imputation model.  The dots
+    represent the mean imputation.  Around ninety percent of these
+    confidence intervals contain the $y=x$ line, which means that the
+    true observed value falls within this range.  The color of the
+    line (as coded in the legend) represents the fraction of missing
+    observations in the pattern of missingness for that observation.
+    The yellow lines have more information (observed covariates) from
+    which to impute the variable, and thus much tighter bounds.}
 \end{figure}
 
 
@@ -745,11 +760,13 @@ the largest dimension with time (iteration number) on the $x$-axis.
 The number of EM chains can also be adjusted.  Once the diagnostic
 draws the graph, the user can visually inspect the results to check
 that all chains convergence to the same point.
-
-
 \begin{figure}[ht]
   \centering \includegraphics[scale=.7]{overdis1d.pdf}
-  \caption{A plot from the overdispersion diagnostic where all EM chains are converging to the same mode, regardless of starting value.  The $y$-axis represents movement in the (very high dimensional) parameter space, and the $x$-axis represents the iteration number of the chain.}
+  \caption{A plot from the overdispersion diagnostic where all EM
+    chains are converging to the same mode, regardless of starting
+    value.  The $y$-axis represents movement in the (very high
+    dimensional) parameter space, and the $x$-axis represents the
+    iteration number of the chain.}
 \end{figure}
 
 In one dimension, the diagnostic plots movement of the chain on the
@@ -769,13 +786,12 @@ highly collinear variables included in the imputation model.  More
 generally, an unidentified imputation model will lead to non-unique ML
 estimates (see King (1989) for a more detailed discussion of
 identification and likelihoods).
-
-
 \begin{figure}
   \centering \includegraphics[scale=.5]{disperse-bad.pdf}
-  \caption{ A problematic plot from the overdispersion diagnostic showing that EM chains are converging to one of two different modes, depending upon the starting value of the chain.}
+  \caption{ A problematic plot from the overdispersion diagnostic
+    showing that EM chains are converging to one of two different
+    modes, depending upon the starting value of the chain.}
 \end{figure}
-
 
 This graph can also be called from $R$ as:
 \begin{verbatim}
@@ -790,16 +806,17 @@ place, in which case output need not be declared, but any other amelia
 options may be set in the same way they would be declared for the
 amelia function.  This allows you to check the likelihood surface
 \emph{before} running the amelia function.
-
-
 \begin{figure}
   \centering \includegraphics[scale=.7]{overdis2d.pdf}
-  \caption{ A alternate way to visualize the plot visualizing the parameter space in two dimensions using the first two principal components of the end points of the EM chains.  The iteration number is no longer represented on the $y$-axis, although the distance between iterations is marked by the distance between arrowheads on each chain.}
+  \caption{ A alternate way to visualize the plot visualizing the
+    parameter space in two dimensions using the first two principal
+    components of the end points of the EM chains.  The iteration
+    number is no longer represented on the $y$-axis, although the
+    distance between iterations is marked by the distance between
+    arrowheads on each chain.}
 \end{figure}
 
-
-
-\section{References}
+\section{Reference}
 \label{sec:ref}
 
 \section{Menu Guide}
