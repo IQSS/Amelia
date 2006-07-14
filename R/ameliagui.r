@@ -505,7 +505,7 @@ set.out<-function(...) {
 #Preamble
 require(tcltk) || stop("The package 'tcltk' is required")
 require(foreign)
-libdir<-file.path(.find.package(package = "amelia")[1], "tklibs")
+libdir<-file.path(.find.package(package = "Amelia")[1], "tklibs")
 addTclPath(libdir)
 tclRequire("combobox")
 .Tcl("catch {namespace import ::combobox::*}")
