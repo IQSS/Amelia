@@ -617,7 +617,7 @@ imputations compares to the density of observed data. Some discussion
 of these graphs can be found in Gelman et al (2005).  Minimally, these
 graphs can be used to check that the mean imputation falls within
 known bounds, when such bounds exist in certain variables or settings.
-\begin{figure}[htp!]\label{f:oi}
+\begin{figure}[htp!]\label{f:oi1}
   \centering \includegraphics[scale=.8]{comp.pdf}
   \caption{ Two examples of the compare diagnostic graph.  In the left
     graph all the imputations, the density of which is shown in black,
@@ -690,8 +690,6 @@ confidently predict the true value of the observation.
     The yellow lines have more information (observed covariates) from
     which to impute the variable, and thus much tighter bounds.}
 \end{figure}
-
-
 Occasionally, the overimputation can display unintuitive results.  For
 example, different observations may have different number of observed
 covariates.  If covariates that are useful to the prediction are
