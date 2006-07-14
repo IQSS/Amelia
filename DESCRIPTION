@@ -1,7 +1,7 @@
-Package: amelia
+Package: Amelia
 Type: Package
 Title: Multiple Imputation by Bootstrap
-Version: 1.0
+Version: 1.1
 Date: 2006-01-23
 Author: James Honaker, Matthew Blackwell, and Gary King
 Maintainer: Matthew Blackwell <mblackwe@ucla.edu>
@@ -10,3 +10,4 @@ Description: Amelia multiply imputes data from a single cross-section,
 License: GNU v.2
 Packaged: Fri May  5 16:55:03 2006
 URL: http://gking.harvard.edu/amelia
+
