@@ -60,10 +60,15 @@ Amelia is named after this famous missing person.</small></p>
   default) will usually be adequate.  Other methods of dealing with
   missing data, such as listwise deletion, mean substitution, or
   single imputation, are in common circumstances biased, inefficient,
-  or both.  <p>
+  or both.
+
+<p>Amelia II is a new program, and follows in the spirit with the same
+purpose as the first version of Amelia (still available <a
+href="/amelia/amelia1/index.shtml">here</a>) by James Honaker, Anne
+Joseph, Gary King, Kenneth Scheve, and Naunihal Singh.
   <ul>
-    <li>Documentation: <a href="/amelia/docs/amelia.pdf">PDF</a>
-	<strong>Warning: This document is not yet finished!</strong></li>
+    <li>Documentation (<strong>Warning: not yet finished!</strong>):
+    <a href="/amelia/docs/amelia.pdf">PDF</a> </li>
 	
     <li>Installation of AmeliaView for Windows (for those who don't
 	know R): (1) <a href="http://www.r-project.org/">install the
