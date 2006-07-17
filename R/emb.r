@@ -30,6 +30,7 @@
 ## 01/06/06 mb - added "allthetas" option to emarch for overdispersion diagnostic
 ## 15/06/06 jh - merged with priors version changing all EM and impute procs, modified how lists are generated in indxs("icap") and amelia("impdata"). 
 ## 27/06/06 mb - added arglist argument to load in output from amelia or the gui. 
+## 13/07/06 mb - moved gc() calls out of emfred into emarch
 
 ## Draw from a multivariate normal distribution 
 ##   n: number of draws 
@@ -238,7 +239,9 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,mu.priors
     count<-0
     diff<- 1+tolerance
     thetahold<-c()
-    while (diff>0){     
+    while (diff>0){
+      if (collect)
+        gc()     
       count<-count+1
       if (p2s==1){
         if (identical((count %% 20),1)) {cat("\n")}
@@ -425,7 +428,6 @@ return(xplay)
 ## Single EM step (returns updated theta)
 ## the "x" passed to emfred is x.0s (missing values replaced with zeros)
 emfred<-function(x,thetareal,o,m,i,iii,AMr1,AMr2,pr=NULL,AM1stln,returntype="theta",mu.priors=NULL,inv.sd.priors=NULL,empri=NULL,collect=FALSE){
-
 AMp<-ncol(x)
 AMn<-nrow(x)
 
@@ -450,8 +452,7 @@ if (identical(pr,NULL)){                     # No Observation Level Priors in Da
     imputations<-AMr1[is:isp, , drop=FALSE] * ((x[is:isp, , drop=FALSE] %*% theta[2:(AMp+1),2:(AMp+1) , drop=FALSE])
         + (matrix(1,1+isp-is,1) %*% theta[1,2:(AMp+1) , drop=FALSE]) ) 
     xplay[is:isp,]<-x[is:isp,] + imputations 
-    if (collect)
-      gc()
+
   }
 } else {                                    # Observation Level Priors Used
 
@@ -498,8 +499,6 @@ if (identical(pr,NULL)){                     # No Observation Level Priors in Da
 
       }
     }
-    if (collect)
-      gc()
   }
 }
 
