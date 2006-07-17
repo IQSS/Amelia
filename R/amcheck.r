@@ -5,7 +5,7 @@
 ## 21/10/05 - now converts variables names to column numbers, stops if variable doesn't exist; returns codes and messages, doesn't stop execution
 ## 04/05/06 mb - moved parameter vs. obs check to prep, checks outname
 ## 10/07/06 mb - fixed handling of variance checks with no fully observed rows.
-
+## 17/07/06 mb - stops if variable only has one observed value.
 
 
 
@@ -175,16 +175,15 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
     
   if (inherits(try(get("write.out"),silent=T),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'write.out' argument doesn't exist.")))
-    
-    
-  #Error Code: 4
+   
+   #Error Code: 4
   #Completely missing columns
-  if (any(colSums(is.na(x))==AMn)) {
+   if (any(colSums(!is.na(x)) <= 1)) {
     error.code<-4
-    error.mess<-paste("The data has a column that is completely missing.  Remove,\n",
-                      "this column from the data and retry amelia.")
+    error.mess<-paste("The data has a column that is completely missing or only has one \n",
+                      "observation.  Remove this column from the data and retry amelia.")
     return(list(code=error.code,mess=error.mess))
-  }
+  }   
   
   #Error codes: 5-6
   #Errors in one of the list variables
@@ -545,18 +544,18 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
     error.code<-42
     error.mess<-paste("There is only 1 column of data. Cannot impute.")
     return(list(code=error.code,mess=error.mess))
-  }
+  }  
   
   #Error code: 43
   #Variable that doesn't vary
   if (is.data.frame(x)) {
-    if (any(sapply(x,var,na.rm=T)==0)) {
-      error.code<-43
-      error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
-      return(list(code=error.code,mess=error.mess))
-    }
+      if (any(sapply(x,var,na.rm=T)==0)) {
+        error.code<-43
+        error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
+        return(list(code=error.code,mess=error.mess))
+      }     
   } else {
-    if (length(na.omit(x)) > 0) {
+    if (nrow(na.omit(x)) > 1) {
       if (any(diag(var(x,na.rm=T))==0)) {
         error.code<-43
         error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
