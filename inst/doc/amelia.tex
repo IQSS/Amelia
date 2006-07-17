@@ -34,6 +34,8 @@
 \tableofcontents
 \newpage
 
+
+
 \section{Introduction}
 \label{sec:intro}
 
@@ -617,8 +619,8 @@ imputations compares to the density of observed data. Some discussion
 of these graphs can be found in Gelman et al (2005).  Minimally, these
 graphs can be used to check that the mean imputation falls within
 known bounds, when such bounds exist in certain variables or settings.
-\begin{figure}[htp!]\label{f:oi1}
-  \centering \includegraphics[scale=.8]{comp.pdf}
+\begin{figure}[htp!]
+  \centering \includegraphics[scale=.8]{comp}
   \caption{ Two examples of the compare diagnostic graph.  In the left
     graph all the imputations, the density of which is shown in black,
     are contained within the range of the observed data for this
@@ -628,6 +630,7 @@ known bounds, when such bounds exist in certain variables or settings.
     not report their income) or may be a warning to change the
     imputation model, if for example the data has strong bounds and
     these imputations fall well outside these bounds.}
+  \label{f:oi1}
 \end{figure}
 
 
@@ -676,8 +679,8 @@ cover the $y=x$ line, we can tell how often the imputation model can
 confidently predict the true value of the observation.
 
 
-\begin{figure}[htp!]\label{f:oi}
-  \centering \includegraphics[scale=.8]{overimp.pdf}
+\begin{figure}[htp!]
+  \centering \includegraphics[scale=.8]{overimp}
   \caption{ An example of the overimpute diagnostic graph.  Here
     ninety percent confidence intervals are constructed that detail
     where an observed value would have been imputed had it been
@@ -689,6 +692,7 @@ confidently predict the true value of the observation.
     observations in the pattern of missingness for that observation.
     The yellow lines have more information (observed covariates) from
     which to impute the variable, and thus much tighter bounds.}
+  \label{f:oi}
 \end{figure}
 Occasionally, the overimputation can display unintuitive results.  For
 example, different observations may have different number of observed
@@ -759,7 +763,7 @@ The number of EM chains can also be adjusted.  Once the diagnostic
 draws the graph, the user can visually inspect the results to check
 that all chains convergence to the same point.
 \begin{figure}[ht]
-  \centering \includegraphics[scale=.7]{overdis1d.pdf}
+  \centering \includegraphics[scale=.7]{overdis1d}
   \caption{A plot from the overdispersion diagnostic where all EM
     chains are converging to the same mode, regardless of starting
     value.  The $y$-axis represents movement in the (very high
@@ -785,7 +789,7 @@ generally, an unidentified imputation model will lead to non-unique ML
 estimates (see King (1989) for a more detailed discussion of
 identification and likelihoods).
 \begin{figure}
-  \centering \includegraphics[scale=.5]{disperse-bad.pdf}
+  \centering \includegraphics[scale=.5]{disperse-bad}
   \caption{ A problematic plot from the overdispersion diagnostic
     showing that EM chains are converging to one of two different
     modes, depending upon the starting value of the chain.}
@@ -805,7 +809,7 @@ options may be set in the same way they would be declared for the
 amelia function.  This allows you to check the likelihood surface
 \emph{before} running the amelia function.
 \begin{figure}
-  \centering \includegraphics[scale=.7]{overdis2d.pdf}
+  \centering \includegraphics[scale=.7]{overdis2d}
   \caption{ A alternate way to visualize the plot visualizing the
     parameter space in two dimensions using the first two principal
     components of the end points of the EM chains.  The iteration
@@ -823,7 +827,12 @@ amelia function.  This allows you to check the likelihood surface
 \subsection{Step 1 - Input}
 \label{sec:step1}
 \begin{figure}[ht]
-  \centering \includegraphics[scale=.75]{step1.png}
+ \begin{htmlonly} 
+  \centering \includegraphics[scale=1]{step1} 
+ \end{htmlonly}
+ \begin{latexonly}
+  \centering \includegraphics[scale=.75]{step1}
+ \end{latexonly}
   \caption{Detail for step 1 on the front page of AmeliaView.}
 \end{figure}
 \begin{enumerate}
@@ -859,7 +868,12 @@ amelia function.  This allows you to check the likelihood surface
 \subsection{Step 2 - Options}
 \label{sec:step2}
 \begin{figure}[ht]
-  \centering \includegraphics[scale=.75]{step2.png}
+ \begin{htmlonly} 
+  \centering \includegraphics[scale=1]{step2} 
+ \end{htmlonly}
+ \begin{latexonly}
+  \centering \includegraphics[scale=.75]{step2}
+ \end{latexonly}
   \caption{Detail for step 2 on the front page of AmeliaView.}
 \end{figure}
 \begin{enumerate}
@@ -881,7 +895,12 @@ amelia function.  This allows you to check the likelihood surface
 \subsubsection{Variables Dialog}
 \label{sec:vardiag}
 \begin{figure}[ht]
-  \centering \includegraphics[scale=.75]{varopts.png}
+ \begin{htmlonly} 
+  \centering \includegraphics[scale=1]{varopts} 
+ \end{htmlonly}
+ \begin{latexonly}
+  \centering \includegraphics[scale=.75]{varopts}
+ \end{latexonly}
   \caption{Detail for Variable Options dialog.}
 \end{figure}
 \begin{enumerate}
@@ -900,7 +919,12 @@ amelia function.  This allows you to check the likelihood surface
 \subsubsection{Time Series Cross Sectional Dialog}
 \label{sec:tscsdiag}
 \begin{figure}[ht]
-  \centering \includegraphics[scale=.75]{tscs.png}
+ \begin{htmlonly} 
+  \centering \includegraphics[scale=1]{tscs} 
+ \end{htmlonly}
+ \begin{latexonly}
+  \centering \includegraphics[scale=.75]{tscs}
+ \end{latexonly}
   \caption{Detail for Time-Series-Cross-Section Options dialog.}
 \end{figure}
 \begin{enumerate}
@@ -923,7 +947,12 @@ amelia function.  This allows you to check the likelihood surface
 \subsubsection{Priors Dialog}
 \label{sec:pridiag}
 \begin{figure}[ht]
-  \centering \includegraphics[scale=.75]{priors.png}
+ \begin{htmlonly} 
+  \centering \includegraphics[scale=1]{priors} 
+ \end{htmlonly}
+ \begin{latexonly}
+  \centering \includegraphics[scale=.75]{priors}
+ \end{latexonly}
   \caption{Detail for Priors Options dialog.}
 \end{figure}
 \begin{enumerate}
@@ -947,7 +976,12 @@ amelia function.  This allows you to check the likelihood surface
 \subsubsection{Case Priors \textbf{NOT CURRENTLY IMPLEMENTED}}
 \label{sec:refcasepri}
 \begin{figure}[ht]
-  \includegraphics[scale=.75]{case.png}
+ \begin{htmlonly} 
+  \centering \includegraphics[scale=1]{case} 
+ \end{htmlonly}
+ \begin{latexonly}
+  \centering \includegraphics[scale=.75]{case}
+ \end{latexonly}
 \caption{Detail for Case Priors dialog.}
 \end{figure}
 \begin{enumerate}
@@ -972,7 +1006,12 @@ amelia function.  This allows you to check the likelihood surface
 \subsubsection{Observational Priors \textbf{NOT CURRENTLY IMPLEMENTED}}
 \label{sec:refobspri}
 \begin{figure}[h]
-  \includegraphics[scale=.75]{obspri.png}
+ \begin{htmlonly} 
+  \centering \includegraphics[scale=1]{obspri} 
+ \end{htmlonly}
+ \begin{latexonly}
+  \centering \includegraphics[scale=.75]{obspri}
+ \end{latexonly}
 \caption{Detail for Observational Priors dialog}
 \end{figure}
 \begin{enumerate}
@@ -990,7 +1029,12 @@ amelia function.  This allows you to check the likelihood surface
 
 
 \begin{figure}[ht]
-  \centering \includegraphics[scale=.75]{step3.png}
+ \begin{htmlonly} 
+  \centering \includegraphics[scale=1]{step3} 
+ \end{htmlonly}
+ \begin{latexonly}
+  \centering \includegraphics[scale=.75]{step3}
+ \end{latexonly}
   \caption{Detail for step 3 on the front page of AmeliaView.}
 \end{figure}
 \begin{enumerate}
@@ -1022,7 +1066,12 @@ amelia function.  This allows you to check the likelihood surface
 \subsubsection{Diagnostics Dialog}
 \label{sec:diagdiag}
 \begin{figure}[ht]
+ \begin{htmlonly} 
+  \centering \includegraphics[scale=1]{diag} 
+ \end{htmlonly}
+ \begin{latexonly}
   \centering \includegraphics[scale=.75]{diag}
+ \end{latexonly}
   \caption{Detail for Diagnostics dialog.}
 \end{figure}
 \begin{enumerate}
