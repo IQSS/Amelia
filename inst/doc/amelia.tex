@@ -416,6 +416,11 @@ transform.  For example,
   \begin{verbatim}> amelia(mydata, logs=c(2,3,7))\end{verbatim} or
   \begin{verbatim}> amelia(mydata, noms=c(``gdp'',``population'')).\end{verbatim}
 
+\subsection{Screen Output}
+The output of the imputation model in the AmeliaView program appears in a new window.  It lists stages of the imputation model, including the number of iterations of the EM chain necessary in each of the bootstraps.
+
+Screen output in the $R$ command level can be adjusted with the ``print to screen'' argument, \texttt{p2s}.  At a value of 0, no screen printing will occur.  This may be useful in large jobs or simulations where a very large number of imputation models may be required.  The default value of 1, lists each bootstrap, and displays the number of iterations required to reach convergence in that bootstrapped dataset.  The value of 2 gives more thorough screen output, including, at each iteration, the number of parameters that have significantly changed since the last iteration.  This may be useful when the EM chain length is very long, as it can provide an intuition for many parameters still need to converge in the EM chain, and a sense of the time remaining.  However, it is worth noting that the last several parameters can often take a significant fraction of the total number of iterations to converge.
+
 \subsection{Transformations of Variables}
 \label{sec:trans}
 
@@ -545,10 +550,23 @@ and those variables that will help in the imputation model.  While it
 may be tempting to simply mark unneeded variables as IDs, it only
 serves to waste memory and slow down the imputation procedure.
 
-%\subsection{Time Series, or Time Series Cross Sectional Data}
-%\label{sec:tscs}
-%For James
+\subsection{Time Series, or Time Series Cross Sectional Data} \label{sec:tscs}
 
+Many variables that are recorded over time within a cross-sectional unit are observed to vary smoothly over time.  In such cases, knowing the observed values of observations close in time to any missing value may enormously aid the imputation of that value.  However, the exact pattern may vary over time within any cross-section.  There may be periods of growth, stability, or decline; in each of which the observed values would be used in a different fashion to impute missing values.  Also, these patterns may vary enormously across different cross-sections, or may exist in some and not others.  ${\mathfrak Amelia}$ can build a general model of patterns within variables across time by creating a sequence of polynomials of the time index.  If, for example, $GDP$ varies smoothly over time, then we make the modeling assumption that there exists some polynomial that describes the economy in cross-sectional unit $i$ at time $t$ as:
+\begin{equation}
+\textrm{GDP}(t)_i = \beta_0 + \beta_1 t + \beta_1 t^2 + \beta_1 t^3 \ldots
+\end{equation}
+And thus if we include enough higher order terms of time then the pattern between observed values of GDP can be estimated.  ${\mathfrak Amelia}$ will create polynomials of time up to the user defined $k$-th order, ($k\leq3$).  If cross-sectional units are specified these polynomials can be interacted with the cross-section unit (this is the default) to allow the patterns over time to vary between cross-sectional units.  Unless you strongly believe all units have the same patterns over time in all variables, this is a reasonable default.  When $k$ is set to 0, this interaction simply results in a model of \emph{fixed effects} where every unit has a uniquely estimated constant term.
+
+In AmeliaView, the TSCS settings can be adjusted in the Time Series Cross-Sectional Dialog (discussed in section \ref{sec:tscsdiag} of this manual).  At the $R$ command line, these options can be set as:
+
+\begin{verbatim}> amelia(mydata, ts=1, cs=2, polytime=2, intercs=TRUE)\end{verbatim} 
+
+Where \texttt{ts} and \texttt{cs} give the locations of the time and cross-section indicators (often country names and years, respectively), \texttt{polytime} is an integer between 0 and 3 inclusive, that sets the order of polynomials to use, and \texttt{intercs} defines whether these polynomials should be interacted with the cross-sectional unit.
+
+\section{Setting Priors} \label{sec:obspri}
+
+${\mathfrak Amelia}$ has number of methods of setting priors within the imputation model.  Two of these are commonly used and discussed below, ridge priors and observational priors.
 
 \subsection{Empirical (Ridge) Priors for High Missingness, 
   Small \emph{n}'s, or Large Correlations}
@@ -573,28 +591,12 @@ but with zero covariances.  Thus, increasing the \texttt{empri}
 setting results in more shrinkage of the covariances thus putting more
 a priori structure on the estimation problem.  In general, keep the
 value on this prior relatively small and increase it only when
-necessary.
+necessary.  A recommendation of 0.5 to 1 percent of the number of observations, $n$, is a reasonable starting value, and often useful in large datasets to add some numerical stability.  For example, in a dataset of two thousand observations, this would translate to a prior value of 10 or 20 respectively.  A prior of up to 5 percent is moderate in most applications.
+
+\subsection{Observation-level priors}
 
 
 
-%\subsection{Priors about Individual Observations}
-%\label{sec:obspri}
-%For James
-
-
-\subsection{Priors of Relationships Among Cases}
-\label{sec:casepri}
-%For James
-
-
-%Do we want to keep this section?
-%\section{How Long Does it Take?}
-%\label{sec:howlong}
-
-
-%Where/when to put this in?
-%\section{Frequently Asked Questions}
-%\label{sec:faq}
 
 \section{Diagnostics}
 \label{sec:diag}
@@ -866,6 +868,7 @@ amelia function.  This allows you to check the likelihood surface
 
 
 \subsection{Step 2 - Options}
+
 \label{sec:step2}
 \begin{figure}[ht]
  \begin{htmlonly} 
