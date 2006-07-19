@@ -262,7 +262,7 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,mu.priors
         }
         if (count<10) tkinsert(run.text,"end"," ")
         tkinsert(run.text,"end",paste(count," ",sep=""))
-        tkcmd("update")   #Forces tcltk to update the text widget that holds the amelia output
+        tcl("update")   #Forces tcltk to update the text widget that holds the amelia output
       }
 
       thetanew<-emfred(x,thetaold,indx$o,indx$m,indx$ivector,indx$icap,indx$AMr1,indx$AMr2,pr=pr,AM1stln=AM1stln,returntype="theta",mu.priors,inv.sd.priors,empri=empri,collect=collect)
@@ -548,7 +548,7 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,ts=NULL,cs=
     tkgrid(run.text,scr)
     tkgrid.configure(scr,sticky="ns")
     tkwm.title(tt,"Amelia Output")
-    tkcmd("update")
+    tcl("update")
   }
   if (p2s==2) {
     cat("\namelia starting\n")

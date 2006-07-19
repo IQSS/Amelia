@@ -212,7 +212,7 @@ disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=N
     tkgrid(run.text,scr)
     tkgrid.configure(scr,sticky="ns")
     tkwm.title(tcl.window,"Overdisperse Output")
-    tkcmd("update")
+    tcl("update")
   }
   
   code<-1
