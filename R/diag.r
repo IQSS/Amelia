@@ -7,6 +7,7 @@
 ##  09/05/06 mb - overimpute: added frontend check for overimpute. 
 ##  15/05/06 jh - overimpute: stacking of original data, and various graphics adjustments
 ##  01/06/06 mb - added "gethull" and "disperse" for overdispersion diagnostic
+##  19/07/06 mb - moved handling of arglists to prep.
 
 compare.density <- function(data=NULL,output=NULL,var=NULL,col=1:2,lwd=1,main="",frontend=F,...) {
   
@@ -80,29 +81,6 @@ compare.density <- function(data=NULL,output=NULL,var=NULL,col=1:2,lwd=1,main=""
 overimpute <- function(data,output,var,frontend=FALSE) {
   
   
-  m<-output$amelia.args$m
-  idvars<-output$amelia.args$idvars
-  means<-output$amelia.args$means
-  sds<-output$amelia.args$sds
-  mins<-output$amelia.args$mins
-  maxs<-output$amelia.args$maxs
-  conf<-output$amelia.args$conf
-  empri<-output$amelia.args$empri
-  ts<-output$amelia.args$ts
-  cs<-output$amelia.args$cs
-  tolerance<-output$amelia.args$tolerance
-  casepri<-output$amelia.args$casepri
-  polytime<-output$amelia.args$polytime
-  lags<-output$amelia.args$lags
-  leads<-output$amelia.args$leads
-  logs<-output$amelia.args$logs
-  sqrts<-output$amelia.args$sqrts
-  lgstc<-output$amelia.args$lgstc
-  intercs<-output$amelia.args$intercs
-  noms<-output$amelia.args$noms
-  startvals<-output$amelia.args$startvals
-  ords<-output$amelia.args$ords
-  
   
   prepped<-amelia.prep(data=data,m=m,idvars=idvars,means=means,sds=sds,mins=mins,
                         maxs=maxs,conf=conf,empri=empri,ts=ts,cs=cs,
@@ -110,7 +88,7 @@ overimpute <- function(data,output,var,frontend=FALSE) {
                         lags=lags,leads=leads,logs=logs,sqrts=sqrts,lgstc=lgstc,
                         p2s=F,frontend=frontend,archive=F,intercs=intercs,
                         noms=noms,startvals=startvals,ords=ords,incheck=F,
-                        collect=F,outname="outdata",write.out=F,var=var)
+                        collect=F,outname="outdata",write.out=F,var=var,arglist=output)
   
   stacked.var<-match(var,prepped$subset.index[prepped$p.order])
   subset.var<-match(var,prepped$subset.index)
@@ -143,7 +121,7 @@ overimpute <- function(data,output,var,frontend=FALSE) {
     pcntmiss<-sum(miss)/length(miss)  
 
     conf<-c()
-    for (k in 1:m) {
+    for (k in 1:prepped$m) {
       thetareal<-output[[paste("theta",k,sep="")]]
       theta<-amsweep(thetareal,c(F,o))
       
@@ -160,13 +138,13 @@ overimpute <- function(data,output,var,frontend=FALSE) {
     }
     
     scaled.conf <- (conf * prepped$scaled.sd[subset.var])  + prepped$scaled.mu[subset.var]
-    varlog<-match(var,logs)      
+    varlog<-match(var,prepped$logs)      
     
     if (!is.na(varlog))
       scaled.conf <- untransform(as.matrix(scaled.conf),logs=1,xmin=prepped$xmin[varlog],sqrts=NULL,lgstc=NULL)
-    if (!is.na(match(var,sqrts)))
+    if (!is.na(match(var,prepped$sqrts)))
       scaled.conf <- untransform(as.matrix(scaled.conf),logs=NULL,xmin=NULL,sqrts=1,lgstc=NULL)
-    if (!is.na(match(var,lgstc)))
+    if (!is.na(match(var,prepped$lgstc)))
       scaled.conf <- untransform(as.matrix(scaled.conf),logs=NULL,xmin=NULL,sqrts=NULL,lgstc=1)
     
     #colors are based on rainbow roygbiv l->r is higher missingness  
@@ -182,8 +160,8 @@ overimpute <- function(data,output,var,frontend=FALSE) {
     else if (pcntmiss >=.80)
       color<-c(color,spectrum[5])
     means<-c(means,mean(scaled.conf))
-    lowers<-c(lowers,sort(scaled.conf)[round(m*20*0.05)])
-    uppers<-c(uppers,sort(scaled.conf)[round(m*20*0.95)])
+    lowers<-c(lowers,sort(scaled.conf)[round(prepped$m*20*0.05)])
+    uppers<-c(uppers,sort(scaled.conf)[round(prepped$m*20*0.95)])
 
   }
 
@@ -236,29 +214,6 @@ disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=N
     tkwm.title(tcl.window,"Overdisperse Output")
     tkcmd("update")
   }
-  if (!is.null(output)) {
-    idvars<-output$amelia.args$idvars
-    means<-output$amelia.args$means
-    sds<-output$amelia.args$sds
-    mins<-output$amelia.args$mins
-    maxs<-output$amelia.args$maxs
-    conf<-output$amelia.args$conf
-    empri<-output$amelia.args$empri
-    ts<-output$amelia.args$ts
-    cs<-output$amelia.args$cs
-    tolerance<-output$amelia.args$tolerance
-    casepri<-output$amelia.args$casepri
-    polytime<-output$amelia.args$polytime
-    lags<-output$amelia.args$lags
-    leads<-output$amelia.args$leads
-    logs<-output$amelia.args$logs
-    sqrts<-output$amelia.args$sqrts
-    lgstc<-output$amelia.args$lgstc
-    intercs<-output$amelia.args$intercs
-    noms<-output$amelia.args$noms
-    startvals<-output$amelia.args$startvals
-    ords<-output$amelia.args$ords
-  }
   
   code<-1
   prepped<-amelia.prep(data=data,m=m,idvars=idvars,means=means,sds=sds,mins=mins,
@@ -266,7 +221,7 @@ disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=N
                         tolerance=tolerance,casepri=casepri,polytime=polytime,
                         lags=lags,leads=leads,logs=logs,sqrts=sqrts,lgstc=lgstc,
                         p2s=p2s,frontend=frontend,archive=archive,intercs=intercs,
-                        noms=noms,startvals=startvals,ords=ords,incheck=incheck)
+                        noms=noms,startvals=startvals,ords=ords,incheck=incheck,arglist=output)
   
   if (prepped$code!=1) {
     cat("Amelia Error Code: ",prepped$code,"\n",prepped$message,"\n")
