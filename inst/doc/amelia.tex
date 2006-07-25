@@ -594,8 +594,55 @@ value on this prior relatively small and increase it only when
 necessary.  A recommendation of 0.5 to 1 percent of the number of observations, $n$, is a reasonable starting value, and often useful in large datasets to add some numerical stability.  For example, in a dataset of two thousand observations, this would translate to a prior value of 10 or 20 respectively.  A prior of up to 5 percent is moderate in most applications.
 
 \subsection{Observation-level priors}
+\label{sec:obspri}
+Reseachers often have additional prior information about missing data 
+values based on previous research, academic consensus, or personal 
+experience.  Amelia can incorporate this information to produce vastly 
+improved imputations.  The Amelia algorithm allows users to include 
+informative Bayesian priors about individual missing data cells 
+instead of the more general model parameters, many of which have 
+little direct meaning.  
 
+The incorporation of priors follows basic Bayesian analysis where the 
+imputation turns out to be a weighted average of the model-based 
+imputation and the prior mean, where the weights are functions of the 
+relative strength of the data and prior: when the model predicts very 
+well, the imputation will downweight the prior, and vice versa.  
 
+The priors about individual observations should describe the analyst's 
+belief about the distribution of the missing data cell.  This can either 
+take the form of a mean and a standard deviation.  For instance, we 
+might know that GDP growth for Ghana in a given year was somwhere 
+around $3.5\%$, but we have some uncertainty as to the exact value.   
+Our prior belief about the distribution of the missing data cell, then, 
+centers on $3.5$ with a standard deviation that reflects the amount of 
+uncertainty we have about our prior belief. 
+
+In AmeliaView, the observational priors dialog will guide you through 
+adding priors to the imputation.  Refer to section \ref{sec:refobspri} for 
+further details on how to add priors in AmeliaView.
+
+To include an observation level prior to Amelia, you must build a few
+matrices that have the same dimensions as the orignal data matrix.  
+If you are describing the distribution by the mean and standard deviation,
+you will need to build two matrices, one for the mean and one for the 
+standard deviation.  To add the prior, first note the cell position of the
+missing data value in question; that is, find its row and column number in
+R.  From here, find the same position in the matrix of prior means and 
+place your prior belief about the mean in this cell.  Repeat the same 
+procedure for the standard deviation and then include them with the 
+\texttt{amelia} function with the \texttt{means} and \texttt{sds} 
+arguments.  An example of this would go as follows:
+
+\begin{verbatim}
+ > n <- nrow(data)  ## grab the rows of the data
+ > p <- ncol(data)  ## grab the columns of the data
+ > mean.priors <- matrix(NA,nrow=n,ncol=p)  ## make priors matrices of
+ > sds.priors <- matrix(NA,nrow=n,ncol=p)  ## the same size as the data
+ > means.priors[150,4] <- 3.5
+ > sds.priors[150,4] <- .5  ## set priors for the cell at row 150, column 4
+ > amelia.out <- amelia(data = data, means = means.priors, sds = sds.priors)
+\end{verbatim}
 
 
 \section{Diagnostics}
