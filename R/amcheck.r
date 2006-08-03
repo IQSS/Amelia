@@ -6,6 +6,7 @@
 ## 04/05/06 mb - moved parameter vs. obs check to prep, checks outname
 ## 10/07/06 mb - fixed handling of variance checks with no fully observed rows.
 ## 17/07/06 mb - stops if variable only has one observed value.
+## 02/08/06 mb - fixed handling of character variables.
 
 
 
@@ -84,7 +85,7 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
   AMn<-nrow(x)
   AMp<-ncol(x)
   error.code <- 1
-
+  subbedout<-c(idvars,cs,ts)
 
 
   
@@ -175,15 +176,16 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
     
   if (inherits(try(get("write.out"),silent=T),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'write.out' argument doesn't exist.")))
-   
-   #Error Code: 4
+    
+    
+  #Error Code: 4
   #Completely missing columns
-   if (any(colSums(!is.na(x)) <= 1)) {
+  if (any(colSums(!is.na(x)) <= 1)) {
     error.code<-4
     error.mess<-paste("The data has a column that is completely missing or only has one \n",
                       "observation.  Remove this column from the data and retry amelia.")
     return(list(code=error.code,mess=error.mess))
-  }   
+  }
   
   #Error codes: 5-6
   #Errors in one of the list variables
@@ -377,7 +379,7 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
     }
     if (any(polytime > 3,polytime < 0)) {
       error.code<-24
-      error.mess<-paste("The number of polynomial terms to include must be between 0 and 3.")
+      error.mess<-paste("The number of polynomial terms to include must be between 1 and 3.")
       return(list(code=error.code,mess=error.mess))
     }
     if (identical(ts,NULL)) {
@@ -385,18 +387,16 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
       error.mess<-paste("You have set polynomials of time without setting the time series variable.")
       return(list(code=error.code,mess=error.mess))
     }
+    if (all(!intercs,identical(polytime,0))) {
+      warning(paste("You've set the polynomials of time to zero with no interaction with \n",
+                    "the cross-sectional variable.  This has no effect on the imputation."))
+    }
   }
   
   #checks for intercs
 
   
   if (identical(intercs,TRUE)) {
-    if (identical(polytime,NULL)) {
-      error.code<-26
-      error.mess<-paste("You have indicated an interaction with the cross section \n",
-                        "without setting the polynomials of time.")
-      return(list(code=error.code,mess=error.mess))
-    }
     if (identical(cs,NULL)) {
       error.code<-27
       error.mess<-paste("You have indicated an interaction with the cross section \n",
@@ -409,6 +409,7 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
                         "interaction between polynomial of time and the cross-section.")
       return(list(code=error.code,mess=error.mess))
     }
+
   }
   
   #Error codes: 29-31
@@ -457,7 +458,7 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
   
   
 
-  
+ 
   #Error code: 36
   #tolerance must be greater than zero
   if (tolerance <= 0) {
@@ -492,20 +493,31 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
     }
   }
   
-  
   if (is.null(c(noms,ords,idvars,cs)))
     fact<-c(1:AMp)
   else
     fact<--c(noms,ords,idvars,cs)
   #Error code: 38
   #factors out of the noms,ids,ords,cs
-  if (sum(ifelse(sapply(x[,fact],class)=="factor",1,0)) > 0) {
+  if (any(sapply(x[,fact],class)=="factor")) {
     error.code<-38
-    error.mess<-paste("You have a \"character\" variable in the data.  You may \n",
+    error.mess<-paste("You have a \"factor\" variable in the data.  You may \n",
                       "have wanted to set this as a ID variable to remove it \n",
                       "from the imputation model or as an ordinal or nominal \n", 
                       "variable to be imputed.  Please set it as either and \n",
                       "try again.") 
+    return(list(code=error.code,mess=error.mess))
+  }
+  if (is.null(c(cs,idvars,noms)))
+    idcheck<-c(1:AMp)
+  else
+    idcheck<--c(cs,idvars,noms)
+  if (any(sapply(x[,idcheck],class)=="character")) {
+    error.code<-38
+    error.mess<-paste("You have a \"character\" variable in the data.  You may \n",
+                      "have wanted to set this as a ID variable to remove it \n",
+                      "from the imputation model.  Please either remove it from \n",
+                      "the data or set it as an ID variable.") 
     return(list(code=error.code,mess=error.mess))
   }
   
@@ -537,7 +549,8 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
       return(list(code=error.code,mess=error.mess))
     }
   }
-
+  
+  
   #Error code: 42
   #Only 1 column of data
   if (AMp==1) {
@@ -546,23 +559,25 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
     return(list(code=error.code,mess=error.mess))
   }  
   
+
   #Error code: 43
   #Variable that doesn't vary
   if (is.data.frame(x)) {
-      if (any(sapply(x,var,na.rm=T)==0)) {
+    
+      if (any(sapply(x[,idcheck],var,na.rm=T)==0)) {
         error.code<-43
         error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
         return(list(code=error.code,mess=error.mess))
       }     
   } else {
     if (nrow(na.omit(x)) > 1) {
-      if (any(diag(var(x,na.rm=T))==0)) {
+      if (any(diag(var(x[,idcheck],na.rm=T))==0)) {
         error.code<-43
         error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
         return(list(code=error.code,mess=error.mess))
       }
     } else {
-      for (i in 1:ncol(x)) {
+      for (i in 1:ncol(x[,idcheck])) {
         if (var(x[,i],na.rm=T) == 0) {
           error.code<-43
           error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")

@@ -31,6 +31,7 @@
 ## 15/06/06 jh - merged with priors version changing all EM and impute procs, modified how lists are generated in indxs("icap") and amelia("impdata"). 
 ## 27/06/06 mb - added arglist argument to load in output from amelia or the gui. 
 ## 13/07/06 mb - moved gc() calls out of emfred into emarch
+## 02/08/06 mb - removed data.matrix() call when calling unsubset (moved to prep), fixed impfill for char.
 
 ## Draw from a multivariate normal distribution 
 ##   n: number of draws 
@@ -96,10 +97,10 @@ impfill<-function(x.orig,x.imp,noms,ords) {
       AMr1.orig <-is.na(x.orig[,-noms])
       x.orig[,-noms][AMr1.orig]<-x.imp[,-noms][AMr1.orig]
       for (i in noms) {
-        if (t(c(1:ncol(x.orig))==i)%*%(orig.class=="factor"))
+        if (orig.class[i]=="factor")
           x.orig[,i]<-as.factor(levels(x.orig[,i])[x.imp[,i]])
-        else if (t(c(1:ncol(x.orig))==i)%*%(sapply(x.orig,class)=="character"))
-          x.orig[,i]<-unique(x.orig[,i])[x.imp[,i]]
+        else if (orig.class[i]=="character")
+          x.orig[,i]<-unique(na.omit(x.orig[,i]))[x.imp[,i]]
         else
           x.orig[,i]<-x.imp[,i]    
       }                   
@@ -499,6 +500,8 @@ if (identical(pr,NULL)){                     # No Observation Level Priors in Da
 
       }
     }
+    if (collect)
+      gc()
   }
 }
 
@@ -603,7 +606,7 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,ts=NULL,cs=
     ximp<-amunstack(ximp,n.order=prepped$n.order,p.order=prepped$p.order)     
     ximp<-unscale(ximp,mu=prepped$scaled.mu,sd=prepped$scaled.sd)
     
-    ximp<-unsubset(x.orig=data.matrix(prepped$trans.x),x.imp=ximp,blanks=prepped$blanks,idvars=prepped$idvars,ts=prepped$ts,cs=prepped$cs,polytime=polytime,intercs=intercs,noms=prepped$noms,index=prepped$index,ords=prepped$ords)
+    ximp<-unsubset(x.orig=prepped$trans.x,x.imp=ximp,blanks=prepped$blanks,idvars=prepped$idvars,ts=prepped$ts,cs=prepped$cs,polytime=polytime,intercs=intercs,noms=prepped$noms,index=prepped$index,ords=prepped$ords)
     ximp<-untransform(ximp,logs=prepped$logs,xmin=prepped$xmin,sqrts=prepped$sqrts,lgstc=prepped$lgstc)
     
     

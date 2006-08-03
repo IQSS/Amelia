@@ -10,6 +10,11 @@
 ## 15/06/06 jh revised "generatepriors"
 ## 26/06/06 mb fixed archive to work with session loading.
 ## 27/06/06 mb amelia.prep accepts, checks, and processes 'arglist'
+## 27/07/06 mb amsubset changes from dataframe to matrix after subsetting to 
+##             avoid eating it on strings.
+## 02/08/06 mb frame.to.matrix now converts chars to either factors (cs,noms) 
+##             or junk (idvars). added to subset/unsubset (ignore last update).
+## 02/08/06 mb fixed bug where polytime=0 would make for odd behaviour/crashing
 
 nametonumber<-function(x,ts,cs,idvars,noms,ords,logs,sqrts,lgstc,lags,leads) {
   listconvert<-function(opt) {
@@ -118,6 +123,20 @@ untransform<-function(x.imp,logs,xmin,sqrts,lgstc) {
   return(x.imp)
 }
 
+frame.to.matrix<-function(x,idvars) {
+  char.vars<-which(sapply(x,class)=="character")
+  if (length(char.vars) > 0)
+    for (i in char.vars)
+      if (is.na(match(i,idvars)))
+        x[,i]<-as.factor(x[,i])         #changes cs/noms char. vars to factors
+      else
+        x[,i]<-1                        #junks id char vars.
+        
+        
+  return(data.matrix(x))                #return it as matrix
+}
+      
+
 
 ## Remove rows and columns from dataset that do not belong
 amsubset<-function(x,idvars,p2s,ts,cs,mu.priors=NULL,sd.priors=NULL,
@@ -129,12 +148,12 @@ amsubset<-function(x,idvars,p2s,ts,cs,mu.priors=NULL,sd.priors=NULL,
   index<-c(1:ncol(x))
 
 
-
   if (!is.null(idvars))
     index<-index[-idvars]
 
   if (is.data.frame(x))
-    x<-data.matrix(x)
+    x<-frame.to.matrix(x,idvars)
+
 
   if (!is.null(lags)) {
     if (!identical(cs,NULL)) {
@@ -219,12 +238,14 @@ amsubset<-function(x,idvars,p2s,ts,cs,mu.priors=NULL,sd.priors=NULL,
       for (i in cstypes){
         dummy<-as.numeric(x[,cs]==i)
         timevars<-cbind(timevars,dummy*polynomials)
+        timevars<-timevars[,-1]
       }
     } else {
       timevars<-cbind(timevars,polynomials)
+      timevars<-timevars[,-c(1,2)]
     }
 
-    timevars<-timevars[,3:ncol(timevars)]
+    
     x<-cbind(x,timevars)  # first column is a holding variable, second is to have fixed effects identified
     for (i in 1:ncol(as.matrix(timevars)))
       index<-c(index,0)               #0 - timevars
@@ -242,6 +263,7 @@ amsubset<-function(x,idvars,p2s,ts,cs,mu.priors=NULL,sd.priors=NULL,
       sd.priors<-sd.priors[,-idvars]
     }
   }
+
 
   AMr1<-is.na(x)
   flag<-rowSums(AMr1)==ncol(x)
@@ -276,6 +298,11 @@ unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,intercs,noms,index,
 #    }
 #    x.imp<-x.imp[,1:(ncol(x.imp)-dimtspoly)]
 #  }
+
+  if (is.data.frame(x.orig)) {
+    oldidvars<-idvars[-match(cs,idvars)]
+    x.orig<-frame.to.matrix(x.orig,oldidvars)
+  }
   AMr1.orig<-is.na(x.orig)
   if (!identical(c(blanks,idvars),c(NULL,NULL))){
     if (identical(blanks,NULL)) {blanks<- -(1:nrow(x.orig))}

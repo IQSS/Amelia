@@ -4,7 +4,9 @@
 ##  05/05/06 mb - catches unexpected amelia errors
 ##  09/05/06 mb - cleaned up diags menu, added overimpute button
 ##  22/06/06 mb - checks added to session loading.
-##  26/06/06 mb - session saving/loading now mirrors amelia output.  
+##  26/06/06 mb - session saving/loading now mirrors amelia output.
+##  26/07/06 mb - added stata 6/7/8 compatibility.
+##  27/07/06 mb - updated variable options screen.  fixed help links.  cosmetics.  
 
 ameliagui<-function() {
 
@@ -90,12 +92,11 @@ load.data <- function(session=F) {
   tkselect(options.csvar,csvar)
   tkconfigure(options.tsvar,command=function(...)set.tsvar())
   tkconfigure(options.csvar,command=function(...)set.csvar())
-  idmat<<-matrix(0,nrow=ncol(amelia.data),ncol=1)
   transmat<<-matrix(0,nrow=ncol(amelia.data),ncol=1)
   amelia.lags<<-matrix(0,nrow=ncol(amelia.data),ncol=1)
   future.lags<<-matrix(0,nrow=ncol(amelia.data),ncol=1)
-  num.poly<<-tclVar("1")
-  intercs<<-tclVar("1")
+  num.poly<<-tclVar("0")
+  intercs<<-tclVar("0")
   store.pri <<- NULL
   obs.prior <<- NULL
   r<<-NULL
@@ -172,8 +173,8 @@ save.session <-function() {
 	amelia.list$amelia.args$lags <- c()
 	amelia.list$amelia.args$leads <- c()
   
-  for (i in 1:length(idmat)) {
-    if (idmat[i] == 1)
+  for (i in 1:length(transmat)) {
+    if (transmat[i] == 6)
       amelia.list$amelia.args$idvars <- c(amelia.list$amelia.args$idvars,i)
     if (transmat[i] == 1)
       amelia.list$amelia.args$ords <- c(amelia.list$amelia.args$ords,i)
@@ -288,7 +289,7 @@ load.session <- function() {
   tsvar <<- amelia.list$amelia.args$ts
   csvar <<- amelia.list$amelia.args$cs
   for (i in amelia.list$amelia.args$idvars)
-    idmat[i]<<-1
+    transmat[i]<<-6
   for (i in amelia.list$amelia.args$logs)
     transmat[i]<<-3  
   for (i in amelia.list$amelia.args$ords)
@@ -361,7 +362,7 @@ run.amelia <- function() {
   fact <- c()
   amlags <- c()
   amfut <- c()
-  
+
   intercs<-as.logical(as.numeric(tclvalue(intercs)))
   num.poly<-as.numeric(tclvalue(num.poly))
   
@@ -376,7 +377,7 @@ run.amelia <- function() {
   
 
   for (i in 1:ncol(amelia.data))
-    if (idmat[i] == 1)
+    if (transmat[i] == 6)
       id <- c(id,i)
   for (i in 1:ncol(amelia.data))
     if (transmat[i] == 1)
@@ -495,7 +496,10 @@ amelia.save <- function(out,outname,m)  {
       write.table(out[[i]],file=paste(am.directory,"/",outname,i,".txt",sep=""),sep="\t")
   if (output.select == 3)
     for (i in 1:m) 
-      write.dta(out[[i]],file=paste(am.directory,"/",outname,i,".dta",sep=""))
+      write.dta(out[[i]],file=paste(am.directory,"/",outname,i,".dta",sep=""),version=6)
+  if (output.select == 3)
+    for (i in 1:m) 
+      write.dta(out[[i]],file=paste(am.directory,"/",outname,i,".dta",sep=""),version=7)
 }
 
 set.out<-function(...) {
@@ -582,7 +586,7 @@ input.label <- tklabel(gui.input, text="Input Data File:                     ")
 input.load <- tkbutton(gui.input, text="Load Data", width = 10, command = function() load.data(,))
 input.see <- tkbutton(gui.input, text="Summarize Data", state = "disabled", width = 13,
   command = function() sum.data())
-input.help <-tkbutton(gui.input, text = "?", command = function()browseURL("http://gking.harvard.edu/amelia/amelia1/docs/"))
+input.help <-tkbutton(gui.input, text = "?", command = function()browseURL("http://gking.harvard.edu/amelia/docs/Step_1.html"))
 
 #Arranging the frame
 tkgrid(tklabel(gui.input, text = "Step 1 - Input", font = c("Arial", "16")), row = 1,
@@ -630,7 +634,7 @@ options.tscs<<-tkbutton(gui.options, text = "TSCS", state = "disabled", width = 
 options.priors<-tkbutton(gui.options, text = "Priors", state = "disabled", width = 10,
   command = function() gui.pri.setup())
 options.help <-tkbutton(gui.options, text = "?", 
-  command = function()browseURL("http://gking.harvard.edu/amelia/amelia1/docs/"))
+  command = function()browseURL("http://gking.harvard.edu/amelia/docs/Step_2.html"))
 
 #option button labels
 options.var.lab<-tklabel(gui.options, text = "Set options for individual variables")
@@ -666,7 +670,7 @@ tkgrid.columnconfigure(gui.options, 3, weight = 1)
 ##output options, run button, diag
 
 output.select<<-1
-output.types<-c("(no save)","CSV","Tab Delimited","Stata")
+output.types<-c("(no save)","CSV","Tab Delimited","Stata 6","Stata 7/8")
 tcl("set", "outtypes",output.types)
 output.drop.label<-tklabel(gui.output,text="Output Data Format:")
 
@@ -688,7 +692,7 @@ output.run<-tkbutton(gui.output,text="Run Amelia", state = "disabled", width = 1
 output.diag<-tkbutton(gui.output, text="Diagnostics", state = "disabled", width = 13,
   command = function() gui.diag.setup())
 output.help <-tkbutton(gui.output, text = "?", 
-  command = function()browseURL("http://gking.harvard.edu/amelia/amelia1/docs/"))
+  command = function()browseURL("http://gking.harvard.edu/amelia/docs/Step_3.html"))
 
 
 #arranging the frame
@@ -827,66 +831,65 @@ gui.var.setup<-function() {
 		tkconfigure(var.opt.id, variable = idvar)
 	}
   var.save <- function() {
-    temp.trans[[selected.var]]<<-as.numeric(tclvalue(trans))
-    temp.id[[selected.var]]<<-as.numeric(tclvalue(idvar))
     transmat<<-temp.trans
-    idmat<<-temp.id
     tkdestroy(tt)
   }
+  set.trans <- function(index, ind) {
+    transind <- which(index==ind,arr.ind=TRUE)
+    temp.trans[transind[1],] <<- transind[2]-1
+  }
+    
 
 
   temp.trans<<-transmat
-  temp.id<<-idmat
-  
 
   var.link <-tkbutton(tt, text = "?", 
-    command = function()browseURL("http://gking.harvard.edu/amelia/amelia1/docs/"))
-	if(!exists("selected.var")) {
-		selected.var<<-1
-		selected.var.name<<-names(amelia.data)[selected.var]
-	}
-  
-	idvar<<-tclVar(temp.id[[selected.var]])
-	trans<<-tclVar(temp.trans[[selected.var]])
-
-	gui.var.left<-tkframe(gui.frame,relief="groove",borderwidth=2)
-	gui.var.center<-tkframe(gui.frame,relief="groove",borderwidth=2)
-	gui.var.right<-tkframe(gui.frame,relief="groove",borderwidth=2)
-
-
-	#Listbox for variables.
-	scr<-tkscrollbar(gui.var.left,repeatinterval = 5,
-	 command = function(...)tkyview(var.list,...))
-	var.list.label<-tklabel(gui.var.left,text="Select a variable:")
-	var.list<-tklistbox(gui.var.left,height=10,selectmode="single",
-    yscrollcommand = function(...)tkset(scr,...))
-	for (i in 1:ncol(amelia.data))
-		tkinsert(var.list,"end",names(amelia.data)[i])
-	tkselection.set(var.list,(selected.var-1))
-	tkbind(var.list,"<Button-1>",function(y)select.var(y))
-
-	#Options for vars
-	var.opt.label<-tklabel(gui.var.center,text="Set variable options for:")
-	var.opt.name <- tklabel(gui.var.center, text = selected.var.name,
-					font = c("arial", 10, "bold"))
-	var.opt.none<-tkradiobutton(gui.var.center,variable=trans,value="0",
-				text="No Transformations")
-	var.opt.ord<-tkradiobutton(gui.var.center,variable=trans,value="1",
-				text="Ordinal")
-	var.opt.nom<-tkradiobutton(gui.var.center,variable=trans,value="2",
-				text="Nominal")
-	var.opt.lgln<-tkradiobutton(gui.var.center,variable=trans,value="3",
-				text="Log-Linear")
-  var.opt.sqrt<-tkradiobutton(gui.var.center,variable=trans,value="4",
-				text="Square Root")
-	var.opt.lgstc<-tkradiobutton(gui.var.center,variable=trans,value="5",
-				text="Logistic")
-	var.opt.id<-tkcheckbutton(gui.var.center,text="ID Variable",variable=idvar)
-  
-  
+    command = function()browseURL("http://gking.harvard.edu/amelia/docs/Variables_Dialog.html"))
+	
+  #ScrollableFrame for variable options
+  sw <- tkwidget(tt,"ScrolledWindow",relief="sunken",borderwidth=2)
+  sf <- tkwidget(sw,"ScrollableFrame")
+  tcl(sw,"setwidget",sf)
+  subfID <- tclvalue(tcl(sf,"getframe"))
+  tcltrans <<- list()
+  trans.radio.buts <<- list()
+  indexmat<-matrix(1:((ncol(amelia.data))*7),ncol(amelia.data),7)
+  transnames<-c("No Transformations","Ordinal","Nominal","Log-Linear","Square Root","Logistic","ID Variable")
   tcl("set","varhelp","")
-  
-  
+  for (i in 0:(ncol(amelia.data))) {    
+    if (i == 0) {
+      tkgrid(tcl("label",paste(subfID,".top",2,sep=""),text="No Transformation"),row=1,column=2)
+      tkgrid(tcl("label",paste(subfID,".top",3,sep=""),text="Ordinal"),row=1,column=3)
+      tkgrid(tcl("label",paste(subfID,".top",4,sep=""),text="Nominal"),row=1,column=4)
+      tkgrid(tcl("label",paste(subfID,".top",5,sep=""),text="Log-Linear"),row=1,column=5)
+      tkgrid(tcl("label",paste(subfID,".top",6,sep=""),text="Sqaure Root"),row=1,column=6)
+      tkgrid(tcl("label",paste(subfID,".top",7,sep=""),text="Logistic"),row=1,column=7)
+      tkgrid(tcl("label",paste(subfID,".top",8,sep=""),text="ID Variable"),row=1,column=8)
+    } else {
+      tcltrans[[i]]<<-tclVar(init=paste(temp.trans[[i]]))
+      for (j in 0:7) {
+        if (j == 0) {
+          tkgrid(tcl("label",paste(subfID,".left",i,sep=""),text=names(amelia.data)[i]),row=i+1,column=1)
+        } else {
+          trans.radio.buts[[indexmat[i,j]]]<<-tcl("radiobutton",
+            paste(subfID,".but",indexmat[i,j],sep=""), variable=tcltrans[[i]],
+            value=paste(j-1))
+          tkgrid(trans.radio.buts[[indexmat[i,j]]],row=i+1,column=j+1)
+          tkbind(paste(subfID,".but",indexmat[i,j],sep=""),"<Motion>",paste("set varhelp \"", transnames[j],"\"",sep=""))
+          tkbind(paste(subfID,".but",indexmat[i,j],sep=""),"<Leave>","set varhelp \" \"")
+          local({
+            tempindexmat<-indexmat
+            tempind<-indexmat[i,j]
+            tkconfigure(paste(subfID,".but",indexmat[i,j],sep=""),command=function()set.trans(tempindexmat,tempind))})
+
+        }
+        
+      }
+    }
+  }
+  tkconfigure(sf,width=450)
+  tkbind(sf,"<MouseWheel>", function(D){ if (as.numeric(D) > 0 ) {offset <- -1} else {offset <- 1}; tkyview(sf,"scroll",paste(offset),"units")})  #        tkyview(sf,"scroll", ,"units"
+      
   
   var.status<-tkframe(tt, relief = "groove", borderwidth = 3)
   var.help<-tklabel(var.status, textvariable="varhelp", font=helpfont)
@@ -896,48 +899,19 @@ gui.var.setup<-function() {
   var.ok<-tkbutton(tt,text="OK", command = function() var.save())
   var.cancel<-tkbutton(tt,text="Cancel", command = function()tkdestroy(tt))
 
-  tkgrid(var.list.label, row = 1, column = 1, columnspan = 2)
-  tkgrid(var.list,row = 2, column = 1)
-  tkgrid(scr, row = 2, column = 2)
-  tkgrid.configure(scr,rowspan=4,sticky="nsw")
-	tkgrid(tkframe(gui.var.center, height = 0, width = 150), row = 1, columnspan = 2)
-	tkgrid(var.opt.label, row = 2, columnspan = 2)
-	tkgrid(var.opt.name, row = 3)
-	tkgrid(var.opt.none, row = 4, sticky = "w")
-	tkgrid(var.opt.ord, row = 5, sticky = "w")
-	tkgrid(var.opt.nom, row = 6, sticky = "w")
-	tkgrid(var.opt.lgln, row = 7, sticky = "w")
-	tkgrid(var.opt.sqrt, row = 8, sticky = "w")
-	tkgrid(var.opt.lgstc, row = 9, sticky = "w")
-	tkgrid(var.opt.id, row = 10, sticky = "w")
-	tkgrid(tkframe(gui.var.center, width = 0, height = 12), column = 2, rowspan = 8)
-	tkgrid(gui.var.left,gui.var.center,padx=10,pady=10,sticky="news")
 	tkpack(var.help, anchor = "w")
 	tkgrid(tklabel(tt, text="Variables Options", font="Arial 16 bold"),pady=5, row = 1, column = 1, columnspan = 2,sticky="w")
-	tkgrid(var.link, row = 1, column = 4, sticky = "ne", padx = 2, pady = 2)
-	tkgrid(gui.frame, row = 2,columnspan = 5)
+  tkgrid(sw, sticky="news",columnspan = 4,row=2,column=1)
+  
+  tkgrid(var.link, row = 1, column = 4, sticky = "ne", padx = 2, pady = 2)
 	tkgrid(var.status, sticky="sew", row = 4,columnspan = 5)
 	tkgrid(var.ok, row = 3, column = 3, sticky = "sew", padx = 10, pady = 10)
   tkgrid(var.cancel, row = 3, column = 4, sticky = "sew", padx = 10, pady = 10)
-	
-  tkfocus(tt)
-  tkgrab.set(tt)
-  tkbind(tt,"<Destroy>", function() {tkgrab.release(tt);tkfocus(gui)})
-	
-	tkbind(var.opt.none, "<Motion>","set varhelp \"The variable needs no transformations.\"")
-  tkbind(var.opt.none, "<Leave>","set varhelp \"\"")
-	tkbind(var.opt.ord, "<Motion>","set varhelp \"The variable is organized into ranked groups.\"")
-  tkbind(var.opt.ord, "<Leave>","set varhelp \"\"")
-	tkbind(var.opt.nom, "<Motion>","set varhelp \"The variable is grouped with no specific ordering.\"")
-  tkbind(var.opt.nom, "<Leave>","set varhelp \"\"")
- 	tkbind(var.opt.lgln, "<Motion>","set varhelp \"The variable needs a log-linear transformation.\"")
-  tkbind(var.opt.lgln, "<Leave>","set varhelp \"\"")
-  tkbind(var.opt.sqrt, "<Motion>","set varhelp \"The variable needs a square root transformation.\"")
-  tkbind(var.opt.sqrt, "<Leave>","set varhelp \"\"")
- 	tkbind(var.opt.lgstc, "<Motion>","set varhelp \"The variable needs a logistic transformation.\"")
-  tkbind(var.opt.lgstc, "<Leave>","set varhelp \"\"")
- 	tkbind(var.opt.id, "<Motion>","set varhelp \"The variable is an identification variable.\"")
-  tkbind(var.opt.id, "<Leave>","set varhelp \"\"")
+  tkgrid.rowconfigure(tt,2,weight = 1)
+  tkgrid.columnconfigure(tt,1,weight=1)
+  tkgrid.columnconfigure(tt,3,weight=1)
+  tkfocus(sf)
+  tkbind(tt,"<Destroy>", function() {tkgrab.release(sf);tkfocus(gui)})
 }
 
 
@@ -977,8 +951,8 @@ sum.data <-function() {
     tkwm.title(mm, "Missingness")
     sw <- tkwidget(mm,"ScrolledWindow",relief="sunken",borderwidth=2)
     sf <- tkwidget(sw,"ScrollableFrame")
-    tkcmd(sw,"setwidget",sf)
-    subfID <- tclvalue(tkcmd(sf,"getframe"))
+    tcl(sw,"setwidget",sf)
+    subfID <- tclvalue(tcl(sf,"getframe"))
     count<-0
     for (i in 1:nrow(amelia.data)) {
       for (j in 1:ncol(amelia.data)) {
@@ -1009,7 +983,7 @@ sum.data <-function() {
   
   
   sum.link <-tkbutton(gui.frame, text = "?", 
-    command = function()browseURL("http://gking.harvard.edu/amelia/amelia1/docs/"))
+    command = function()browseURL("http://gking.harvard.edu/amelia/docs/"))
   
   if (!exists("sum.var")) {
     sum.var<<-1
@@ -1025,6 +999,9 @@ sum.data <-function() {
 		tkinsert(var.list,"end",names(amelia.data)[i])
 	tkselection.set(var.list,(sum.var-1))
 	tkbind(var.list,"<Button-1>",function(y)select.var(y))
+	tkbind(var.list,"<Up>",function()select.var(sum.var))
+	tkbind(var.list,"<Down>",function()select.var(sum.var-2))
+	
 	
 	var.sum.name <- tklabel(gui.sum.right, text = sum.var.name,
     font = c("arial", 10, "bold"))
@@ -1124,7 +1101,7 @@ gui.tscs.setup<-function() {
   lags<<-tclVar(temp.lags[[tscs.var]])
   leads<<-tclVar(temp.leads[[tscs.var]])  
   tscs.link <-tkbutton(tt, text = "?", 
-    command = function()browseURL("http://gking.harvard.edu/amelia/amelia1/docs/"))
+    command = function()browseURL("http://gking.harvard.edu/amelia/docs/Time_Series_Cross.html"))
   
   
   poly.time<-tklabel(gui.top, text="Polynomials of time?")
@@ -1237,8 +1214,8 @@ gui.pri.setup<-function() {
     tkwm.title(ss, "Case Priors")
     sw <- tkwidget(ss,"ScrolledWindow",relief="sunken",borderwidth=2)
     sf <- tkwidget(sw,"ScrollableFrame")
-    tkcmd(sw,"setwidget",sf)
-    subfID <- tclvalue(tkcmd(sf,"getframe"))
+    tcl(sw,"setwidget",sf)
+    subfID <- tclvalue(tcl(sf,"getframe"))
     reset.c<-tkbutton(ss, text = "Reset All", command = function() reset.case(), width = 10)
     case.ok<-tkbutton(ss, text = "OK", command = function() case.save(), width = 10)
     case.can<-tkbutton(ss, text = "Cancel", command = function() tkdestroy(ss), width = 10)
@@ -1381,9 +1358,9 @@ gui.pri.setup<-function() {
           if (i!=0 && j!=0) {	        
             tcl(table1,"set",paste(i,j,sep=","),shown.table[i,j]) 
             if (!is.na(amelia.data)[rownames(shown.table)[i],j])
-              tkcmd(table1,"tag","celltag","obs",paste(i,j,sep=","))
+              tcl(table1,"tag","celltag","obs",paste(i,j,sep=","))
   			  	else
-			  	    tkcmd(table1,"tag","celltag","miss",paste(i,j,sep=","))
+			  	    tcl(table1,"tag","celltag","miss",paste(i,j,sep=","))
             up.prog(count2,tot2)
             count2<-count2+1
             tcl("update")
@@ -1463,10 +1440,10 @@ gui.pri.setup<-function() {
  		xscr <-tkscrollbar(pp,orient="horizontal",
 			command=function(...)tkxview(table1,...))
  		yscr <- tkscrollbar(pp,command=function(...)tkyview(table1,...))
-		tkgrid(tklabel(pp,text="-If you have an idea of how the distribution of the observation looks: mean, standard deviation", justify = "left"),
+		tkgrid(tklabel(pp,text="Enter your prior values as follows: mean, standard deviation.  For example: 5,1 ", justify = "left"),
 			 row = 4, sticky = "nw", columnspan = 5)
-		tkgrid(tklabel(pp,text="-If you have an idea of the approximate range of the value: minimum, maximum, degree of confidence.",
-			justify = "left"), row = 5, sticky = "nw", columnspan = 5)
+		#tkgrid(tklabel(pp,text="-If you have an idea of the approximate range of the value: minimum, maximum, degree of confidence.",
+		#	justify = "left"), row = 5, sticky = "nw", columnspan = 5)
 		
     caselist <- "        . . . . . . . . . . . . . . . . . . "
     tcl("set","caselist",caselist)	
@@ -1484,11 +1461,11 @@ gui.pri.setup<-function() {
       tkselect(priCaseSelect,0) 
     applyPriChanges<-tkbutton(pp, text="Apply",command=function() pull.table(as.numeric(tkcurselection(priCaseSelect))))
 		tkgrid(priCaseSelect,applyPriChanges,row=1, sticky="sew",padx=5,pady=5)
-    ok.obs<-tkbutton(pp, text="Ok", command = function() save.obs())
-		can.obs<-tkbutton(pp, text="Cancel", command = function() tkdestroy(pp))
+    ok.obs<-tkbutton(pp, text="Ok", command = function() save.obs(), width=20)
+		can.obs<-tkbutton(pp, text="Cancel", command = function() tkdestroy(pp), width=20)
     reset.o<-tkbutton(pp,text = "Reset Values to Default",
-      command = function() reset.obs())
-    tkgrid(ok.obs, can.obs, reset.o, row = 6, sticky = "sew", padx = 5, pady = 5)
+      command = function() reset.obs(), width=20)
+    tkgrid(ok.obs, can.obs, reset.o, row = 6, sticky = "sw", padx = 5, pady = 5)
  		tkgrid(table1, row = 2, columnspan = 5)
  		tkgrid(yscr,sticky="nsw",row = 2, column = 6)
  		tkgrid(xscr,sticky="new", row = 3, columnspan = 5)
@@ -1510,9 +1487,9 @@ gui.pri.setup<-function() {
         if (i!=0 && j!=0) {	        
           tcl(table1,"set",paste(i,j,sep=","),shown.table[i,j]) 
 				  if (!is.na(amelia.data)[rownames(shown.table)[i],j])
- 				  	tkcmd(table1,"tag","celltag","obs",paste(i,j,sep=","))
+ 				  	tcl(table1,"tag","celltag","obs",paste(i,j,sep=","))
 			  	else
-			  	  tkcmd(table1,"tag","celltag","miss",paste(i,j,sep=","))
+			  	  tcl(table1,"tag","celltag","miss",paste(i,j,sep=","))
 	        up.prog(count,tot)
           count<-count+1
           tcl("update")
@@ -1577,7 +1554,7 @@ gui.pri.setup<-function() {
       tkdestroy(sw2)
       sw2 <<- tkwidget(pp,"ScrolledWindow",relief="sunken",borderwidth=2)
       s2 <- tkwidget(sw2,"ScrollableFrame")
-      tkcmd(sw2,"setwidget",s2)
+      tcl(sw2,"setwidget",s2)
       s2.height<-nrow(shown.table)*25
       s2.width<-nrow(shown.table)*115
       if (s2.height > 550)
@@ -1585,7 +1562,7 @@ gui.pri.setup<-function() {
       if (s2.width > 750)
         s2.width<-750 
       tkconfigure(s2,width=s2.width,height=s2.height)
-      subfID <- tclvalue(tkcmd(s2,"getframe"))
+      subfID <- tclvalue(tcl(s2,"getframe"))
       for (i in 1:(1+nrow(shown.table))) {
         for (j in 1:(1+ncol(shown.table))) {
           if (j!=1 && i==1) {
@@ -1671,7 +1648,7 @@ gui.pri.setup<-function() {
  		tkwm.title(pp,"Observational Priors")
     sw2 <- tkwidget(pp,"ScrolledWindow",relief="sunken",borderwidth=2)
     sf <- tkwidget(sw2,"ScrollableFrame")
-    tkcmd(sw2,"setwidget",sf)
+    tcl(sw2,"setwidget",sf)
     sf.height<-nrow(shown.table)*25
     sf.width<-nrow(shown.table)*115
     if (sf.height > 550)
@@ -1679,7 +1656,7 @@ gui.pri.setup<-function() {
     if (sf.width > 750)
       sf.width<-750 
     tkconfigure(sf,width=sf.width,height=sf.height)
-    subfID <- tclvalue(tkcmd(sf,"getframe"))
+    subfID <- tclvalue(tcl(sf,"getframe"))
     cnameframe<-tkframe(pp)
     but.frame<-tkframe(pp)
     caselist <- "        . . . . . . . . . . . . . . . . . . "
@@ -1707,7 +1684,7 @@ gui.pri.setup<-function() {
 		can.obs<-tkbutton(but.frame, text="Cancel", command = function() tkdestroy(pp),width=11)
     reset.o<-tkbutton(but.frame,text = "Reset Values", width=11,
       command = function() reset.obs())
-    tkgrid(ok.obs, can.obs, reset.o, row = 5, sticky = "sew", padx = 5, pady = 5)
+    tkgrid(ok.obs, can.obs, reset.o, row = 5, sticky = "sw", padx = 5, pady = 5)
     hover.frame<-tkframe(pp,relief="groove",borderwidth=2)
     tcl("set","hovervar","")
     hover.var<-tklabel(hover.frame,textvariable="hovervar")
@@ -1840,7 +1817,7 @@ gui.pri.setup<-function() {
   tcl("set","prihelp","")
   
   pri.link <-tkbutton(tt, text = "?", 
-    command = function()browseURL("http://gking.harvard.edu/amelia/amelia1/docs/"))
+    command = function()browseURL("http://gking.harvard.edu/amelia/docs/Priors_Dialog.html"))
   
   
   pri.status <- tkframe(tt, relief = "groove", borderwidth = 2)
@@ -1939,7 +1916,8 @@ gui.diag.setup <- function() {
   
   
   
-  
+  diag.link <- tkbutton(tt, text = "?", 
+    command = function()browseURL("http://gking.harvard.edu/amelia/docs/Diagnostics_Dialog.html"))
   diag.close<-tkbutton(tt, text="Close",command=function()tkdestroy(tt))
   
   tcl("set","diaghelp","")
@@ -1957,7 +1935,7 @@ gui.diag.setup <- function() {
   tkgrid(diag.disp, row = 2, column=4, padx = 5, pady = 5, columnspan = 3,sticky="news")
   tkgrid(diag.close,row = 4, column = 6, sticky = "news", padx = 5, pady = 5)
   tkgrid(diag.status, row = 5,column=1, columnspan = 6,sticky="sew")
-  
+  tkgrid(diag.link, row = 1, column=6,sticky="e")
   tkgrid(tklabel(tt, text="Diagnostics", font="Arial 16 bold"),pady=5, row = 1, column = 1, columnspan = 3,sticky="w")
   tkfocus(tt)
   tkgrab.set(tt)
@@ -1969,7 +1947,7 @@ gui.diag.setup <- function() {
 }
 #tkwm.iconbitmap(gui,"c:/amelia/amelia.ico")
 tkwm.deiconify(gui)
-tkwait.window(gui)
+#tkwait.window(gui)
 
 }
                                                                   
