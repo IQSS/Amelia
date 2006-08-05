@@ -6,7 +6,8 @@
 ##  22/06/06 mb - checks added to session loading.
 ##  26/06/06 mb - session saving/loading now mirrors amelia output.
 ##  26/07/06 mb - added stata 6/7/8 compatibility.
-##  27/07/06 mb - updated variable options screen.  fixed help links.  cosmetics.  
+##  27/07/06 mb - updated variable options screen.  fixed help links.  cosmetics.
+##  04/08/06 mb - sessions load properly for non-csv files.  
 
 ameliagui<-function() {
 
@@ -33,6 +34,8 @@ file.type<-function(...) {
     filetype<-"{{SPSS} {.dat}} {{All files} *}"
   if (as.numeric(drop.select)==4)
     filetype<-"{{SAS Transport} {.xport}} {{All files} *}"
+  if (as.numeric(drop.select)==5)
+    filetype<-"{{RData} {.RData}} {{All files} *}"
   file.kind<<-filetype
 }
 
@@ -66,6 +69,9 @@ load.data <- function(session=F) {
     amelia.data<<-try(read.spss(am.filename,use.value.labels=F))
   if (drop.select == 4)
     amelia.data<<-try(read.xport(am.filename))
+  if (drop.select == 5)
+    amelia.data<<-try(load(am.filename))
+  filetype.sess <<- drop.select
   if (inherits(amelia.data, "try-error")) {
     tkmessageBox(message="Failure in loading the data.  Try again.",icon="error",type="ok")
     return(NULL)
@@ -145,14 +151,14 @@ save.session <-function() {
     return(NULL)
   }  
   file.select <- tclvalue(tkgetSaveFile(filetypes="{{R files} {.R}} {{All files} *}"))
-  if (exists("amelia.list")) {
-    amelia.list$amelia.args$am.filename <- am.filename
-    amelia.list$amelia.args$varmin <- varmin
-    amelia.list$amelia.args$varmax <- varmax
-    amelia.list$amelia.args$output.select <- output.select
-    dump("amelia.list", file.select)
-    return(NULL)
-  } 
+#  if (exists("amelia.list")) {
+#    amelia.list$amelia.args$am.filename <- am.filename
+#    amelia.list$amelia.args$varmin <- varmin
+#    amelia.list$amelia.args$varmax <- varmax
+#    amelia.list$amelia.args$output.select <- output.select
+#    dump("amelia.list", file.select)
+#    return(NULL)
+#  } 
   amelia.list<-list()
 	outname1 <- tclvalue(outname)
 	outnum1 <- as.numeric(tclvalue(outnum))
@@ -164,6 +170,7 @@ save.session <-function() {
 	amelia.list$amelia.args$ts <- tsvar
 	amelia.list$amelia.args$cs <- csvar
 	amelia.list$amelia.args$am.filename <- am.filename
+	amelia.list$amelia.args$file.type <- filetype.sess
   amelia.list$amelia.args$idvars <- c()
 	amelia.list$amelia.args$ords <- c()
 	amelia.list$amelia.args$noms <- c()
@@ -283,8 +290,9 @@ load.session <- function() {
     tkmessageBox(message=paste("Dataset file not found at:",amelia.list$amelia.args$am.filename,"Cannot load session.",sep="\n"),icon="error",type="ok")
     return(NULL)
   }
-    
-  tclvalue(inname)<<-amelia.list$amelia.args$am.filename  
+  drop.select <<- amelia.list$amelia.args$file.type 
+  tclvalue(inname)<<-amelia.list$amelia.args$am.filename
+  am.filename <<- amelia.list$amelia.args$am.filename  
   load.data(session=T)
   tsvar <<- amelia.list$amelia.args$ts
   csvar <<- amelia.list$amelia.args$cs
@@ -569,7 +577,7 @@ if (.Platform$OS.type == "windows") {
 #Data type combobox
 drop.select<<-0
 file.kind<<-"{{Comma-delimited files} {.csv}} {{All files} *} "
-file.types<-c("CSV","Tab Delimited","Stata","SPSS","SAS Transport")
+file.types<-c("CSV","Tab Delimited","Stata","SPSS","SAS Transport") #,"RData")
 tcl("set", "filetypes",file.types)
 input.drop.label<-tklabel(gui.input,text="Input Data Format:")
 
