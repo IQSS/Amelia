@@ -867,6 +867,45 @@ amelia function.  This allows you to check the likelihood surface
     arrowheads on each chain.}
 \end{figure}
 
+\section{Sessions}
+\label{sec:sessions}
+Setting options for large datasets can take quite some time, especially
+with the precense of observational priors and non-linear variables.  To
+ease this process, Amelia includes the ability to save and load sessions.
+A saved session includes all options set by the user in addition to any
+output information from Amelia.  The session are useful for setting large
+numbers of options over multiple instances of Amelia or imputing the data
+multiple times with the same setup.   
+
+In AmeliaView, you can save a session by opening the "File" menu and 
+selecting "Save Session."  This will open a dialog that will ask for a 
+filename (the file extenstion must be ".r").  To load a saved session,
+simply navigate to the "File" menu and select "Load Session" and locate
+the saved session file.  Note that the data file referenced in the session
+file must be in the same location when attempting to load the session.
+Once loaded, Amelia will set all options to those of the saved session.
+
+You may wish to load a AmeliaView session at the R command line.  To do so,
+use the \texttt{source} command to load the session file which will add
+a list named \texttt{amelia.list}.  You can use this list as the 
+\texttt{arglist} options,  which takes an Amelia output list or a session
+list as its argument.  An example of loading a session at the command
+line would be:
+
+\begin{verbatim}
+> source("am-session.R") 
+> amelia.out <- amelia(data=x,arglist=amelia.list)
+\end{verbatim}
+
+In this example \texttt{am-session.R} is the session file and \texttt{x}
+is the dataset that corresponds to the session file.  At the command line,
+you will have to load the data into R.  When provided to Amelia, the 
+argument list will take precendence over other arguments.  For example,
+specifying an identification variable with \texttt{idvars} while also
+using \texttt{arglist} will result in Amelia ignoring the \texttt{idvars}
+provided by the user and refer to the idvars setting in \texttt{arglist}.
+
+
 \section{Reference}
 \label{sec:ref}
 
@@ -893,16 +932,6 @@ amelia function.  This allows you to check the likelihood surface
   Transport (.XPORT).
 \item \textbf{Input Data File} - Enter the location of your dataset.
   If your file is located in a high level directory, it might be
-  better to simply use the ``Browse'' button.
-\item \textbf{Browse} - Use this button to open a dialog that will
-  find your data file in the directory structure.
-\item \textbf{Load Data} - Load the data into ${\mathfrak Amelia}$.
-  This button initializes all the settings while storing the data file
-  into the memory of ${\mathfrak Amelia}$.  Once you load the data,
-  this button will become disabled and display ``Data Loaded'' if it
-  is successful.  Any options that are available to set will become
-  active as well.  Some buttons may still be disabled; in order to
-  access them, you need to set other options.  See the specific button
   you are trying to access for more information.
 \item \textbf{Summarize Data} - View plots and summary statistics for
   the individual variables.  This button will bring up a dialog box
@@ -980,6 +1009,16 @@ amelia function.  This allows you to check the likelihood surface
 \begin{enumerate}
 \item \textbf{Polynomials of Time} - This option, if activated, will
   have ${\mathfrak Amelia}$ use trends of time as a additional
+  condition for fitting the missing data.  The higher the level of
+  polynomial will allow more variation in the trend structure, yet it
+  will take more degrees of freedom to estimate.
+\item \textbf{Interact with Cross-Section} - Interacting this with the
+  cross section is way of allowing the trend of time to vary across
+  cases as well.  Using a 0 level polynomial and interacting with the
+  cross section is the equivalent of using a fixed effects.  For more
+  information see \ref{sec:tscs} above.
+\item \textbf{Variable Listbox} - Choose the variable whose lag you
+  would like to set.
   condition for fitting the missing data.  The higher the level of
   polynomial will allow more variation in the trend structure, yet it
   will take more degrees of freedom to estimate.
