@@ -7,7 +7,8 @@
 ##  26/06/06 mb - session saving/loading now mirrors amelia output.
 ##  26/07/06 mb - added stata 6/7/8 compatibility.
 ##  27/07/06 mb - updated variable options screen.  fixed help links.  cosmetics.
-##  04/08/06 mb - sessions load properly for non-csv files.  
+##  04/08/06 mb - sessions load properly for non-csv files.
+##  24/08/06 mb - added tolerance option on variables page.  
 
 ameliagui<-function() {
 
@@ -474,7 +475,7 @@ run.amelia <- function() {
         mins=mins,maxs=maxs,conf=conf,means=means,sds=sds, lags = amlags,
         empri = as.numeric(tclvalue(empri)), intercs = intercs, leads = amfut, 
         polytime = num.poly, frontend=TRUE, logs=logs, sqrts=sqrts, lgstc=lgstc,
-        ords=ord,write.out=F),silent=T)
+        ords=ord,write.out=F,tolerance=as.numeric(tclvalue(tol))),silent=T)
   
   if (inherits(amelia.list,"try-error")) {
     tkinsert(run.text,"end","\nThere was an unexpected error in the execution of Amelia.  \nDouble check all inputs for errors and take note of the error message:\n\n")
@@ -528,6 +529,7 @@ if (.Platform$OS.type == "windows")
 outname <<- tclVar("outdata")
 outnum <<- tclVar("5")
 empri <<- tclVar("0")
+tol <<-tclVar("10e-4")
 amelia.data <<- NULL
 am.filename <<- NULL
 varnames <<- NULL
@@ -840,6 +842,7 @@ gui.var.setup<-function() {
 	}
   var.save <- function() {
     transmat<<-temp.trans
+    tol<<-tclVar(tclvalue(temptol))
     tkdestroy(tt)
   }
   set.trans <- function(index, ind) {
@@ -897,15 +900,15 @@ gui.var.setup<-function() {
   }
   tkconfigure(sf,width=450)
   tkbind(sf,"<MouseWheel>", function(D){ if (as.numeric(D) > 0 ) {offset <- -1} else {offset <- 1}; tkyview(sf,"scroll",paste(offset),"units")})  #        tkyview(sf,"scroll", ,"units"
-      
-  
+  temptol<<-tclVar(tclvalue(tol))
+  tolerance.box<-tkentry(tt, width= "7", textvariable=temptol)
   var.status<-tkframe(tt, relief = "groove", borderwidth = 3)
   var.help<-tklabel(var.status, textvariable="varhelp", font=helpfont)
 
 
 
   var.ok<-tkbutton(tt,text="OK", command = function() var.save())
-  var.cancel<-tkbutton(tt,text="Cancel", command = function()tkdestroy(tt))
+  var.cancel<-tkbutton(tt,text="Cancel", command = function() tkdestroy(tt))
 
 	tkpack(var.help, anchor = "w")
 	tkgrid(tklabel(tt, text="Variables Options", font="Arial 16 bold"),pady=5, row = 1, column = 1, columnspan = 2,sticky="w")
@@ -915,6 +918,8 @@ gui.var.setup<-function() {
 	tkgrid(var.status, sticky="sew", row = 4,columnspan = 5)
 	tkgrid(var.ok, row = 3, column = 3, sticky = "sew", padx = 10, pady = 10)
   tkgrid(var.cancel, row = 3, column = 4, sticky = "sew", padx = 10, pady = 10)
+  tkgrid(tklabel(tt,text="Tolerance:"), row=3, column=1,sticky="e")
+  tkgrid(tolerance.box, row=3, column= 2,sticky="w")
   tkgrid.rowconfigure(tt,2,weight = 1)
   tkgrid.columnconfigure(tt,1,weight=1)
   tkgrid.columnconfigure(tt,3,weight=1)
