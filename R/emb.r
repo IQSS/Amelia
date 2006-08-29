@@ -32,6 +32,7 @@
 ## 27/06/06 mb - added arglist argument to load in output from amelia or the gui. 
 ## 13/07/06 mb - moved gc() calls out of emfred into emarch
 ## 02/08/06 mb - removed data.matrix() call when calling unsubset (moved to prep), fixed impfill for char.
+## 29/08/06 jh - changed tolerance defaults 
 
 ## Draw from a multivariate normal distribution 
 ##   n: number of draws 
@@ -536,7 +537,7 @@ if (returntype=="theta"){
 
 ## Core amelia function
 amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,ts=NULL,cs=NULL,casepri=NULL,means=NULL,
-                  sds=NULL,mins=NULL,maxs=NULL,conf=NULL,empri=NULL,tolerance=0.00001,polytime=NULL,startvals=0,
+                  sds=NULL,mins=NULL,maxs=NULL,conf=NULL,empri=NULL,tolerance=0.0001,polytime=NULL,startvals=0,
                   lags=NULL, leads=NULL, intercs=FALSE,archive=TRUE,sqrts=NULL,lgstc=NULL,noms=NULL,incheck=T,
                   ords=NULL,collect=FALSE,outname="outdata",write.out=TRUE,arglist=NULL) {
 
