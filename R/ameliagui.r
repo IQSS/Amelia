@@ -9,7 +9,7 @@
 ##  27/07/06 mb - updated variable options screen.  fixed help links.  cosmetics.
 ##  04/08/06 mb - sessions load properly for non-csv files.
 ##  24/08/06 mb - added tolerance option on variables page.  
-##  11/09/06 mb - actually passes nominals now
+##  11/09/06 mb - actually passes nominals now, fixed char problems on summarize
 
 ameliagui<-function() {
 
@@ -376,7 +376,10 @@ run.amelia <- function() {
   intercs<-as.logical(as.numeric(tclvalue(intercs)))
   num.poly<-as.numeric(tclvalue(num.poly))
   
-  if (tsvar == 0) {
+ if (num.poly == 0)
+    if (intercs == FALSE)
+      num.poly<-NULL
+ if (tsvar == 0) {
     num.poly<-NULL
     tsvar <-NULL
   }
@@ -384,11 +387,7 @@ run.amelia <- function() {
     csvar <-NULL
     intercs<-FALSE
   }
-  if (num.poly == 0)
-    if (intercs == FALSE)
-      num.poly<-NULL
  
-
   for (i in 1:ncol(amelia.data))
     if (transmat[i] == 6)
       id <- c(id,i)
@@ -943,7 +942,7 @@ sum.data <-function() {
 		sum.var.name<<-names(amelia.data)[sum.var]
 		tkconfigure(var.sum.name,text=sum.var.name)
 		
-		if (is.factor(amelia.data[,sum.var])) {
+		if (any(is.factor(amelia.data[,sum.var]),is.character(amelia.data[,sum.var]))) {
 		  tkconfigure(var.but.plot, state="disabled")
 		  tkconfigure(var.info.min, text = "Min: (is factor)")
       tkconfigure(var.info.max, text = "Max: ...")
@@ -1023,7 +1022,7 @@ sum.data <-function() {
 	
 	var.sum.name <- tklabel(gui.sum.right, text = sum.var.name,
     font = c("arial", 10, "bold"))
-  if (!is.factor(amelia.data[,sum.var])) {
+  if (!any(is.factor(amelia.data[,sum.var]),is.character(amelia.data[,sum.var]))) {
     var.info.mean<-tklabel(gui.sum.right,text=paste("Mean:",
 	  	signif(mean(as.numeric(amelia.data[,sum.var]),na.rm=T),digits=4)))
     var.info.sd<-tklabel(gui.sum.right,text=paste("SD:",
