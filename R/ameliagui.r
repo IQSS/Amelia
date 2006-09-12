@@ -9,6 +9,7 @@
 ##  27/07/06 mb - updated variable options screen.  fixed help links.  cosmetics.
 ##  04/08/06 mb - sessions load properly for non-csv files.
 ##  24/08/06 mb - added tolerance option on variables page.  
+##  11/09/06 mb - actually passes nominals now
 
 ameliagui<-function() {
 
@@ -383,7 +384,10 @@ run.amelia <- function() {
     csvar <-NULL
     intercs<-FALSE
   }
-  
+  if (num.poly == 0)
+    if (intercs == FALSE)
+      num.poly<-NULL
+ 
 
   for (i in 1:ncol(amelia.data))
     if (transmat[i] == 6)
@@ -475,7 +479,8 @@ run.amelia <- function() {
         mins=mins,maxs=maxs,conf=conf,means=means,sds=sds, lags = amlags,
         empri = as.numeric(tclvalue(empri)), intercs = intercs, leads = amfut, 
         polytime = num.poly, frontend=TRUE, logs=logs, sqrts=sqrts, lgstc=lgstc,
-        ords=ord,write.out=F,tolerance=as.numeric(tclvalue(tol))),silent=T)
+        ords=ord,noms=nom,write.out=F,tolerance=as.numeric(tclvalue(tol))),silent=T)
+
   
   if (inherits(amelia.list,"try-error")) {
     tkinsert(run.text,"end","\nThere was an unexpected error in the execution of Amelia.  \nDouble check all inputs for errors and take note of the error message:\n\n")
@@ -529,7 +534,7 @@ if (.Platform$OS.type == "windows")
 outname <<- tclVar("outdata")
 outnum <<- tclVar("5")
 empri <<- tclVar("0")
-tol <<-tclVar("10e-4")
+ tol<<-tclVar("0.0001")
 amelia.data <<- NULL
 am.filename <<- NULL
 varnames <<- NULL

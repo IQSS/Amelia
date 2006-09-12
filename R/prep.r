@@ -15,7 +15,7 @@
 ## 02/08/06 mb frame.to.matrix now converts chars to either factors (cs,noms) 
 ##             or junk (idvars). added to subset/unsubset (ignore last update).
 ## 02/08/06 mb fixed bug where polytime=0 would make for odd behaviour/crashing
-
+## 11/09/06 mb fixed bug in unsubset: 'index' too long to subset w/o 'which'
 nametonumber<-function(x,ts,cs,idvars,noms,ords,logs,sqrts,lgstc,lags,leads) {
   listconvert<-function(opt) {
     junk.seq<-1:ncol(x)
@@ -315,7 +315,7 @@ unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,intercs,noms,index,
   if (!is.null(noms)) {
     for (i in noms) {
       y<-runif(nrow(x.imp))
-      dums<-x.imp[,index==(-i)]
+      dums<-x.imp[,which(index==-i)]
       p<-dums*(dums>0)*(dums<1) + ((dums-1) >=0)
       psub<-rowSums(as.matrix(p))
       psub<-(psub <= 1) + (psub)*(psub > 1)
