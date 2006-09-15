@@ -871,9 +871,9 @@ amelia function.  This allows you to check the likelihood surface
 \label{sec:sessions}
 Setting options for large datasets can take quite some time, especially
 with the precense of observational priors and non-linear variables.  To
-ease this process, Amelia includes the ability to save and load sessions.
+ease this process, Amelia has the ability to save and load sessions.
 A saved session includes all options set by the user in addition to any
-output information from Amelia.  The session are useful for setting large
+output information from Amelia.  Sessions are useful for setting large
 numbers of options over multiple instances of Amelia or imputing the data
 multiple times with the same setup.   
 
@@ -882,13 +882,15 @@ selecting "Save Session."  This will open a dialog that will ask for a
 filename (the file extenstion must be ".r").  To load a saved session,
 simply navigate to the "File" menu and select "Load Session" and locate
 the saved session file.  Note that the data file referenced in the session
-file must be in the same location when attempting to load the session.
-Once loaded, Amelia will set all options to those of the saved session.
+file must be located in the same directory and have the same name when 
+attempting to load the session.  Upon loading, Amelia configures all options 
+to same values as the saved session.
 
-You may wish to load a AmeliaView session at the R command line.  To do so,
-use the \texttt{source} command to load the session file which will add
-a list named \texttt{amelia.list}.  You can use this list as the 
-\texttt{arglist} options,  which takes an Amelia output list or a session
+In some cases you may wish to load a AmeliaView session at the R command line.
+To do so, use the \texttt{source} command to load the session file which 
+will add a list named \texttt{amelia.list} to your working environment.  
+You can use this list in the \texttt{arglist} options for the 
+\texttt{amelia} function, which takes an Amelia output or session
 list as its argument.  An example of loading a session at the command
 line would be:
 
@@ -899,17 +901,14 @@ line would be:
 
 In this example \texttt{am-session.R} is the session file and \texttt{x}
 is the dataset that corresponds to the session file.  At the command line,
-you will have to load the data into R.  When provided to Amelia, the 
-argument list will take precendence over other arguments.  For example,
-specifying an identification variable with \texttt{idvars} while also
-using \texttt{arglist} will result in Amelia ignoring the \texttt{idvars}
+you must load the data into R seperately as sessions are not tied to specific
+datasets at the command line.  When provided to Amelia, the argument list 
+will take precendence over other arguments.  For example, specifying an 
+identification variable with \texttt{idvars} while also using 
+\texttt{arglist} will result in Amelia ignoring the \texttt{idvars} 
 provided by the user and refer to the idvars setting in \texttt{arglist}.
 
-
-\section{Reference}
-\label{sec:ref}
-
-\section{Menu Guide}
+\section{AmeliaView Menu Guide}
 \label{sec:menu}
 
 \subsection{Step 1 - Input}
@@ -983,8 +982,6 @@ provided by the user and refer to the idvars setting in \texttt{arglist}.
   \caption{Detail for Variable Options dialog.}
 \end{figure}
 \begin{enumerate}
-\item \textbf{Variable Listbox} - Choose the variable whose options
-  you wish to set.
 \item \textbf{Variable Transformations} - Choose the transformation
   that best normalizes for the variable, if any exists.  See
   \ref{sec:trans} on Transformations to see how each transformation is
@@ -992,6 +989,9 @@ provided by the user and refer to the idvars setting in \texttt{arglist}.
   variable.  If so, it will be left out of the imputation model, but
   will remain in the dataset.  This is useful for variables that have
   no explanatory power like extra case identifiers.
+\item \textbf{Tolerance} - Adjust the level of tolerance that \Amelia
+  uses to check convergence of the EM algorithm.  If you imputations
+  seem to never converge, increasing this value will speed up convergence.
 \end{enumerate}
 
 
@@ -1050,19 +1050,18 @@ provided by the user and refer to the idvars setting in \texttt{arglist}.
   start is around 5\% of the total observations in the dataset.
 \item \textbf{Variable Listbox} - Select the variable for which you
   want to set a range prior.
-\item \textbf{Range Prior \textbf{NOT CURRENTLY IMPLEMENTED}} - If you
+\item \textbf{Range Prior} - If you
   have a prior belief about the range of possible values that a
   variable can take, enter the lower and upper bound.
-\item \textbf{Set Case Priors \textbf{NOT CURRENTLY IMPLEMENTED}} -
+\item \textbf{Set Case Priors} -
   Tell ${\mathfrak Amelia}$ which cases are similar.  See
   \ref{sec:casepri} for more details about case priors.
-\item \textbf{Set Observational Priors \textbf{NOT CURRENTLY
-      IMPLEMENTED}} - Set prior beliefs about ranges for individual
-  missing observations.  For more information about observational
-  priors, see \ref{sec:obspri}.
+\item \textbf{Set Observational Priors} - Set prior beliefs about 
+ ranges for individual missing observations.  For more information 
+ about observational priors, see \ref{sec:obspri}.
 \end{enumerate}
 
-\subsubsection{Case Priors \textbf{NOT CURRENTLY IMPLEMENTED}}
+\subsubsection{Case Priors}
 \label{sec:refcasepri}
 \begin{figure}[ht]
  \begin{htmlonly} 
@@ -1092,7 +1091,7 @@ provided by the user and refer to the idvars setting in \texttt{arglist}.
   setting.
 \end{enumerate}
 
-\subsubsection{Observational Priors \textbf{NOT CURRENTLY IMPLEMENTED}}
+\subsubsection{Observational Priors}
 \label{sec:refobspri}
 \begin{figure}[h]
  \begin{htmlonly} 
