@@ -40,9 +40,10 @@
 \label{sec:intro}
 
 This manual presents a brief introduction to the \AmeliaII software
-package for multiple imputation.  We wrote the first version of Amelia
-to remedy the discrepancy between the way social scientists then
-analyzed data with missing values and the recommendations of the
+package for multiple imputation.  James Honaker, Anne Joseph, Gary
+King, Kenneth Scheve, and Naunihal Singh wrote the first version of
+Amelia to remedy the discrepancy between the way social scientists
+then analyzed data with missing values and the recommendations of the
 statistics community.  With a few notable exceptions, statisticians
 and methodologists had agreed on the advantages of the concept of
 ``multiple imputation'' as a general-purpose approach to data with
@@ -51,29 +52,38 @@ listwise deletion (deleting all observations with at least one missing
 cell) or other ad hoc techniques like best guess or mean imputation to
 make inferences in the presence of missing data.  These practices are
 known to be inefficient and often biased.  Unfortunately, many of the
-multiple imputation methods that had been used previously were unfit
-for handling the common problems of social science data and were often
-difficult to use, even for experts.
+multiple imputation algorithms that had been proposed in the
+literature were unfit for handling the common problems of social
+science data and were often difficult to use, even for experts.
 
-A key reason multiple imputation had not been used frequenly in the
+A key reason multiple imputation had not been used frequently in the
 social sciences is because it was developed so that producers of large
 public-use data sets could conduct the imputation for the analyst, but
 this paradigm did not help those who collected, merged, or processed
 their own data.  Before \citet*{KinHonJos01}, a small number of public
 use data sets had been imputed, but very few researchers had imputed a
-data set or used multiple imputation.  The contribution of the work
-that led to the first version of \Amelia was the EMis algorithm that
-produced imputations requiring less expertise to use and with more
-speed than existing MCMC-based methods.  This made it possible to
-write \AmeliaII so that scholars can impute their own data, rather
-than waiting for others to do it for them.  The boostrapping-based EMB
-algorithm included in \AmeliaII can impute many more variables, with
-many more observations.  It also has features to make valid and
-accurate imputations for time series cross-sectional data.
+data set or used a multiply imputed data set.  The contribution of the
+work that led to the first version of \Amelia was the EMis algorithm
+that produced imputations requiring less expertise to use and with
+more speed than existing MCMC-based algorithms.  This made it possible
+to write \Amelia so that scholars could impute their own data, rather
+than waiting for others to do it for them.
 
-This software implements the ideas developed in \citet*{KinHonJos01}
-and \citet*{HonKin06}.  Please read these in conjunction with this
-manual.
+The \AmeliaII program goes several significant steps beyond the
+capabilities of \AmeliaI.  For one, the boostrapping-based EMB
+algorithm included in \AmeliaII can impute many more variables, with
+many more observations, in much less time.  The great simplicity and
+power of the EMB algorithm made it possible to write \AmeliaII so that
+virtually never crashes --- which to our knowledge makes it unique
+among all existing multiple imputation software.  (We have yet to find
+a data set that will crash \AmeliaII, but if you find one, please let
+us know!)
+
+\AmeliaII also has features to make valid and much more accurate
+imputations for cross-sectional, time-series, and
+time-series-cross-section data.  This software implements the ideas
+developed in \citet*{HonKin06}.  Please read this paper in conjunction
+with this manual.
 
 \section{What ${\mathfrak Amelia}$ Does}
 \label{sec:what}
@@ -82,22 +92,22 @@ Multiple imputation involves imputing $m$ values for each missing cell
 in your data matrix and creating $m$ ``completed'' data sets.  (Across
 these completed data sets, the observed values are the same, but the
 missing values are filled in with different imputations that reflect
-the uncertainty about the missing data.)  After imputation with our
-algorithm, you can apply whatever statistical method you would have
-used if there had been no missing values to each of the $m$ data sets,
-and use a simple procedure, described in the next paragraph, to
-combine the results.  (You can combine the results automatically by
-doing your data analyses within Zelig, or within Clarify for Stata;
-see \url{http://gking.harvard.edu/stats.shtml}.)  Under normal
-circumstances, you only need to impute once and can then analyze the
-$m$ imputed data sets as many times and for as many purposes as you
-wish.  The advantage of \AmeliaII is that it combines the comparative
-speed and ease-of-use of our algorithm with the power of multiple
-imputation, to let you focus on your substantive research questions
-rather than spending time developing complex application-specific
-models for nonresponse in each new data set.  Unless the rate of
-missingness is very high, $m = 5$ (the program default) is probably
-adequate.
+the uncertainty about the missing data.)  After imputation with
+\AmeliaII's EMB algorithm, you can apply whatever statistical method
+you would have used if there had been no missing values to each of the
+$m$ data sets, and use a simple procedure, described in the next
+paragraph, to combine the results.  (You can combine the results
+automatically by doing your data analyses within Zelig, or within
+Clarify for Stata; see \url{http://gking.harvard.edu/stats.shtml}.)
+Under normal circumstances, you only need to impute once and can then
+analyze the $m$ imputed data sets as many times and for as many
+purposes as you wish.  The advantage of \AmeliaII is that it combines
+the comparative speed and ease-of-use of our algorithm with the power
+of multiple imputation, to let you focus on your substantive research
+questions rather than spending time developing complex
+application-specific models for nonresponse in each new data set.
+Unless the rate of missingness is very high, $m = 5$ (the program
+default) is probably adequate.
 
 In order to combine the results across $m$ data sets, first decide on
 the quantity of interest to compute, such as univariate mean,
@@ -134,7 +144,7 @@ within logically possible ranges, etc.
 
 \section{Versions of ${\mathfrak Amelia}$}
 \label{sec:versions}
-Two versions of \Amelia are available, each with its own advantages
+Two versions of \AmeliaII are available, each with its own advantages
 and drawbacks.  First, \AmeliaII exists as a package, or collection of
 functions, for the R statistical software package.  Users can utilize
 their knowledge of the R language to run \AmeliaII at the command line
@@ -151,53 +161,26 @@ platforms and \AmeliaII for R runs in any environment that R can.  All
 versions of ${\mathfrak Amelia}$ require the R software, which is
 freely available at \url{http://www.r-project.org/}.
 
-%While the underlying mechanics of ${\mathfrak Amelia}$ consist of only
-%a few functions, there are a number of ways to access these functions
-%to produce imputations.  At its most basic, ${\mathfrak Amelia}$ is a
-%library for the R statistical software package that makes the
-%${\mathfrak Amelia}$ routine available in the R environment.  In
-%addition, a Graphical User Interface (GUI) can access the same routine
-%without the need for direct user coding.  In Windows, ${\mathfrak
-%  Amelia}$ allows the user to bypass the use of R completely by
-%detaching the GUI from R. In Linux, ${\mathfrak Amelia}$ can run from
-%the command line or from the GUI, yet both require use of R.
-%Currently, there we do not support a MacOS version of ${\mathfrak
-%  Amelia}$, yet we hope to change this in the near future.  All
-%versions of ${\mathfrak Amelia}$ require the R software, which is
-%freely available at \url{http://www.r-project.org/}.  It compiles and
-%runs on a wide variety of platforms including UNIX, Windows, and
-%MacOS.  This manual will focus on the GUI version of ${\mathfrak
-%  Amelia}$, although many of the ideas presented apply equally to the
-%command-line version.  For help with the syntax of the command-line
-%version, please refer to the help files included with the ${\mathfrak
-%  Amelia}$ library.  These can be accessed at the R command prompt by
-%typing
-%  \begin{verbatim}
-%  > help(``amelia'') .
-%  \end{verbatim}
-%In what follows we will describe the how a user would use the GUI
-%version, but follow this with syntax to create the same procedure from
-%the command-line version.
 
 \section{Installation and Updates}
 \label{sec:install}
 
 Before installing \AmeliaII, you must have installed R version 2.1.0
 or higher, which is freely available at
-\url{http://www.r-project.org/}.  
+\url{http://www.r-project.org/}.
 \subsection{Windows --- AmeliaView}
 \label{sec:win-install}
 To install AmeliaView in the Windows environment, simply download the
 installer \texttt{setup.exe} from
 \url{http://gking.harvard.edu/amelia/} and run it.  The installer will
-ask you to choose a location to install ${\mathfrak Amelia}$.  If you
-have installed $R$ with the default options, ${\mathfrak Amelia}$ will
-automatically find the location of R.  If the installer cannot find R,
-it will ask you to locate the directory of the most current version of
-R.  Make sure you choose the directory name that includes the version
-number of R (e.g. C:/Program Files/R/R-2.2.0) and contains a
-subdirectory named \texttt{bin}.  The installer will also put
-shortcuts on your Desktop and Start Menu.
+ask you to choose a location to install \AmeliaII.  If you have
+installed $R$ with the default options, \AmeliaII will automatically
+find the location of R.  If the installer cannot find R, it will ask
+you to locate the directory of the most current version of R.  Make
+sure you choose the directory name that includes the version number of
+R (e.g. C:/Program Files/R/R-2.2.0) and contains a subdirectory named
+\texttt{bin}.  The installer will also put shortcuts on your Desktop
+and Start Menu.
 
 \subsection{Windows --- \AmeliaII for R}
 
@@ -221,8 +204,8 @@ with the call:
 To install ${\mathfrak Amelia}$ in a Linux OS, you must install the
 ${\mathfrak Amelia}$ library into your version of R.  This is true
 even if users only wish to use AmeliaView.  Download the package from
-\url{http://gking.harvard.edu}.  Then, in the same directory as the
-file, at the Linux/Unix command line type
+\url{http://gking.harvard.edu/amelia}.  Then, in the same directory as
+the file, at the Linux/Unix command line type
   \begin{verbatim}
   > R CMD INSTALL --library=.R/library amelia_1.0.tar.gz .
   \end{verbatim}
@@ -261,8 +244,8 @@ logically through these steps.  In Windows, this can be accessed from
 the desktop shortcut created by the installer.  In Linux, accessing
 the GUI requires calling a function from within R\footnote{AmeliaView
   can be called from within R in Windows, as well, using the
-  \texttt{ameliagui()} function.}.  Once AmeliaView is open, no
-further use of R is required.
+  \texttt{ameliagui()} function.}.  Once AmeliaView is open, no direct
+use of R is required.
 
 The main window of AmeliaView is divided into three steps.  In Step 1,
 you indicate the location of your data and load it into the program.
@@ -303,7 +286,7 @@ button.  For example:
 \subsection{\Amelia for R}
 \label{sec:roverview}
 Using \Amelia in $R$ you will first have to load the library into R
-using the \texttt{library(amelia)} command.  Once the package is
+using the \texttt{library(Amelia)} command.  Once the package is
 loaded, you can set options using the arguments of the
 \texttt{amelia()} function.  The output data will be either a list of
 $m$ data frames or matrices depending on the your input data.  Please
@@ -312,7 +295,6 @@ adjusting the optional arguments from their default values.
 
 \section{Data Input and Output}
 \label{sec:data}
-
 
 \subsection{AmeliaView}
 \label{sec:data-gui}
@@ -355,13 +337,14 @@ Another output file that is produced when running ${\mathfrak Amelia}$
 is the Replication Archive.  This file can be used to reproduce the
 same set of options you ran ${\mathfrak Amelia}$ with so that you or
 anyone else can replicate the same findings.  This file automatically
-saves to ``amarchive.r''. This file can also serve as a session save
-that can be opened later to load the same options that you ran
-${\mathfrak Amelia}$ under.  This allows you to pick up where you left
-off in the next run of ${\mathfrak Amelia}$, adjust options and rerun
-the imputations, or return at a later point and use the diagnostic
-routines.
-
+saves to ``amarchive.r''.  (If, as is becomming standard practice, you
+create and archive replication data sets to accompany your papers
+\citep{King95}, you should include this file.)This file can also serve
+as a session save that can be opened later to load the same options
+that you ran ${\mathfrak Amelia}$ under.  This allows you to pick up
+where you left off in the next run of ${\mathfrak Amelia}$, adjust
+options and rerun the imputations, or return at a later point and use
+the diagnostic routines.
 
 \subsection{\Amelia for R}
 \label{sec:data-r}
@@ -371,8 +354,9 @@ either a text format such as Comma Separated Values (.csv) or
 Tab-Delimited (.txt) and then read them into R (generally this would
 involve the functions \texttt{read.csv} or \texttt{read.table},
 respectively).  You can read about the specifics of how to load data
-into R in the R documentation.  Of course your data may be generated
-by code and amelia called as a function later in that code.
+into R in the R documentation or in Zelig
+(\url{http://gking.harvard.edu/zelig}).  Of course your data may be
+generated by code and amelia called as a function later in that code.
 
 Besides various commercial packages to transfer your data between
 formats, a viable option is using the \texttt{foreign} package.  This
@@ -390,14 +374,11 @@ For example, a simple session or code fragment might be:
   \begin{verbatim}
   > library(amelia)
   > x<-read.table("mydata.csv")
-  > empri<-10
-  > amords<-c(3,4)
-  > output<-amelia(data=x,empri=empri,amords=amords)
+  > output<-amelia(data=x,empri=10,amords=c(3,4))
   > save(output,file="output.rData")
   \end{verbatim}
 where \texttt{amords} and \texttt{empri} are options detailed later in
 this manual.
-
 
 \section{Options}
 \label{sec:options}
@@ -413,13 +394,34 @@ within R, users can set the transformations by including a vector of
 column numbers or names (if column names exist), that \Amelia should
 transform.  For example,
 
-  \begin{verbatim}> amelia(mydata, logs=c(2,3,7))\end{verbatim} or
-  \begin{verbatim}> amelia(mydata, noms=c(``gdp'',``population'')).\end{verbatim}
+\begin{verbatim}
+> amelia(mydata, logs=c(2,3,7))
+\end{verbatim}
+or
+\begin{verbatim}
+> amelia(mydata, noms=c(``gdp'',``population''))
+\end{verbatim}
 
 \subsection{Screen Output}
-The output of the imputation model in the AmeliaView program appears in a new window.  It lists stages of the imputation model, including the number of iterations of the EM chain necessary in each of the bootstraps.
+The output of the imputation model in the AmeliaView program appears
+in a new window.  It lists stages of the imputation model, including
+the number of iterations of the EM chain necessary in each of the
+bootstraps.
 
-Screen output in the $R$ command level can be adjusted with the ``print to screen'' argument, \texttt{p2s}.  At a value of 0, no screen printing will occur.  This may be useful in large jobs or simulations where a very large number of imputation models may be required.  The default value of 1, lists each bootstrap, and displays the number of iterations required to reach convergence in that bootstrapped dataset.  The value of 2 gives more thorough screen output, including, at each iteration, the number of parameters that have significantly changed since the last iteration.  This may be useful when the EM chain length is very long, as it can provide an intuition for many parameters still need to converge in the EM chain, and a sense of the time remaining.  However, it is worth noting that the last several parameters can often take a significant fraction of the total number of iterations to converge.
+Screen output in the $R$ command level can be adjusted with the
+``print to screen'' argument, \texttt{p2s}.  At a value of 0, no
+screen printing will occur.  This may be useful in large jobs or
+simulations where a very large number of imputation models may be
+required.  The default value of 1, lists each bootstrap, and displays
+the number of iterations required to reach convergence in that
+bootstrapped dataset.  The value of 2 gives more thorough screen
+output, including, at each iteration, the number of parameters that
+have significantly changed since the last iteration.  This may be
+useful when the EM chain length is very long, as it can provide an
+intuition for many parameters still need to converge in the EM chain,
+and a sense of the time remaining.  However, it is worth noting that
+the last several parameters can often take a significant fraction of
+the total number of iterations to converge.
 
 \subsection{Transformations of Variables}
 \label{sec:trans}
@@ -427,18 +429,18 @@ Screen output in the $R$ command level can be adjusted with the ``print to scree
 Social science data commonly includes variables that fail to fit into
 a multivariate normal distribution. Indeed, numerous model have been
 introduced specifically to deal with the problems they present.  As it
-turns out, much evidence in the literature (discussed in our paper)
-indicates that the multivariate normal model used in ${\mathfrak
-  Amelia}$ usually works well for the imputation stage even when
-discrete or non-normal variables are included and when the analysis
-stage involves these limited dependent variable models.  Nevertheless,
-${\mathfrak Amelia}$ includes some limited capacity to deal directly
-with ordinal and nominal variables and to variables that require other
-transformations.  In general nominal and log transform variables must
-be declared to \Amelia, whereas ordinal (including dichotomous)
-variables often need not be, as described below.  (For harder cases,
-see Schafer, 1997, for specialized MCMC-based imputation models for
-discrete variables.)\nocite{KinHonJos01}
+turns out, much evidence in the literature (discussed in
+\citealt{KinHonJos01}) indicates that the multivariate normal model
+used in ${\mathfrak Amelia}$ usually works well for the imputation
+stage even when discrete or non-normal variables are included and when
+the analysis stage involves these limited dependent variable models.
+Nevertheless, ${\mathfrak Amelia}$ includes some limited capacity to
+deal directly with ordinal and nominal variables and to variables that
+require other transformations.  In general nominal and log transform
+variables must be declared to \Amelia, whereas ordinal (including
+dichotomous) variables often need not be, as described below.  (For
+harder cases, see Schafer, 1997, for specialized MCMC-based imputation
+models for discrete variables.)\nocite{KinHonJos01}
 
 Although these transformations are taken internally on these variables
 to better fit the data to the multivariate normal assumptions of the
@@ -552,15 +554,45 @@ serves to waste memory and slow down the imputation procedure.
 
 \subsection{Time Series, or Time Series Cross Sectional Data} \label{sec:tscs}
 
-Many variables that are recorded over time within a cross-sectional unit are observed to vary smoothly over time.  In such cases, knowing the observed values of observations close in time to any missing value may enormously aid the imputation of that value.  However, the exact pattern may vary over time within any cross-section.  There may be periods of growth, stability, or decline; in each of which the observed values would be used in a different fashion to impute missing values.  Also, these patterns may vary enormously across different cross-sections, or may exist in some and not others.  ${\mathfrak Amelia}$ can build a general model of patterns within variables across time by creating a sequence of polynomials of the time index.  If, for example, $GDP$ varies smoothly over time, then we make the modeling assumption that there exists some polynomial that describes the economy in cross-sectional unit $i$ at time $t$ as:
+Many variables that are recorded over time within a cross-sectional
+unit are observed to vary smoothly over time.  In such cases, knowing
+the observed values of observations close in time to any missing value
+may enormously aid the imputation of that value.  However, the exact
+pattern may vary over time within any cross-section.  There may be
+periods of growth, stability, or decline; in each of which the
+observed values would be used in a different fashion to impute missing
+values.  Also, these patterns may vary enormously across different
+cross-sections, or may exist in some and not others.  ${\mathfrak
+  Amelia}$ can build a general model of patterns within variables
+across time by creating a sequence of polynomials of the time index.
+If, for example, $GDP$ varies smoothly over time, then we make the
+modeling assumption that there exists some polynomial that describes
+the economy in cross-sectional unit $i$ at time $t$ as:
 \begin{equation}
 \textrm{GDP}(t)_i = \beta_0 + \beta_1 t + \beta_1 t^2 + \beta_1 t^3 \ldots
 \end{equation}
-And thus if we include enough higher order terms of time then the pattern between observed values of GDP can be estimated.  ${\mathfrak Amelia}$ will create polynomials of time up to the user defined $k$-th order, ($k\leq3$).  If cross-sectional units are specified these polynomials can be interacted with the cross-section unit (this is the default) to allow the patterns over time to vary between cross-sectional units.  Unless you strongly believe all units have the same patterns over time in all variables, this is a reasonable default.  When $k$ is set to 0, this interaction simply results in a model of \emph{fixed effects} where every unit has a uniquely estimated constant term.
+And thus if we include enough higher order terms of time then the
+pattern between observed values of GDP can be estimated.  ${\mathfrak
+  Amelia}$ will create polynomials of time up to the user defined
+$k$-th order, ($k\leq3$).  If cross-sectional units are specified
+these polynomials can be interacted with the cross-section unit (this
+is the default) to allow the patterns over time to vary between
+cross-sectional units.  Unless you strongly believe all units have the
+same patterns over time in all variables, this is a reasonable
+default.  When $k$ is set to 0, this interaction simply results in a
+model of \emph{fixed effects} where every unit has a uniquely
+estimated constant term.  \AmeliaII does not smooth the observed data,
+and only uses this functional form, or one you choose, with all the
+other variables in the analysis and the uncertainty of the prediction,
+to impute the missing values.
 
-In AmeliaView, the TSCS settings can be adjusted in the Time Series Cross-Sectional Dialog (discussed in section \ref{sec:tscsdiag} of this manual).  At the $R$ command line, these options can be set as:
+In AmeliaView, the TSCS settings can be adjusted in the Time Series
+Cross-Sectional Dialog (discussed in section \ref{sec:tscsdiag} of
+this manual).  At the $R$ command line, these options can be set as:
 
-\begin{verbatim}> amelia(mydata, ts=1, cs=2, polytime=2, intercs=TRUE)\end{verbatim} 
+\begin{verbatim}
+> amelia(mydata, ts=1, cs=2, polytime=2, intercs=TRUE)
+\end{verbatim} 
 
 Where \texttt{ts} and \texttt{cs} give the locations of the time and cross-section indicators (often country names and years, respectively), \texttt{polytime} is an integer between 0 and 3 inclusive, that sets the order of polynomials to use, and \texttt{intercs} defines whether these polynomials should be interacted with the cross-sectional unit.
 
