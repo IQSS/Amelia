@@ -594,39 +594,54 @@ this manual).  At the $R$ command line, these options can be set as:
 > amelia(mydata, ts=1, cs=2, polytime=2, intercs=TRUE)
 \end{verbatim} 
 
-Where \texttt{ts} and \texttt{cs} give the locations of the time and cross-section indicators (often country names and years, respectively), \texttt{polytime} is an integer between 0 and 3 inclusive, that sets the order of polynomials to use, and \texttt{intercs} defines whether these polynomials should be interacted with the cross-sectional unit.
+Where \texttt{ts} and \texttt{cs} give the locations of the time and
+cross-section indicators (often country names and years,
+respectively), \texttt{polytime} is an integer between 0 and 3
+inclusive, that sets the order of polynomials to use, and
+\texttt{intercs} defines whether these polynomials should be
+interacted with the cross-sectional unit.
 
 \section{Setting Priors} \label{sec:obspri}
 
-${\mathfrak Amelia}$ has number of methods of setting priors within the imputation model.  Two of these are commonly used and discussed below, ridge priors and observational priors.
+${\mathfrak Amelia}$ has a number of methods of setting priors within
+the imputation model.  Two of these are commonly used and discussed
+below, empirical or ridge priors and observational priors.
 
 \subsection{Empirical (Ridge) Priors for High Missingness, 
-  Small \emph{n}'s, or Large Correlations}
-\label{sec:prior}
+  Small \emph{n}'s, or Large Correlations}\label{sec:prior}
+
 When the data to be analyzed contain a high degree of missingness or
 very strong correlations among the variables, or when the number of
-observations is only slightly greater than $p(p+3)/2$ (where $p$ is
-the number of variables), results from your analysis model will be
-more dependent on the choice of imputation model.  This suggests more
-testing in these cases of alternative specifications under ${\mathfrak
-  Amelia}$.
+observations is only slightly greater than the number of parameters
+$p(p+3)/2$ (where $p$ is the number of variables), results from your
+analysis model will be more dependent on the choice of imputation
+model.  This suggests more testing in these cases of alternative
+specifications under ${\mathfrak Amelia}$.
 
-In addition, in these circumstances, we recommend adding a ridge prior
-which will help with numerical stability by shrinking the covariances
-among the variables toward zero without changing the means or
-variances.  The ridge prior can be implemented by setting the option
-\texttt{empri} in R and the Ridge Prior entry under the ``Priors''
-button in the standalone.  Including this prior as a positive number
-is roughly equivalent to adding \texttt{empri} artificial observations
-to the data set with the same means and variances as the existing data
-but with zero covariances.  Thus, increasing the \texttt{empri}
-setting results in more shrinkage of the covariances thus putting more
-a priori structure on the estimation problem.  In general, keep the
-value on this prior relatively small and increase it only when
-necessary.  A recommendation of 0.5 to 1 percent of the number of observations, $n$, is a reasonable starting value, and often useful in large datasets to add some numerical stability.  For example, in a dataset of two thousand observations, this would translate to a prior value of 10 or 20 respectively.  A prior of up to 5 percent is moderate in most applications.
+In these circumstances, we recommend adding a ridge prior which will
+help with numerical stability by shrinking the covariances among the
+variables toward zero without changing the means or variances.  The
+ridge prior can be implemented by setting the option \texttt{empri} in
+R and the Ridge Prior entry under the ``Priors'' button in the
+standalone.  Including this prior as a positive number is roughly
+equivalent to adding \texttt{empri} artificial observations to the
+data set with the same means and variances as the existing data but
+with zero covariances.  Thus, increasing the \texttt{empri} setting
+results in more shrinkage of the covariances, thus putting more a
+priori structure on the estimation problem: like many Bayesian
+methods, it reduces variance in return for an increase in bias that
+one hopes does not overwhelm the advantages in efficiency.  In
+general, we suggest keeping the value on this prior relatively small
+and increase it only when necessary.  A recommendation of 0.5 to 1
+percent of the number of observations, $n$, is a reasonable starting
+value, and often useful in large datasets to add some numerical
+stability.  For example, in a dataset of two thousand observations,
+this would translate to a prior value of 10 or 20 respectively.  A
+prior of up to 5 percent is moderate in most applications.
 
 \subsection{Observation-level priors}
 \label{sec:obspri}
+
 Reseachers often have additional prior information about missing data 
 values based on previous research, academic consensus, or personal 
 experience.  Amelia can incorporate this information to produce vastly 
@@ -654,17 +669,16 @@ In AmeliaView, the observational priors dialog will guide you through
 adding priors to the imputation.  Refer to section \ref{sec:refobspri} for 
 further details on how to add priors in AmeliaView.
 
-To include an observation level prior to Amelia, you must build a few
-matrices that have the same dimensions as the orignal data matrix.  
-If you are describing the distribution by the mean and standard deviation,
-you will need to build two matrices, one for the mean and one for the 
-standard deviation.  To add the prior, first note the cell position of the
-missing data value in question; that is, find its row and column number in
-R.  From here, find the same position in the matrix of prior means and 
-place your prior belief about the mean in this cell.  Repeat the same 
-procedure for the standard deviation and then include them with the 
-\texttt{amelia} function with the \texttt{means} and \texttt{sds} 
-arguments.  An example of this would go as follows:
+Alternatively, in R, you must build two matrices, one for the mean and
+one for the standard deviation, and both of which have the same
+dimensions as the original data matrix.  To add the prior, first note
+the cell position of the missing data value in question; that is, find
+its row and column number in R.  From here, find the same position in
+the matrix of prior means and place your prior belief about the mean
+in this cell.  Repeat the same procedure for the standard deviation
+and then include them with the \texttt{amelia} function with the
+\texttt{means} and \texttt{sds} arguments.  An example of this would
+go as follows:
 
 \begin{verbatim}
  > n <- nrow(data)  ## grab the rows of the data
@@ -677,17 +691,17 @@ arguments.  An example of this would go as follows:
 \end{verbatim}
 
 
-\section{Diagnostics}
-\label{sec:diag}
+\section{Diagnostics}\label{sec:diag}
+
 \Amelia currently provides three diagnostic tools to inspect the
 imputations that are created.  These routines \texttt{compare},
 \texttt{overimpute} and \texttt{overdisperse} graphically investigate
 the distribution of the imputations, the fit of the imputation model,
 and modality of the Likelihood space optimized by the EM chain,
-respectively.  We are currently developing other diagnostic routines
-and tests.
+respectively.
 
 \subsection{Compare}
+
 In the diagnostic window of AmeliaView, the compare function will, for
 a given variable, generate a plot of the relative frequencies of the
 observed data with an overlay of the relative frequency of the imputed
@@ -702,7 +716,7 @@ graphs can be used to check that the mean imputation falls within
 known bounds, when such bounds exist in certain variables or settings.
 \begin{figure}[htp!]
   \centering \includegraphics[scale=.8]{comp}
-  \caption{ Two examples of the compare diagnostic graph.  In the left
+  \caption{Two examples of the compare diagnostic graph.  In the left
     graph all the imputations, the density of which is shown in black,
     are contained within the range of the observed data for this
     variable (in red).  In the right graph some of the mean imputed
@@ -725,8 +739,9 @@ you would like to produce the graph for.
 
 \subsection{Overimpute}
 \label{sec:overimpute}
-Overimputing is a technique we have developed to judge the fit of the
-imputation model.  Because of the nature of the missing data
+
+\emph{Overimputing} is a technique we have developed to judge the fit
+of the imputation model.  Because of the nature of the missing data
 mechanism, it is impossible to tell whether the mean prediction of the
 imputation model is close to the unobserved value that is trying to be
 recovered.  By definition this missing data does not exist to create
@@ -740,12 +755,11 @@ Overimputing involves sequentially treating each of the
 observed value in turn we then generate several hundred imputed values
 of that observed value, \emph{as if it had been missing}.  While $m=5$
 imputations are sufficient for most analysis models, this large number
-of observations allows us to construct a confidence interval of what
+of imputations allows us to construct a confidence interval of what
 the imputed value would have been, had any of the observed data been
 missing.  We can then graphically inspect whether our observed data
 tends to fall within the region where it would have been imputed had
 it been missing.
-
 
 Our overimputation diagnostic runs this procedure through all of the
 observed values for a user selected variable.  We can graph the
@@ -759,10 +773,9 @@ imputation model. By checking how many of the confidence intervals
 cover the $y=x$ line, we can tell how often the imputation model can
 confidently predict the true value of the observation.
 
-
 \begin{figure}[htp!]
   \centering \includegraphics[scale=.8]{overimp}
-  \caption{ An example of the overimpute diagnostic graph.  Here
+  \caption{An example of the overimpute diagnostic graph.  Here
     ninety percent confidence intervals are constructed that detail
     where an observed value would have been imputed had it been
     missing from the dataset, given the imputation model.  The dots
@@ -776,7 +789,7 @@ confidently predict the true value of the observation.
   \label{f:oi}
 \end{figure}
 Occasionally, the overimputation can display unintuitive results.  For
-example, different observations may have different number of observed
+example, different observations may have different numbers of observed
 covariates.  If covariates that are useful to the prediction are
 themselves missing, then the confidence interval for this observation
 will be much larger.  In the extreme, there may be observations where
@@ -811,6 +824,7 @@ you would like to produce the graph for.
 
 \subsection{Overdispersed Starting Values}
 \label{sec:overdisperse}
+
 If the data given to \Amelia has a poorly behaved likelihood, the EM
 algorithm can have problems finding a global maximum of the likelihood
 surface and starting values can begin to effect imputations.  Because
@@ -901,44 +915,46 @@ amelia function.  This allows you to check the likelihood surface
 
 \section{Sessions}
 \label{sec:sessions}
-Setting options for large datasets can take quite some time, especially
-with the precense of observational priors and non-linear variables.  To
-ease this process, Amelia has the ability to save and load sessions.
-A saved session includes all options set by the user in addition to any
-output information from Amelia.  Sessions are useful for setting large
-numbers of options over multiple instances of Amelia or imputing the data
-multiple times with the same setup.   
 
-In AmeliaView, you can save a session by opening the "File" menu and 
-selecting "Save Session."  This will open a dialog that will ask for a 
-filename (the file extenstion must be ".r").  To load a saved session,
-simply navigate to the "File" menu and select "Load Session" and locate
-the saved session file.  Note that the data file referenced in the session
-file must be located in the same directory and have the same name when 
-attempting to load the session.  Upon loading, Amelia configures all options 
-to same values as the saved session.
+Setting options for some large datasets may take some time, especially
+with the presence of many observational priors and non-linear
+variables.  To ease this process, Amelia has the ability to save and
+load sessions.  A saved session includes all options set by the user
+in addition to any output information from Amelia.  Sessions are
+useful for setting large numbers of options over multiple instances of
+Amelia or imputing the data multiple times with the same setup.
 
-In some cases you may wish to load a AmeliaView session at the R command line.
-To do so, use the \texttt{source} command to load the session file which 
-will add a list named \texttt{amelia.list} to your working environment.  
-You can use this list in the \texttt{arglist} options for the 
-\texttt{amelia} function, which takes an Amelia output or session
-list as its argument.  An example of loading a session at the command
-line would be:
+In AmeliaView, you can save a session by opening the ``File'' menu and
+selecting ``Save Session.''  This will open a dialog that will ask for
+a filename (the file extenstion must be ``.r'').  To load a saved
+session, simply navigate to the "File" menu and select "Load Session"
+and locate the saved session file.  Note that the data file referenced
+in the session file must be located in the same directory and have the
+same name when attempting to load the session.  Upon loading, Amelia
+configures all options to same values as the saved session.
+
+In some cases you may wish to load a AmeliaView session at the R
+command line.  To do so, use the \texttt{source} command to load the
+session file which will add a list named \texttt{amelia.list} to your
+working environment.  You can use this list in the \texttt{arglist}
+options for the \texttt{amelia} function, which takes an Amelia output
+or session list as its argument.  An example of loading a session at
+the command line would be:
 
 \begin{verbatim}
 > source("am-session.R") 
 > amelia.out <- amelia(data=x,arglist=amelia.list)
 \end{verbatim}
 
-In this example \texttt{am-session.R} is the session file and \texttt{x}
-is the dataset that corresponds to the session file.  At the command line,
-you must load the data into R seperately as sessions are not tied to specific
-datasets at the command line.  When provided to Amelia, the argument list 
-will take precendence over other arguments.  For example, specifying an 
-identification variable with \texttt{idvars} while also using 
-\texttt{arglist} will result in Amelia ignoring the \texttt{idvars} 
-provided by the user and refer to the idvars setting in \texttt{arglist}.
+In this example \texttt{am-session.R} is the session file and
+\texttt{x} is the dataset that corresponds to the session file.  At
+the command line, you must load the data into R seperately as sessions
+are not tied to specific datasets at the command line.  When provided
+to Amelia, the argument list will take precendence over other
+arguments.  For example, specifying an identification variable with
+\texttt{idvars} while also using \texttt{arglist} will result in
+Amelia ignoring the \texttt{idvars} provided by the user and refer to
+the idvars setting in \texttt{arglist}.
 
 \section{AmeliaView Menu Guide}
 \label{sec:menu}
