@@ -10,8 +10,10 @@
 ##  04/08/06 mb - sessions load properly for non-csv files.
 ##  24/08/06 mb - added tolerance option on variables page.  
 ##  11/09/06 mb - actually passes nominals now, fixed char problems on summarize
+##  19/09/06 mb - changed function name to AmeliaView
 
-ameliagui<-function() {
+
+AmeliaView<-function() {
 
 main.close<-function() {
 	qvalue<-tkmessageBox(message="Are you sure you want to exit Amelia?",
