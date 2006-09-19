@@ -24,33 +24,36 @@ Amelia is named after this famous missing person.</small></p>
 </td><td valign='top'>
 
 <p>Amelia II "multiply imputes" missing data in a single cross-section
-  (such as a survey) or from a time-series-cross-sectional data set
-  (such as collected by years for each of several countries).  Amelia
-  II implements a bootstrapping-based algorithm that gives essentially
-  the same answers as IP or EMis, is faster than existing approaches
-  and can handle many more variables.  Unlike Amelia I and other
-  statistically rigorous imputation software, it virtually never
-  crashes (but please let us know if you find to the contrary!).  The
-  program also generalizes existing approaches by allowing for trends
-  in time across observations within a cross-sectional unit, as well
-  as priors that allow experts to incorporate beliefs they have about
-  the values of missing cells in their data.  Amelia II
-  also includes a useful diagnostic of the fit of multiple imputation
-  models.  The program works from the R command line or via a
-  graphical user interface that does not require users to know R.
+  (such as a survey), from a time series (like variables collected for
+  each year in a country), or from a time-series-cross-sectional data
+  set (such as collected by years for each of several countries).
+  Amelia II implements our bootstrapping-based algorithm that gives
+  essentially the same answers as the standard IP or EMis approaches,
+  is usually considerably faster than existing approaches and can
+  handle many more variables.  Unlike Amelia I and other statistically
+  rigorous imputation software, it virtually never crashes (but please
+  let us know if you find to the contrary!).  The program also
+  generalizes existing approaches by allowing for trends in time series
+  across observations within a cross-sectional unit, as well as priors
+  that allow experts to incorporate beliefs they have about the values
+  of missing cells in their data.  Amelia II also includes useful
+  diagnostics of the fit of multiple imputation models.  The program
+  works from the R command line or via a graphical user interface that
+  does not require users to know R.
 
- <p> Multiple imputation involves imputing <em>m</em> values for each missing
-  cell in your data matrix and creating <em>m</em> "completed" data sets.
+ <p> Multiple imputation involves imputing <em>m</em> values for each
+ missing cell in your data matrix and creating <em>m</em> "completed"
+ data sets.
   (Across these completed data sets, the observed values are the same,
   but the missing values are filled in with different imputations that
   reflect our uncertainty about the missing data.)  After imputation,
   Amelia will then save the <em>m</em> data
   sets.  You then apply whatever statistical method you would have used
   if there had been no missing values to each of the <em>m</em> data sets,
-  and use a simple procedure to
-  combine the results.  Under normal circumstances, you
+  and use a simple procedure to combine the results.  Under normal
+  circumstances, you
   only need to impute once and can then analyze the <em>m</em> imputed
-  data  sets as many times and for as many purposes as you wish.  The
+  data sets as many times and for as many purposes as you wish.  The
   advantage of Amelia is that it combines the comparative speed and
   ease-of-use of our algorithm with the power of multiple
   imputation, to let you focus on your substantive research questions
@@ -60,14 +63,17 @@ Amelia is named after this famous missing person.</small></p>
   default) will usually be adequate.  Other methods of dealing with
   missing data, such as listwise deletion, mean substitution, or
   single imputation, are in common circumstances biased, inefficient,
-  or both.
+  or both.  When multiple imputation works properly, it fills in data
+  in such a way as to not change any relationships in the data but
+  which enables the inclusion of all the observed data in the
+  partially missing rows.
 
 <p>Amelia II is a new program, and follows in the spirit with the same
 purpose as the first version of Amelia (still available <a
 href="/amelia/amelia1/index.shtml">here</a>) by James Honaker, Anne
 Joseph, Gary King, Kenneth Scheve, and Naunihal Singh.
   <ul>
-    <li>Documentation (<strong>Warning: not yet finished!</strong>):
+    <li>Documentation:
     <a href="/amelia/docs/amelia.pdf">PDF</a> </li>
 	
     <li>Installation of AmeliaView for Windows (for those who don't
