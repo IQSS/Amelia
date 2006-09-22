@@ -189,7 +189,12 @@ primarily as a function within other $R$ code can install all the
 Amelia functions as one would install any other Amelia library.  There
 is a .zip package install, which can be added to the library path.
 Additionally the functions are provided in a set of five source files
-which can be sourced into any $R$ code directly.
+which can be sourced into any $R$ code directly.  A package install can be called within R by:
+  \begin{verbatim}
+  > install.packages("Amelia",repos="http://gking.harvard.edu")
+  \end{verbatim}
+While Amelia works in builds of $R$ beyond version $2.1.0$, the online package install will only be available for the most recent version of $R$, currently, $2.3.1$. 
+
 
 Even users familiar with the $R$ language may find it useful to
 utilize AmeliaView to set options on variables, change arguments, or
@@ -284,12 +289,13 @@ button.  For example:
 
 \ 
 \subsection{\Amelia for R}
+
 \label{sec:roverview}
 Using \Amelia in $R$ you will first have to load the library into R
 using the \texttt{library(Amelia)} command.  Once the package is
 loaded, you can set options using the arguments of the
 \texttt{amelia()} function.  The output data will be either a list of
-$m$ data frames or matrices depending on the your input data.  Please
+$m$ data frames or matrices depending on your input data.  Please
 refer to the end of this manual for detailed documentation on
 adjusting the optional arguments from their default values.
 
@@ -337,7 +343,7 @@ Another output file that is produced when running ${\mathfrak Amelia}$
 is the Replication Archive.  This file can be used to reproduce the
 same set of options you ran ${\mathfrak Amelia}$ with so that you or
 anyone else can replicate the same findings.  This file automatically
-saves to ``amarchive.r''.  (If, as is becomming standard practice, you
+saves to ``amarchive.r''.  (If, as is becoming standard practice, you
 create and archive replication data sets to accompany your papers
 \citep{King95}, you should include this file.)This file can also serve
 as a session save that can be opened later to load the same options
@@ -395,11 +401,11 @@ column numbers or names (if column names exist), that \Amelia should
 transform.  For example,
 
 \begin{verbatim}
-> amelia(mydata, logs=c(2,3,7))
+> amelia(mydata, noms=c(2,3,7))
 \end{verbatim}
 or
 \begin{verbatim}
-> amelia(mydata, noms=c(``gdp'',``population''))
+> amelia(mydata, logs=c(``gdp'',``population''))
 \end{verbatim}
 
 \subsection{Screen Output}
@@ -427,7 +433,7 @@ the total number of iterations to converge.
 \label{sec:trans}
 
 Social science data commonly includes variables that fail to fit into
-a multivariate normal distribution. Indeed, numerous model have been
+a multivariate normal distribution. Indeed, numerous models have been
 introduced specifically to deal with the problems they present.  As it
 turns out, much evidence in the literature (discussed in
 \citealt{KinHonJos01}) indicates that the multivariate normal model
@@ -445,7 +451,7 @@ models for discrete variables.)\nocite{KinHonJos01}
 Although these transformations are taken internally on these variables
 to better fit the data to the multivariate normal assumptions of the
 imputation model, all the imputations that are created will be
-returned in the original untransformed form of the data.  The fully
+returned in the original untransformed form of the data (If the user has \emph{already} performed transformations on their data (such as taking a log or square root) these do not need to be declared, as that would result in the transformation occuring \emph{doubly} in the imputation model).  The fully
 imputed datasets that are returned will always be in the form of the
 original data that is passed to the amelia routine.
 
@@ -485,7 +491,7 @@ data set (such as religion coded 1 for Catholic, 2 for Jewish, and 3
 for Protestant) must be specified to ${\mathfrak Amelia}$.
 
 For a $ p$-category multinomial variable, ${\mathfrak Amelia}$ will
-find $ p$ (as long as your data contain at least one value in each
+determine $ p$ (as long as your data contain at least one value in each
 category), and substitute $ p-1$ binary variables to specify each
 possible category. These new $ p-1$ variables will be treated as the
 other variables in the multivariate normal imputation method chosen,
@@ -509,7 +515,7 @@ space.
 If one of your variables is heavily skewed or has outliers that may
 alter the imputation in an unwanted way, you can use a natural
 logarithm transformation of that variable in order to normalize its
-distribution.  This transformed distribution help ${\mathfrak Amelia}$
+distribution.  This transformed distribution helps ${\mathfrak Amelia}$
 to avoid imputing values that depend too heavily on outlying data
 points.  Log transformations are common in expenditure and economic
 variables where we have strong beliefs that the marginal relationship
@@ -578,7 +584,7 @@ $k$-th order, ($k\leq3$).  If cross-sectional units are specified
 these polynomials can be interacted with the cross-section unit (this
 is the default) to allow the patterns over time to vary between
 cross-sectional units.  Unless you strongly believe all units have the
-same patterns over time in all variables, this is a reasonable
+same patterns over time in all variables (including the same constant term), this is a reasonable
 default.  When $k$ is set to 0, this interaction simply results in a
 model of \emph{fixed effects} where every unit has a uniquely
 estimated constant term.  \AmeliaII does not smooth the observed data,
@@ -658,7 +664,7 @@ well, the imputation will downweight the prior, and vice versa.
 
 The priors about individual observations should describe the analyst's 
 belief about the distribution of the missing data cell.  This can either 
-take the form of a mean and a standard deviation.  For instance, we 
+take the form of a mean and a standard deviation or a confidence interval.  For instance, we 
 might know that GDP growth for Ghana in a given year was somwhere 
 around $3.5\%$, but we have some uncertainty as to the exact value.   
 Our prior belief about the distribution of the missing data cell, then, 
@@ -670,7 +676,7 @@ adding priors to the imputation.  Refer to section \ref{sec:refobspri} for
 further details on how to add priors in AmeliaView.
 
 Alternatively, in R, you must build two matrices, one for the mean and
-one for the standard deviation, and both of which have the same
+one for the standard deviation, both of which have the same
 dimensions as the original data matrix.  To add the prior, first note
 the cell position of the missing data value in question; that is, find
 its row and column number in R.  From here, find the same position in
@@ -683,7 +689,7 @@ go as follows:
 \begin{verbatim}
  > n <- nrow(data)  ## grab the rows of the data
  > p <- ncol(data)  ## grab the columns of the data
- > mean.priors <- matrix(NA,nrow=n,ncol=p)  ## make priors matrices of
+ > means.priors <- matrix(NA,nrow=n,ncol=p)  ## make priors matrices of
  > sds.priors <- matrix(NA,nrow=n,ncol=p)  ## the same size as the data
  > means.priors[150,4] <- 3.5
  > sds.priors[150,4] <- .5  ## set priors for the cell at row 150, column 4
@@ -696,6 +702,7 @@ go as follows:
 \Amelia currently provides three diagnostic tools to inspect the
 imputations that are created.  These routines \texttt{compare},
 \texttt{overimpute} and \texttt{overdisperse} graphically investigate
+
 the distribution of the imputations, the fit of the imputation model,
 and modality of the Likelihood space optimized by the EM chain,
 respectively.
@@ -707,11 +714,11 @@ a given variable, generate a plot of the relative frequencies of the
 observed data with an overlay of the relative frequency of the imputed
 values.  The imputed curve plots the density of the \emph{mean}
 imputation over the $m$ datasets.  That is, for each cell that is
-missing in the variable the diagnostic will find the mean of the that
+missing in the variable the diagnostic will find the mean of that
 cell in each of the $m$ datasets and use that value for the density
 plot.  These graphs will allow you to inspect how the density of
 imputations compares to the density of observed data. Some discussion
-of these graphs can be found in Gelman et al (2005).  Minimally, these
+of these graphs can be found in \citet*{AbaGelLev05}.  Minimally, these
 graphs can be used to check that the mean imputation falls within
 known bounds, when such bounds exist in certain variables or settings.
 \begin{figure}[htp!]
@@ -783,6 +790,7 @@ confidently predict the true value of the observation.
     confidence intervals contain the $y=x$ line, which means that the
     true observed value falls within this range.  The color of the
     line (as coded in the legend) represents the fraction of missing
+
     observations in the pattern of missingness for that observation.
     The yellow lines have more information (observed covariates) from
     which to impute the variable, and thus much tighter bounds.}
@@ -842,6 +850,7 @@ maximum.  On the other hand, we might see our EM chain converging to
 multiple locations.  The algorithm may also wander around portions of
 the parameter space that are not fully identified, such as a ridge of
 equal likelihood, as would happen for example, if the same variable
+
 were accidentally included in the imputation model twice.
 
 \Amelia includes a diagnostic to run the EM chain from multiple
@@ -857,7 +866,7 @@ the largest dimension with time (iteration number) on the $x$-axis.
 The number of EM chains can also be adjusted.  Once the diagnostic
 draws the graph, the user can visually inspect the results to check
 that all chains convergence to the same point.
-\begin{figure}[ht]
+\begin{figure}[ht]\label{f:overgood}
   \centering \includegraphics[scale=.7]{overdis1d}
   \caption{A plot from the overdispersion diagnostic where all EM
     chains are converging to the same mode, regardless of starting
@@ -868,13 +877,13 @@ that all chains convergence to the same point.
 
 In one dimension, the diagnostic plots movement of the chain on the
 $y$-axis and time, in the form of the iteration number, on the
-$x$-axis.  Figures 1 and 2 show two examples of one dimensional plots.
+$x$-axis.  Figures \ref{f:overgood} and \ref{f:overbad} show two examples of one dimensional plots.
 The first shows a well behaved likelihood, as the starting values all
 converge to the same point.  The black horizontal line is the point
 where \Amelia converges when it uses the default method for choosing
 the starting values.  The diagnostic takes the end point of this chain
 as the possible maximum and disperses the starting values away from it
-to see if the chain will ever finish at another mode.  Figure 2 shows
+to see if the chain will ever finish at another mode.  Figure \ref{f:overbad} shows
 an example of how a diagnostic plot will look on a problematic
 likelihood surface.  A few of the iterations are ending up in vastly
 different location in the parameter space.  This can happen for a
@@ -883,7 +892,7 @@ highly collinear variables included in the imputation model.  More
 generally, an unidentified imputation model will lead to non-unique ML
 estimates (see King (1989) for a more detailed discussion of
 identification and likelihoods).
-\begin{figure}
+\begin{figure}\label{f:overbad}
   \centering \includegraphics[scale=.5]{disperse-bad}
   \caption{ A problematic plot from the overdispersion diagnostic
     showing that EM chains are converging to one of two different
@@ -939,6 +948,7 @@ session file which will add a list named \texttt{amelia.list} to your
 working environment.  You can use this list in the \texttt{arglist}
 options for the \texttt{amelia} function, which takes an Amelia output
 or session list as its argument.  An example of loading a session at
+
 the command line would be:
 
 \begin{verbatim}
