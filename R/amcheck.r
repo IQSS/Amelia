@@ -7,7 +7,7 @@
 ## 10/07/06 mb - fixed handling of variance checks with no fully observed rows.
 ## 17/07/06 mb - stops if variable only has one observed value.
 ## 02/08/06 mb - fixed handling of character variables.
-
+## 25/09/06 mb - fixed handling of errors in output writing.
 
 
 
@@ -601,25 +601,29 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
   }
   
   #checks for outname
-  if (!is.character(outname)) {
-    outname<-"outdata"
-    warning("The output filename (outname) was not a character.  It has been set it its default 'outdata' in the working directory.")
+  if (write.out==T) {
+    if (!is.character(outname)) {
+      outname<-"outdata"
+      warning("The output filename (outname) was not a character.  It has been set it 
+its default 'outdata' in the working directory.")
+    }
+    #Error code: 45
+    #output file errors
+    outtest<-try(write.csv("test",file=paste(outname,"1.csv",sep="")),silent=T)
+    if (inherits(outtest,"try-error")) {
+      error.code<-45
+      error.mess<-paste("R cannot write to the outname you have specified.  Please 
+check","that the directory exists and that you have permission to write.",sep="\n")
+      return(list(code=error.code,mess=error.mess))
+    }
+    tmpdir<- strsplit(paste(outname,"1.csv",sep=""),.Platform$file.sep)
+    am.dir <- tmpdir[[1]][1]
+    if (length(tmpdir[[1]]) > 1)
+      for (i in 2:(length(tmpdir[[1]])))
+        am.dir <- file.path(am.dir, tmpdir[[1]][i])
+    file.remove(am.dir)
   }
-  outtest<-try(write.csv("test",file=paste(outname,"1.csv",sep="")),silent=T)
-  
-  
-  tmpdir<- strsplit(outname,.Platform$file.sep)
-  am.dir <- tmpdir[[1]][1]
-  for (i in 2:(length(tmpdir[[1]])-1))
-    am.dir <- file.path(am.dir, tmpdir[[1]][i])
-  if (all(length(tmpdir[[1]])>1,!file.exists(am.dir))) {
-    outname<-"outdata"
-    warning("The output filename (outname) was not unusable.  It has been set it its default 'outdata' in the working directory.")
-  }
- 
-    
       
-
 
   if (xor(!identical(means,NULL),!identical(sds,NULL))) {
     means<-NULL
