@@ -33,6 +33,8 @@
 ## 13/07/06 mb - moved gc() calls out of emfred into emarch
 ## 02/08/06 mb - removed data.matrix() call when calling unsubset (moved to prep), fixed impfill for char.
 ## 29/08/06 jh - changed tolerance defaults 
+## 20/09/06 mb - new option (temp?) keep.data that will trash datasets from memory
+## 01/10/06 mb - added additional info to p2s=2.
 
 ## Draw from a multivariate normal distribution 
 ##   n: number of draws 
@@ -271,14 +273,13 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,mu.priors
       diff2<-sqrt(sum((thetanew-thetaold)^2))   
       diff<-(abs(thetanew-thetaold)>tolerance)
       diff<-sum(diff*upper.tri(diff,diag=TRUE))
-      if(p2s==2){
-        cat("(",diff,") ",sep="")
-        flush.console()      
-      }
 
-      if (diff2 > iter.hist[count,1] && count > 2) {                                #checks to see if step length has increased
+      if (diff > iter.hist[count,1] && count > 2) {                                #checks to see if step length has increased
         mono.flag<-1
-        
+
+    ##################################
+    ## Should we make this optional???
+    #################################    
         if (sum(iter.hist[count,3],iter.hist[(count-1),3],1) == 3)  #if step length has increased for more 3 steps
           if (is.null(empri))                                                        #the ridge prior is increased by 1%  of 
             empri<-trunc(.01*nrow(x))                                                #the rows of data, up to 5% of the rows.
@@ -292,7 +293,17 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,mu.priors
         sing.flag<-0
       else
         sing.flag<-1
-      iter.hist<-rbind(iter.hist,c(diff2,sing.flag,mono.flag))
+      if(p2s==2){
+        cat("(",diff,sep="")
+        if (all(mono.flag == 1, count > 50))
+          cat("*",sep="")
+        if (sing.flag == 1)
+          cat("!",sep="")
+        cat(")",sep="")
+        flush.console()      
+      }
+
+      iter.hist<-rbind(iter.hist,c(diff,sing.flag,mono.flag))
       if (allthetas)
         thetahold<-cbind(thetahold,(thetanew[upper.tri(thetanew,diag=T)])[-1])
       thetaold<-thetanew
@@ -539,7 +550,7 @@ if (returntype=="theta"){
 amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,ts=NULL,cs=NULL,casepri=NULL,means=NULL,
                   sds=NULL,mins=NULL,maxs=NULL,conf=NULL,empri=NULL,tolerance=0.0001,polytime=NULL,startvals=0,
                   lags=NULL, leads=NULL, intercs=FALSE,archive=TRUE,sqrts=NULL,lgstc=NULL,noms=NULL,incheck=T,
-                  ords=NULL,collect=FALSE,outname="outdata",write.out=TRUE,arglist=NULL) {
+                  ords=NULL,collect=FALSE,outname="outdata",write.out=TRUE,arglist=NULL,keep.data=TRUE) {
 
   #Generates the Amelia Output window for the frontend
   if (frontend) {
@@ -594,8 +605,13 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,ts=NULL,cs=
       prepped$archv[[paste("iter.hist",i,sep="")]]<-thetanew$iter.hist
     }
 
-    impdata[[m+i]]<-thetanew$thetanew
-    names(impdata)[m+i]<-paste("theta",i,sep="")
+    if (keep.data) {
+      impdata[[m+i]]<-thetanew$thetanew
+      names(impdata)[m+i]<-paste("theta",i,sep="")
+    } else {
+      impdata[[m+i]]<-NA
+    }
+
     if (any(eigen(thetanew$thetanew[2:nrow(thetanew$thetanew),2:ncol(thetanew$thetanew)])$values < .Machine$double.eps)) {
       impdata[[i]]<-NA
       code<-2
@@ -611,9 +627,12 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,ts=NULL,cs=
     ximp<-untransform(ximp,logs=prepped$logs,xmin=prepped$xmin,sqrts=prepped$sqrts,lgstc=prepped$lgstc)
     
     
-    
-    impdata[[i]]<-impfill(x.orig=data,x.imp=ximp,noms=prepped$noms,ords=prepped$ords)  #I removed an xtemp here to cut down on memory. -mb
-    names(impdata)[i]<-paste("m",i,sep="")
+    if (keep.data) {
+      impdata[[i]]<-impfill(x.orig=data,x.imp=ximp,noms=prepped$noms,ords=prepped$ords)  #I removed an xtemp here to cut down on memory. -mb
+      names(impdata)[i]<-paste("m",i,sep="")
+    } else {
+      impdata[[i]]<-NA
+    }
     
     if (write.out){
       write.csv(impdata[[i]],file=paste(prepped$outname,i,".csv",sep=""))
