@@ -35,9 +35,9 @@ file.type<-function(...) {
   if (as.numeric(drop.select)==2)
     filetype<-"{{Stata files} {.dta}} {{All files} *}"
   if (as.numeric(drop.select)==3)
-    filetype<-"{{SPSS} {.dat}} {{All files} *}"
+    filetype<-"{{SPSS} {.sav}} {{All files} *}"
   if (as.numeric(drop.select)==4)
-    filetype<-"{{SAS Transport} {.xport}} {{All files} *}"
+    filetype<-"{{{All files} *}"
   if (as.numeric(drop.select)==5)
     filetype<-"{{RData} {.RData}} {{All files} *}"
   file.kind<<-filetype
@@ -70,7 +70,7 @@ load.data <- function(session=F) {
   if (drop.select == 2)
     amelia.data<<-try(read.dta(am.filename,convert.factors=F))
   if (drop.select == 3)
-    amelia.data<<-try(read.spss(am.filename,use.value.labels=F))
+    amelia.data<<-try(read.spss(am.filename,use.value.labels=F,to.data.frame=TRUE))
   if (drop.select == 4)
     amelia.data<<-try(read.xport(am.filename))
   if (drop.select == 5)
@@ -505,10 +505,10 @@ run.amelia <- function() {
 amelia.save <- function(out,outname,m)  {
   if (output.select == 1)
     for (i in 1:m) 
-      write.csv(out[[i]],file=paste(am.directory,"/",outname,i,".csv",sep=""))
+      write.csv(out[[i]],file=paste(am.directory,"/",outname,i,".csv",sep=""),row.names=FALSE)
   if (output.select == 2)
     for (i in 1:m) 
-      write.table(out[[i]],file=paste(am.directory,"/",outname,i,".txt",sep=""),sep="\t")
+      write.table(out[[i]],file=paste(am.directory,"/",outname,i,".txt",sep=""),sep="\t",row.names=FALSE)
   if (output.select == 3)
     for (i in 1:m) 
       write.dta(out[[i]],file=paste(am.directory,"/",outname,i,".dta",sep=""),version=6)
