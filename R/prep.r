@@ -555,7 +555,7 @@ amelia.prep <- function(data,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,
       }
     } else {
       if ((realAMp*(realAMp+3))/2 >= (2*realAMn)) {
-        error.code<-35
+        error.code<-34
         error.mess<-paste("The number of observations in too low to estimate the number of \n",
                         "parameters.  You can either remove some variables, add some \n",
                         "observations, or increase the empirical prior.")

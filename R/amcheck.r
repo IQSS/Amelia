@@ -459,10 +459,10 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
   
 
  
-  #Error code: 36
+  #Error code: 35
   #tolerance must be greater than zero
   if (tolerance <= 0) {
-    error.code<-36
+    error.code<-35
     error.mess<-paste("The tolerance option must be greater than zero.")
     return(list(code=error.code,mess=error.mess))
   }
@@ -471,10 +471,10 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
   if (!identical(noms,NULL)) {
     
     for (i in noms) {
-      #Error code: 37
+      #Error code: 36
       #too many levels on noms
       if (length(unique(x[,i])) > (1/3)*(AMn)) {
-        error.code<-37
+        error.code<-36
         error.mess<-paste("The number of categories in your variables set in noms is \n",
                           "greater than one-third the number of observations.  Check \n",
                           "that noms is set correctly.")
@@ -497,10 +497,10 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
     fact<-c(1:AMp)
   else
     fact<--c(noms,ords,idvars,cs)
-  #Error code: 38
+  #Error code: 37
   #factors out of the noms,ids,ords,cs
   if (any(sapply(x[,fact],class)=="factor")) {
-    error.code<-38
+    error.code<-37
     error.mess<-paste("You have a \"factor\" variable in the data.  You may \n",
                       "have wanted to set this as a ID variable to remove it \n",
                       "from the imputation model or as an ordinal or nominal \n", 
@@ -515,8 +515,9 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
   if (any(sapply(x[,idcheck],class)=="character")) {
     error.code<-38
     error.mess<-paste("You have a \"character\" variable in the data.  You may \n",
-                      "have wanted to set this as a ID variable to remove it \n",
-                      "from the imputation model.  Please either remove it from \n",
+                      "have wanted to set this as a ID variable,
+nominal\n",
+                      "or the cross sectional variable.  Please either remove it from \n",
                       "the data or set it as an ID variable.") 
     return(list(code=error.code,mess=error.mess))
   }
