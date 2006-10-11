@@ -12,6 +12,7 @@
 %\newcommand{\Amelia}{${\mathfrak{A}melia}$}
 \newcommand{\Amelia}{\ensuremath{\mathfrak Amelia} }
 \newcommand{\AmeliaII}{\ensuremath{\mathfrak Amelia~II} }
+\newcommand{\adjparbox}[2]{\parbox{#1}{\vspace{.35em}#2\vspace{.35em}}}
 \usepackage{vmargin}
 \topmargin=0in
 
@@ -186,10 +187,8 @@ and Start Menu.
 
 Users familiar with the $R$ language, and who intend to use \Amelia
 primarily as a function within other $R$ code can install all the
-Amelia functions as one would install any other Amelia library.  There
-is a .zip package install, which can be added to the library path.
-Additionally the functions are provided in a set of five source files
-which can be sourced into any $R$ code directly.  A package install can be called within R by:
+Amelia functions as one would install any other $R$ library.  A
+package install can be called within R by:
   \begin{verbatim}
   > install.packages("Amelia",repos="http://gking.harvard.edu")
   \end{verbatim}
@@ -201,7 +200,7 @@ utilize AmeliaView to set options on variables, change arguments, or
 run diagnostics.  From the command line, AmeliaView can be brought up
 with the call:
   \begin{verbatim}
-  > ameliagui()
+  > AmeliaView()
   \end{verbatim}
 
 \subsection{Linux}
@@ -964,6 +963,152 @@ arguments.  For example, specifying an identification variable with
 \texttt{idvars} while also using \texttt{arglist} will result in
 Amelia ignoring the \texttt{idvars} provided by the user and refer to
 the idvars setting in \texttt{arglist}.
+
+\section{Error Checking and Reference Guide}
+\label{sec:errors}
+In order to assure a smooth run of the algorithm, \Amelia runs a check
+of all the inputs passed to it.  If it finds an error, it will exit
+the function and present you with an error message and an error code.
+The vast majority of these checks keep your inputs from crashing
+\Amelia, but there are a few instances when you would want to turn off
+checking.  In these cases, you can use the \texttt{incheck} argument
+to the \texttt{amelia()} function.  Setting this option to
+\texttt{FALSE} will skip all error checking.  Only run \Amelia with
+this option set if you know that all your inputs are correct and you
+are sure you need to bypass a certain check.
+
+
+\subsection{Error Code Reference}
+\label{sec:errorref}
+
+\begin{longtable}{|l|l|}
+\hline
+  \multicolumn{1}{|l|}{Return Code} & 
+  \multicolumn{1}{l|}{Error Message} \\
+  \hline
+\endhead
+
+1  & \adjparbox{5in}{Normal run of Amelia}\\
+\hline
+2  &  \adjparbox{5in}{One or more imputations ended with a non-invertible covariance
+matrix.  Check for highly collinear variables.}\\
+\hline
+3  &  \adjparbox{5in}{One of the arguments points to an R variables that does not
+exists.} \\
+\hline
+4  &  \adjparbox{5in}{One variable in the data set is completely missing or only has
+one observation.}\\
+\hline
+5  &  \adjparbox{5in}{One of the variables you have referred to in an argument does
+not match any variable name in the data.}\\
+\hline
+6  &  \adjparbox{5in}{One of the column numbers in an argument is outside the range of
+the data.}\\
+\hline
+7  &  \adjparbox{5in}{One of the priors matrices is not a matrix. }\\
+\hline
+8  &  \adjparbox{5in}{One of the priors matrices is a character matrix, but it must be
+numeric.}\\
+\hline
+9  &  \adjparbox{5in}{One of the priors matrices does not have the same dimensions as
+the data.} \\
+\hline
+10 &  \adjparbox{5in}{A variable marked for a square root transformation has negative
+values.} \\
+\hline
+11 &  \adjparbox{5in}{A varaible marked for a logistic transformation has values
+outside of the 0-1 interval.}\\
+\hline
+12 &  \adjparbox{5in}{Confidence intervals on priors must be between 0 and 1.}\\
+\hline
+13 &  \adjparbox{5in}{Cannot set all the variables as identification variables.}\\
+\hline
+14 &  \adjparbox{5in}{The time series and cross sectional variables cannot be the
+same.}\\
+\hline
+15 &  \adjparbox{5in}{Only one time series variable can be specified.}\\
+\hline
+16 &  \adjparbox{5in}{Only one cross sectional variable can be specified.}\\
+\hline
+17 &  \adjparbox{5in}{The case priors must be in the form of a matrix.}\\
+\hline
+18 &  \adjparbox{5in}{The cross sectional variable must be set to use case priors.}\\
+\hline
+19 &  \adjparbox{5in}{The case priors have the wrong dimensions.  They should be a $k x
+k$ matrix, where is $k$ is the number of cases.}\\
+\hline
+20 &  \adjparbox{5in}{Case prior values must be either 0, 1, 2, or 3.}\\
+\hline
+21 &  \adjparbox{5in}{The polynominals of time are longer than one variable.}\\
+\hline
+22 &  \adjparbox{5in}{The polynominals of time argument is not a number.}\\
+\hline
+23 &  \adjparbox{5in}{The polynominals of time argument is not an integer.}\\
+\hline
+24 &  \adjparbox{5in}{The polynominals of time arugment is not between 0 and 3.}\\
+\hline
+25 &  \adjparbox{5in}{The polynominals of time argument is set without the time series
+varaible being set.}\\
+\hline
+26 &  \adjparbox{5in}{The interact with the cross-section argument (\texttt{intercs})
+is set without the cross-sectional variable being set.}\\
+\hline
+28 &  \adjparbox{5in}{There are too many cross sections to run \Amelia with an
+interaction between the cross section and the polynominals of time.}\\
+\hline
+29 &  \adjparbox{5in}{One of the logical arguments is longer than one.}\\
+\hline
+30 &  \adjparbox{5in}{One of the logical arguments is not a logical (TRUE/FALSE)
+value.}\\
+\hline
+31 &  \adjparbox{5in}{One of the logical arguments is NULL, but it must be
+(TRUE/FALSE).}\\
+\hline
+32 &  \adjparbox{5in}{One of the variables is marked for more than one
+transformation.}\\
+\hline
+33 &  \adjparbox{5in}{One of the time series or cross sectional variables is marked
+for transformation, but these cannot be transformed.}\\
+\hline
+34 &  \adjparbox{5in}{The number of observations is too small to estimate the
+imputations for the number of paramters included.  Drop some
+parameters or increase the empirical prior.}\\
+\hline
+35 &  \adjparbox{5in}{The tolerance parameter is less than or equal to zero.  Your
+chains will never converge.}\\
+\hline
+36 &  \adjparbox{5in}{The number of categories in a variable marked as nominal is
+greater than one-third of the number of rows in the data.  Make sure
+you have set this argument correctly.}\\
+\hline
+37 &  \adjparbox{5in}{There is factor variable that isn't marked as an identification,
+nominal, ordinal, or cross sectional variable.  These are non-numeric variables
+and they cannot be imputed as anything other than a nominal or an
+ordinal.}\\
+\hline
+38 &  \adjparbox{5in}{There is a character variable in your data.  Remove it from your
+data or convert it to a factor and set it accordingly (see error code
+37).}\\
+\hline
+39 &  \adjparbox{5in}{There are no missing values in the data. }\\
+\hline
+40 &  \adjparbox{5in}{The lags argument is set without setting the time series
+variable.}\\
+\hline
+41 &  \adjparbox{5in}{The leads argument is set without setting the time series
+variable.}\\
+\hline
+42 &  \adjparbox{5in}{There is only one column of data.  In order to impute, there has
+to be more than one variable.}\\
+\hline
+43 &  \adjparbox{5in}{There is a variable in your data that does not vary.}\\
+\hline
+44 &  \adjparbox{5in}{A variable marked as an ordinal has non-integer values.}\\
+\hline
+45 &  \adjparbox{5in}{The output filename is in a location that \Amelia cannot write.
+Please check file permissions and try again.}\\
+\hline
+\end{longtable}
 
 \section{AmeliaView Menu Guide}
 \label{sec:menu}
