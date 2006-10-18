@@ -1,11 +1,11 @@
-\name{amelia.gui}
-\alias{amelia.gui}
+\name{AmeliaView}
+\alias{AmeliaView}
 \title{Interactive GUI for Amelia}
-\description{Brings up the Amelia graphical interface, which allows users
+\description{Brings up the AmeliaView graphical interface, which allows users
   to load datasets, manage options and run Amelia from a traditional 
   windowed environment.
 }
 \usage{
-amelia.gui()
+AmeliaView
 }
 \keyword{ utilities }% at least one, from doc/KEYWORDS

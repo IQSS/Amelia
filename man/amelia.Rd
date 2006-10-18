@@ -7,20 +7,22 @@
   imputed datasets.  
 }
 \usage{
-amelia(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,ts=NULL,cs=NULL,casepri=NULL,means=NULL,
-                  sds=NULL,mins=NULL,maxs=NULL,conf=NULL,empri=NULL,tolerance=0.00001,polytime=NULL,startvals=0,
-                  lags=NULL, leads=NULL, intercs=FALSE,archive=TRUE,sqrts=NULL,lgstc=NULL,noms=NULL,incheck=T,
-                  ords=NULL,collect=FALSE,outname="outdata",write.out=TRUE)
-}
-
+amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
+                 ts=NULL,cs=NULL,casepri=NULL,means=NULL,sds=NULL,mins=NULL,
+                 maxs=NULL,conf=NULL,empri=NULL,tolerance=0.0001,
+                 polytime=NULL,startvals=0,lags=NULL, leads=NULL,
+                 intercs=FALSE,archive=TRUE,sqrts=NULL,lgstc=NULL,
+                 noms=NULL,incheck=T,ords=NULL,collect=FALSE,
+                 outname="outdata",write.out=TRUE,arglist=NULL,keep.data=TRUE) 
 \arguments{
   \item{data}{incomplete data, organized into either a data frame 
     or a matrix.}
   
   \item{m}{number of imputed datasets to create.}
   
-  \item{p2s}{a logical value indicating if progress should be printed 
-    to the screen.}
+  \item{p2s}{an interger value taking either 0 for no screen output, 1
+  for normal screen printing of iteration numbers, and 2 for detailed
+  screen output.  See "Details" for specifics on output when p2s=2.}
     
   \item{frontend}{a logical value used internally for the GUI.}
   
@@ -113,14 +115,44 @@ amelia(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,ts=NULL,cs=NULL,casep
       
   \item{noms}{a vector of numbers or names indicating columns in the data
     that are nominal variables.}
-    
+
+  \item{ords}{a vector of numbers or names indicating columns in the
+    data that are ordinal variables.}
+
+  \item{collect}{a logical value indicating whether or not garbage
+    collection should occur during the imputations.  Only set this to
+    \code{TRUE} if you are experiencing memory issues as it can
+    significantly slow down the imputation process.}
+
   \item{incheck}{a logical indicating whether or not the inputs to the
     function should be checked before running \code{amelia}.  This should
     only be set to \code{FALSE} if you are extremely confident that your
     settings are non-problematic and you are trying to save computational 
     time.}
+
+  \item{outname}{a string indicating the prefix of the file to which
+    Amelia will write the imputed datasets.  You can also specify a path
+    in front of the prefix if you do not wish your items stored in the
+    working directory.  The files will be written as .csv files.}
+
+  \item{write.out}{a logical value indicating whether or not you wish to
+    have Amelia write your imputed datasets as comma-seperated value files.
+    If \code{TRUE}, Amelia will use the \code{outname} arugment as the
+    file prefix.}
+
+  \item{arglist}{an output list from the \code{amelia} function or from
+    a saved session from AmeliaView.  Values from this list take precendent
+    over any individually set arugments.   See the Amelia manual for more
+    information.}
+
+  \item{keep.data}{a logical value indicating whether or not to keep the
+    imputed datasets after each imputation.  Useful if the datasets are
+    large and you wish to avoid keeping them in memory after they have been
+    written to a file.}
+
 }
-\details{Multiple imputation is a method for analyzing incomplete 
+
+\details{ Multiple imputation is a method for analyzing incomplete
   multivariate data.  This function will take an incomplete dataset in
   either data frame or matrix form and return \code{m} imputed datatsets
   with no missing values. The algorithm used will bootstrap a sample dataset
@@ -183,6 +215,11 @@ amelia(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,ts=NULL,cs=NULL,casep
     errors.}
   
   \item{message}{error message.  Only appears if return code is not 0.}
+
+  \item{amelia.args}{list of the arguments used in the imputation along
+    with a few diagnostics on each imputation.}
+  \item{thetas}{a matrix of the output parameter matrices used to
+    generate the imputed datasets.}
 }
 
 \keyword{models}
