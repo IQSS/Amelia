@@ -547,10 +547,13 @@ if (returntype=="theta"){
 # try to minimize the number of copies of the dataset
 
 ## Core amelia function
-amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,ts=NULL,cs=NULL,casepri=NULL,means=NULL,
-                  sds=NULL,mins=NULL,maxs=NULL,conf=NULL,empri=NULL,tolerance=0.0001,polytime=NULL,startvals=0,
-                  lags=NULL, leads=NULL, intercs=FALSE,archive=TRUE,sqrts=NULL,lgstc=NULL,noms=NULL,incheck=T,
-                  ords=NULL,collect=FALSE,outname="outdata",write.out=TRUE,arglist=NULL,keep.data=TRUE) {
+amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
+                 ts=NULL,cs=NULL,casepri=NULL,means=NULL,sds=NULL,mins=NULL,
+                 maxs=NULL,conf=NULL,empri=NULL,tolerance=0.0001,
+                 polytime=NULL,startvals=0,lags=NULL, leads=NULL,
+                 intercs=FALSE,archive=TRUE,sqrts=NULL,lgstc=NULL,
+                 noms=NULL,incheck=T,ords=NULL,collect=FALSE,
+                 outname="outdata",write.out=TRUE,arglist=NULL,keep.data=TRUE) {
 
   #Generates the Amelia Output window for the frontend
   if (frontend) {

@@ -16,7 +16,9 @@
 ##             or junk (idvars). added to subset/unsubset (ignore last update).
 ## 02/08/06 mb fixed bug where polytime=0 would make for odd behaviour/crashing
 ## 11/09/06 mb fixed bug in unsubset: 'index' too long to subset w/o 'which'
-nametonumber<-function(x,ts,cs,idvars,noms,ords,logs,sqrts,lgstc,lags,leads) {
+nametonumber<-function(x,ts,cs,idvars,noms,ords,logs,sqrts,lgstc,lags,leads)
+{
+  
   listconvert<-function(opt) {
     junk.seq<-1:ncol(x)
     junk.names<-dimnames(x)[[2]]
@@ -54,14 +56,16 @@ nametonumber<-function(x,ts,cs,idvars,noms,ords,logs,sqrts,lgstc,lags,leads) {
   if (class(leads)=="character")
     leads<-listconvert(leads)
 
-  output<-list(code=code,ts=ts,cs=cs,idvars=idvars,noms=noms,ords=ords,logs=logs,
-              sqrts=sqrts,lgstc=lgstc,lags=lags,leads=leads,mess=mess)
-
-  if (any(is.na(output)))
-    output$code<-1
-
+  output<-list(code=code,ts=ts,cs=cs,idvars=idvars,noms=noms,
+               ords=ords,logs=logs,sqrts=sqrts,lgstc=lgstc,
+               lags=lags,leads=leads,mess=mess)
+  
+  if (any(is.na(output))) 
+      output$code<-1
+  
   return(output)
 }
+
 ## amtransform - Transform variables to assume normality
 ##   x:      data matrix
 ##   logs:   variable list of log-linear transformations
@@ -463,7 +467,7 @@ amelia.prep <- function(data,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,
   code<-1
   if (!identical(arglist,NULL)) {
     if (!is.list(arglist) || identical(arglist$amelia.args,NULL)) {
-      error.code<-37
+      error.code<-46
       error.mess<-paste("The argument list you provided is invalid.")
       return(list(code=error.code,message=error.mess))
     }
@@ -590,4 +594,3 @@ amelia.prep <- function(data,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,
     outname = outname,
     subset.index = d.subset$index))
 }
-    
