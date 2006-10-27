@@ -599,7 +599,7 @@ tkconfigure(input.drop.box,command=function(...)file.type())
 input.entry <- tkentry(gui.input, width="45", textvariable = inname)
 input.browse <- tkbutton(gui.input, text="Browse...", command=function()get.filename())
 input.label <- tklabel(gui.input, text="Input Data File:                     ")
-input.load <- tkbutton(gui.input, text="Load Data", width = 10, command = function() load.data(,))
+input.load <- tkbutton(gui.input, text="Load Data", width = 10, command = function() load.data())
 input.see <- tkbutton(gui.input, text="Summarize Data", state = "disabled", width = 13,
   command = function() sum.data())
 input.help <-tkbutton(gui.input, text = "?", command = function()browseURL("http://gking.harvard.edu/amelia/docs/Step_1.html"))
