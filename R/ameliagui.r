@@ -879,7 +879,7 @@ gui.var.setup<-function() {
       tkgrid(tcl("label",paste(subfID,".top",3,sep=""),text="Ordinal"),row=1,column=3)
       tkgrid(tcl("label",paste(subfID,".top",4,sep=""),text="Nominal"),row=1,column=4)
       tkgrid(tcl("label",paste(subfID,".top",5,sep=""),text="Log-Linear"),row=1,column=5)
-      tkgrid(tcl("label",paste(subfID,".top",6,sep=""),text="Sqaure Root"),row=1,column=6)
+      tkgrid(tcl("label",paste(subfID,".top",6,sep=""),text="Square Root"),row=1,column=6)
       tkgrid(tcl("label",paste(subfID,".top",7,sep=""),text="Logistic"),row=1,column=7)
       tkgrid(tcl("label",paste(subfID,".top",8,sep=""),text="ID Variable"),row=1,column=8)
     } else {
