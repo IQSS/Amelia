@@ -11,6 +11,7 @@
 ##  24/08/06 mb - added tolerance option on variables page.  
 ##  11/09/06 mb - actually passes nominals now, fixed char problems on summarize
 ##  19/09/06 mb - changed function name to AmeliaView
+##  30/11/06 mb - fixed session loading for 2.4.0
 
 
 AmeliaView<-function() {
@@ -280,7 +281,7 @@ load.session <- function() {
   first.line <- readLines(session.test)[1]
   close(session.test)
   
-	if (first.line != "\"amelia.list\" <-") {
+	if (first.line != "\"amelia.list\" <-" && first.line != "'amelia.list' <-") {
     tkmessageBox(message="Not an Amelia session file.  Try again.",icon="error",type="ok")
     return(NULL)
   }
@@ -535,7 +536,7 @@ if (.Platform$OS.type == "windows")
 outname <<- tclVar("outdata")
 outnum <<- tclVar("5")
 empri <<- tclVar("0")
- tol<<-tclVar("0.0001")
+tol<<-tclVar("0.0001")
 amelia.data <<- NULL
 am.filename <<- NULL
 varnames <<- NULL
@@ -1754,6 +1755,20 @@ gui.pri.setup<-function() {
 		tkbind(pp,"<Destroy>",function() {tkgrab.release(pp);tkfocus(tt);})
 	}
 
+
+#  obs.priors2 <- function() {           
+#    pp <- tktoplevel()
+#    tkwm.title(pp,"Observational Priors")
+#    current.priors <- tkframe(pp)
+#    currentPriorsSW <- tkwidget(pp, "ScrolledWindow", relief="sunken", borderwidth=2)
+#    currentPriorsSF <- tkwidget(currentPriorsSW, "ScrollableFrame")
+#    tcl(currentPriorsSW, "setwidget", currentPriorsSF)
+#    subfID <- tclvalue(tcl(currentPriorsSF, "getframe"))
+#    addPriorButton <- tkbutton(pp, text = "Add Prior",
+#                               command = function() print(1))
+#    removePriorButton <- tkbutton(pp, text = "Remove Selected Priors", command =
+#                                  function() print(2)) 
+                                        
   pri.save <- function() {
     empri<<-tclVar(as.numeric(tclvalue(temp.empri)))
     for (i in 1:ncol(amelia.data)) {
@@ -1969,4 +1984,26 @@ tkwm.deiconify(gui)
 tkwait.window(gui)
 
 }
-                                                                  
+
+## the following functions have been imported from Rcmdr
+ameliaEnv <- function() {
+    pos <-  match("ameliaEnv", search())
+    if (is.na(pos)) { # Must create it
+        ameliaEnv <- list()
+        attach(ameliaEnv, pos = length(search()) - 1)
+        rm(ameliaEnv)
+        pos <- match("ameliaEnv", search())
+        }
+    return(pos.to.env(pos))
+    }
+
+putAmelia <- function(x, value)
+    assign(x, value, envir = ameliaEnv())
+
+getAmelia <- function(x, mode="any")
+    get(x, envir = ameliaEnv(), mode = mode, inherits = FALSE)
+    
+ameliaTclSet <- function(name, value){
+    name <- ls(unclass(getAmelia(name))$env)
+    tcl("set", name, value)
+    }
