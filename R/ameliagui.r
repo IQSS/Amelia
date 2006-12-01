@@ -11,7 +11,7 @@
 ##  24/08/06 mb - added tolerance option on variables page.  
 ##  11/09/06 mb - actually passes nominals now, fixed char problems on summarize
 ##  19/09/06 mb - changed function name to AmeliaView
-##  30/11/06 mb - fixed session loading for 2.4.0
+##  1/12/06 mb - fixed session loading for 2.4.0, can't compare non-numerics
 
 
 AmeliaView<-function() {
@@ -281,7 +281,7 @@ load.session <- function() {
   first.line <- readLines(session.test)[1]
   close(session.test)
   
-	if (first.line != "\"amelia.list\" <-" && first.line != "'amelia.list' <-") {
+	if (first.line != "\"amelia.list\" <-" && first.line != "`amelia.list` <-") {
     tkmessageBox(message="Not an Amelia session file.  Try again.",icon="error",type="ok")
     return(NULL)
   }
@@ -1898,7 +1898,7 @@ gui.diag.setup <- function() {
 		varnum2<-tknearest(diag.list, varnum)
 		diag.sel.var<<-as.numeric(varnum2) + 1
 		diag.var.name<<-names(amelia.data)[diag.sel.var]
-		if (is.factor(amelia.data[,diag.sel.var]))
+		if (!is.numeric(amelia.data[,diag.sel.var]))
 		  tkconfigure(diag.but.compare, state="disabled")
     else 
       tkconfigure(diag.but.compare, state="active")

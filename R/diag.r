@@ -8,6 +8,8 @@
 ##  15/05/06 jh - overimpute: stacking of original data, and various graphics adjustments
 ##  01/06/06 mb - added "gethull" and "disperse" for overdispersion diagnostic
 ##  19/07/06 mb - moved handling of arglists to prep.
+##  01/12/06 mb - can't compare non-numerics, only use the relevant columns when
+##                building compare
 
 compare.density <- function(data=NULL,output=NULL,var=NULL,col=1:2,lwd=1,main="",frontend=F,...) {
   
@@ -18,32 +20,35 @@ compare.density <- function(data=NULL,output=NULL,var=NULL,col=1:2,lwd=1,main=""
       stop("The variable name (var) doesn't correspond to a column in the data.")
     else
       var<-match(var,names(data))
-  
   if (any(var>ncol(data),var<0,var%%1!=0))
     stop("The 'var' option points to a non-existant column.")
+  if (!is.numeric(data[,var]))
+    stop("The variable selected is not a numeric variable.")
   if (any(!is.list(output),is.null(output$amelia.arg),is.null(output$m1)))
     stop("The 'output' is not an Amelia list.")
-
   
   mcount<-output$amelia.arg$m
-  varimp<-data.matrix(output[[1]])
+  varimp<-output[[1]][,var]
   if (identical(varimp,NA)) {
     varimp<-0
     mcount<-mcount-1
   } else {
     if (any(dim(output[[1]])!=dim(data)))
       stop("The 'output' doesn't match the data.")
+    else if (!is.numeric(output[[1]][,var]))
+      stop("The variable selected is not a numeric variable")
   }
   for (i in 2:output$amelia.arg$m) {
     if (identical(output[[i]],NA)) {
       mcount<-mcount-1
     } else {
-      varimp<-varimp+data.matrix(output[[i]])
-    if (any(dim(output[[i]])!=dim(data)))
-      stop("The 'output' doesn't match the data.")
+      varimp<-varimp+output[[i]][,var]
+      if (any(dim(output[[i]])!=dim(data)))
+        stop("The 'output' doesn't match the data.")
+      else if (!is.numeric(output[[i]][,var]))
+        stop("The variable selected is not a numeric variable.")
     }
   }
-  print(mcount)
   varimp<-varimp/mcount
   
   if (frontend)
@@ -51,7 +56,6 @@ compare.density <- function(data=NULL,output=NULL,var=NULL,col=1:2,lwd=1,main=""
       
   
   vars <- data[,var]
-  varimp<-varimp[,var]
   ratio<-length(varimp[is.na(vars)])/length(varimp[!is.na(vars)])
   varnames<-dimnames(data)[[2]]            # This will work for both data.frames AND matricies.
   main<-varnames[var]                      # This will work for both data.frames AND matricies.
