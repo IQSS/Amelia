@@ -76,6 +76,13 @@ Joseph, Gary King, Kenneth Scheve, and Naunihal Singh.
     <li>Documentation:
     <a href="/amelia/docs/amelia.pdf">PDF</a> </li>
 	
+    <li>All <span class="orange">questions, bugs, and requests</span>:
+    Amelia Mailing List, <a
+	href="http://lists.hmdc.harvard.edu/index.cgi?info=amelia"
+	target="gkingext">[Un]Subscribe</a>, or <a
+	href="http://lists.hmdc.harvard.edu/lists/amelia/"
+	target="gkingext">Browse/Search Archives</a></li>
+
     <li>Installation of AmeliaView for Windows (for those who don't
 	know R): (1) <a href="http://www.r-project.org/">install the
 	current verison of R</a> if you haven't already, (2)
@@ -106,12 +113,6 @@ Joseph, Gary King, Kenneth Scheve, and Naunihal Singh.
 	2001): Pp. 49-69. (<span class="bg">Article:</span> <a
 	href="/files/evil.pdf">PDF</a> | <span class="bg">Abstract:</span>
 	<a href="/files/abs/evil-abs.shtml">HTML</a>)</li>
-	
-    <li>All questions, bugs, and requests: Amelia Mailing List, <a
-	href="http://lists.hmdc.harvard.edu/index.cgi?info=amelia"
-	target="gkingext">[Un]Subscribe</a>, or <a
-	href="http://lists.hmdc.harvard.edu/lists/amelia/"
-	target="gkingext">Browse/Search Archives</a></li>
 	
     <li><a href="/amelia/" target="ChangeDetectionWiz"
 	onClick="doChangeDetectionPopup()"> Track Amelia changes</a></li>

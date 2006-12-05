@@ -135,7 +135,7 @@ $S^{2}_{q}=\Sigma^{m}_{j=1}(q_j-\bar{q})^2/(m-1)$ be the sample
 variance across the $m$ point estimates.  The standard error of the
 multiple imputation point estimate is the square root of
 \begin{equation}
-SE(q)^2=\frac{1}{m}\sum^{m}_{j=1}SE(q_j)^2+S^{2}_{j}(1+1/m).
+SE(q)^2=\frac{1}{m}\sum^{m}_{j=1}SE(q_j)^2+S^2_q(1+1/m).
 \end{equation}
 
 Users should see especially Pp. 57-58 of \citet{KinHonJos01} for a
@@ -379,10 +379,10 @@ For example, a simple session or code fragment might be:
   \begin{verbatim}
   > library(amelia)
   > x<-read.table("mydata.csv")
-  > output<-amelia(data=x,empri=10,amords=c(3,4))
+  > output<-amelia(data=x,empri=10,ords=c(3,4))
   > save(output,file="output.rData")
   \end{verbatim}
-where \texttt{amords} and \texttt{empri} are options detailed later in
+where \texttt{ords} and \texttt{empri} are options detailed later in
 this manual.
 
 \section{Options}
@@ -606,7 +606,7 @@ inclusive, that sets the order of polynomials to use, and
 \texttt{intercs} defines whether these polynomials should be
 interacted with the cross-sectional unit.
 
-\section{Setting Priors} \label{sec:obspri}
+\section{Setting Priors} 
 
 ${\mathfrak Amelia}$ has a number of methods of setting priors within
 the imputation model.  Two of these are commonly used and discussed
@@ -661,18 +661,19 @@ imputation and the prior mean, where the weights are functions of the
 relative strength of the data and prior: when the model predicts very 
 well, the imputation will downweight the prior, and vice versa.  
 
-The priors about individual observations should describe the analyst's 
-belief about the distribution of the missing data cell.  This can either 
-take the form of a mean and a standard deviation or a confidence interval.  For instance, we 
-might know that GDP growth for Ghana in a given year was somwhere 
-around $3.5\%$, but we have some uncertainty as to the exact value.   
-Our prior belief about the distribution of the missing data cell, then, 
-centers on $3.5$ with a standard deviation that reflects the amount of 
-uncertainty we have about our prior belief. 
+The priors about individual observations should describe the analyst's
+belief about the distribution of the missing data cell.  This can
+either take the form of a mean and a standard deviation or a
+confidence interval.  For instance, we might know that GDP growth for
+Ghana in a given year was somwhere around $3.5\%$, but we have some
+uncertainty as to the exact value.  Our prior belief about the
+distribution of the missing data cell, then, centers on $3.5$ with a
+standard deviation that reflects the amount of uncertainty we have
+about our prior belief.
 
-In AmeliaView, the observational priors dialog will guide you through 
-adding priors to the imputation.  Refer to section \ref{sec:refobspri} for 
-further details on how to add priors in AmeliaView.
+In AmeliaView, the observational priors dialog will guide you through
+adding priors to the imputation.  Refer to section \ref{sec:refobspri}
+for further details on how to add priors in AmeliaView.
 
 Alternatively, in R, you must build two matrices, one for the mean and
 one for the standard deviation, both of which have the same
@@ -1509,14 +1510,13 @@ A list containing the imputed datasets in objects 1 through \texttt{m}.
   variable can take, enter the lower and upper bound.
 \item \textbf{Set Case Priors} -
   Tell ${\mathfrak Amelia}$ which cases are similar.  See
-  \ref{sec:casepri} for more details about case priors.
+  \ref{sec:refcasepri} for more details about case priors.
 \item \textbf{Set Observational Priors} - Set prior beliefs about 
  ranges for individual missing observations.  For more information 
  about observational priors, see \ref{sec:obspri}.
 \end{enumerate}
 
-\subsubsection{Case Priors}
-\label{sec:refcasepri}
+\subsubsection{Case Priors}\label{sec:refcasepri}
 \begin{figure}[ht]
  \begin{htmlonly} 
   \centering \includegraphics[scale=1]{case} 
@@ -1545,8 +1545,7 @@ A list containing the imputed datasets in objects 1 through \texttt{m}.
   setting.
 \end{enumerate}
 
-\subsubsection{Observational Priors}
-\label{sec:refobspri}
+\subsubsection{Observational Priors}\label{sec:refobspri}
 \begin{figure}[h]
  \begin{htmlonly} 
   \centering \includegraphics[scale=1]{obspri} 
