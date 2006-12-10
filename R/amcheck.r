@@ -11,28 +11,27 @@
 
 
 
-amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
-  casepri,polytime,lags,leads,logs,sqrts,lgstc,p2s,frontend,archive,intercs,noms,
-  startvals,ords,collect,outname,write.out) {
+amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
+                        ts=NULL,cs=NULL,casepri=NULL,means=NULL,sds=NULL,
+                        mins=NULL,maxs=NULL,conf=NULL,empri=NULL,
+                        tolerance=0.0001,polytime=NULL,startvals=0,lags=NULL,
+                        leads=NULL,intercs=FALSE,archive=TRUE,sqrts=NULL,
+                        lgstc=NULL,noms=NULL,incheck=T,ords=NULL,collect=FALSE,
+                        outname="outdata",write.out=TRUE,arglist=NULL,
+                        keep.data=TRUE, priors=NULL) {
 
   #Checks for errors in list variables
   listcheck<-function(vars,optname) {
     if (identical(vars,NULL))
       return(0)
-    if (mode(vars) == "character") {
-      for (i in 1:length(vars)) {
-        mat<-vars[[i]]==dimnames(x)[[2]]
-        if (sum(mat) == 0) {
-          mess<-paste(optname,"is set to a name that doesn't match any of the column names in the data.")
+    if (mode(vars) == "character") { 
+      if (any(is.na(match(vars,colnames(data))))) {
+        mess<-paste("The following variables are refered to in the",
+                    optname,"argument, but don't are not columns in the data:",
+                    vars[is.na(match(vars,colnames(data)))])
           return(list(1,mess))
         }
-#        for (j in 1:ncol(x))   #We don't need a vector of numbers to subset
-#          if (mat[[j]])        #we can just subset with the names
-#            vars[[i]]<-j
-      }
        return(0)
-#      vars<-as.numeric(vars)    #THESE WERE THE OLD LINES
-#      return(vars)              #THIS CONVERSION WOULD CAUSE "IDENTICAL" TO FAIL   
     }
     if (any(vars>AMp,vars<0,vars%%1!=0)) {
       mess<-paste(optname," is out of the range of \n",
@@ -72,7 +71,7 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
                           "Please change it to a numeric matrix.")
         return(list(2,mess))
       }
-      if (any(dim(opt)!=dim(x))) {
+      if (any(dim(opt)!=dim(data))) {
         mess<-paste("The", optname,"matrices must have the same dimensions\n",
                         "as the data.")
         return(list(3,mess))
@@ -81,17 +80,14 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
     return(0)
   }
 
-
-  AMn<-nrow(x)
-  AMp<-ncol(x)
   error.code <- 1
-  subbedout<-c(idvars,cs,ts)
 
 
-  
+
+
   #Error Code: 3
   #Arguments point to variables that do not exist.
-  if (inherits(try(get("x"),silent=T),"try-error"))
+  if (inherits(try(get("data"),silent=T),"try-error"))
     return(list(code=3,mess=paste("The setting for the data argument doesn't exist.")))
   if (inherits(try(get("m"),silent=T),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'm' argument doesn't exist.")))
@@ -178,9 +174,13 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
     return(list(code=3,mess=paste("The setting for the 'write.out' argument doesn't exist.")))
     
     
+  AMn<-nrow(data)
+  AMp<-ncol(data)
+  subbedout<-c(idvars,cs,ts)
+  
   #Error Code: 4
   #Completely missing columns
-  if (any(colSums(!is.na(x)) <= 1)) {
+  if (any(colSums(!is.na(data)) <= 1)) {
     error.code<-4
     error.mess<-paste("The data has a column that is completely missing or only has one \n",
                       "observation.  Remove this column from the data and retry amelia.")
@@ -229,35 +229,85 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
   if (!identical(ordout,0))                                  # THIS FORMERLY READ "NOMOUT"
     return(list(code=(ordout[[1]]+4),mess=ordout[[2]]))
   
-  #Error codes: 7-9
-  #check the priors
-  meanout<-priorcheck(means,"prior means")
-  if (!identical(meanout,0))
-    return(list(code=(meanout[[1]]+4),mess=meanout[[2]]))
-   
-  sdout<-priorcheck(sds,"prior standard deviations ('sds')")
-  if (!identical(sdout,0))
-    return(list(code=(sdout[[1]]+4),mess=sdout[[2]]))
+  # priors errors
+  if (!identical(priors,NULL)) {
 
-  minout<-priorcheck(mins,"prior minimums ('mins')")
-  if (!identical(minout,0))
-    return(list(code=(minout[[1]]+4),mess=minout[[2]]))
+    # Error code: 7
+    # priors isn't a matrix
+    if (!is.matrix(priors)) {
+      error.code <- 7
+      error.mess <- "The priors argument is not a matrix."
+      return(list(code=error.code, mess=error.mess))
+    }
+
+    # Error code: 8
+    # priors is not numeric
+    if (!is.numeric(priors)) {
+      error.code <- 7
+      error.mess <- paste("The priors matrix is non-numeric.  It should\n",
+                          "only have numeric values.")
+      return(list(code=error.code, mess=error.mess))
+
+    }
+
+    # Error code: 46
+    # priors matrix has the wrong dimensions
+    if (ncol(priors) != 4 & ncol(priors) != 5) {
+      error.code <- 46
+      error.mess <- paste("The priors matrix has the wrong numberof columns.\n",
+                          "It should have either 4 or 5 columns.",)
+      return(list(code=error.code, mess=error.mess))
+    }
+
+    if (nrow(priors) > nrow(data)*ncol(data)) {
+      error.code <- 46
+      error.mess <- "There are more priors than there are observations."
+      return(list(code=error.code, mess=error.mess))
+    }
+
+    # Error code: 47
+    # NAs in priors matrix
+    if (any(is.na(priors))) {
+      error.code <- 47
+      error.mess <- "There are missing values in the priors matrix."
+      return(list(code=error.code, mess=error.mess))
+    }  
     
-  maxout<-priorcheck(maxs,"prior maximums ('maxs')")
-  if (!identical(maxout,0))
-    return(list(code=(maxout[[1]]+4),mess=maxout[[2]]))
     
-  confout<-priorcheck(conf,"prior confidences ('conf')")
-  if (!identical(confout,0))
-    return(list(code=(confout[[1]]+4),mess=confout[[2]]))
+    prior.cols <- priors[,2] %in% c(1:ncol(data))
+    prior.rows <- priors[,1] %in% c(0:nrow(data))
 
+    # Error code: 9
+    # priors set for cells that aren't in the data
+    if (sum(c(!prior.cols,!prior.rows)) != 0) { 
+      error.code <- 9
+      error.mess <- "There are priors set on cells that don't exist."
+      return(list(code=error.code,mess=error.mess))
+    }
 
-  
-  
+    # drop any rows in the matrix that refer to non-NA cells
+    if (any(!is.na(data[priors[priors[,1]!=0,1:2]]))) {
+      priors <- priors[!is.na(data[priors[,1:2]]),]
+      warning("There are priors that refer to non-missing cells.  These have been dropped")
+
+    }
+
+    # Error code: 12
+    # confidences have to be in 0-1
+    if (nrow(priors) == 5) {
+      if (any(priors[,5] <= 0) || any(priors[,5] >= 1)) {
+        error.code<-12
+        error.mess<-paste("The priors confidences matrix has values that are less \n",
+                          "than or equal to 0 or greater than or equal to 1.")
+        return(list(code=error.code,mess=error.mess))
+      }
+    }
+        
+  }
   #Error code: 10
   #Square roots with negative values
   if (!identical(sqrts,NULL)) {
-    if (any(na.omit(x[,sqrts]) < 0)) {
+    if (any(na.omit(data[,sqrts]) < 0)) {
       error.code<-10
       error.mess<-paste("The square root transformation cannot be used on \n",
                         "variables with negative values.")
@@ -268,24 +318,26 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
   #Error code: 11
   #0-1 Bounds on logistic transformations
   if (!identical(lgstc,NULL)) {
-    if (any(x[,lgstc] <= 0,x[,lgstc]>=1)) {
+    if (any(data[,lgstc] <= 0,data[,lgstc]>=1)) {
       error.code<-11
       error.mess<-paste("The logistic transformation cannot be used on \n",
                         "variables with values out of the 0-1 range.")
       return(list(code=error.code,mess=error.mess))
     }
+    
   }
   
   #Error code: 12
   #Confidence Intervals for priors bounded to 0-1
-  if (!identical(conf,NULL)) {
-    if (any(conf <= 0,conf>=1,na.rm=T)) {
-      error.code<-12
-      error.mess<-paste("The priors confidences matrix has values that are less \n",
-                        "than or equal to 0 or greater than or equal to 1.")
-      return(list(code=error.code,mess=error.mess))
-    }
-  }
+  
+#  if (!identical(conf,NULL)) {
+#    if (any(conf <= 0,conf>=1,na.rm=T)) {
+#      error.code<-12
+#      error.mess<-paste("The priors confidences matrix has values that are less \n",
+#                        "than or equal to 0 or greater than or equal to 1.")
+#      return(list(code=error.code,mess=error.mess))
+#    }
+#  }
 
   #Error code: 13
   #Can't set all variables to 'idvar'
@@ -343,7 +395,7 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
     }
     #Error code: 19
     #Case priors have the wrong dimensions
-    if (sum(dim(casepri) == c(length(unique(x[,cs])),length(unique(x[,cs])))) != 2) {
+    if (sum(dim(casepri) == c(length(unique(data[,cs])),length(unique(data[,cs])))) != 2) {
       error.code<-19
       error.mess<-paste("The case priors have the wrong dimensions.  It should \n", 
                            "have rows and columns equal to the number of cases.")
@@ -403,7 +455,7 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
                         "without setting the cross section variable.")
       return(list(code=error.code,mess=error.mess))
     }
-    if (length(unique(x[,cs])) > (1/3)*(AMn)) {
+    if (length(unique(data[,cs])) > (1/3)*(AMn)) {
       error.code<-28
       error.mess<-paste("There are too many cross-sections in the data to use an \n",
                         "interaction between polynomial of time and the cross-section.")
@@ -473,7 +525,7 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
     for (i in noms) {
       #Error code: 36
       #too many levels on noms
-      if (length(unique(x[,i])) > (1/3)*(AMn)) {
+      if (length(unique(data[,i])) > (1/3)*(AMn)) {
         error.code<-36
         error.mess<-paste("The number of categories in your variables set in noms is \n",
                           "greater than one-third the number of observations.  Check \n",
@@ -481,7 +533,7 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
         return(list(code=error.code,mess=error.mess))
       }
       
-      if (length(unique(x[,i])) > 10)
+      if (length(unique(data[,i])) > 10)
         warning("The number of catagories in one of the variables marked nominal has greater than 10 categories. Check nominal specification.")
       
 
@@ -499,7 +551,7 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
     fact<--c(noms,ords,idvars,cs)
   #Error code: 37
   #factors out of the noms,ids,ords,cs
-  if (any(sapply(x[,fact],class)=="factor")) {
+  if (any(sapply(data[,fact],class)=="factor")) {
     error.code<-37
     error.mess<-paste("You have a \"factor\" variable in the data.  You may \n",
                       "have wanted to set this as a ID variable to remove it \n",
@@ -512,7 +564,7 @@ amcheck <- function(x,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,tolerance,
     idcheck<-c(1:AMp)
   else
     idcheck<--c(cs,idvars,noms)
-  if (any(sapply(x[,idcheck],class)=="character")) {
+  if (any(sapply(data[,idcheck],class)=="character")) {
     error.code<-38
     error.mess<-paste("You have a \"character\" variable in the data.  You may \n",
                       "have wanted to set this as a ID variable,
@@ -524,7 +576,7 @@ nominal\n",
   
   #Error code: 39
   #No missing observation
-  if (!any(is.na(x))) {
+  if (!any(is.na(data))) {
     error.code<-39
     error.mess<-paste("Your data has no missing values.  Make sure the code for \n",
                       "missing data is set to the code for R, which is NA.")
@@ -563,23 +615,23 @@ nominal\n",
 
   #Error code: 43
   #Variable that doesn't vary
-  if (is.data.frame(x)) {
+  if (is.data.frame(data)) {
     
-      if (any(sapply(x[,idcheck],var,na.rm=T)==0)) {
+      if (any(sapply(data[,idcheck,drop=FALSE],var,na.rm=T)==0)) {
         error.code<-43
         error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
         return(list(code=error.code,mess=error.mess))
       }     
   } else {
-    if (nrow(na.omit(x)) > 1) {
-      if (any(diag(var(x[,idcheck],na.rm=T))==0)) {
+    if (nrow(na.omit(data)) > 1) {
+      if (any(diag(var(data[,idcheck],na.rm=T))==0)) {
         error.code<-43
         error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
         return(list(code=error.code,mess=error.mess))
       }
     } else {
-      for (i in 1:ncol(x[,idcheck])) {
-        if (var(x[,i],na.rm=T) == 0) {
+      for (i in 1:ncol(data[,idcheck])) {
+        if (var(data[,i],na.rm=T) == 0) {
           error.code<-43
           error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
           return(list(code=error.code,mess=error.mess))
@@ -593,7 +645,7 @@ nominal\n",
     for (i in ords) {
       #Error code: 44
       #Ordinal variable with non-integers
-      if (any(unique(na.omit(x[,i])) %% 1 != 0 )) {
+      if (any(unique(na.omit(data[,i])) %% 1 != 0 )) {
         error.code<-44
         error.mess<-paste("You have designated a variable as ordinal when it has non-integer values.")
         return(list(code=error.code,mess=error.mess))
@@ -626,21 +678,45 @@ check","that the directory exists and that you have permission to write.",sep="\
   }
       
 
-  if (xor(!identical(means,NULL),!identical(sds,NULL))) {
-    means<-NULL
-    sds<-NULL
-    warning("Both the means and the SDs have to be set in order to use observational priors.  The priors have been removed from the analysis.")
-  }
-  if (sum(!identical(mins,NULL),!identical(maxs,NULL),!identical(conf,NULL)) != 3 &&
-        sum(!identical(mins,NULL),!identical(maxs,NULL),!identical(conf,NULL)) != 0) {
-    mins<-NULL
-    maxs<-NULL
-    conf<-NULL
-    warning("Not all of the range parameters were set for the observational priors.  They have been removed.")
-  }
-  
+#  if (xor(!identical(means,NULL),!identical(sds,NULL))) {
+#    means<-NULL
+#    sds<-NULL
+#    warning("Both the means and the SDs have to be set in order to use observational priors.  The priors have been removed from the analysis.")
+#  }
+#  if (sum(!identical(mins,NULL),!identical(maxs,NULL),!identical(conf,NULL)) != 3 &&
+#        sum(!identical(mins,NULL),!identical(maxs,NULL),!identical(conf,NULL)) != 0) {
+#    mins<-NULL
+#    maxs<-NULL
+#    conf<-NULL
+#    warning("Not all of the range parameters were set for the observational priors.  They have been removed.")
+#  }
 
   
+  removedCols <- length(c(idvars,cs,ts,noms))
+  nomCols     <- sum(apply(data[,noms],2, function(t) length(unique(na.omit(t))) ))
+  tsCols      <- sum(length(unique(data[,cs]))^(intercs) * polytime, intercs)
+  addedCols   <- length(c(lags, leads)) + tsCols + nomCols
+  realAMp     <- AMp + addedCols - removedCols
+  realAMn     <- sum(rowSums(is.na(data))!=ncol(data))
+  #Error code: 34-35
+  #Too few observations to estimate parameters
+  if (!identical(empri,NULL)) {
+    if ((realAMp*(realAMp+3))/2 >= ((2*realAMn)+empri)) {
+      error.code<-34
+      error.mess<-paste("The number of observations in too low to estimate the number of \n",
+                        "parameters.  You can either remove some variables, add some \n",
+                        "observations, or increase the empirical prior.")
+      return(list(code=error.code,message=error.mess))
+    }
+  } else {
+    if ((realAMp*(realAMp+3))/2 >= (2*realAMn)) {
+      error.code<-34
+      error.mess<-paste("The number of observations in too low to estimate the number of \n",
+                        "parameters.  You can either remove some variables, add some \n",
+                        "observations, or increase the empirical prior.")
+      return(list(code=error.code,message=error.mess))
+    }
+  }
   
     #checks of m
   if (!is.numeric(m)) {
@@ -658,5 +734,5 @@ check","that the directory exists and that you have permission to write.",sep="\
 
 
 
-  return(list(m=m,means=means,sds=sds,mins=mins,maxs=maxs,conf=conf,outname=outname))
+  return(list(m=m,outname=outname,priors=priors))
 }

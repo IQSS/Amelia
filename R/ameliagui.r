@@ -38,7 +38,7 @@ file.type<-function(...) {
   if (as.numeric(drop.select)==3)
     filetype<-"{{SPSS} {.sav}} {{All files} *}"
   if (as.numeric(drop.select)==4)
-    filetype<-"{{{All files} *}"
+    filetype<-"{{All files} *}"
   if (as.numeric(drop.select)==5)
     filetype<-"{{RData} {.RData}} {{All files} *}"
   file.kind<<-filetype
@@ -111,6 +111,7 @@ load.data <- function(session=F) {
   store.pri <<- NULL
   obs.prior <<- NULL
   r<<-NULL
+  priorsmat <<- NULL
   outname <<- tclVar("outdata")
   outnum <<- tclVar("5")
   empri <<- tclVar("0")
@@ -421,64 +422,12 @@ run.amelia <- function() {
   }
 
 
-  mins <- matrix(NA, nrow = nrow(amelia.data), ncol = ncol(amelia.data))
-  maxs <- matrix(NA, nrow = nrow(amelia.data), ncol = ncol(amelia.data))
-  conf <- matrix(NA, nrow = nrow(amelia.data), ncol = ncol(amelia.data))
-  means <- matrix(NA, nrow = nrow(amelia.data), ncol = ncol(amelia.data))
-  sds <- matrix(NA, nrow = nrow(amelia.data), ncol = ncol(amelia.data))
-  
-  if (all(!is.null(varmin),!is.null(varmax))) {
-    for (i in 1:ncol(amelia.data)) {
-      if (all(!is.na(varmin[i]),!is.na(varmax[i]))) {
-        mins[,i]<-varmin[i]
-        maxs[,i]<-varmax[i]
-        conf[,i]<-.95
-      }
-    }
-  }
-  if (!is.null(r)) {  
-    for (i in 1:nrow(amelia.data)) {
-      for (j in 1:ncol(amelia.data))  {
-        if (all(r[i,j] != "MISS",r[i,j] != "--",j!=tsvar,j!=csvar)) {
-          numholder <- strsplit(r[i,j],split = ",")
-          if (length(numholder[[1]]) == 3) {
-            mins[i,j] <- numholder[[1]][1]
-            maxs[i,j] <- numholder[[1]][2]
-            conf[i,j] <- numholder[[1]][3]
-          } else {
-            if (length(numholder[[1]]) == 2) {
-              means[i,j] <- numholder[[1]][1]
-              sds[i,j] <- numholder[[1]][2]
-            } else {
-              tkmessageBox(message="Failure in loading the observational priors.  Try again.",icon="error",type="ok")
-              return(NULL)
-            }
-          }
-        }
-      }
-    }
-    storage.mode(mins) <- "numeric"
-    storage.mode(maxs) <- "numeric"
-    storage.mode(conf) <- "numeric"
-    storage.mode(means) <- "numeric"
-    storage.mode(sds) <- "numeric"
-  }
-  
-  if (all(is.na(mins)))
-    mins<-NULL
-  if (all(is.na(maxs)))
-    maxs<-NULL
-  if (all(is.na(conf)))
-    conf<-NULL
-  if (all(is.na(means)))
-    means<-NULL
-  if (all(is.na(sds)))
-    sds<-NULL
-  
-  
+  colnames(priorsmat)<<-NULL
+  rownames(priorsmat)<<-NULL
+
   amelia.list <<- try(amelia(amelia.data, m = as.numeric(tclvalue(outnum)),
         p2s = FALSE, idvars = id, casepri = store.pri, ts = tsvar, cs = csvar,
-        mins=mins,maxs=maxs,conf=conf,means=means,sds=sds, lags = amlags,
+        priors=priorsmat, lags = amlags,
         empri = as.numeric(tclvalue(empri)), intercs = intercs, leads = amfut, 
         polytime = num.poly, frontend=TRUE, logs=logs, sqrts=sqrts, lgstc=lgstc,
         ords=ord,noms=nom,write.out=F,tolerance=as.numeric(tclvalue(tol))),silent=T)
@@ -548,7 +497,7 @@ inname <<- tclVar("")
 
 
 gui<-tktoplevel()
-tkwm.title(gui, "Amelia II")
+tkwm.title(gui, "AmeliaView")
                          
 ##Menu
 main.menu<-tkmenu(gui)
@@ -556,15 +505,21 @@ main.menu.file<-tkmenu(main.menu, tearoff=0)
 main.menu.help<-tkmenu(main.menu, tearoff=0)
 tkadd(main.menu.file,"command",label="Load Session",command=function()load.session())
 tkadd(main.menu.file,"command",label="Save Session",command=function()save.session())
-tkadd(main.menu.file,"command",label="Exit Amelia",command=function()main.close())
-tkadd(main.menu.help,"command",label="About",command=function()tkmessageBox(title="Amelia For Windows",message="James Honaker, Gary King, & Matthew Blackwell\n2005",icon="info",type="ok"))
+tkadd(main.menu.file,"command",label="ExitAmelia",command=function()main.close())
+tkadd(main.menu.help,"command",label="Amelia Website",command=
+      function()browseURL("http://gking.harvard.edu/amelia/"))
+tkadd(main.menu.help,"command",label="Online Documentation",command=
+      function()browseURL("http://gking.harvard.edu/amelia/docs/"))
+
+tkadd(main.menu.help,"command",label="About",command=
+      function()tkmessageBox(title="AmeliaView",message="James Honaker, Gary King, & Matthew Blackwell 2006",icon="info",type="ok"))
 tkadd(main.menu,"cascade",label="File",menu=main.menu.file)
 tkadd(main.menu,"cascade",label="Help",menu=main.menu.help)
 tkconfigure(gui,menu=main.menu)
 
 ##Frame
 gui.skel<-tkframe(gui)
-main.title<-tklabel(gui, text="Amelia II",font=c("Arial",22))
+main.title<-tklabel(gui, text="AmeliaView",font=c("Arial",22))
 
 tkgrid(main.title,sticky = "ew")
 
@@ -1304,550 +1259,343 @@ gui.pri.setup<-function() {
     tkbind(ss,"<Destroy>",function(){tkgrab.release(ss);tkfocus(tt)})
   }
 
-
-
-
-	call.datapri<-function() {
-    up.prog <-function(i,tot) {
-      percent<- 2*(as.integer(100*(i/tot)))
-      tkcoords(prog,"bar",0,0,percent,20)
-      tcl("update")
-      if (i  == tot)
-          tkdestroy(ttt)
-    }
-    reset.obs<-function() {
-      obs.prior<<-NULL
-      r<<-NULL
-      tkdestroy(pp)
-      call.datapri()
-      return(NULL)
-    }  
-    save.obs<-function() {
-      cell.location<-strsplit(tclvalue(tcl(table1,"curselection")),split = ",")
-      row.pos<-as.integer(cell.location[[1]][1])
-      col.pos<-as.integer(cell.location[[1]][2])
-      if (!is.na(tclvalue(tcl(table1,"curvalue"))))
-        rtemp[as.integer(row.names(shown.table)[row.pos]),col.pos]<<-tclvalue(tcl(table1,"curvalue")) 
-      r<<-rtemp
-      tkdestroy(pp)
-    }  
-    pull.table<-function(case.selected) {
-      cell.location<-strsplit(tclvalue(tcl(table1,"curselection")),split = ",")
-      row.pos<-as.integer(cell.location[[1]][1])
-      col.pos<-as.integer(cell.location[[1]][2])
-      if (!is.na(tclvalue(tcl(table1,"curvalue"))))
-        rtemp[as.integer(row.names(shown.table)[row.pos]),col.pos]<<-tclvalue(tcl(table1,"curvalue"))
-      invlist<<-rtemp[ifelse(apply(is.na(amelia.data),1,sum),TRUE,FALSE),]
-      
-      
-      if (case.selected == 0) {
-        case.selected<-seq(1:length(unique(amelia.data[,csvar])))
-        shown.table<<-invlist
-      } else {
-        if (all(!is.na(amelia.data[amelia.data[,csvar]==unique(amelia.data[,csvar])[case.selected],]))) {
-          tkmessageBox(title="No missing data",message="There is no missing data in the chosen subset.",type="ok")
-          return(NULL)
-        }
-        shown.table<<-invlist[invlist[,csvar]==unique(amelia.data[,csvar])[case.selected],]
-      } 
-      if ((nrow(shown.table)* ncol(shown.table)) >  6000) {
-        big.list<-tkmessageBox(title="Large Subset",message="You have specified a large subset of data which could take many minutes (up to 10) to load.  Are you sure you want load the whole dataset at one time?",type="yesno")
-        if (tclvalue(big.list)=="no")
-            return(NULL)
+  obs.priors2 <- function() {
+    removePriors <- function() {
+      if (is.null(priorsmat)) {
+        tkmessageBox(title="No priors",
+                     message="There are no priors to remove.",
+                     icon="error", type="ok")
       }
-      #tcl("unset",obs.prior)
-      obs.prior<<- tclArray()
-      tkconfigure(table1,variable=obs.prior,rows=nrow(shown.table)+1,cols=ncol(shown.table)+1)
-      ttt<<-tktoplevel()
-      tkwm.title(ttt,"Loading...")
-      prog<<-tkcanvas(ttt, width = 200, height = 20, bd = 1, relief = "sunken",
-        highlightt = 0)
-      tkcreate(prog,"rectangle",0,0,0,20,tags = "bar",fill="navy")
-      tkpack(prog,padx=10,pady=10)
-      count2<-1
-      tot2<-nrow(shown.table)*ncol(shown.table)
-      
-      for (i in 0:nrow(shown.table)) {  
-        for (j in 0:ncol(shown.table)) {
-          if (i==0 && j!=0) {
-            tcl(table1,"set",paste(i,j,sep=","),colnames(shown.table)[j])
-          }
-          if (i!=0 && j==0) {
-            tcl(table1,"set",paste(i,j,sep=","),rownames(shown.table)[i])
-          }
-          if (i!=0 && j!=0) {	        
-            tcl(table1,"set",paste(i,j,sep=","),shown.table[i,j]) 
-            if (!is.na(amelia.data)[rownames(shown.table)[i],j])
-              tcl(table1,"tag","celltag","obs",paste(i,j,sep=","))
-  			  	else
-			  	    tcl(table1,"tag","celltag","miss",paste(i,j,sep=","))
-            up.prog(count2,tot2)
-            count2<-count2+1
-            tcl("update")
-          }
+      selectedPriors <- as.numeric(lapply(priorsChecked,
+                                          function(x) as.numeric(tclvalue(x))))
+      rowSelected <- which(selectedPriors==1)
+
+      mess <- "Are you sure you want to remove the selected priors?"
+      sure <- tkmessageBox(title="Remove Prior",message=mess,
+                           icon="question", type="yesno", default="no")
+      if (tclvalue(sure)=="no")
+        return()
+      priorsmat <<- priorsmat[-rowSelected,, drop=FALSE]
+      if (nrow(priorsmat)==0)
+        priorsmat <<- NULL
+
+      tkdestroy(pp)
+      obs.priors2()
+      return()
+    }
+    addPrior <- function(type) {
+      onOK <- function() {
+        caseSelection <- as.numeric(tkcurselection(casesBox))
+        varSelection  <- as.numeric(tkcurselection(varsBox)) +1
+        
+
+        if (caseSelection==0) {
+          rowSelection <- 0
+          colSelection <- which(anyMissing)[varSelection]
+        } else {
+          rowSelection  <- missingCases[caseSelection]
+          colSelection <- which(is.na(amelia.data[rowSelection,]))[varSelection]
         }
         
-        
-      }
-        
-    }
-    save.cell<-function(cell) {
-      cell.location<-strsplit(cell,split = ",")
-      row.pos<-as.integer(cell.location[[1]][1])
-      col.pos<-as.integer(cell.location[[1]][2])
-      if (!is.na(tclvalue(tcl(table1,"get",cell))))
-        rtemp[as.integer(row.names(shown.table)[row.pos]),col.pos]<<-tclvalue(tcl(table1,"get",cell))
-    }
-   
-
-    count<-1
-    if (is.null(r)) {
-      r<<-ifelse(is.na(amelia.data),"MISS","--")
-      if (tsvar != 0)
-        r[,tsvar] <<- amelia.data[,tsvar]
-      if (csvar != 0)
-        r[,csvar] <<- as.character(amelia.data[,csvar])
-    }
-    rtemp<<-r
-    invlist<<-r[ifelse(apply(is.na(amelia.data),1,sum),TRUE,FALSE),]
-    tot<-(nrow(invlist)*ncol(invlist))
-    if (tot > 15000) {
-      if (csvar == 0) {
-        big.list<-tkmessageBox(title="Large Subset",message="You have specified a large subset of data which could take many minutes (up to 10) to load.  Are you sure you want load the whole dataset at one time?",type="yesno")
-        if (tclvalue(big.list)=="no")
-          return(NULL)
-        else
-          shown.table<<-invlist
-      } else {
-        shown.table<<-invlist[invlist[,csvar]==unique(amelia.data[,csvar])[1],]
-        if (nrow(shown.table)*ncol(shown.table) > 15000) {
-          big.list<-tkmessageBox(title="Large Subset",message="You have specified a large subset of data which could take many minutes (up to 10) to load.  Are you sure you want load the whole dataset at one time?",type="yesno")
-          if (tclvalue(big.list)=="no")
-            return(NULL)
-        }
-        tot<-nrow(shown.table)*ncol(shown.table)
-      }
-    } else {
-      shown.table<<-invlist
-    }
-    ttt<-tktoplevel()
-    tkwm.title(ttt,"Loading...")
-    prog<<-tkcanvas(ttt, width = 200, height = 20, bd = 1, relief = "sunken",
-      highlightt = 0)
-    tkcreate(prog,"rectangle",0,0,0,20,tags = "bar",fill="navy")
-    tkpack(prog,padx=10,pady=10)
-    if (is.null(obs.prior))
-      obs.prior<<- tclArray()
-    
-    #for (i in 1:nrow(shown.table)) {
-    #  for (j in 1:ncol(shown.table)) {
-    #    obs.prior[i,j] <- shown.table[i,j]
-    #    up.prog(count,tot)
-    #    count<-count+1
-    #  }
-    #}
-    #fill.names(obs.prior,amelia.data)
-    #tclArrayName <<- ls(obs.prior$env)
-		height<--1
-		width<--1
-		pp <- tktoplevel()
- 		#tkwm.title(pp,tclArrayName)
- 		table1 <<- tkwidget(pp, "table", rows = nrow(shown.table)+1,
-			cols = ncol(shown.table)+1, titlerows = "1", titlecols = "1",
-			height = 20, width = paste(width+1),
-			xscrollcommand=function(...) tkset(xscr,...),
-			yscrollcommand=function(...) tkset(yscr,...))
- 		xscr <-tkscrollbar(pp,orient="horizontal",
-			command=function(...)tkxview(table1,...))
- 		yscr <- tkscrollbar(pp,command=function(...)tkyview(table1,...))
-		tkgrid(tklabel(pp,text="Enter your prior values as follows: mean, standard deviation.  For example: 5,1 ", justify = "left"),
-			 row = 4, sticky = "nw", columnspan = 5)
-		#tkgrid(tklabel(pp,text="-If you have an idea of the approximate range of the value: minimum, maximum, degree of confidence.",
-		#	justify = "left"), row = 5, sticky = "nw", columnspan = 5)
-		
-    caselist <- "        . . . . . . . . . . . . . . . . . . "
-    tcl("set","caselist",caselist)	
-		priCaseSelect<-tkwidget(pp,"combobox",listvar="caselist",editable="FALSE")
-		if (csvar == 0) {
-      tkconfigure(priCaseSelect, state="disabled")
-    } else {                                               
-      caselist<-unique(amelia.data[,csvar])
-      caselist<-c("(all)",as.character(caselist))
-      tcl("set","caselist",caselist)
-    }
-    if (nrow(invlist)*ncol(invlist) > 15000)
-      tkselect(priCaseSelect,1)
-    else 
-      tkselect(priCaseSelect,0) 
-    applyPriChanges<-tkbutton(pp, text="Apply",command=function() pull.table(as.numeric(tkcurselection(priCaseSelect))))
-		tkgrid(priCaseSelect,applyPriChanges,row=1, sticky="sew",padx=5,pady=5)
-    ok.obs<-tkbutton(pp, text="Ok", command = function() save.obs(), width=20)
-		can.obs<-tkbutton(pp, text="Cancel", command = function() tkdestroy(pp), width=20)
-    reset.o<-tkbutton(pp,text = "Reset Values to Default",
-      command = function() reset.obs(), width=20)
-    tkgrid(ok.obs, can.obs, reset.o, row = 6, sticky = "sw", padx = 5, pady = 5)
- 		tkgrid(table1, row = 2, columnspan = 5)
- 		tkgrid(yscr,sticky="nsw",row = 2, column = 6)
- 		tkgrid(xscr,sticky="new", row = 3, columnspan = 5)
- 		tkconfigure(table1,background="white", variable=obs.prior,
-        selectmode="extended", coltagcommand = "colorize",autoclear=1,browsecommand=function(s) save.cell(s))
-    tcl(table1,"tag","delete","obs")
-    tcl(table1,"tag","configure","active",foreground = "black",background="white")
-    tcl(table1,"tag","configure","obs",state="disabled",background="SystemButtonFace",foreground="SystemDisabledText")
-    tcl(table1,"tag","configure","miss",state="normal")
-    tkbind(table1,"<Return>","break")
- 		for (i in 0:nrow(shown.table)) {  
-			for (j in 0:ncol(shown.table)) {
-			  if (i==0 && j!=0) {
-			    tcl(table1,"set",paste(i,j,sep=","),colnames(shown.table)[j])
-	      }
-	      if (i!=0 && j==0) {
-			    tcl(table1,"set",paste(i,j,sep=","),rownames(shown.table)[i])
-	      }
-        if (i!=0 && j!=0) {	        
-          tcl(table1,"set",paste(i,j,sep=","),shown.table[i,j]) 
-				  if (!is.na(amelia.data)[rownames(shown.table)[i],j])
- 				  	tcl(table1,"tag","celltag","obs",paste(i,j,sep=","))
-			  	else
-			  	  tcl(table1,"tag","celltag","miss",paste(i,j,sep=","))
-	        up.prog(count,tot)
-          count<-count+1
-          tcl("update")
-        }
-			}
-		}
-		tkfocus(pp)
-		tkgrab.set(pp)
-		tkbind(pp,"<Destroy>",function() {tkgrab.release(pp);tkfocus(tt)})
-	}
-	
-	#observational priors for linux/mac?
-  unix.datapri<-function() {
-    up.prog <-function(i,tot) {
-      percent<- 2*(as.integer(100*(i/tot)))
-      tkcoords(prog,"bar",0,0,percent,20)
-      tcl("update")
-      if (i  == tot)
-          tkdestroy(ttt)
-    }
-    reset.obs<-function() {
-      r<<-NULL
-      tkdestroy(pp)
-      unix.datapri()
-      return(NULL)
-    }  
-    save.obs<-function() {
-      r<<-rtemp
-      tkdestroy(pp)
-    }
-    unix.save.cell<-function(i,j) {
-      rtemp[rownames(shown.table)[i],j-1]<<-tclvalue(rArray[[(ncol(shown.table)*(as.numeric(rownames(shown.table)[i])-1)+(j-1))]])
-    }
-    pull.table<-function(case.selected) {
-      invlist<<-rtemp[ifelse(apply(is.na(amelia.data),1,sum),TRUE,FALSE),]
-      if (case.selected == 0) {
-        case.selected<-seq(1:length(unique(amelia.data[,csvar])))
-        shown.table<<-invlist
-      } else {
-        if (all(!is.na(amelia.data[amelia.data[,csvar]==unique(amelia.data[,csvar])[case.selected],]))) {
-          tkmessageBox(title="No missing data",message="There is no missing data in the chosen subset.",type="ok")
-          return(NULL)
-        }
-        shown.table<<-invlist[invlist[,csvar]==unique(amelia.data[,csvar])[case.selected],]
-      } 
-      if ((nrow(shown.table)* ncol(shown.table)) >  6000) {
-        big.list<-tkmessageBox(title="Large Subset",message="You have specified a large subset of data which could take many minutes (up to 10) to load.  Are you sure you want load the whole dataset at one time?",type="yesno")
-        if (tclvalue(big.list)=="no")
-            return(NULL)
-      }
-      #tcl("unset",obs.prior)
-      ttt<<-tktoplevel()
-      tkwm.title(ttt,"Loading...")
-      prog<<-tkcanvas(ttt, width = 200, height = 20, bd = 1, relief = "sunken",
-        highlightt = 0)
-      tkcreate(prog,"rectangle",0,0,0,20,tags = "bar",fill="navy")
-      tkpack(prog,padx=10,pady=10)
-      count2<-1
-      tot2<-nrow(shown.table)*ncol(shown.table)
-      rArray<<-list()
-      rArray[[(nrow(r)*ncol(r))+1]]<<-NA
-      tkdestroy(sw2)
-      sw2 <<- tkwidget(pp,"ScrolledWindow",relief="sunken",borderwidth=2)
-      s2 <- tkwidget(sw2,"ScrollableFrame")
-      tcl(sw2,"setwidget",s2)
-      s2.height<-nrow(shown.table)*25
-      s2.width<-nrow(shown.table)*115
-      if (s2.height > 550)
-        s2.height<-550
-      if (s2.width > 750)
-        s2.width<-750 
-      tkconfigure(s2,width=s2.width,height=s2.height)
-      subfID <- tclvalue(tcl(s2,"getframe"))
-      for (i in 1:(1+nrow(shown.table))) {
-        for (j in 1:(1+ncol(shown.table))) {
-          if (j!=1 && i==1) {
-            tkgrid(tcl("entry",paste(subfID,".",i,"k",j,sep=""), textvariable= tclVar(names(amelia.data)[j-1]), 
-              relief="flat",width=11,state="disabled",foreground="black",justify="center",background="grey"),row=1,column=j)
-          }   
-          if (j==1 && i !=1) {
-            tkgrid(tcl("entry",paste(subfID,".",i,"g",j,sep=""), 
-              textvariable = tclVar(paste(row.names(shown.table)[i-1])), state="disabled",
-              width=8,foreground="black",background="gray", relief="flat",justify="right"), row = i+3, column = j)
-          } 
-          if (j!=1 && i!=1) {  
-            if (!is.na(amelia.data)[rownames(shown.table)[i-1],j-1]) {
-              tkgrid(tcl("entry",paste(subfID,".",i,"h",j,sep=""), 
-                textvariable = tclVar(paste(shown.table[i-1,j-1])), state="disabled",width=11,
-                foreground="black"), row = i+3, column = j)
-              tkbind(paste(subfID,".",i,"h",j,sep=""),"<Motion>",paste("set hovervar \"", names(amelia.data)[j-1],"\"",sep=""))
-              tkbind(paste(subfID,".",i,"h",j,sep=""),"<Leave>","set hovervar \" \"") 
-            } else {
-              rArray[[(ncol(shown.table)*(as.numeric(row.names(shown.table)[i-1])-1)+(j-1))]]<-tclVar(shown.table[i-1,j-1])
-              tkgrid(tcl("entry",paste(subfID,".",i,"i",j,sep=""), background="white",
-                width=11,textvariable = rArray[[ncol(shown.table)*(as.numeric(row.names(shown.table)[i-1])-1)+(j-1)]]), 
-                row = i+3, column = j)
-              tkbind(paste(subfID,".",i,"i",j,sep=""),"<Motion>",paste("set hovervar \"", names(amelia.data)[j-1],"\"",sep=""))
-              tkbind(paste(subfID,".",i,"i",j,sep=""),"<Leave>","set hovervar \" \"")
-              local ({
-                ii <- i
-                jj <- j
-                tkbind(paste(subfID,".",i,"i",j,sep=""),"<KeyRelease>",function()unix.save.cell(ii,jj))
-              })
-            
-            }
-            up.prog(count2,tot2)
-            count2<-count2+1
-                
+        # fork for range vs. dist
+        if (type=="range") {
+          if (tclvalue(priorMin)=="") {
+            tkmessageBox(title="Error",
+                         message="Please enter a mean value.",
+                         type="ok",icon="error")
+            return()
           }
-        }
-      }
-      tkpack(sw2,fill="both",expand="yes",side="bottom",after=but.frame)   
-      tkfocus(pp)
-    }    
-        
-    count<-1
-    if (is.null(r)) {
-      r<<-ifelse(is.na(amelia.data),"MISS","--")
-      if (tsvar != 0)
-        r[,tsvar] <<- amelia.data[,tsvar]
-      if (csvar != 0)
-        r[,csvar] <<- as.character(amelia.data[,csvar])
-    }
-    rtemp<<-r
-    invlist<<-r[ifelse(apply(is.na(amelia.data),1,sum),TRUE,FALSE),]
-    tot<-(nrow(invlist)*ncol(invlist))
-      
-    if (tot > 7000) {
-      if (csvar == 0) {
-        big.list<-tkmessageBox(title="Large Subset",message="You have specified a large subset of data which could take minutes to load.  Are you sure you want load the whole dataset at one time?",type="yesno")
-        if (tclvalue(big.list)=="no")
-          return(NULL)
-        else
-          shown.table<<-invlist
-      } else {
-        shown.table<<-invlist[invlist[,csvar]==unique(amelia.data[,csvar])[1],]
-        if (nrow(shown.table)*ncol(shown.table) > 15000) {
-          big.list<-tkmessageBox(title="Large Subset",message="You have specified a large subset of data which could take minutes to load.  Are you sure you want load the whole dataset at one time?",type="yesno")
-          if (tclvalue(big.list)=="no")
-            return(NULL)
-        }
-        tot<-nrow(shown.table)*ncol(shown.table)
-      }
-    } else {
-      shown.table<<-invlist
-      tot<-nrow(shown.table)*ncol(shown.table)
-    }
-    ttt<-tktoplevel()
-    tkwm.title(ttt,"Loading...")
-    prog<-tkcanvas(ttt, width = 200, height = 20, bd = 1, relief = "sunken",
-      highlightt = 0)
-    tkcreate(prog,"rectangle",0,0,0,20,tags = "bar",fill="navy")
-    tkpack(prog,padx=10,pady=10)
+          if (tclvalue(priorMax)=="") {
+            tkmessageBox(title="Error",
+                         message="Please enter a mean value.",
+                         type="ok",icon="error")
+            return()
+          }          
 
-		pp <- tktoplevel()
- 		tkwm.title(pp,"Observational Priors")
-    sw2 <- tkwidget(pp,"ScrolledWindow",relief="sunken",borderwidth=2)
-    sf <- tkwidget(sw2,"ScrollableFrame")
-    tcl(sw2,"setwidget",sf)
-    sf.height<-nrow(shown.table)*25
-    sf.width<-nrow(shown.table)*115
-    if (sf.height > 550)
-      sf.height<-550
-    if (sf.width > 750)
-      sf.width<-750 
-    tkconfigure(sf,width=sf.width,height=sf.height)
-    subfID <- tclvalue(tcl(sf,"getframe"))
-    cnameframe<-tkframe(pp)
-    but.frame<-tkframe(pp)
-    caselist <- "        . . . . . . . . . . . . . . . . . . "
-    tcl("set","caselist",caselist)	
-		priCaseSelect<-tkwidget(cnameframe,"combobox",listvar="caselist",editable="FALSE")
-		if (csvar == 0) {
-      tkconfigure(priCaseSelect, state="disabled")
-    } else {                                               
-      caselist<-unique(amelia.data[,csvar])
-      caselist<-c("(all)",as.character(caselist))
-      tcl("set","caselist",caselist)
-    }
-    if (nrow(invlist)*ncol(invlist) > 7000)
-      tkselect(priCaseSelect,1)
-    else 
-      tkselect(priCaseSelect,0)                                   
-    applyPriChanges<-tkbutton(cnameframe, text="Apply",width=11,command=function() pull.table(as.numeric(tkcurselection(priCaseSelect))))
-		tkgrid(priCaseSelect,applyPriChanges,row=1, sticky="sew",padx=5,pady=5)   
-    
-    tkpack(cnameframe,anchor="nw")
-    tkpack(but.frame, side="bottom",anchor="se")
-    rArray<<-list()
-    rArray[[(nrow(r)*ncol(r))+1]]<<-NA
- 		ok.obs<-tkbutton(but.frame, text="Ok", command = function() save.obs(), width=11)
-		can.obs<-tkbutton(but.frame, text="Cancel", command = function() tkdestroy(pp),width=11)
-    reset.o<-tkbutton(but.frame,text = "Reset Values", width=11,
-      command = function() reset.obs())
-    tkgrid(ok.obs, can.obs, reset.o, row = 5, sticky = "sw", padx = 5, pady = 5)
-    hover.frame<-tkframe(pp,relief="groove",borderwidth=2)
-    tcl("set","hovervar","")
-    hover.var<-tklabel(hover.frame,textvariable="hovervar")
-    tkpack(hover.var,anchor="w")
-    tkpack(hover.frame,fill="x",expand="yes",side="bottom",before=but.frame)
-    for (i in 1:(1+nrow(shown.table))) {
-      for (j in 1:(1+ncol(shown.table))) {
-        if (j!=1 && i==1) {
-          tkgrid(tcl("entry",paste(subfID,".",i,"k",j,sep=""), textvariable= tclVar(names(amelia.data)[j-1]), 
-            relief="flat",width=11,state="disabled",foreground="black",justify="center",background="grey"),row=1,column=j)
-        }    
-        if (j==1 && i !=1) {
-          tkgrid(tcl("entry",paste(subfID,".",i,"g",j,sep=""), 
-            textvariable = tclVar(paste(row.names(shown.table)[i-1])), state="disabled",
-            width=8,foreground="black",background="gray", relief="flat",justify="right"), row = i+3, column = 1)
-        } 
-        if (j!=1 && i!=1) {  
-          if (!is.na(amelia.data)[rownames(shown.table)[i-1],j-1]) {
-            tkgrid(tcl("entry",paste(subfID,".",i,"h",j,sep=""), 
-              textvariable = tclVar(paste(shown.table[i-1,j-1])), state="disabled",width=11,
-              foreground="black"), row = i+3, column = j)
-            tkbind(paste(subfID,".",i,"h",j,sep=""),"<Motion>",paste("set hovervar \"", names(amelia.data)[j-1],"\"",sep=""))
-            tkbind(paste(subfID,".",i,"h",j,sep=""),"<Leave>","set hovervar \" \"") 
-          } else {
-            rArray[[(ncol(shown.table)*(as.numeric(row.names(shown.table)[i-1])-1)+(j-1))]]<-tclVar(shown.table[i-1,j-1])
-            tkgrid(tcl("entry",paste(subfID,".",i,"i",j,sep=""), background="white",
-              width=11,textvariable = rArray[[ncol(shown.table)*(as.numeric(row.names(shown.table)[i-1])-1)+(j-1)]]), 
-              row = i+3, column = j)
-            tkbind(paste(subfID,".",i,"i",j,sep=""),"<Motion>",paste("set hovervar \"", names(amelia.data)[j-1],"\"",sep=""))
-            tkbind(paste(subfID,".",i,"i",j,sep=""),"<Leave>","set hovervar \" \"")
-            local ({
-              ii <- i
-              jj <- j
-              tkbind(paste(subfID,".",i,"i",j,sep=""),"<KeyRelease>",function()unix.save.cell(ii,jj))
-            })
-            
+          if (tclvalue(priorConf)=="") {
+            tkmessageBox(title="Error",
+                         message="Please enter a mean value.",
+                         type="ok",icon="error")
+            return()
+          }          
+          if (isTRUE(as.numeric(tclvalue(priorConf)) == 0)) {
+            tkmessageBox(title="Error",
+                         message="Confidence levels must be between 0 and 1.",
+                         type="ok",icon="error")
+            return()
           }
           
-          up.prog(count,tot)
-          count<-count+1 
+          prMax <- as.numeric(tclvalue(priorMax))
+          prMin <- as.numeric(tclvalue(priorMin))
+          prCon <- as.numeric(tclvalue(priorConf))
+          if (prMax <= prMin) {
+            tkmessageBox(title="Error",
+                         message="The max is less than the min.",
+                         type="ok",icon="error")
+            return()
+          } 
+          prMean<- prMin + (prMax-prMin/2)
+          prSD  <-(prMax-prMin)/(2*qnorm(1-(1-prCon)/2))
+          
+                  
+        #if dist prior
+        } else {             
+          if (tclvalue(priorMean)=="") {
+            tkmessageBox(title="Error",
+                         message="Please enter a mean value.",
+                         type="ok",icon="error")
+            return()
+          }
+          if (tclvalue(priorSD)=="") {
+            tkmessageBox(title="Error",
+                         message="Please enter a SD value.",
+                         type="ok",icon="error")
+            return()
+          }
+          if (isTRUE(as.numeric(tclvalue(priorSD)) == 0)) {
+            tkmessageBox(title="Error",
+                         message="Standard deviations must be greater than 0.",
+                         type="ok",icon="error")
+            return()
+          }
+          prMean <- as.numeric(tclvalue(priorMean))
+          prSD   <- as.numeric(tclvalue(priorSD))
+          
+          
         }
-                
+        newPrior <- c(rowSelection, colSelection,prMean,prSD)
+        if (!is.null(priorsmat)) {
+          matchPrior <- apply(priorsmat, 1,
+                              function(x) all(x[1]==rowSelection,
+                                              x[2]==colSelection))
+        } else {
+          matchPrior <- FALSE
+        }
+      
+        if (any(matchPrior)) {
+          mess <- "There is a prior associate with this case. Overwrite?"
+          over <- tkmessageBox(title="Overwrite Prior",message=mess,
+                               icon="question",type="yesno",default="no")
+          if (tclvalue(over)=="no")
+            return()
+          else
+            priorsmat<<-priorsmat[-which(matchPrior),]
+        }
+          
+        priorsmat <<- rbind(priorsmat,newPrior)
+        tkdestroy(addPrior.diag)
+        tkdestroy(pp)
+        obs.priors2()
       }
+      validateNumeric <- function(x) {
+        if (isTRUE(grep("(^-?[0-9]*\\.?[0-9]*$)",x)==1))
+          return(tclVar("TRUE"))
+        else
+          return(tclVar("FALSE"))
+      }
+      validateSD <- function(x) {
+        if (isTRUE(grep("^[0-9]*\\.?[0-9]*$",x)==1))
+          return(tclVar("TRUE"))
+        else
+          return(tclVar("FALSE"))
+      }
+      validateConf <- function(x) {
+        if (isTRUE(grep("^0*\\.?[0-9]*$",x)==1))
+          return(tclVar("TRUE"))
+        else
+          return(tclVar("FALSE"))
+      }
+      setMissingVars <- function() {
+        
+        currentSelection <- as.numeric(tkcurselection(casesBox))
+        currentCase      <- missingCases[currentSelection]
+        if (currentSelection==0)
+          missVars <- anyMissing
+        else
+          missVars    <- is.na(amelia.data[currentCase,])
+        missVarNames<- colnames(amelia.data)[missVars]
+        tcl("set","priVarNames",missVarNames)
+        tkselect(varsBox,0)
+      }
+        
+      
+      addPrior.diag <- tktoplevel()
+      tkwm.title(addPrior.diag, "Add Prior")
+      missingCases <- apply(amelia.data, 1, function(x) any(is.na(x)))
+      missingCases <- which(missingCases)
+      anyMissing   <- apply(amelia.data, 2, function(x) any(is.na(x)))
+      if (all(csvar>0,tsvar>0)) {
+        cases <- apply(amelia.data[missingCases,c(csvar,tsvar)],1,
+                       function(x) {
+                         if (length(x)==2)
+                           return(paste(x[1],x[2]))
+                         else
+                           paste(x)})
+      } else if (all(csvar==0,tsvar==0)) {
+        cases <- rownames(amelia.data)[missingCases]
+      } else {
+        cases <- paste(amelia.data[missingCases,c(csvar,tsvar)])
+      }
+      
+      cases <- c("(whole variable)",cases)
+      vars <- colnames(amelia.data)[anyMissing]
+      tcl("set","priVarNames",vars)
+      tcl("set","caseNames",cases)
+      casesBox <-tkwidget(addPrior.diag,"combobox",borderwidth=1,
+                           editable="FALSE",listvar= "caseNames",width=18)
+      varsBox <- tkwidget(addPrior.diag,"combobox",borderwidth=1,
+                           editable="FALSE",listvar= "priVarNames",width=18)
+      tkgrid(tklabel(addPrior.diag, text="Case:"), column=1, row=1)
+      tkgrid(tklabel(addPrior.diag, text="Variable:"), column=1, row=2)
+      tkselect(casesBox, 0)
+      tkselect(varsBox, 0)
+      tkconfigure(casesBox, command=function(...) setMissingVars())
+      tkgrid(casesBox, column=2, row=1, pady=3)
+      tkgrid(varsBox,  column=2, row=2, pady=3)
+      
+      if (type=="dist") {
+        priorMean <- tclVar()
+        priorSD   <- tclVar()
+        
+        meanBox <- tkentry(addPrior.diag, textvar=priorMean, validate="key",
+                           vcmd = function(P) validateNumeric(P))
+
+        sdBox <- tkentry(addPrior.diag, textvar=priorSD, validate="key",
+                         vcmd = function(P) validateSD(P))
+
+        tkgrid(tklabel(addPrior.diag, text="Mean:"), column=1, row=3)
+        tkgrid(tklabel(addPrior.diag, text="Standard Deviation:"), column=1,
+               row=4)
+        tkgrid(meanBox, column=2, row=3, pady=3)
+        tkgrid(sdBox, column=2, row=4, pady=3)        
+        
+      } else {
+        priorMin  <- tclVar()
+        priorMax  <- tclVar()
+        priorConf <- tclVar()
+        
+        minBox  <- tkentry(addPrior.diag, textvar=priorMin, validate="key",
+                           vcmd = function(P) validateNumeric(P))
+
+        maxBox  <- tkentry(addPrior.diag, textvar=priorMax, validate="key",
+                           vcmd = function(P) validateNumeric(P))
+
+        
+        confBox <- tkentry(addPrior.diag, textvar=priorConf, validate="key",
+                           vcmd = function(P) validateNumeric(P))
+
+        tkgrid(tklabel(addPrior.diag, text="Minimum:"), column=1, row=3)
+        tkgrid(tklabel(addPrior.diag, text="Maximum:"), column=1, row=4)
+        tkgrid(tklabel(addPrior.diag, text="Confidence:"), column=1, row=5)
+       
+        tkgrid(minBox, column=2, row=3, pady=3)
+        tkgrid(maxBox, column=2, row=4, pady=3)
+        tkgrid(confBox, column=2, row=5, pady=3)
+        
+      }
+      
+      addPriorOK <- tkbutton(addPrior.diag, text="OK", command=function() onOK())
+      addPriorCancel <- tkbutton(addPrior.diag, text="Cancel",
+                                 command=function() tkdestroy(addPrior.diag))
+
+      tkgrid(addPriorOK, column=1,row=6)
+      tkgrid(addPriorCancel, column=2, row=6)
+
+      tkgrab.set(addPrior.diag)
+      tkfocus(addPrior.diag)
+      tkbind(addPrior.diag,"<Destroy>",
+             function(){tkgrab.release(addPrior.diag);tkfocus(pp);tkgrab.set(pp)})
     }
-    tkpack(sw2,fill="both",expand="yes",side="bottom",after=but.frame)
-		tkfocus(pp)
-		tkgrab.set(pp)
-		tkbind(pp,"<Destroy>",function() {tkgrab.release(pp);tkfocus(tt);})
-	}
+    
 
+    pp <- tktoplevel()
+    
+    tkwm.title(pp,"Observational Priors")
+    current.priors <- tkframe(pp)
+    currentPriorsSW <- tkwidget(pp, "ScrolledWindow", relief="sunken", borderwidth=2)
+    priorsChecked <<- list()
+    currentPriorsSF <- tkwidget(currentPriorsSW, "ScrollableFrame")
+    subfID <- tclvalue(tcl(currentPriorsSF,"getframe"))
+    tcl(currentPriorsSW, "setwidget", currentPriorsSF)
+    subfID <- tclvalue(tcl(currentPriorsSF, "getframe"))
+    addDistPriorButton <- tkbutton(pp, text = "Add Distribution Prior",
+                               command = function() addPrior(type="dist"))
+    addRangePriorButton <- tkbutton(pp, text = "Add Range Prior",
+                               command = function() addPrior(type="range"))
+    removePriorButton <- tkbutton(pp, text = "Remove Selected Priors", command =
+                                  function() removePriors())
+    obsOK <- tkbutton(pp, text="OK", command=function() {rm(priorsChecked,envir=.GlobalEnv);tkdestroy(pp);})
+    
+    if (is.null(priorsmat))
+      localPriors <- matrix(NA,1,1)
+    else
+      localPriors <- priorsmat
+    for (i in 1:nrow(localPriors)) {
+      if (ncol(localPriors) == 1)
+        next()
+      priorsChecked[[i]]<<-tclVar("0")
+      tkgrid(tcl("checkbutton",paste(subfID,".",i,sep=""),
+                 variable = paste(priorsChecked[[i]])),
+             pady=5, padx=5, row=i, column=1)
 
-#  obs.priors2 <- function() {           
-#    pp <- tktoplevel()
-#    tkwm.title(pp,"Observational Priors")
-#    current.priors <- tkframe(pp)
-#    currentPriorsSW <- tkwidget(pp, "ScrolledWindow", relief="sunken", borderwidth=2)
-#    currentPriorsSF <- tkwidget(currentPriorsSW, "ScrollableFrame")
-#    tcl(currentPriorsSW, "setwidget", currentPriorsSF)
-#    subfID <- tclvalue(tcl(currentPriorsSF, "getframe"))
-#    addPriorButton <- tkbutton(pp, text = "Add Prior",
-#                               command = function() print(1))
-#    removePriorButton <- tkbutton(pp, text = "Remove Selected Priors", command =
-#                                  function() print(2)) 
+      if ((localPriors[i,1]==0))
+        case <- "(whole variable)"
+      else
+        case <- paste(as.character(amelia.data[localPriors[i,1],csvar]),
+                      as.character(amelia.data[localPriors[i,1],tsvar]))
+      
+      tkgrid(tcl("label",paste(subfID,".",i,"i",sep=""),text=case,
+                 relief="sunken", width=20),row=i,column=2)
+
+      tkgrid(tcl("label",paste(subfID,".",i,"i2",sep=""),text=
+             names(amelia.data)[localPriors[i,2]], relief="sunken",
+                 width=20),row=i,column=3)
+
+      
+      tkgrid(tcl("label",paste(subfID,".",i,"i3",sep=""),text=
+             as.character(round(localPriors[i,3],5)), relief="sunken", width=20),
+             row=i,column=4)
+
+      
+      tkgrid(tcl("label",paste(subfID,".",i,"i4",sep=""),text=
+             as.character(round(localPriors[i,4],5)), relief="sunken", width=20),
+             row=i,column=5)
+    }
+      
+    #tkpack(currentPriorsSF)
+    tkconfigure(currentPriorsSF,width=700)
+    tkgrid(currentPriorsSW, row=1, sticky="news",columnspan=3)
+    tkgrid(addDistPriorButton, addRangePriorButton, removePriorButton,row=2)
+    tkgrid(obsOK, row=4, column=2, sticky="ns")
+    tkfocus(pp)
+    tkgrab.set(pp)
+    tkbind(pp,"<Destroy>",function(){tkgrab.release(pp);tkfocus(tt);tkgrab.set(tt)})
+  }
+    
                                         
   pri.save <- function() {
     empri<<-tclVar(as.numeric(tclvalue(temp.empri)))
-    for (i in 1:ncol(amelia.data)) {
-      varmin[i]<<-as.numeric(tclvalue(tclvarmin[[i]]))
-      varmax[i]<<-as.numeric(tclvalue(tclvarmax[[i]]))
-    }
     tkdestroy(tt)
   }
-  select.var<-function(varnum) {
-		varnum2<-tknearest(var.list, varnum)
-		pri.var<<-as.numeric(varnum2) + 1
-		pri.varname<<-names(amelia.data)[pri.var]
-		tkconfigure(minbox, textvariable = tclvarmin[[pri.var]])
-		tkconfigure(maxbox, textvariable = tclvarmax[[pri.var]])
-		if (any(is.factor(amelia.data[,pri.var]),pri.var==tsvar,pri.var==csvar)) {
-		  tkconfigure(minbox, state = "disabled")
-		  tkconfigure(maxbox, state = "disabled")
-    } else {
-		  tkconfigure(minbox, state = "normal")
-		  tkconfigure(maxbox, state = "normal")
-    }
-	}
-  if (is.null(varmin)) {
-    varmin<<-matrix(NA,ncol(amelia.data),1)
-    varmax<<-matrix(NA,ncol(amelia.data),1)
-    pri.var<<-1
-    pri.varname<<-names(amelia.data)[pri.var]
-
-  }
-  
-  for (i in 1:ncol(amelia.data)) {
-    tclvarmin[[i]]<<-tclVar(paste(varmin[i]))
-    tclvarmax[[i]]<<-tclVar(paste(varmax[i]))
-  }
-
 
 
   tt<-tktoplevel()
   tkwm.title(tt, "Priors Settings")
   gui.frame<-tkframe(tt)
-	priors <- tkframe(tt, relief = "groove", borderwidth = 2)
-	gui.bottom1<-tkframe(tt, relief = "groove",borderwidth=2)
-	gui.bottom2<-tkframe(tt, relief = "groove", borderwidth=2)
+  priors <- tkframe(tt, relief = "groove", borderwidth = 2)
 	
-	 	#Listbox for variables.
-  scr <- tkscrollbar(gui.bottom1, repeatinterval=5,
-    command=function(...)tkyview(var.list,...))
-	var.list.label<-tklabel(gui.bottom1,text="Select a variable:")
-	var.list<-tklistbox(gui.bottom1,height=10,selectmode="single",
-    yscrollcommand=function(...)tkset(scr,...))
-	for (i in 1:ncol(amelia.data))
-		tkinsert(var.list,"end",names(amelia.data)[i])
-	tkselection.set(var.list,(pri.var-1))
-	tkbind(var.list,"<Button-1>",function(y)select.var(y))
-	
-	boxlabel<-tklabel(gui.bottom2, text=paste("Lower and Upper Bounds:"))
-	minbox<-tkentry(gui.bottom2, width = 10, textvariable=tclvarmin[[pri.var]])
-	maxbox<-tkentry(gui.bottom2, width = 10, textvariable=tclvarmax[[pri.var]])
- 
- if (any(is.factor(amelia.data[,pri.var]),pri.var==tsvar,pri.var==csvar)) {
-		  tkconfigure(minbox, state = "disabled")
-		  tkconfigure(maxbox, state = "disabled")
-    } else {
-		  tkconfigure(minbox, state = "normal")
-		  tkconfigure(maxbox, state = "normal")
-    }
- 
-	temp.empri<<-tclVar(as.numeric(tclvalue(empri)))
-	empri.ent<-tkentry(priors,width=4,textvariable = temp.empri)
-	empri.label<-tklabel(priors,text="Empirical prior:")
-	case.but<-tkbutton(gui.frame,text="Set case priors",
-    command = function() case.priors())
+  
+  temp.empri<<-tclVar(as.numeric(tclvalue(empri)))
+  empri.ent<-tkentry(priors,width=4,textvariable = temp.empri)
+  empri.label<-tklabel(priors,text="Empirical prior:")
+  case.but<-tkbutton(gui.frame,text="Set case priors",
+                     command = function() case.priors())
+  
   if (csvar == 0)
     tkconfigure(case.but, state="disabled")
-	data.but<-tkbutton(gui.frame,text="Set observation priors")
-  if (.Platform$OS.type == "windows")
-		tkconfigure(data.but, command = function() call.datapri())
-	else 
-    tkconfigure(data.but, command = function() unix.datapri())	
+
+  data.but<-tkbutton(gui.frame,text="Set observation priors")
+  tkconfigure(data.but, command = function() obs.priors2())	
   tcl("set","prihelp","")
   
   pri.link <-tkbutton(tt, text = "?", 
@@ -1862,24 +1610,22 @@ gui.pri.setup<-function() {
   
   tkgrid(prihelp, row = 1, sticky = "nw")
   tkgrid(tkframe(pri.status, height = 0, width = 450), row = 2)
-	tkgrid(empri.label, empri.ent,row = 1, padx = 5, pady = 5) 
+  tkgrid(empri.label, empri.ent,row = 1, padx = 5, pady = 5) 
   tkgrid(tklabel(priors, text = paste("(N for current dataset is ",
-    nrow(amelia.data),")",sep="")), row = 2)
+                           nrow(amelia.data),")",sep="")), row = 2)
   tkgrid(case.but,data.but, row = 1, padx = 5, pady = 5, sticky = "ew")
-	tkgrid(var.list.label,row = 1, column = 1)
-	tkgrid(var.list, row = 2, column = 1)
-  tkgrid(scr, row = 2, column = 2, sticky="nsw")
-  tkgrid(boxlabel, row = 1, padx=3, pady=3,columnspan = 2)
-  tkgrid(minbox, maxbox, row = 2, padx=3, pady=3,sticky="ew")
+	
+	
+  
+  
+  
   tkgrid(pri.link, sticky = "ne", row = 1, column = 2, padx = 2, pady = 2)
-	tkgrid(priors, sticky = "nsew", row = 2, column = 0, columnspan = 3, padx = 10, pady = 10)
-	tkgrid(gui.bottom1, row = 3, column = 0, sticky="news",padx=10,pady=10)
-	tkgrid(gui.bottom2, row = 3, column = 1, sticky="news", columnspan=2,padx=10,pady=10)
-	tkgrid(gui.frame, sticky = "nw", row = 4, column = 0, padx = 5, pady = 5)
-	tkgrid(pri.ok, row = 5, column = 1, sticky = "ew", padx = 5, pady = 5)
-	tkgrid(pri.cancel, row = 5, column = 2, sticky = "ew", padx = 5, pady = 5)
+  tkgrid(priors, sticky = "nsew", row = 2, column = 0, columnspan = 3, padx = 10, pady = 10)
+  tkgrid(gui.frame, sticky = "nw", row = 4, column = 0, padx = 5, pady = 5)
+  tkgrid(pri.ok, row = 5, column = 1, sticky = "ew", padx = 5, pady = 5)
+  tkgrid(pri.cancel, row = 5, column = 2, sticky = "ew", padx = 5, pady = 5)
   tkgrid(pri.status, sticky="sew", row = 6,  columnspan = 3)
- 	tkgrid(tklabel(tt, text="Priors Options", font="Arial 16 bold"),pady=5, row = 1, column = 0, columnspan = 2,sticky="w")
+  tkgrid(tklabel(tt, text="Priors Options", font="Arial 16 bold"),pady=5, row = 1, column = 0, columnspan = 2,sticky="w")
   tkfocus(tt)
   tkgrab.set(tt)
   tkbind(tt,"<Destroy>",function(){tkgrab.release(tt);tkfocus(gui)})
@@ -1889,7 +1635,7 @@ gui.pri.setup<-function() {
   tkbind(empri.label, "<Leave>","set prihelp \"\"")
  	tkbind(case.but, "<Motion>","set prihelp \"Set prior beliefs about the similarity between different cross-sectional units.\"")
   tkbind(case.but, "<Leave>","set prihelp \"\"")
- 	tkbind(data.but, "<Motion>","set prihelp \"Set beliefs about the likely ranges of individual missing observations.\"")
+ 	tkbind(data.but, "<Motion>","set prihelp \"Set priors about individual observations or whole variables.\"")
   tkbind(data.but, "<Leave>","set prihelp \"\"")                
 }
 
@@ -1981,7 +1727,7 @@ gui.diag.setup <- function() {
 }
 #tkwm.iconbitmap(gui,"c:/amelia/amelia.ico")
 tkwm.deiconify(gui)
-tkwait.window(gui)
+#tkwait.window(gui)
 
 }
 

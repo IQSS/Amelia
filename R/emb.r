@@ -35,6 +35,7 @@
 ## 29/08/06 jh - changed tolerance defaults 
 ## 20/09/06 mb - new option (temp?) keep.data that will trash datasets from memory
 ## 01/10/06 mb - added additional info to p2s=2.
+## 27/11/06 mb - new priors format
 
 ## Draw from a multivariate normal distribution 
 ##   n: number of draws 
@@ -70,20 +71,20 @@ mpinv <- function(X, tol = sqrt(.Machine$double.eps)) {
 ##   x:          data (matrix)
 ##   priors:     matrix of priors about means for observations
 ##   sd.priors:  matrix of priors about standard deviations for observations
-bootx<-function(x,mu.priors=NULL,sd.priors=NULL){
+bootx<-function(x,priors=NULL){
   flag=TRUE
   AMn=nrow(x)
   while (flag){
     order<-trunc(runif(nrow(x), min=1, max=nrow(x)+1))
     xboot<-x[order,]
-    if (!identical(mu.priors,NULL)){
-      mu.priors<-mu.priors[order,]
-      sd.priors<-sd.priors[order,]
+    if (!identical(priors,NULL)){
+      priors[,1]<-match(priors[,1],order)
+      priors <- priors[!is.na(priors[,1]),,drop=FALSE]
     }
     
     flag<-any(colSums(is.na(xboot))==AMn)
   }
-  return(list(x=xboot,mu.priors=mu.priors,sd.priors=sd.priors))
+  return(list(x=xboot,priors=priors))
 }
 
 ## Put imputations into the original data format
@@ -219,22 +220,19 @@ if (identical(m,vector(mode='logical',length=length(m)))) # This is check for sw
 }
 
 ## EM chain architecture calls 
-emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,mu.priors=NULL,sd.priors=NULL,empri=NULL,frontend=FALSE,collect=FALSE,allthetas=FALSE){
+emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NULL,empri=NULL,frontend=FALSE,collect=FALSE,allthetas=FALSE){
   if (p2s == 2) {
     cat("setting up EM chain indicies\n")
     flush.console()
   }
-
+  
   iter.hist<-matrix(0,nrow=1,ncol=3)
   if (nrow(packr(x))<nrow(x)){          # Check for fully observed data
 
     if (identical(thetaold,NULL)) thetaold<-startval(x,startvals=startvals)    # This needs to be strengthened 
     indx<-indxs(x)                      # This needs x.NA
-    if (identical(mu.priors,NULL)){
-      pr<-NULL
-    } else {
-      pr<-!is.na(mu.priors)
-      inv.sd.priors<-1/sd.priors
+    if (!identical(priors,NULL)){
+      priors[,4]<-1/priors[,4]          # change sd to 1/sd
     }    
 
     x[is.na(x)]<-0                      # Change x.NA to x.0s       
@@ -269,7 +267,7 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,mu.priors
         tcl("update")   #Forces tcltk to update the text widget that holds the amelia output
       }
 
-      thetanew<-emfred(x,thetaold,indx$o,indx$m,indx$ivector,indx$icap,indx$AMr1,indx$AMr2,pr=pr,AM1stln=AM1stln,returntype="theta",mu.priors,inv.sd.priors,empri=empri,collect=collect)
+      thetanew<-emfred(x,thetaold,indx$o,indx$m,indx$ivector,indx$icap,indx$AMr1,indx$AMr2,pr=pr,AM1stln=AM1stln,returntype="theta",priors=priors,empri=empri,collect=collect)
       diff2<-sqrt(sum((thetanew-thetaold)^2))   
       diff<-(abs(thetanew-thetaold)>tolerance)
       diff<-sum(diff*upper.tri(diff,diag=TRUE))
@@ -329,14 +327,11 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,mu.priors
 }
 
 ## Draw imputations for missing values from a given theta matrix
-impute<-function(x,thetareal,mu.priors=NULL,sd.priors=NULL){
+impute<-function(x,thetareal,priors=NULL){
 
   indx<-indxs(x)                      # This needs x.NA 
-  if (identical(mu.priors,NULL)){
-    pr<-NULL
-  } else {
-    pr<-!is.na(mu.priors)
-    inv.sd.priors<-1/sd.priors
+  if (!identical(priors,NULL)){
+    priors[,4]<-1/priors[,4]
   }    
 
   x[is.na(x)]<-0                      # Change x.NA to x.0s       
@@ -359,7 +354,7 @@ impute<-function(x,thetareal,mu.priors=NULL,sd.priors=NULL){
     st<-2
   }
 
-  if (identical(pr,NULL)){                     # No Observation Level Priors in Dataset
+  if (identical(priors,NULL)){                     # No Observation Level Priors in Dataset
 
     for (ss in st:(length(i)-1)){
  
@@ -367,12 +362,12 @@ impute<-function(x,thetareal,mu.priors=NULL,sd.priors=NULL){
 
       is<-i[ss]
       isp<-i[ss+1]-1
-  
+      
       Ci<-matrix(0,AMp,AMp)
       hold<-chol(theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])])
       Ci[m[ss,],m[ss,]]<-hold
       junk<-matrix(rnorm((i[ss+1]-is) * AMp), i[ss+1]-is, AMp) %*% Ci
- 
+      
       imputations<-AMr1[is:isp, , drop=FALSE] * ((x[is:isp, , drop=FALSE] %*% theta[2:(AMp+1),2:(AMp+1) , drop=FALSE])
           + (matrix(1,1+isp-is,1) %*% theta[1,2:(AMp+1) , drop=FALSE]) )
       xplay[is:isp,]<-x[is:isp,] + imputations + junk
@@ -386,30 +381,44 @@ impute<-function(x,thetareal,mu.priors=NULL,sd.priors=NULL){
 
       is<-i[ss]
       isp<-i[ss+1]-1
-
+   
       for (jj in is:isp){
+      # Prior specified for this observation
+        if (sum(priors[,1] == jj)) {              
 
-        ##    pr[jj,] is a Boolean vector of the positions where priors are specified for observation jj
-
-        if(sum(pr[jj,])){                     # Prior specified for this observation
+          ## maybe we should sort priors earlier? do we need to?
+          priorsForThisRow <- priors[priors[,1] == jj, , drop = FALSE] 
+          priorsForThisRow <- priorsForThisRow[order(priorsForThisRow[,2]),,drop=FALSE]
+          columnsWithPriors <- c(1:AMp) %in% priorsForThisRow[, 2]
 
           # Calculate sd2
-          solve.Sigma<-  solve( theta[c(FALSE,pr[jj,]),c(FALSE,pr[jj,])] )        # NOT SURE THAT THIS IS CORRECT MATRIX
-                                                                           # CAN THIS BE NonPD?  Should we try "mpinv"?
-          solve.Lambda<-matrix(0,sum(pr[jj,]),sum(pr[jj,]))
-          diag(solve.Lambda)<-inv.sd.priors[jj, pr[jj,] ]
+          solve.Sigma  <- solve( theta[c(FALSE,columnsWithPriors),
+                                       c(FALSE,columnsWithPriors)] )
+                                 # NOT SURE THAT THIS IS CORRECT MATRIX
+       
+          solve.Lambda <- matrix(0, nrow(priorsForThisRow),
+                               nrow(priorsForThisRow))
+        
+        
 
           #Calculate imputed values
-          imputations<-((x[jj, , drop=FALSE] %*% theta[2:(AMp+1),2:(AMp+1) , drop=FALSE]) + theta[1,2:(AMp+1) , drop=FALSE] )
-
-          # Update **theta**
-          copy.theta<-theta                                     # Make a copy of theta
-          copy.theta[ c(FALSE,pr[jj,]),c(FALSE,pr[jj,]) ] <- solve(solve.Lambda + solve.Sigma)   # Overwrite prior locations
-
+          imputations <- ((x[jj, , drop=FALSE] %*%
+                           theta[2:(AMp+1),2:(AMp+1) , drop=FALSE]) +
+                           theta[1,2:(AMp+1) , drop=FALSE] )
+          
           # Weight these together
-          mu.miss<-(solve(solve.Lambda + solve.Sigma)) %*% (solve.Lambda%*%mu.priors[jj,pr[jj,]] + solve.Sigma%*%imputations[ pr[jj,] ])
-          imputations[ pr[jj,] ]<-mu.miss     # Probably some dropping goes on here
-
+          diag(solve.Lambda) <- priorsForThisRow[,4]
+          mu.miss <- (solve(solve.Lambda + solve.Sigma)) %*%
+                     (solve.Lambda %*% priorsForThisRow[,3] +
+                      solve.Sigma  %*% imputations[columnsWithPriors])
+        
+          imputations[columnsWithPriors]<-mu.miss     # Probably some
+                                                    #dropping goes on here
+          # update **theta**
+          copy.theta <- theta
+          copy.theta[c(FALSE,columnsWithPriors),c(FALSE,columnsWithPriors)] <-
+            solve(solve.Lambda + solve.Sigma)
+          
           # Create "noise" term from updated theta
           Ci<-matrix(0,AMp,AMp)
           hold<-chol(copy.theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])])
@@ -440,7 +449,7 @@ return(xplay)
 
 ## Single EM step (returns updated theta)
 ## the "x" passed to emfred is x.0s (missing values replaced with zeros)
-emfred<-function(x,thetareal,o,m,i,iii,AMr1,AMr2,pr=NULL,AM1stln,returntype="theta",mu.priors=NULL,inv.sd.priors=NULL,empri=NULL,collect=FALSE){
+emfred<-function(x,thetareal,o,m,i,iii,AMr1,AMr2,pr=NULL,AM1stln,returntype="theta",priors=NULL,empri=NULL,collect=FALSE){
 AMp<-ncol(x)
 AMn<-nrow(x)
 
@@ -453,7 +462,7 @@ if (!AM1stln){
   st<-2
 }
 
-if (identical(pr,NULL)){                     # No Observation Level Priors in Dataset
+if (identical(priors,NULL)){                     # No Observation Level Priors in Dataset
   for (ss in st:(length(i)-1)){
 
     theta<-amsweep(thetareal,c(FALSE,o[ss,]))
@@ -477,26 +486,42 @@ if (identical(pr,NULL)){                     # No Observation Level Priors in Da
     isp<-i[ss+1]-1
 
     for (jj in is:isp){
-
-      ##    pr[jj,] is a Boolean vector of the positions where priors are specified for observation jj
-
-      if(sum(pr[jj,])){                     # Prior specified for this observation
+      
+      # Prior specified for this observation
+      if (sum(priors[,1] == jj)) {         
+        ## maybe we should sort priors earlier? do we need to?
+        priorsForThisRow <- priors[priors[,1] == jj, , drop = FALSE] 
+        priorsForThisRow <- priorsForThisRow[order(priorsForThisRow[,2]),,drop=FALSE]
+        columnsWithPriors <- c(1:AMp) %in% priorsForThisRow[, 2]
 
         # Calculate sd2
-        solve.Sigma<-  solve( theta[c(FALSE,pr[jj,]),c(FALSE,pr[jj,])] )        # NOT SURE THAT THIS IS CORRECT MATRIX
-        solve.Lambda<-matrix(0,sum(pr[jj,]),sum(pr[jj,]))
+        solve.Sigma  <- solve( theta[c(FALSE,columnsWithPriors),
+                                     c(FALSE,columnsWithPriors)] )
+                                 # NOT SURE THAT THIS IS CORRECT MATRIX
+       
+        solve.Lambda <- matrix(0, nrow(priorsForThisRow),
+                               nrow(priorsForThisRow))
+        
+        
 
         #Calculate imputed values
-        imputations<-((x[jj, , drop=FALSE] %*% theta[2:(AMp+1),2:(AMp+1) , drop=FALSE]) + theta[1,2:(AMp+1) , drop=FALSE] )
+        imputations <- ((x[jj, , drop=FALSE] %*%
+                         theta[2:(AMp+1),2:(AMp+1) , drop=FALSE]) +
+                         theta[1,2:(AMp+1) , drop=FALSE] )
 
         # Weight these together
-        diag(solve.Lambda)<-inv.sd.priors[jj, pr[jj,] ]
-        mu.miss<-(solve(solve.Lambda + solve.Sigma)) %*% (solve.Lambda%*%mu.priors[jj,pr[jj,]] + solve.Sigma%*%imputations[ pr[jj,] ])
-        imputations[ pr[jj,] ]<-mu.miss     # Probably some dropping goes on here
+        diag(solve.Lambda) <- priorsForThisRow[,4]
+        mu.miss <- (solve(solve.Lambda + solve.Sigma)) %*%
+                   (solve.Lambda %*% priorsForThisRow[,3] +
+                    solve.Sigma  %*% imputations[columnsWithPriors])
+        
+        imputations[columnsWithPriors]<-mu.miss     # Probably some
+                                                    #dropping goes on here
+        
 
         # Update "hmcv" 
         copy.theta<-theta                                                                          # Make a copy of theta
-        copy.theta[ pr[jj,]+1 ,pr[jj,]+1 ] <- solve(solve.Lambda + solve.Sigma)                    # Overwrite prior locations
+        copy.theta[ c(FALSE,columnsWithPriors) ,c(FALSE,columnsWithPriors) ] <- solve(solve.Lambda + solve.Sigma)                    # Overwrite prior locations
         hmcv[m[ss,],m[ss,]]<-hmcv[m[ss,],m[ss,]] + copy.theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])]     # Add to hmcv in missing locations
 
         # Add into dataset of expected values
@@ -548,12 +573,12 @@ if (returntype=="theta"){
 
 ## Core amelia function
 amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
-                 ts=NULL,cs=NULL,casepri=NULL,means=NULL,sds=NULL,mins=NULL,
-                 maxs=NULL,conf=NULL,empri=NULL,tolerance=0.0001,
+                 ts=NULL,cs=NULL,casepri=NULL,empri=NULL,tolerance=0.0001,
                  polytime=NULL,startvals=0,lags=NULL, leads=NULL,
                  intercs=FALSE,archive=TRUE,sqrts=NULL,lgstc=NULL,
                  noms=NULL,incheck=T,ords=NULL,collect=FALSE,
-                 outname="outdata",write.out=TRUE,arglist=NULL,keep.data=TRUE) {
+                 outname="outdata",write.out=TRUE,arglist=NULL,
+                 keep.data=TRUE, priors=NULL) {
 
   #Generates the Amelia Output window for the frontend
   if (frontend) {
@@ -575,13 +600,13 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
              
   code<-1   
   
-  prepped<-amelia.prep(data=data,m=m,idvars=idvars,means=means,sds=sds,mins=mins,
-                        maxs=maxs,conf=conf,empri=empri,ts=ts,cs=cs,
-                        tolerance=tolerance,casepri=casepri,polytime=polytime,
-                        lags=lags,leads=leads,logs=logs,sqrts=sqrts,lgstc=lgstc,
-                        p2s=p2s,frontend=frontend,archive=archive,intercs=intercs,
-                        noms=noms,startvals=startvals,ords=ords,incheck=incheck,
-                        collect=collect,outname=outname,write.out=write.out,arglist=arglist)
+  prepped<-amelia.prep(data=data,m=m,idvars=idvars,empri=empri,ts=ts,cs=cs,
+                       tolerance=tolerance,casepri=casepri,polytime=polytime,
+                       lags=lags,leads=leads,logs=logs,sqrts=sqrts,lgstc=lgstc,
+                       p2s=p2s,frontend=frontend,archive=archive,intercs=intercs,
+                       noms=noms,startvals=startvals,ords=ords,incheck=incheck,
+                       collect=collect,outname=outname,write.out=write.out,
+                       arglist=arglist,priors=priors)
   
   if (prepped$code!=1) {
     cat("Amelia Error Code: ",prepped$code,"\n",prepped$message,"\n")
@@ -594,16 +619,15 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       cat("running bootstrap\n")
       flush.console()
     }
-
-    x.boot<-bootx(prepped$x,prepped$mu.priors,prepped$sd.priors) 
-    x.stacked<-amstack(x.boot$x,colorder=FALSE,x.boot$mu.priors,x.boot$sd.priors)   # Don't reorder columns thetanew will not align with d.stacked$x
+    
+    x.boot<-bootx(prepped$x,prepped$priors) 
+    x.stacked<-amstack(x.boot$x,colorder=FALSE,x.boot$priors)   # Don't reorder columns thetanew will not align with d.stacked$x
 
     if (p2s) cat("-- Imputation", i, "--\n")
     if (frontend) tkinsert(run.text,"end",paste("-- Imputation",i,"--\n"))
     flush.console()
 
-    thetanew<-emarch(x.stacked$x,p2s=p2s,thetaold=NULL,tolerance=tolerance,startvals=startvals,x.stacked$mu.priors,x.stacked$sd.priors,empri=empri,frontend=frontend,collect=collect)
-     
+    thetanew<-emarch(x.stacked$x,p2s=p2s,thetaold=NULL,tolerance=tolerance,startvals=startvals,x.stacked$priors,empri=empri,frontend=frontend,collect=collect)
     if (archive){
       prepped$archv[[paste("iter.hist",i,sep="")]]<-thetanew$iter.hist
     }
@@ -622,7 +646,7 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       next()
     }
     
-    ximp<-impute(prepped$x, thetanew$thetanew, mu.priors=prepped$mu.priors, sd.priors=prepped$sd.priors )   #, d.stacked$mu.priors,d.stacked$sd.priors)     
+    ximp<-impute(prepped$x, thetanew$thetanew, priors=prepped$priors)
     ximp<-amunstack(ximp,n.order=prepped$n.order,p.order=prepped$p.order)     
     ximp<-unscale(ximp,mu=prepped$scaled.mu,sd=prepped$scaled.sd)
     

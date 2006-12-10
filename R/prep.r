@@ -16,6 +16,9 @@
 ##             or junk (idvars). added to subset/unsubset (ignore last update).
 ## 02/08/06 mb fixed bug where polytime=0 would make for odd behaviour/crashing
 ## 11/09/06 mb fixed bug in unsubset: 'index' too long to subset w/o 'which'
+## 18/10/06 mb incorporated confidence levels into generating priors
+## 20/10/06 mb new format for priors
+
 nametonumber<-function(x,ts,cs,idvars,noms,ords,logs,sqrts,lgstc,lags,leads)
 {
   
@@ -65,6 +68,53 @@ nametonumber<-function(x,ts,cs,idvars,noms,ords,logs,sqrts,lgstc,lags,leads)
   
   return(output)
 }
+
+## convert.priors - convert 4/5-column priors to matrix of priors
+##   priors:  4/5 column priors matrix
+##   nrow:    rows of the data matrix
+##   ncol:    cols of the data matrix
+##
+##  output: a list of either 2 (in the 4 col case) or 3 (in the 5 col
+##          case) of prior matrices.
+#convert.priors <- fucntion(priors, nrow, ncol) {
+#  if (!is.matrix(priors))
+#    stop("argument 'priors' is not a matrix")
+#  if (ncol(priors) != 4 || ncol(priors) != 5)
+#    stop("priors matrix has the wrong number of columns")
+
+
+
+  
+#  if (ncol(priors) == 4) {
+#    #generate output priors matrix, the size of the data
+#    out.means <- matrix(NA, nrow = nrow, ncol = ncol)
+#    out.sds   <- matrix(NA, nrow = nrow, ncol = ncol)
+
+#    # fill in the the matrices
+#    for (i in 1:nrow(priors)) {
+#      out.means[priors[i,1], priors[i,2]] <- priors[i,3]
+#        out.sds[priors[i,1], priors[i,2]] <- priors[i,4]
+#    }
+
+#    return(list(means = out.means, sds = out.sds))
+#  }
+
+  
+#  if (ncol(priors) == 5) {
+#    out.mins  <- matrix(NA, nrow = nrow, ncol = ncol)
+#    out.maxs  <- matrix(NA, nrow = nrow, ncol = ncol)
+#    out.conf  <- matrix(NA, nrow = nrow, ncol = ncol)
+
+#    for (i in 1:nrow(priors)) {
+#      out.mins[priors[i,1], priors[i,2]] <- priors[i,3]
+#      out.maxs[priors[i,1], priors[i,2]] <- priors[i,4]
+#      out.conf[priors[i,1], priors[i,2]] <- priors[i,5]
+#    }
+
+#    return(list(mins = out.mins, maxs = out.maxs, conf = out.conf))
+#  }
+#}
+
 
 ## amtransform - Transform variables to assume normality
 ##   x:      data matrix
@@ -143,13 +193,13 @@ frame.to.matrix<-function(x,idvars) {
 
 
 ## Remove rows and columns from dataset that do not belong
-amsubset<-function(x,idvars,p2s,ts,cs,mu.priors=NULL,sd.priors=NULL,
+amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
                   polytime=NULL,intercs=FALSE,lags=NULL,leads=NULL,noms=NULL) {
-  lags<-unique(lags)
-  leads<-unique(leads)
-  noms<-unique(noms)
-  idvars<-unique(idvars)
-  index<-c(1:ncol(x))
+  lags   <- unique(lags)
+  leads  <- unique(leads)
+  noms   <- unique(noms)
+  idvars <- unique(idvars)
+  index  <- c(1:ncol(x))
 
 
   if (!is.null(idvars))
@@ -253,20 +303,10 @@ amsubset<-function(x,idvars,p2s,ts,cs,mu.priors=NULL,sd.priors=NULL,
     x<-cbind(x,timevars)  # first column is a holding variable, second is to have fixed effects identified
     for (i in 1:ncol(as.matrix(timevars)))
       index<-c(index,0)               #0 - timevars
-    if (!identical(mu.priors,NULL)){
-      timepriors<-matrix(NA,nrow(timevars),ncol(timevars))
-      mu.priors<-cbind(mu.priors,timepriors)
-      sd.priors<-cbind(sd.priors,timepriors)
-    }
   }
 
-  if (!identical(idvars,NULL)){
-    x<-x[,-idvars]
-    if (!identical(mu.priors,NULL)){
-      mu.priors<-mu.priors[,-idvars]
-      sd.priors<-sd.priors[,-idvars]
-    }
-  }
+  if (!identical(idvars,NULL))
+    x<-x[,-idvars]   
 
 
   AMr1<-is.na(x)
@@ -275,18 +315,20 @@ amsubset<-function(x,idvars,p2s,ts,cs,mu.priors=NULL,sd.priors=NULL,
   blanks<-1:nrow(x)
     blanks<-blanks[flag]
     x<-x[!flag,]
-    if (!identical(mu.priors,NULL)){
-      mu.priors<-mu.priors[!flag,]
-      sd.priors<-sd.priors[!flag,]
-    }
+  
+    priors[,1] <- priors[,1] - colSums(sapply(priors[,1],">",blanks))
+    
+  
+  
 
     if (p2s) cat("Warning: There are observations in the data that are completely missing.","\n",
                  "        These observations will remain unimputed in the final datasets.","\n")
   } else {
     blanks<-NULL
   }
+  priors[,2] <- match(priors[,2], index)
 
-return(list(x=x,index=index,idvars=idvars,blanks=blanks,mu.priors=mu.priors,sd.priors=sd.priors))
+return(list(x=x,index=index,idvars=idvars,blanks=blanks,priors=priors))
 }
 
 ## Replace rows and columns removed in "amsubset"
@@ -375,18 +417,18 @@ unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,intercs,noms,index,
 
 }
 ## Rescale Dataset
-scalecenter<-function(x,mu.priors=NULL,sd.priors=NULL){
+scalecenter<-function(x,priors=NULL){
 
   AMn<-nrow(x)
   ones<-matrix(1,AMn,1)
   meanx<-colMeans(x,na.rm=TRUE)
   stdvx<-apply(x,2,sd,na.rm=TRUE)
   x.ztrans<-(x-(ones %*% meanx))/(ones %*% stdvx)
-  if (!identical(mu.priors,NULL)){
-    mu.priors<-(mu.priors-(ones %*% meanx))/(ones %*% stdvx)
-    sd.priors<-sd.priors/(ones %*% stdvx)
+  if (!identical(priors,NULL)){
+    priors[,3]<-(priors[,3]-meanx[priors[,2]])/stdvx[priors[,2]]
+    priors[,4]<-priors[,4]/stdvx[priors[,2]]
   }
-return(list(x=x.ztrans,mu=meanx,sd=stdvx,mu.priors=mu.priors,sd.priors=sd.priors))
+return(list(x=x.ztrans,mu=meanx,sd=stdvx,priors=priors))
 }
 
 unscale<-function(x,mu,sd){
@@ -399,7 +441,7 @@ return(x.unscale)
 
 ## Stack dataset and return vectors for sorting
 ## NOTE:  THIS ORDERS TIES IN A SLIGHTLY DIFFERENT WAY THAN "stack.g" IN GAUSS AMELIA
-amstack<-function(x,colorder=TRUE,mu.priors=NULL,sd.priors=NULL){
+amstack<-function(x,colorder=TRUE,priors=NULL){
 
   AMp<-ncol(x)
   AMr1<-is.na(x)
@@ -415,12 +457,12 @@ amstack<-function(x,colorder=TRUE,mu.priors=NULL,sd.priors=NULL){
 
   AMr1<- AMr1[n.order,]     # p.order has already been rearranged
   x<- x[n.order,p.order]    # rearrange rows and columns of dataset
-  if (!identical(mu.priors,NULL)){
-    mu.priors<-mu.priors[n.order,p.order]
-    sd.priors<-sd.priors[n.order,p.order]
+  if (!identical(priors,NULL)){
+    priors[,1]<-match(priors[,1],n.order)
+    priors[,2]<-match(priors[,2],p.order)
   }
 
-  return(list(x=x,n.order=n.order,p.order=p.order,mu.priors=mu.priors,sd.priors=sd.priors))
+  return(list(x=x,n.order=n.order,p.order=p.order,priors=priors))
 }
 
 
@@ -433,66 +475,68 @@ amunstack<-function(x,n.order,p.order){
 
 # This function is in miserable shape.  Need to clean up how lack of priors are dealt with.
 
-generatepriors<-function(casepri=NULL,means=NULL,sds=NULL,mins=NULL,maxs=NULL,conf=NULL,ranges=NULL,empri=NULL){
+generatepriors<-function(AMr1,casepri=NULL,empri=NULL,priors=NULL){
 
-  mu.priors<-NULL
-  sd.priors<-NULL
-
-  if (!identical(mins,NULL)){
-    mu.priors<-mins + ((maxs - mins)/2)
-    sd.priors<-(maxs - mins)/3.92     #NOTE: FIX THIS: Currently ignores CONF - ASSUMES CI95
-  }
-
-  # If both ranges and obspri exist, ranges overides.
-
-  if (!identical(means,NULL)){
-    if (!identical(mu.priors,NULL)){
-      mu.priors<-means
-      sd.priors<-sds
+  if (!identical(priors,NULL)) {
+    if (ncol(priors) == 5){
+      new.priors<-matrix(NA, nrow = nrow(priors), ncol = 4)
+      new.priors[,1:2]<-priors[,1:2]           
+      new.priors[,3]<-priors[,3] + ((priors[,4] - priors[,3])/2)
+      new.priors[,4]<-(priors[,4]-priors[,3])/(2*qnorm(1-(1-priors[,5])/2))
+                                        #NOTE: FIX THIS: Currently ignores CONF- ASSUMES CI95
+      
     } else {
-      mu.priors[!is.na(means)]<-means[!is.na(means)]
-      sd.priors[!is.na(sds)]<-sds[!is.na(sds)]
+      new.priors <-priors
+    }
+    zeros <- which(new.priors[,1]==0)
+    if (length(zeros) > 0) {
+      varPriors <- new.priors[zeros,2]
+      missCells <- which(AMr1[,varPriors,drop=FALSE], arr.ind=TRUE)
+      addedPriors <- matrix(NA, nrow=nrow(missCells), ncol=4)
+      addedPriors[,1] <- missCells[,1]
+      addedPriors[,2] <- varPriors[missCells[,2]]
+      addedPriors[,-c(1,2)] <- new.priors[zeros[missCells[,2]],-c(1,2)]
+      new.priors <- new.priors[-zeros,,drop=FALSE]
+      new.priors <- rbind(new.priors,addedPriors)
+      return(new.priors)
     }
   }
-
-return(list(mu.priors=mu.priors,sd.priors=sd.priors))
 }
 
+amelia.prep <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
+                        ts=NULL,cs=NULL,casepri=NULL,empri=NULL,
+                        tolerance=0.0001,polytime=NULL,startvals=0,lags=NULL,
+                        leads=NULL,intercs=FALSE,archive=TRUE,sqrts=NULL,
+                        lgstc=NULL,noms=NULL,incheck=T,ords=NULL,collect=FALSE,
+                        outname="outdata",write.out=TRUE,arglist=NULL,
+                        keep.data=TRUE, priors=NULL,var=NULL) {
 
-amelia.prep <- function(data,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,
-                        tolerance,casepri,polytime,lags,leads,logs,sqrts,
-                        lgstc,p2s,frontend,archive,intercs,noms,startvals,
-                        ords,incheck,collect=F,outname="outdata",write.out=F,arglist,var=NULL) {
 
-  code<-1
+  code <- 1
   if (!identical(arglist,NULL)) {
     if (!is.list(arglist) || identical(arglist$amelia.args,NULL)) {
-      error.code<-46
-      error.mess<-paste("The argument list you provided is invalid.")
-      return(list(code=error.code,message=error.mess))
+      error.code <- 46
+      error.mess <- paste("The argument list you provided is invalid.")
+      return(list(code=error.code, message=error.mess))
     }
-    m<-arglist$amelia.args$m
-    idvars<-arglist$amelia.args$idvars
-    means<-arglist$amelia.args$means
-    sds<-arglist$amelia.args$sds
-    mins<-arglist$amelia.args$mins
-    maxs<-arglist$amelia.args$maxs
-    conf<-arglist$amelia.args$conf
-    empri<-arglist$amelia.args$empri
-    ts<-arglist$amelia.args$ts
-    cs<-arglist$amelia.args$cs
-    tolerance<-arglist$amelia.args$tolerance
-    casepri<-arglist$amelia.args$casepri
-    polytime<-arglist$amelia.args$polytime
-    lags<-arglist$amelia.args$lags
-    leads<-arglist$amelia.args$leads
-    logs<-arglist$amelia.args$logs
-    sqrts<-arglist$amelia.args$sqrts
-    lgstc<-arglist$amelia.args$lgstc
-    intercs<-arglist$amelia.args$intercs
-    noms<-arglist$amelia.args$noms
-    startvals<-arglist$amelia.args$startvals
-    ords<-arglist$amelia.args$ords
+    m         <- arglist$amelia.args$m
+    idvars    <- arglist$amelia.args$idvars
+    empri     <- arglist$amelia.args$empri
+    ts        <- arglist$amelia.args$ts
+    cs        <- arglist$amelia.args$cs
+    tolerance <- arglist$amelia.args$tolerance
+    casepri   <- arglist$amelia.args$casepri
+    polytime  <- arglist$amelia.args$polytime
+    lags      <- arglist$amelia.args$lags
+    leads     <- arglist$amelia.args$leads
+    logs      <- arglist$amelia.args$logs
+    sqrts     <- arglist$amelia.args$sqrts
+    lgstc     <- arglist$amelia.args$lgstc
+    intercs   <- arglist$amelia.args$intercs
+    noms      <- arglist$amelia.args$noms
+    startvals <- arglist$amelia.args$startvals
+    ords      <- arglist$amelia.args$ords
+    priors    <- arglist$amelia.args$priors
   }
   
   
@@ -503,30 +547,38 @@ amelia.prep <- function(data,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,
   }
   
   if (incheck) {
-    checklist<-amcheck(x=data,m=m,idvars=numopts$idvars,means=means,sds=sds,mins=mins,maxs=maxs,conf=conf,empri=empri,ts=numopts$ts,cs=numopts$cs,
-      tolerance=tolerance,casepri=casepri,polytime=polytime,lags=numopts$lags,leads=numopts$leads,logs=numopts$logs,sqrts=numopts$sqrts,lgstc=numopts$lgstc,p2s=p2s,frontend=frontend,
-      archive=archive,intercs=intercs,noms=numopts$noms,startvals=startvals,ords=numopts$ords,
-      collect=collect,outname=outname,write.out=write.out)
+
+    checklist<-amcheck(data = data, m = m, idvars = numopts$idvars, priors =
+                       priors, empri = empri, ts = numopts$ts, cs = numopts$cs,
+                       tolerance = tolerance, casepri = casepri, polytime =
+                       polytime, lags = numopts$lags,leads = numopts$leads, logs
+                       = numopts$logs, sqrts = numopts$sqrts, lgstc
+                       =numopts$lgstc, p2s = p2s, frontend = frontend, archive =
+                       archive, intercs = intercs, noms = numopts$noms,
+                       startvals = startvals, ords = numopts$ords, collect =
+                       collect, outname = outname, write.out = write.out)
+    #check.call <- match.call()
+    #check.call[[1]] <- as.name("amcheck")
+    #checklist <- eval(check.call, parent.frame())
+    
     if (!is.null(checklist$code)) {
       return(list(code=checklist$code,message=checklist$mess))
     }
-    m<-checklist$m
-    means<-checklist$means
-    sds<-checklist$sds
-    mins<-checklist$mins
-    maxs<-checklist$maxs
-    conf<-checklist$conf
-    outname<-checklist$outname
+    m <- checklist$m
+    priors <- checklist$priors
+    outname <- checklist$outname
   }
 
-  priors=generatepriors(casepri=casepri,means=means,sds=sds,mins=mins,
-    maxs=maxs,conf=conf,empri=empri)
-
+  priors <- generatepriors(AMr1 = is.na(data) ,casepri = casepri,
+                           empri = empri, priors = priors)
+  
+  
   if (archive) {
-    archv<-list(m=m,idvars=numopts$idvars,logs=numopts$logs,ts=numopts$ts,cs=numopts$cs,casepri=casepri,
-    sds=sds,mins=mins,maxs=maxs,conf=conf,empri=empri,tolerance=tolerance,
-    polytime=polytime,lags=numopts$lags,leads=numopts$leads,intercs=intercs,sqrts=numopts$sqrts,
-    lgstc=numopts$lgstc,noms=numopts$noms,ords=numopts$ords,outname=outname)
+    archv<-list(m=m, idvars=numopts$idvars, logs=numopts$logs, ts=numopts$ts, cs=numopts$cs,
+                casepri=casepri, empri=empri, tolerance=tolerance,
+                polytime=polytime, lags=numopts$lags, leads=numopts$leads,
+                intercs=intercs, sqrts=numopts$sqrts, lgstc=numopts$lgstc,
+                noms=numopts$noms, ords=numopts$ords, outname=outname, priors=priors)
   } else {
     archv<-NULL
   }
@@ -537,60 +589,32 @@ amelia.prep <- function(data,m,idvars,means,sds,mins,maxs,conf,empri,ts,cs,
 
   
   d.trans<-amtransform(data,logs=numopts$logs,sqrts=numopts$sqrts,lgstc=numopts$lgstc)  
-  d.subset<-amsubset(d.trans$x,idvars=numopts$idvars,p2s=p2s,ts=numopts$ts,cs=numopts$cs,priors$mu.priors,priors$sd.priors,polytime=polytime,intercs=intercs,noms=numopts$noms)
-  d.scaled<-scalecenter(d.subset$x,mu.priors=d.subset$mu.priors,sd.priors=d.subset$sd.priors)
-  d.stacked<-amstack(d.scaled$x,colorder=TRUE,mu.priors=d.scaled$mu.priors,sd.priors=d.scaled$sd.priors)
-  
-
-  
-  if (incheck) {
-    #Error code: 34-35
-    #Too few observations to estimate parameters
-    realAMp<-ncol(d.stacked$x)
-    realAMn<-nrow(d.stacked$x)
-    if (!identical(empri,NULL)) {
-
-      if ((realAMp*(realAMp+3))/2 >= ((2*realAMn)+empri)) {
-        error.code<-34
-        error.mess<-paste("The number of observations in too low to estimate the number of \n",
-                        "parameters.  You can either remove some variables, add some \n",
-                        "observations, or increase the empirical prior.")
-        return(list(code=error.code,message=error.mess))
-      }
-    } else {
-      if ((realAMp*(realAMp+3))/2 >= (2*realAMn)) {
-        error.code<-34
-        error.mess<-paste("The number of observations in too low to estimate the number of \n",
-                        "parameters.  You can either remove some variables, add some \n",
-                        "observations, or increase the empirical prior.")
-        return(list(code=error.code,message=error.mess))
-      }
-    }
-  }
+  d.subset<-amsubset(d.trans$x,idvars=numopts$idvars,p2s=p2s,ts=numopts$ts,cs=numopts$cs,polytime=polytime,intercs=intercs,noms=numopts$noms,priors=priors)
+  d.scaled<-scalecenter(d.subset$x,priors=d.subset$priors)
+  d.stacked<-amstack(d.scaled$x,colorder=TRUE,priors=d.scaled$priors)
 
   return(list(
-    x = d.stacked$x,
-    code = code,
-    mu.priors = d.stacked$mu.priors,
-    sd.priors = d.stacked$sd.priors,
-    n.order = d.stacked$n.order,
-    p.order = d.stacked$p.order,
-    scaled.mu = d.scaled$mu,
-    scaled.sd = d.scaled$sd,
-    trans.x = d.trans$x,
-    blanks = d.subset$blanks,
-    idvars = d.subset$idvars,
-    ts = numopts$ts,
-    cs = numopts$cs,
-    noms = numopts$noms,
-    index = d.subset$index,
-    ords = numopts$ords,
-    m = m,
-    logs = numopts$logs,
-    archv = archv,
-    xmin = d.trans$xmin,
-    sqrts = numopts$sqrts,
-    lgstc = numopts$lgstc,
-    outname = outname,
+    x            = d.stacked$x,
+    code         = code,
+    priors       = d.stacked$priors,
+    n.order      = d.stacked$n.order,
+    p.order      = d.stacked$p.order,
+    scaled.mu    = d.scaled$mu,
+    scaled.sd    = d.scaled$sd,
+    trans.x      = d.trans$x,
+    blanks       = d.subset$blanks,
+    idvars       = d.subset$idvars,
+    ts           = numopts$ts,
+    cs           = numopts$cs,
+    noms         = numopts$noms,
+    index        = d.subset$index,
+    ords         = numopts$ords,
+    m            = m,
+    logs         = numopts$logs,
+    archv        = archv,
+    xmin         = d.trans$xmin,
+    sqrts        = numopts$sqrts,
+    lgstc        = numopts$lgstc,
+    outname      = outname,
     subset.index = d.subset$index))
 }
