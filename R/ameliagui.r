@@ -1731,7 +1731,7 @@ gui.diag.setup <- function() {
 }
 #tkwm.iconbitmap(gui,"c:/amelia/amelia.ico")
 tkwm.deiconify(gui)
-#tkwait.window(gui)
+tkwait.window(gui)
 
 }
 
