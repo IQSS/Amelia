@@ -18,6 +18,7 @@
 ## 11/09/06 mb fixed bug in unsubset: 'index' too long to subset w/o 'which'
 ## 18/10/06 mb incorporated confidence levels into generating priors
 ## 20/10/06 mb new format for priors
+## 13/12/06 mb indiv. obs priors get priority in generatepriors
 
 nametonumber<-function(x,ts,cs,idvars,noms,ords,logs,sqrts,lgstc,lags,leads)
 {
@@ -497,7 +498,12 @@ generatepriors<-function(AMr1,casepri=NULL,empri=NULL,priors=NULL){
       addedPriors[,2] <- varPriors[missCells[,2]]
       addedPriors[,-c(1,2)] <- new.priors[zeros[missCells[,2]],-c(1,2)]
       new.priors <- new.priors[-zeros,,drop=FALSE]
+
+      # find any matches in the rows/cols and remove from addedPriors
+      # since we've removed other dups, addedPriors will have the only
+      # dups
       new.priors <- rbind(new.priors,addedPriors)
+      new.priors <- new.priors[!duplicated(new.priors[,1:2]),]
       return(new.priors)
     }
   }

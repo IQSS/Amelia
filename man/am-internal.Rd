@@ -16,13 +16,18 @@
 \alias{scalecenter}
 \alias{startval}
 \alias{unscale}
+\alias{frame.to.matrix}
+\alias{ameliaEnv}
+\alias{ameliaTclSet}
+\alias{getAmelia}
+\alias{putAmelia}
 \alias{unsubset}
 \alias{untransform}
 \alias{framemat}
 \alias{impfill}
 \title{Internal Amelia functions}
 \description{Internal or currently undocumented functions in Amelia}
-\author{James Honaker, Matthew Blackwell, Gary King}
+\author{James Honaker, Gary King, Matt Blackwell}
 \alias{ameliagui}
 \alias{amelia.prep}
 \alias{compare.density}

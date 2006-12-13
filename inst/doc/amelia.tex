@@ -671,31 +671,31 @@ distribution of the missing data cell, then, centers on $3.5$ with a
 standard deviation that reflects the amount of uncertainty we have
 about our prior belief.
 
-In AmeliaView, the observational priors dialog will guide you through
-adding priors to the imputation.  Refer to section \ref{sec:refobspri}
-for further details on how to add priors in AmeliaView.
+In AmeliaView, the observational priors dialog will guide you through adding
+priors to the imputation.  Refer to section \ref{sec:refobspri} for further
+details on how to add priors in AmeliaView.
 
-Alternatively, in R, you must build two matrices, one for the mean and
-one for the standard deviation, both of which have the same
-dimensions as the original data matrix.  To add the prior, first note
-the cell position of the missing data value in question; that is, find
-its row and column number in R.  From here, find the same position in
-the matrix of prior means and place your prior belief about the mean
-in this cell.  Repeat the same procedure for the standard deviation
-and then include them with the \texttt{amelia} function with the
-\texttt{means} and \texttt{sds} arguments.  An example of this would
-go as follows:
+Alternatively, in R, you must build a priors matrix with either four or five
+columns. Each row of the matrix represents a prior on either one observation
+or one variable.  In any row, the entry in the first column is the row of the
+observation and the entry is the second column is the column of the
+observation.  In the four column priors matrix the third and fourth columns are
+the mean and standard deviation of the prior distribution of the missing value.
+For example, in the following example we would be indicating a prior mean of 500
+with a standard deviation of 50 on the missing cell in row 42, column 3:
 
 \begin{verbatim}
- > n <- nrow(data)  ## grab the rows of the data
- > p <- ncol(data)  ## grab the columns of the data
- > means.priors <- matrix(NA,nrow=n,ncol=p)  ## make priors matrices of
- > sds.priors <- matrix(NA,nrow=n,ncol=p)  ## the same size as the data
- > means.priors[150,4] <- 3.5
- > sds.priors[150,4] <- .5  ## set priors for the cell at row 150, column 4
- > amelia.out <- amelia(data = data, means = means.priors, sds = sds.priors)
+> priors
+     row column mean std dev
+[1,]  42      3  500      50
+[2,]  46      5    1       3
+[3,]   0      2    0       1
 \end{verbatim}
 
+In the five column matrix, the last three columns describe a confidence range of
+the data. The columns are a minimum value, a maximum value, and a confidence
+level between 0 and 1, not inclusive.  Whichever format you choose, it must be
+consistent across the entire matrix.  
 
 \section{Diagnostics}\label{sec:diag}
 
@@ -1006,13 +1006,11 @@ not match any variable name in the data.}\\
 6  &  \adjparbox{5in}{One of the column numbers in an argument is outside the range of
 the data.}\\
 \hline
-7  &  \adjparbox{5in}{One of the priors matrices is not a matrix. }\\
+7  &  \adjparbox{5in}{The priors matrix is not a matrix. }\\
 \hline
-8  &  \adjparbox{5in}{One of the priors matrices is a character matrix, but it must be
-numeric.}\\
+8  &  \adjparbox{5in}{The priors matrix is non-numeric.}\\
 \hline
-9  &  \adjparbox{5in}{One of the priors matrices does not have the same dimensions as
-the data.} \\
+9  &  \adjparbox{5in}{There are priors specified for cells not in the data.} \\
 \hline
 10 &  \adjparbox{5in}{A variable marked for a square root transformation has negative
 values.} \\
@@ -1114,6 +1112,12 @@ Please check file permissions and try again.}\\
   \texttt{amelia} function or session lists from AmeliaView
   sessions.}\\
 \hline
+47 &  \adjparbox{5in}{The priors matrix has the wrong dimensions.}\\
+\hine
+48 &  \adjparbox{5in}{There are missing values in the priors matrix.}\\
+\hline
+43 &  \adjparbox{5in}{There are multiple priors set for one observation or variable..}\\
+\hline
 \end{longtable}
 
 \section{Command Line Argument Reference}
@@ -1124,13 +1128,12 @@ Please check file permissions and try again.}\\
 
 \subsubsection*{Syntax}
 \begin{verbatim}
-amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
-                 ts=NULL,cs=NULL,casepri=NULL,means=NULL,sds=NULL,mins=NULL,
-                 maxs=NULL,conf=NULL,empri=NULL,tolerance=0.0001,
-                 polytime=NULL,startvals=0,lags=NULL, leads=NULL,
-                 intercs=FALSE,archive=TRUE,sqrts=NULL,lgstc=NULL,
-                 noms=NULL,incheck=T,ords=NULL,collect=FALSE,
-                 outname="outdata",write.out=TRUE,arglist=NULL,keep.data=TRUE)
+amelia(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
+       ts=NULL,cs=NULL,casepri=NULL,priors=NULL,empri=NULL,tolerance=0.0001,
+       polytime=NULL,startvals=0,lags=NULL, leads=NULL,
+       intercs=FALSE,archive=TRUE,sqrts=NULL,lgstc=NULL,
+       noms=NULL,incheck=T,ords=NULL,collect=FALSE,
+       outname="outdata",write.out=TRUE,arglist=NULL,keep.data=TRUE)
 \end{verbatim}
 \subsubsection*{Arguments}
     \begin{itemize}
@@ -1160,60 +1163,22 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
         section variable.
 
   
-      \item \texttt{casepri} :indicator matrix of size \emph{kxk}
-        (where \emph{k} is the number of cases) for the degree of
-        similarity between two cases.  For example, the [2,3] entry
-        would indicate how similar cases 2 and 3 were.  The indicators
-        can be 0, 1, 2, or 3.  Values should only appear in the upper
-        triangle, as values in the lower triangle are ignored.
+      \item \texttt{casepri} :indicator matrix of size \emph{kxk} (where
+        \emph{k} is the number of cases) for the degree of similarity between
+        two cases.  For example, the [2,3] entry would indicate how similar
+        cases 2 and 3 were.  The indicators can be 0, 1, 2, or 3.  Values should
+        only appear in the upper triangle, as values in the lower triangle are
+        ignored.
     
-      \item \texttt{means}: a matrix with the same dimensions as the
-        data where each cell contains a prior belief about the mean
-        value of that cell in the data.  For example, the values in
-        \texttt{means[2,3]} would be your prior belief about the mean of
-        data[2,3].  Cell should be \texttt{NA} if no prior exists. If
-        \texttt{means} is set, \texttt{sds} must be set as well.
-
+      \item \texttt{priors}: a four or five column matrix containing the priors
+        for either individual missing observations or variable-wide missing
+        values.
     
-      \item \texttt{sds}: a matrix with the same dimensions as the
-        data where each cell contains a prior belief about the
-        stardard deviation around the prior mean of that cell in the
-        data.  For example, the values in \texttt{sds[2,3]} would be
-        your prior belief about the \texttt{means[2,3]} of
-        \texttt{data[2,3]}.  Cell should be \texttt{NA} if no prior
-        exists. If \texttt{sds} is set, \texttt{means} must be set as
-        well.
-    
-      \item \texttt{mins}: a matrix with the same dimensions as the
-        data, used for range priors.  A cell in this matrix contains a
-        prior belief about a minimum value for that cell in the data.
-        For example, the values in \texttt{mins[2,3]} would be your
-        prior belief about the minimum of \texttt{data[2,3]}.  If
-        \texttt{mins} is set, \texttt{maxs} and \texttt{conf} must be set as
-        well.
-    
-      \item \texttt{maxs}: a matrix with the same dimensions as the
-        data, used for range priors.  A cell in this matrix contains a
-        prior belief about a maximum value for that cell in the data.
-        For example, the values in \texttt{maxs[2,3]} would be your
-        prior belief about the maximum of \texttt{data[2,3]}.  If
-        \texttt{maxs} is set, \texttt{mins} and \texttt{conf} must be set as
-        well.
-    
-      \item \texttt{conf}: a matrix with the same dimensions as the
-        data, used for range priors.  A cell in this matrix contains
-        your prior confidence about the range prior for that cell in
-        the data.  For example, the values in \texttt{maxs[2,3]} would
-        be your prior belief about the maximum of \texttt{data[2,3]}.
-        If \texttt{maxs} is set, \texttt{mins} and \texttt{conf} must be set
-        as well.
-    
-      \item \texttt{empri}: number indicating level of the empirical
-        (or ridge) prior.  This prior shinks the covariances of the
-        data, but keeps the means and variances the same for problems
-        of high missingness, small N's or large correlations among the
-        variables.  Should be kept small; a reasonable upper bound is
-        around 10\% of the rows of the data.
+      \item \texttt{empri}: number indicating level of the empirical (or ridge)
+        prior.  This prior shinks the covariances of the data, but keeps the
+        means and variances the same for problems of high missingness, small N's
+        or large correlations among the variables.  Should be kept small; a
+        reasonable upper bound is around 10\% of the rows of the data.
   
       \item \texttt{tolerance}: convergence requirement.
   

@@ -11,7 +11,8 @@
 ##  24/08/06 mb - added tolerance option on variables page.  
 ##  11/09/06 mb - actually passes nominals now, fixed char problems on summarize
 ##  19/09/06 mb - changed function name to AmeliaView
-##  1/12/06 mb - fixed session loading for 2.4.0, can't compare non-numerics
+##  01/12/06 mb - fixed session loading for 2.4.0, can't compare non-numerics
+##  11/12/06 mb - rehauled priors
 
 
 AmeliaView<-function() {
@@ -1421,21 +1422,24 @@ gui.pri.setup<-function() {
       
       addPrior.diag <- tktoplevel()
       tkwm.title(addPrior.diag, "Add Prior")
-      missingCases <- apply(amelia.data, 1, function(x) any(is.na(x)))
-      missingCases <- which(missingCases)
+      missingCases <- which(!complete.cases(amelia.data))
       anyMissing   <- apply(amelia.data, 2, function(x) any(is.na(x)))
-      if (all(csvar>0,tsvar>0)) {
-        cases <- apply(amelia.data[missingCases,c(csvar,tsvar)],1,
-                       function(x) {
-                         if (length(x)==2)
-                           return(paste(x[1],x[2]))
-                         else
-                           paste(x)})
-      } else if (all(csvar==0,tsvar==0)) {
-        cases <- rownames(amelia.data)[missingCases]
-      } else {
-        cases <- paste(amelia.data[missingCases,c(csvar,tsvar)])
-      }
+#      if (all(csvar>0,tsvar>0)) {
+#        cases <- apply(amelia.data[missingCases,c(csvar,tsvar),drop=F],1,
+#                       function(x) {
+#                         if (length(x)==2)
+#                           return(paste(x[1],x[2]))
+#                         else
+#                           paste(x)})
+#      } else if (all(csvar==0,tsvar==0)) {
+#        cases <- rownames(amelia.data)[missingCases]
+#      } else {
+#        cases <- paste(amelia.data[missingCases,c(csvar,tsvar)])
+#      }
+
+      cases <- paste(rownames(amelia.data)[missingCases], ") ",
+                     amelia.data[missingCases,csvar]," ",
+                     amelia.data[missingCases,tsvar], sep="")
       
       cases <- c("(whole variable)",cases)
       vars <- colnames(amelia.data)[anyMissing]

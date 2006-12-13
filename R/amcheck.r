@@ -250,29 +250,37 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
 
     }
 
-    # Error code: 46
+    # Error code: 47
     # priors matrix has the wrong dimensions
     if (ncol(priors) != 4 & ncol(priors) != 5) {
-      error.code <- 46
+      error.code <- 47
       error.mess <- paste("The priors matrix has the wrong numberof columns.\n",
                           "It should have either 4 or 5 columns.",)
       return(list(code=error.code, mess=error.mess))
     }
 
     if (nrow(priors) > nrow(data)*ncol(data)) {
-      error.code <- 46
+      error.code <- 47
       error.mess <- "There are more priors than there are observations."
       return(list(code=error.code, mess=error.mess))
     }
 
-    # Error code: 47
+    
+    # Error code: 48
     # NAs in priors matrix
     if (any(is.na(priors))) {
-      error.code <- 47
+      error.code <- 48
       error.mess <- "There are missing values in the priors matrix."
       return(list(code=error.code, mess=error.mess))
     }  
-    
+
+    # Error code: 49
+    # multiple priors set
+    if (any(duplicated(priors[,1:2]))) {
+      error.code <- 49
+      error.mess <- "Multiple priors set on one observation or variable."
+      return(list(code=error.code,mess=error.mess))
+    }
     
     prior.cols <- priors[,2] %in% c(1:ncol(data))
     prior.rows <- priors[,1] %in% c(0:nrow(data))

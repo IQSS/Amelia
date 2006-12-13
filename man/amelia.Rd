@@ -7,13 +7,14 @@
   imputed datasets.  
 }
 \usage{
-amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
-                 ts=NULL,cs=NULL,casepri=NULL,means=NULL,sds=NULL,mins=NULL,
-                 maxs=NULL,conf=NULL,empri=NULL,tolerance=0.0001,
-                 polytime=NULL,startvals=0,lags=NULL, leads=NULL,
-                 intercs=FALSE,archive=TRUE,sqrts=NULL,lgstc=NULL,
-                 noms=NULL,incheck=T,ords=NULL,collect=FALSE,
-                 outname="outdata",write.out=TRUE,arglist=NULL,keep.data=TRUE) 
+
+amelia(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,ts=NULL,
+       cs=NULL,casepri=NULL,empri=NULL,tolerance=0.0001,polytime=NULL,
+       startvals=0,lags=NULL,leads=NULL,intercs=FALSE,archive=TRUE,
+       sqrts=NULL,lgstc=NULL,noms=NULL,incheck=T,ords=NULL,
+       collect=FALSE,outname="outdata",write.out=TRUE,arglist=NULL,
+       keep.data=TRUE, priors=NULL)}
+
 \arguments{
   \item{data}{incomplete data, organized into either a data frame 
     or a matrix.}
@@ -42,39 +43,10 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     were.  The indicators can be 0, 1, 2, or 3.  Values should only appear
     in the upper triangle, as values in the lower triangle are ignored.}
     
-  \item{means}{a matrix with the same dimensions as the data where each 
-    cell contains a prior belief about the mean value of that cell in the 
-    data.  For example, the values in \code{means[2,3]} would be your prior 
-    belief about the mean of data[2,3].  Cell should be \code{NA} if no 
-    prior exists. If \code{means} is set, \code{sds} must be set as well.}
-    
-  \item{sds}{a matrix with the same dimensions as the data where each 
-    cell contains a prior belief about the stardard deviation around the 
-    prior mean of that cell in the data.  For example, the values in 
-    \code{sds[2,3]} would be your prior belief about the \code{means[2,3]} 
-    of \code{data[2,3]}.  Cell should be \code{NA} if no prior exists. If 
-    \code{sds} is set, \code{means} must be set as well.}
-    
-  \item{mins}{a matrix with the same dimensions as the data, used for
-    range priors.  A cell in this matrix contains a prior belief about a
-    minimum value for that cell in the data.  For example, the values in 
-    \code{mins[2,3]} would be your prior belief about the minimum of 
-    \code{data[2,3]}.  If \code{mins} is set, \code{maxs} and \code{conf}
-    must be set as well.}
-    
-  \item{maxs}{a matrix with the same dimensions as the data, used for
-    range priors.  A cell in this matrix contains a prior belief about a
-    maximum value for that cell in the data.  For example, the values in 
-    \code{maxs[2,3]} would be your prior belief about the maximum of 
-    \code{data[2,3]}.  If \code{maxs} is set, \code{mins} and \code{conf}
-    must be set as well.}
-    
-  \item{conf}{a matrix with the same dimensions as the data, used for
-    range priors.  A cell in this matrix contains your prior confidence
-    about the range prior for that cell in the data.  For example, the 
-    values in \code{maxs[2,3]} would be your prior belief about the maximum 
-    of \code{data[2,3]}.  If \code{maxs} is set, \code{mins} and \code{conf}
-    must be set as well.}
+  \item{priors}{a four or five column matrix containing the priors for
+    either individual missing observations or variable-wide missing
+    values.  See "Details" for more information.}
+
     
   \item{empri}{number indicating level of the empirical (or ridge) prior.
     This prior shinks the covariances of the data, but keeps the means
@@ -150,6 +122,9 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     large and you wish to avoid keeping them in memory after they have been
     written to a file.}
 
+  \item{startvals}{starting values, 0 for the parameter matrix from
+    listwise deletion, 1 for an identity matrix.}
+
 }
 
 \details{ Multiple imputation is a method for analyzing incomplete
@@ -160,26 +135,30 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   values of sample.  It repeats this process \code{m} times to produces
   the output data.
   
-  You can give Amelia your informational priors about the data in a number
-  of ways.  If you have information about the way in which two cases 
-  interact, you can use the \code{casepri} setting.  If you have a prior
-  belief about the values of a single observation or group of observations,
-  you can set them in one of two ways.  First, you can set a mean and 
-  standard deviation for the observation (this assumes a normal distribution)
-  by setting the \code{means} and \code{sds} matrices in the same location
-  as the observation.  For example, if you had a thought that the 
-  observation located at [50,7] in your data had a mean of 0 and a standard
-  deviation of 1, you would pass to \code{amelia} a \code{means} matrix
-  with a 0 in the [50,7] location and a seperate \code{sds} matrix with
-  a 1 in the [50,7] location.  Observations for which no informational
-  prior exist, should be left as \code{NA} in both of these matrices.
-  
-  Second, you can set a range of values that you are confident the 
-  observation will fall in.  In a similar manner as above, you place the
-  minimum and maximum values in the location of the observation in the
-  \code{mins} and \code{maxs}, respectively.  We also require that you 
-  specify how confident you are about the range as a value between 0 and 1.
-  This goes in the \code{conf} matrix in the same location as observation.
+  You can provide Amelia with informational priors about the missing
+  observations in your data.  To specify priors, pass a four or five
+  column matrix to the \code{priors} argument with each row specifying a
+  different priors as such:
+
+\code{ one.prior <- c(row, column, mean,standard deviation)}
+
+or,
+
+\code{ one.prior <- c(row, column, minimum, maximum, confidence)}.
+
+  So, in the first and second column of the priors matrix should be the
+  row and column number of the prior being set.  In the other columns
+  should either be the mean and standard deviation of the prior, or a
+  minimum, maximum and confidence level for the prior. You must specify
+  your priors all as distributions or all as confidence ranges.  Note
+  that ranges are converted to distributions, so setting a confidence of
+  1 will generate an error.
+
+  Setting a priors for the missing values of an entire variable is done
+  in the same manner as above, but inputing a \code{0} for the row
+  instead of the row number.  If priors are set for both the entire
+  variable and an individual observation, the individual prior takes
+  precedence.
   
   If each imputation is taking a long time to converge, you can increase
   the empirical prior, \code{empri}.  This value has the effect of smoothing
@@ -196,6 +175,8 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   Please refer to the Amelia manual for more information on the function
   or the options.
 }
+
+\author{James Honaker, Gary King, Matt Blackwell}
  
 \value{A list containing the imputed datasets in objects 1 through \code{m}.
   Thus, you can refer to any of the datasets by referencing 
