@@ -1470,8 +1470,8 @@ gui.pri.setup<-function() {
         tkgrid(tklabel(addPrior.diag, text="Mean:"), column=1, row=3)
         tkgrid(tklabel(addPrior.diag, text="Standard Deviation:"), column=1,
                row=4)
-        tkgrid(meanBox, column=2, row=3, pady=3)
-        tkgrid(sdBox, column=2, row=4, pady=3)        
+        tkgrid(meanBox, column=2, row=3, pady=5, padx=5)
+        tkgrid(sdBox, column=2, row=4, pady=5, padx=5)        
         
       } else {
         priorMin  <- tclVar()
@@ -1492,18 +1492,18 @@ gui.pri.setup<-function() {
         tkgrid(tklabel(addPrior.diag, text="Maximum:"), column=1, row=4)
         tkgrid(tklabel(addPrior.diag, text="Confidence:"), column=1, row=5)
        
-        tkgrid(minBox, column=2, row=3, pady=3)
-        tkgrid(maxBox, column=2, row=4, pady=3)
-        tkgrid(confBox, column=2, row=5, pady=3)
+        tkgrid(minBox, column=2, row=3, pady=5, padx=5)
+        tkgrid(maxBox, column=2, row=4, pady=5, padx=5)
+        tkgrid(confBox, column=2, row=5, pady=5, padx=5)
         
       }
       
-      addPriorOK <- tkbutton(addPrior.diag, text="OK", command=function() onOK())
+      addPriorOK <- tkbutton(addPrior.diag, text="   OK   ", command=function() onOK())
       addPriorCancel <- tkbutton(addPrior.diag, text="Cancel",
                                  command=function() tkdestroy(addPrior.diag))
 
-      tkgrid(addPriorOK, column=1,row=6)
-      tkgrid(addPriorCancel, column=2, row=6)
+      tkgrid(addPriorOK, column=1,row=6, padx=5, pady=5)
+      tkgrid(addPriorCancel, column=2, row=6, padx=5, pady=5)
 
       tkgrab.set(addPrior.diag)
       tkfocus(addPrior.diag)
@@ -1523,17 +1523,29 @@ gui.pri.setup<-function() {
     tcl(currentPriorsSW, "setwidget", currentPriorsSF)
     subfID <- tclvalue(tcl(currentPriorsSF, "getframe"))
     addDistPriorButton <- tkbutton(pp, text = "Add Distribution Prior",
-                               command = function() addPrior(type="dist"))
+                               command = function() addPrior(type="dist"),
+                                   width=20)
     addRangePriorButton <- tkbutton(pp, text = "Add Range Prior",
-                               command = function() addPrior(type="range"))
+                               command = function() addPrior(type="range"),
+                                    width=20)
     removePriorButton <- tkbutton(pp, text = "Remove Selected Priors", command =
-                                  function() removePriors())
-    obsOK <- tkbutton(pp, text="OK", command=function() {rm(priorsChecked,envir=.GlobalEnv);tkdestroy(pp);})
+                                  function() removePriors(),
+                                  width=20)
+    obsOK <- tkbutton(pp, text="OK", command=function() {rm(priorsChecked,envir=.GlobalEnv);tkdestroy(pp);},width=10)
     
     if (is.null(priorsmat))
       localPriors <- matrix(NA,1,1)
     else
       localPriors <- priorsmat
+    tkgrid(tcl("label",paste(subfID,".1h",sep=""), text="case",
+               width=20),row=0,column=2)
+    tkgrid(tcl("label",paste(subfID,".1k",sep=""), text="variable",
+               width=20),row=0,column=3)
+    tkgrid(tcl("label",paste(subfID,".1l",sep=""), text="mean",
+               width=20),row=0,column=4)
+    tkgrid(tcl("label",paste(subfID,".1m",sep=""), text="std dev",
+               width=20),row=0,column=5)
+    
     for (i in 1:nrow(localPriors)) {
       if (ncol(localPriors) == 1)
         next()
@@ -1565,12 +1577,16 @@ gui.pri.setup<-function() {
              as.character(round(localPriors[i,4],5)), relief="sunken", width=20),
              row=i,column=5)
     }
-      
-    #tkpack(currentPriorsSF)
-    tkconfigure(currentPriorsSF,width=700)
-    tkgrid(currentPriorsSW, row=1, sticky="news",columnspan=3)
-    tkgrid(addDistPriorButton, addRangePriorButton, removePriorButton,row=2)
-    tkgrid(obsOK, row=4, column=2, sticky="ns")
+    if (.Platform$OS.type == "windows")
+      box.width <- 550
+    else
+      box.width <- 625
+    tkconfigure(currentPriorsSF,width=box.width, height=100)
+    tkgrid(currentPriorsSW, row=1, sticky="news", column=1,columnspan=3)
+    tkgrid(addDistPriorButton, row=2,sticky="nsew", column=1,padx=5,pady=5)
+    tkgrid(addRangePriorButton, row=2,sticky="nsew", column=2,padx=5,pady=5)
+    tkgrid(removePriorButton,row=2,sticky="nsew", column=3, pady=5, padx=5)
+    tkgrid(obsOK, row=4, column=3, sticky="nse", padx=5, pady=5)
     tkfocus(pp)
     tkgrab.set(pp)
     tkbind(pp,"<Destroy>",function(){tkgrab.release(pp);tkfocus(tt);tkgrab.set(tt)})
@@ -1729,7 +1745,7 @@ gui.diag.setup <- function() {
  	tkbind(diag.overimp, "<Motion>","set diaghelp \"Overimpute and graph confidence intervals.\"")
   tkbind(diag.overimp, "<Leave>","set diaghelp \"\"")
 }
-#tkwm.iconbitmap(gui,"c:/amelia/amelia.ico")
+#tkwm.iconbitmap(gui,"~/amelia/setup/files/amelia.ico")
 tkwm.deiconify(gui)
 tkwait.window(gui)
 

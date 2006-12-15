@@ -10,6 +10,7 @@
 ##  19/07/06 mb - moved handling of arglists to prep.
 ##  01/12/06 mb - can't compare non-numerics, only use the relevant columns when
 ##                building compare
+##  13/12/06 mb - changed for new priors.
 
 compare.density <- function(data=NULL,output=NULL,var=NULL,col=1:2,lwd=1,main="",frontend=F,...) {
   
@@ -86,13 +87,13 @@ overimpute <- function(data,output,var,frontend=FALSE) {
   
   
   
-  prepped<-amelia.prep(data=data,m=m,idvars=idvars,means=means,sds=sds,mins=mins,
-                        maxs=maxs,conf=conf,empri=empri,ts=ts,cs=cs,
-                        tolerance=tolerance,casepri=casepri,polytime=polytime,
-                        lags=lags,leads=leads,logs=logs,sqrts=sqrts,lgstc=lgstc,
-                        p2s=F,frontend=frontend,archive=F,intercs=intercs,
-                        noms=noms,startvals=startvals,ords=ords,incheck=F,
-                        collect=F,outname="outdata",write.out=F,var=var,arglist=output)
+  prepped<-amelia.prep(data=data,m=m,idvars=idvars,priors=priors,empri=empri,
+                       ts=ts,cs=cs,tolerance=tolerance,casepri=casepri,
+                       polytime=polytime, lags=lags,leads=leads,logs=logs,
+                       sqrts=sqrts,lgstc=lgstc, p2s=F,frontend=frontend,
+                       archive=F,intercs=intercs, noms=noms,
+                       startvals=startvals,ords=ords,incheck=F, collect=F,
+                       outname="outdata",write.out=F,var=var,arglist=output)
   
   stacked.var<-match(var,prepped$subset.index[prepped$p.order])
   subset.var<-match(var,prepped$subset.index)
@@ -201,8 +202,7 @@ gethull <- function(st,tol,rots) {
 }  
 
     
-disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=NULL,cs=NULL,casepri=NULL,means=NULL,
-                  sds=NULL,mins=NULL,maxs=NULL,conf=NULL,empri=NULL,tolerance=0.00001,polytime=NULL,startvals=0,
+disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=NULL,cs=NULL,casepri=NULL,priors=NULL,empri=NULL,tolerance=0.00001,polytime=NULL,startvals=0,
                   lags=NULL, leads=NULL, intercs=FALSE,archive=TRUE,sqrts=NULL,lgstc=NULL,noms=NULL,incheck=T,
                   ords=NULL,dims=1,output=NULL) {
 
@@ -220,8 +220,7 @@ disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=N
   }
   
   code<-1
-  prepped<-amelia.prep(data=data,m=m,idvars=idvars,means=means,sds=sds,mins=mins,
-                        maxs=maxs,conf=conf,empri=empri,ts=ts,cs=cs,
+  prepped<-amelia.prep(data=data,m=m,idvars=idvars,priors=priors,empri=empri,ts=ts,cs=cs,
                         tolerance=tolerance,casepri=casepri,polytime=polytime,
                         lags=lags,leads=leads,logs=logs,sqrts=sqrts,lgstc=lgstc,
                         p2s=p2s,frontend=frontend,archive=archive,intercs=intercs,
@@ -234,7 +233,7 @@ disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=N
   if (p2s) cat("-- Imputation", "1", "--")
   if (frontend) tkinsert(run.text,"end",paste("-- Imputation","1","--\n"))
   flush.console()
-  thetanew<-emarch(prepped$x,p2s=p2s,thetaold=NULL,tolerance=tolerance,startvals=0,prepped$mu.priors,prepped$sd.priors,empri=empri,frontend=frontend,allthetas=T)
+  thetanew<-emarch(prepped$x,p2s=p2s,thetaold=NULL,tolerance=tolerance,startvals=0,priors=prepped$priors,empri=empri,frontend=frontend,allthetas=T,collect=FALSE)
   impdata<-thetanew$thetanew
   startsmat<-matrix(0,ncol(prepped$x)+1,ncol(prepped$x)+1)
   startsmat[upper.tri(startsmat,T)]<-c(-1,impdata[,ncol(impdata)])
@@ -254,7 +253,7 @@ disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=N
     newstartsmat[1,2:nrow(startsmat)]<-startmus
     newstartsmat[2:nrow(startsmat),1]<-startmus
 
-    thetanew<-emarch(prepped$x,p2s=p2s,thetaold=newstartsmat,tolerance=tolerance,startvals=0,prepped$mu.priors,prepped$sd.priors,empri=empri,frontend=frontend,allthetas=T)
+    thetanew<-emarch(prepped$x,p2s=p2s,thetaold=newstartsmat,tolerance=tolerance,startvals=0,priors=prepped$priors,empri=empri,frontend=frontend,allthetas=T,collect=FALSE)
     impdata<-cbind(impdata,thetanew$thetanew)
     iters<-c(iters,nrow(thetanew$iter.hist)+1)
   }

@@ -236,7 +236,6 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
     }    
 
     x[is.na(x)]<-0                      # Change x.NA to x.0s       
-
     AM1stln<-sum(indx$m[1])==0
     count<-0
     diff<- 1+tolerance
@@ -287,7 +286,7 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
         mono.flag<-0
       }
       
-      if (all(eigen(thetanew[2:nrow(thetanew),2:ncol(thetanew)])$values > .Machine$double.eps))
+      if (all(eigen(thetanew[2:nrow(thetanew),2:ncol(thetanew)],only.values=T)$values > .Machine$double.eps))
         sing.flag<-0
       else
         sing.flag<-1

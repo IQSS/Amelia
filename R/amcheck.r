@@ -8,6 +8,7 @@
 ## 17/07/06 mb - stops if variable only has one observed value.
 ## 02/08/06 mb - fixed handling of character variables.
 ## 25/09/06 mb - fixed handling of errors in output writing.
+## 13/12/06 mb - removed dropping of extra priors, added new priors
 
 
 
@@ -291,13 +292,6 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       error.code <- 9
       error.mess <- "There are priors set on cells that don't exist."
       return(list(code=error.code,mess=error.mess))
-    }
-
-    # drop any rows in the matrix that refer to non-NA cells
-    if (any(!is.na(data[priors[priors[,1]!=0,1:2]]))) {
-      priors <- priors[!is.na(data[priors[,1:2]]),]
-      warning("There are priors that refer to non-missing cells.  These have been dropped")
-
     }
 
     # Error code: 12
