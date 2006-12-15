@@ -1334,12 +1334,13 @@ A list containing the imputed datasets in objects 1 through \texttt{m}.
 \subsection{Step 1 - Input}
 \label{sec:step1}
 \begin{figure}[ht]
- \begin{htmlonly} 
-  \centering \includegraphics[scale=1]{step1} 
- \end{htmlonly}
- \begin{latexonly}
-  \centering \includegraphics[scale=.75]{step1}
- \end{latexonly}
+  \centering 
+  \begin{htmlonly} 
+    \includegraphics[scale=1]{step1} 
+  \end{htmlonly}
+  \begin{latexonly}
+    \includegraphics[scale=.75]{step1}
+  \end{latexonly}
   \caption{Detail for step 1 on the front page of AmeliaView.}
 \end{figure}
 \begin{enumerate}
@@ -1366,12 +1367,13 @@ A list containing the imputed datasets in objects 1 through \texttt{m}.
 
 \label{sec:step2}
 \begin{figure}[ht]
- \begin{htmlonly} 
-  \centering \includegraphics[scale=1]{step2} 
- \end{htmlonly}
- \begin{latexonly}
-  \centering \includegraphics[scale=.75]{step2}
- \end{latexonly}
+  \centering
+  \begin{htmlonly} 
+    \includegraphics[scale=1]{step2} 
+  \end{htmlonly}
+  \begin{latexonly}
+    \includegraphics[scale=.75]{step2}
+  \end{latexonly}
   \caption{Detail for step 2 on the front page of AmeliaView.}
 \end{figure}
 \begin{enumerate}
@@ -1393,12 +1395,13 @@ A list containing the imputed datasets in objects 1 through \texttt{m}.
 \subsubsection{Variables Dialog}
 \label{sec:vardiag}
 \begin{figure}[ht]
- \begin{htmlonly} 
-  \centering \includegraphics[scale=1]{varopts} 
- \end{htmlonly}
- \begin{latexonly}
-  \centering \includegraphics[scale=.75]{varopts}
- \end{latexonly}
+  \centering 
+  \begin{htmlonly} 
+    \includegraphics[scale=1]{varopts} 
+  \end{htmlonly}
+  \begin{latexonly}
+    \includegraphics[scale=.75]{varopts}
+  \end{latexonly}
   \caption{Detail for Variable Options dialog.}
 \end{figure}
 \begin{enumerate}
@@ -1418,12 +1421,13 @@ A list containing the imputed datasets in objects 1 through \texttt{m}.
 \subsubsection{Time Series Cross Sectional Dialog}
 \label{sec:tscsdiag}
 \begin{figure}[ht]
- \begin{htmlonly} 
-  \centering \includegraphics[scale=1]{tscs} 
- \end{htmlonly}
- \begin{latexonly}
-  \centering \includegraphics[scale=.75]{tscs}
- \end{latexonly}
+  \centering 
+  \begin{htmlonly} 
+    \includegraphics[scale=1]{tscs} 
+  \end{htmlonly}
+  \begin{latexonly}
+    \includegraphics[scale=.75]{tscs}
+  \end{latexonly}
   \caption{Detail for Time-Series-Cross-Section Options dialog.}
 \end{figure}
 \begin{enumerate}
@@ -1456,11 +1460,12 @@ A list containing the imputed datasets in objects 1 through \texttt{m}.
 \subsubsection{Priors Dialog}
 \label{sec:pridiag}
 \begin{figure}[ht]
+  \centering
  \begin{htmlonly} 
-  \centering \includegraphics[scale=1]{priors} 
+   \includegraphics[scale=1]{priors} 
  \end{htmlonly}
  \begin{latexonly}
-  \centering \includegraphics[scale=.75]{priors}
+   \includegraphics[scale=.75]{priors}
  \end{latexonly}
   \caption{Detail for Priors Options dialog.}
 \end{figure}
@@ -1468,11 +1473,6 @@ A list containing the imputed datasets in objects 1 through \texttt{m}.
 \item \textbf{Empirical Prior} - A prior that adds observations to
   your data in order to shrink the covariances.  A useful place to
   start is around 5\% of the total observations in the dataset.
-\item \textbf{Variable Listbox} - Select the variable for which you
-  want to set a range prior.
-\item \textbf{Range Prior} - If you
-  have a prior belief about the range of possible values that a
-  variable can take, enter the lower and upper bound.
 \item \textbf{Set Case Priors} -
   Tell ${\mathfrak Amelia}$ which cases are similar.  See
   \ref{sec:refcasepri} for more details about case priors.
@@ -1483,11 +1483,12 @@ A list containing the imputed datasets in objects 1 through \texttt{m}.
 
 \subsubsection{Case Priors}\label{sec:refcasepri}
 \begin{figure}[ht]
+  \centering
  \begin{htmlonly} 
-  \centering \includegraphics[scale=1]{case} 
+   \includegraphics[scale=1]{case} 
  \end{htmlonly}
  \begin{latexonly}
-  \centering \includegraphics[scale=.75]{case}
+   \includegraphics[scale=.75]{case}
  \end{latexonly}
 \caption{Detail for Case Priors dialog.}
 \end{figure}
@@ -1512,35 +1513,98 @@ A list containing the imputed datasets in objects 1 through \texttt{m}.
 
 \subsubsection{Observational Priors}\label{sec:refobspri}
 \begin{figure}[h]
- \begin{htmlonly} 
-  \centering \includegraphics[scale=1]{obspri} 
- \end{htmlonly}
- \begin{latexonly}
-  \centering \includegraphics[scale=.75]{obspri}
- \end{latexonly}
-\caption{Detail for Observational Priors dialog}
+  \centering
+  \begin{htmlonly} 
+    \includegraphics[scale=1]{obsprior} 
+  \end{htmlonly}
+  \begin{latexonly}
+    \includegraphics[scale=.75]{obsprior}
+  \end{latexonly}
+  \caption{Detail for Observational Priors dialog}
 \end{figure}
 \begin{enumerate}
-\item \textbf{Missing Cell} - A missing value in the data.  Click on
-  the cell to enter your prior beliefs about the value.  Enter your
-  prior beliefs as a range of possible values as with a comma in
-  between (e.g. \texttt{0,10000}).
-\item \textbf{Observed Cell} - Non-missing values cannot be selected
-  since there is no way to incorporate a prior about an observed
-  value.
+\item \textbf{Current Priors} - A list of current priors in distribtutional
+  form, with the variable and case name.  
+\item \textbf{Add Distributional Prior} - Add a prior belief about an
+  observation or an entire variable with a mean and standard deviation about the
+  missing values.  
+\item \textbf{Add Range Prior} - Add a prior belief about an observation or an
+  entire variable with a range and a confidence level.  
+\item \textbf{Remove Selected Priors} - This will remove any of the current
+  priors selected with the check box.  
 \end{enumerate}
+
+\subsubsection{Add Distribution Prior}\label{sec:refdistpri}
+\begin{figure}[h]
+  \centering
+  \begin{htmlonly} 
+    \includegraphics[scale=1]{distpri} 
+  \end{htmlonly}
+  \begin{latexonly}
+    \includegraphics[scale=.75]{distpri}
+  \end{latexonly}
+  \caption{Detail for Add Distributional Prior dialog}
+\end{figure}
+\begin{enumerate}
+\item \textbf{Case} - Select the case name or number you wish to set the prior
+  about.  You can also choose to make the prior for the entire variable.  The
+  case names are generated from the rowname of the observation, the value of the
+  cross-section variable of the observation and the value of the time series
+  variable of the observation.  
+\item \textbf{Variable} - The variable associated with the prior you would like
+  specify.  The list provided only shows the missing variables for the currently
+  selected observation.  
+\item \textbf{Mean} - The mean value of the prior. The textbox will not accept
+  letters or out of place punctuation.
+\item \textbf{Standard Deviation} - The standard deviation of the prior.  The
+  textbox will only accept positive non-zero values.  
+\end{enumerate}
+
+
+\subsubsection{Add Range Prior}\label{sec:refrangepri}
+\begin{figure}[h]
+  \centering 
+  \begin{htmlonly} 
+    \includegraphics[scale=1]{rangepri} 
+  \end{htmlonly}
+  \begin{latexonly}
+    \includegraphics[scale=.75]{rangepri}
+  \end{latexonly}
+  \caption{Detail for Add Range Prior dialog}
+\end{figure}
+\begin{enumerate}
+\item \textbf{Case} - Select the case name or number you wish to set the prior
+  about.  You can also choose to make the prior for the entire variable.  The
+  case names are generated from the rowname of the observation, the value of the
+  cross-section variable of the observation and the value of the time series
+  variable of the observation.  
+\item \textbf{Variable} - The variable associated with the prior you would like
+  specify.  The list provided only shows the missing variables for the currently
+  selected observation.  
+\item \textbf{Minimum} - The minimum value of the prior. The textbox will not accept
+  letters or out of place punctuation.
+\item \textbf{Maximum} - The maximum value of the prior. The textbox will not accept
+  letters or out of place punctuation.
+\item \textbf{Confidence} - The confidence level of the prior.  This should be
+  between 0 and 1, non-inclusive.  This value represents how certain your priors
+  are.  This value cannot be 1, even if you are absolutely certain of a give
+  range.  This is used to convert the range into an appropriate distributional
+  prior.  
+\end{enumerate}
+
 
 \subsection{Step 3 - Output}
 \label{sec:step3}
 
 
 \begin{figure}[ht]
- \begin{htmlonly} 
-  \centering \includegraphics[scale=1]{step3} 
- \end{htmlonly}
- \begin{latexonly}
-  \centering \includegraphics[scale=.75]{step3}
- \end{latexonly}
+  \centering 
+  \begin{htmlonly} 
+    \includegraphics[scale=1]{step3} 
+  \end{htmlonly}
+  \begin{latexonly}
+    \includegraphics[scale=.75]{step3}
+  \end{latexonly}
   \caption{Detail for step 3 on the front page of AmeliaView.}
 \end{figure}
 \begin{enumerate}
@@ -1572,12 +1636,13 @@ A list containing the imputed datasets in objects 1 through \texttt{m}.
 \subsubsection{Diagnostics Dialog}
 \label{sec:diagdiag}
 \begin{figure}[ht]
- \begin{htmlonly} 
-  \centering \includegraphics[scale=1]{diag} 
- \end{htmlonly}
- \begin{latexonly}
-  \centering \includegraphics[scale=.75]{diag}
- \end{latexonly}
+  \centering
+  \begin{htmlonly} 
+    \includegraphics[scale=1]{diag} 
+  \end{htmlonly}
+  \begin{latexonly}
+    \includegraphics[scale=.75]{diag}
+  \end{latexonly}
   \caption{Detail for Diagnostics dialog.}
 \end{figure}
 \begin{enumerate}
