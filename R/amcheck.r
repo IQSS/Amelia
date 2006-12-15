@@ -9,6 +9,7 @@
 ## 02/08/06 mb - fixed handling of character variables.
 ## 25/09/06 mb - fixed handling of errors in output writing.
 ## 13/12/06 mb - removed dropping of extra priors, added new priors
+## 15/12/06 mb - fixed problem of nrow(priors)==5
 
 
 
@@ -296,7 +297,7 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
 
     # Error code: 12
     # confidences have to be in 0-1
-    if (nrow(priors) == 5) {
+    if (ncol(priors) == 5) {
       if (any(priors[,5] <= 0) || any(priors[,5] >= 1)) {
         error.code<-12
         error.mess<-paste("The priors confidences matrix has values that are less \n",
