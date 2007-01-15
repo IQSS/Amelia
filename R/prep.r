@@ -599,6 +599,42 @@ amelia.prep <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   d.scaled<-scalecenter(d.subset$x,priors=d.subset$priors)
   d.stacked<-amstack(d.scaled$x,colorder=TRUE,priors=d.scaled$priors)
 
+  if (incheck) {
+    realAMp <- ncol(d.stacked$x)
+    realAMn <- nrow(d.stacked$x)
+  #Error code: 34-35
+  #Too few observations to estimate parameters
+    if (!identical(empri,NULL)) {
+      if (realAMp*2 >= realAMn+empri) {
+        error.code<-34
+        error.mess<-paste("The number of observations in too low to estimate the number of \n",
+                        "parameters.  You can either remove some variables, reduce \n",
+                        "the order of the time polynomial, or increase the empirical prior.")
+        return(list(code=error.code,message=error.mess))
+      }
+      if (realAMp*4 >= realAMn +empri) {
+        warning("You have very few observations, meaning the imputation model might not be identified. If you have trouble, remove some variables or reduce the dimenions of the time polynomials to reduce the number of parameters.")
+      }
+  
+  } else {
+    if (2*realAMp >= realAMn) {
+      error.code<-34      
+        error.mess<-paste("The number of observations in too low to estimate the number of \n",
+                        "parameters.  You can either remove some variables, reduce \n",
+                        "the order of the time polynomial, or increase the empirical prior.")
+      return(list(code=error.code,message=error.mess))
+    }
+    
+    if (realAMp*4 >= realAMn) {
+        warning("You have very few observations, meaning the imputation model
+might not be identified. If you have trouble, remove some variables or reduce
+the dimenions of the time polynomials to reduce the number of parameters.")
+    }
+  }
+}
+
+
+  
   return(list(
     x            = d.stacked$x,
     code         = code,

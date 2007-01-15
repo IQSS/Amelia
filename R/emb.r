@@ -285,8 +285,7 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
       } else {
         mono.flag<-0
       }
-      
-      if (all(eigen(thetanew[2:nrow(thetanew),2:ncol(thetanew)],only.values=T)$values > .Machine$double.eps))
+      if (all(eigen(thetanew[2:nrow(thetanew),2:ncol(thetanew)],only.values=T, symmetric=TRUE)$values > .Machine$double.eps))
         sing.flag<-0
       else
         sing.flag<-1
@@ -638,7 +637,8 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       impdata[[m+i]]<-NA
     }
 
-    if (any(eigen(thetanew$thetanew[2:nrow(thetanew$thetanew),2:ncol(thetanew$thetanew)])$values < .Machine$double.eps)) {
+    if
+    (any(eigen(thetanew$thetanew[2:nrow(thetanew$thetanew),2:ncol(thetanew$thetanew)], only.values=TRUE, symmetric=TRUE)$values < .Machine$double.eps)) {
       impdata[[i]]<-NA
       code<-2
       cat("\n\nThe resulting variance matrix was not invertible.  Please check your data for highly collinear variables.\n\n")

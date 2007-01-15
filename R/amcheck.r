@@ -693,33 +693,6 @@ check","that the directory exists and that you have permission to write.",sep="\
 #    conf<-NULL
 #    warning("Not all of the range parameters were set for the observational priors.  They have been removed.")
 #  }
-
-  
-  removedCols <- length(c(idvars,cs,ts,noms))
-  nomCols     <- sum(apply(data[,noms],2, function(t) length(unique(na.omit(t))) ))
-  tsCols      <- sum(length(unique(data[,cs]))^(intercs) * polytime, intercs)
-  addedCols   <- length(c(lags, leads)) + tsCols + nomCols
-  realAMp     <- AMp + addedCols - removedCols
-  realAMn     <- sum(rowSums(is.na(data))!=ncol(data))
-  #Error code: 34-35
-  #Too few observations to estimate parameters
-  if (!identical(empri,NULL)) {
-    if ((realAMp*(realAMp+3))/2 >= ((2*realAMn)+empri)) {
-      error.code<-34
-      error.mess<-paste("The number of observations in too low to estimate the number of \n",
-                        "parameters.  You can either remove some variables, add some \n",
-                        "observations, or increase the empirical prior.")
-      return(list(code=error.code,message=error.mess))
-    }
-  } else {
-    if ((realAMp*(realAMp+3))/2 >= (2*realAMn)) {
-      error.code<-34
-      error.mess<-paste("The number of observations in too low to estimate the number of \n",
-                        "parameters.  You can either remove some variables, add some \n",
-                        "observations, or increase the empirical prior.")
-      return(list(code=error.code,message=error.mess))
-    }
-  }
   
     #checks of m
   if (!is.numeric(m)) {
