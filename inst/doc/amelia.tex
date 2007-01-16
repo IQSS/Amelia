@@ -26,7 +26,7 @@
 \setcounter{tocdepth}{3}
 
 \title{${\mathfrak Amelia}$ II: A Program for Missing Data}
-
+\date{January 15, 2007}
 \author{James Honaker, Gary King, and Matthew Blackwell}
 
 \begin{document}
@@ -1208,12 +1208,12 @@ amelia(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       
   \item \texttt{noms}: a vector of numbers or names indicating columns in the data that are nominal variables.
 
-  \item{ords}{a vector of numbers or names indicating columns in the
-    data that should be treated as ordinal variables.}
+  \item \texttt{ords}: a vector of numbers or names indicating columns in the
+    data that should be treated as ordinal variables.
 
   \item \texttt{incheck}:  a logical indicating whether or not the inputs to the
-    function should be checked before running \code{amelia}.  This should
-    only be set to \code{FALSE} if you are extremely confident that your
+    function should be checked before running \texttt{amelia}.  This should
+    only be set to \texttt{FALSE} if you are extremely confident that your
     settings are non-problematic and you are trying to save computational 
     time.
 
@@ -1227,14 +1227,14 @@ amelia(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     working directory.  The files will be written as .csv files.
 
   \item \texttt{write.out}: a logical value indicating whether or not you wish to have Amelia write your imputed datasets as comma-seperated value files.
-    If \code{TRUE}, Amelia will use the \code{outname} arugment as the
+    If \texttt{TRUE}, Amelia will use the \texttt{outname} arugment as the
     file prefix.
 
   \item \texttt{archive}: a logical variable indicating whether a replication archive should be saved.  This archive includes all of the settings, the results
     of each imputation and some information about the convergence.  The
-    output will be saved as \code{'amarchive.R'} in your working directory.
+    output will be saved as \texttt{'amarchive.R'} in your working directory.
 
-  \item \texttt{arglist}: an output list from the \code{amelia} function or from
+  \item \texttt{arglist}: an output list from the \texttt{amelia} function or from
     a saved session from AmeliaView.  Values from this list take precendent
     over any individually set arugments.   See the Amelia manual for more
     information.
