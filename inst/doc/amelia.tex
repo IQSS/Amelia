@@ -41,23 +41,28 @@
 \label{sec:intro}
 
 This manual presents a brief introduction to the \AmeliaII software
-package for multiple imputation.  \AmeliaII allows users to appropriately impute (``fill in'' or rectangularize) incomplete datasets so that analyses that require complete observations can use all the information present in a dataset with missingness, and avoid the biases and inefficiencies that can result from dropping all partially observed observations from the analysis.  
+package for multiple imputation.  \AmeliaII allows users to
+appropriately impute (``fill in'' or rectangularize) incomplete data
+sets so that analyses which require complete observations can use all
+the information present in a dataset with missingness, and avoid the
+biases and inefficiencies that can result from dropping all partially
+observed observations from the analysis.
 
-
-James Honaker, Anne Joseph, Gary King, Kenneth Scheve, and Naunihal Singh (1998) wrote the first version of
-Amelia to remedy the discrepancy between the way social scientists
-then analyzed data with missing values and the recommendations of the
-statistics community.  With a few notable exceptions, statisticians
-and methodologists had agreed on the advantages of the concept of
-``multiple imputation'' as a general-purpose approach to data with
-missing values; yet at the time most social scientists had still used
-listwise deletion (deleting all observations with at least one missing
-cell) or other ad hoc techniques like best guess or mean imputation to
-make inferences in the presence of missing data.  These practices are
-known to be inefficient and often biased.  Unfortunately, many of the
-multiple imputation algorithms that had been proposed in the
-literature were unfit for handling the common problems of social
-science data and were often difficult to use, even for experts.
+James Honaker, Anne Joseph, Gary King, Kenneth Scheve, and Naunihal
+Singh (1998) wrote the first version of Amelia to remedy the
+discrepancy between the way social scientists then analyzed data with
+missing values and the recommendations of the statistics community.
+With a few notable exceptions, statisticians and methodologists had
+agreed on the advantages of the concept of ``multiple imputation'' as
+a general-purpose approach to data with missing values; yet at the
+time most social scientists had still used listwise deletion (deleting
+all observations with at least one missing cell) or other ad hoc
+techniques like best guess or mean imputation to make inferences in
+the presence of missing data.  These practices are known to be
+inefficient and often biased.  Unfortunately, many of the multiple
+imputation algorithms that had been proposed in the literature were
+unfit for handling the common problems of social science data and were
+often difficult to use, even for experts.
 
 A key reason multiple imputation had not been used frequently in the
 social sciences is because it was developed so that producers of large
@@ -83,9 +88,10 @@ software.
 
 \AmeliaII also has features to make valid and much more accurate
 imputations for cross-sectional, time-series, and
-time-series-cross-section data, and allows the incorporation of observation level prior information.  This software implements the ideas
-developed in \citet*{HonKin06}.  Please read this paper in conjunction
-with this manual.
+time-series-cross-section data, and allows the incorporation of
+observation and data-matrix-cell level prior information.  This
+software implements the ideas developed in \citet*{HonKin06}.  Please
+read this paper in conjunction with this manual.
 
 \section{What ${\mathfrak Amelia}$ Does}
 \label{sec:what}
@@ -194,7 +200,9 @@ package install can be called within $R$ by:
   \begin{verbatim}
   > install.packages("Amelia",repos="http://gking.harvard.edu")
   \end{verbatim}
-While Amelia works in builds of $R$ beyond version $2.1.0$, the online package install will only be available for the most recent version of $R$, currently, $2.4.0$. 
+While Amelia works in builds of R beyond version $2.1.0$, the online
+package install will only be available for the most recent version of
+R, currently, $2.4.0$.
 
 
 Even users familiar with the $R$ language may find it useful to
@@ -453,9 +461,13 @@ models for discrete variables.)\nocite{KinHonJos01}
 Although these transformations are taken internally on these variables
 to better fit the data to the multivariate normal assumptions of the
 imputation model, all the imputations that are created will be
-returned in the original untransformed form of the data (If the user has \emph{already} performed transformations on their data (such as taking a log or square root) these do not need to be declared, as that would result in the transformation occurring \emph{doubly} in the imputation model).  The fully
-imputed datasets that are returned will always be in the form of the
-original data that is passed to the amelia routine.
+returned in the original untransformed form of the data (If the user
+has \emph{already} performed transformations on their data (such as
+taking a log or square root) these do not need to be declared, as that
+would result in the transformation occurring \emph{doubly} in the
+imputation model).  The fully imputed datasets that are returned will
+always be in the form of the original data that is passed to the
+amelia routine.
 
 \subsubsection{Ordinal}
 \label{sec:ord}
@@ -586,13 +598,13 @@ $k$-th order, ($k\leq3$).  If cross-sectional units are specified
 these polynomials can be interacted with the cross-section unit (this
 is the default) to allow the patterns over time to vary between
 cross-sectional units.  Unless you strongly believe all units have the
-same patterns over time in all variables (including the same constant term), this is a reasonable
-default.  When $k$ is set to 0, this interaction simply results in a
-model of \emph{fixed effects} where every unit has a uniquely
-estimated constant term.  \AmeliaII does not smooth the observed data,
-and only uses this functional form, or one you choose, with all the
-other variables in the analysis and the uncertainty of the prediction,
-to impute the missing values.
+same patterns over time in all variables (including the same constant
+term), this is a reasonable default.  When $k$ is set to 0, this
+interaction simply results in a model of \emph{fixed effects} where
+every unit has a uniquely estimated constant term.  \AmeliaII does not
+smooth the observed data, and only uses this functional form, or one
+you choose, with all the other variables in the analysis and the
+uncertainty of the prediction, to impute the missing values.
 
 In AmeliaView, the TSCS settings can be adjusted in the Time Series
 Cross-Sectional Dialog (discussed in section \ref{sec:tscsdiag} of
@@ -658,11 +670,12 @@ informative Bayesian priors about individual missing data cells
 instead of the more general model parameters, many of which have 
 little direct meaning.  
 
-The incorporation of priors follows basic Bayesian analysis where the 
-imputation turns out to be a weighted average of the model-based 
-imputation and the prior mean, where the weights are functions of the 
-relative strength of the data and prior: when the model predicts very 
-well, the imputation will down-weight the prior, and vice versa \citep{HonKin06}.  
+The incorporation of priors follows basic Bayesian analysis where the
+imputation turns out to be a weighted average of the model-based
+imputation and the prior mean, where the weights are functions of the
+relative strength of the data and prior: when the model predicts very
+well, the imputation will down-weight the prior, and vice versa
+\citep{HonKin06}.
 
 The priors about individual observations should describe the analyst's
 belief about the distribution of the missing data cell.  This can
@@ -674,17 +687,20 @@ distribution of the missing data cell, then, centers on $3.5$ with a
 standard deviation that reflects the amount of uncertainty we have
 about our prior belief.
 
-In AmeliaView, the observational priors dialog will guide you through adding
-priors to the imputation.  Refer to section \ref{sec:refobspri} for further
-details on how to add priors in AmeliaView.
+In AmeliaView, the observational priors dialog will guide you through
+adding priors to the imputation.  Refer to section \ref{sec:refobspri}
+for further details on how to add priors in AmeliaView.
 
-Alternatively, in R, you must build a priors matrix with either four or five
-columns. Each row of the matrix represents a prior on either one observation
-or one variable.  In any row, the entry in the first column is the row of the
-observation and the entry is the second column is the column of the
-observation.  In the four column priors matrix the third and fourth columns are
-the mean and standard deviation of the prior distribution of the missing value.
-For example, in the following example the first row constructs a prior mean of 500 with a standard deviation of 50 on the missing cell in row 42, column 3:
+Alternatively, in R, you must build a priors matrix with either four
+or five columns. Each row of the matrix represents a prior on either
+one observation or one variable.  In any row, the entry in the first
+column is the row of the observation and the entry is the second
+column is the column of the observation.  In the four column priors
+matrix the third and fourth columns are the mean and standard
+deviation of the prior distribution of the missing value.  For
+example, in the following example the first row constructs a prior
+mean of 500 with a standard deviation of 50 on the missing cell in row
+42, column 3:
 
 \begin{verbatim}
 > priors
@@ -694,11 +710,15 @@ For example, in the following example the first row constructs a prior mean of 5
 [3,]   0      2    0       1
 \end{verbatim}
 
-
-In the five column matrix, the last three columns describe a confidence range of
-the data. The columns are a lower bound, an upper bound, and a confidence
-level between 0 and 1, exclusive.  Whichever format you choose, it must be
-consistent across the entire matrix.  The last prior created in the example above specifies a row number of 0.  This indicates that the prior created should be applied to all missing values in this variable (here variable 2), unless another prior is specifically created for that observation (as in observation 46 in this example).
+In the five column matrix, the last three columns describe a
+confidence range of the data. The columns are a lower bound, an upper
+bound, and a confidence level between 0 and 1, exclusive.  Whichever
+format you choose, it must be consistent across the entire matrix.
+The last prior created in the example above specifies a row number of
+0.  This indicates that the prior created should be applied to all
+missing values in this variable (here variable 2), unless another
+prior is specifically created for that observation (as in observation
+46 in this example).
 
 \section{Diagnostics}\label{sec:diag}
 
@@ -879,21 +899,22 @@ that all chains convergence to the same point.
 
 In one dimension, the diagnostic plots movement of the chain on the
 $y$-axis and time, in the form of the iteration number, on the
-$x$-axis.  Figures \ref{f:overgood} and \ref{f:overbad} show two examples of one dimensional plots.
-The first shows a well behaved likelihood, as the starting values all
-converge to the same point.  The black horizontal line is the point
-where \Amelia converges when it uses the default method for choosing
-the starting values.  The diagnostic takes the end point of this chain
-as the possible maximum and disperses the starting values away from it
-to see if the chain will ever finish at another mode.  Figure \ref{f:overbad} shows
-an example of how a diagnostic plot will look on a problematic
-likelihood surface.  A few of the iterations are ending up in vastly
-different location in the parameter space.  This can happen for a
-variety of reasons.  In this example it is a result of having two
-highly collinear variables included in the imputation model.  More
-generally, an unidentified imputation model will lead to non-unique ML
-estimates (see King (1989) for a more detailed discussion of
-identification and likelihoods).
+$x$-axis.  Figures \ref{f:overgood} and \ref{f:overbad} show two
+examples of one dimensional plots.  The first shows a well behaved
+likelihood, as the starting values all converge to the same point.
+The black horizontal line is the point where \Amelia converges when it
+uses the default method for choosing the starting values.  The
+diagnostic takes the end point of this chain as the possible maximum
+and disperses the starting values away from it to see if the chain
+will ever finish at another mode.  Figure \ref{f:overbad} shows an
+example of how a diagnostic plot will look on a problematic likelihood
+surface.  A few of the iterations are ending up in vastly different
+location in the parameter space.  This can happen for a variety of
+reasons.  In this example it is a result of having two highly
+collinear variables included in the imputation model.  More generally,
+an unidentified imputation model will lead to non-unique ML estimates
+(see King (1989) for a more detailed discussion of identification and
+likelihoods).
 \begin{figure}\label{f:overbad}
   \centering \includegraphics[scale=.5]{disperse-bad}
   \caption{ A problematic plot from the overdispersion diagnostic

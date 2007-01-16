@@ -14,14 +14,12 @@ Blackwell</a>
 
 <br /><br />
 <!-- rbuild: replace 'Version:' '</b>' version -->
-<b>Version:1.0</b>
+<b>Version:1.1-15</b>
 
-<table border='0' cellpadding='0' cellspacing='8'><tr><td valign='top'
-width='200'> <p !style="float:left; width: 300; margin: 1.5em;"> <img
+<p style="float:left; width: 300; margin: 1.5em;"> <img
 src="/amelia/gallery19.jpg" width="300" /> <br /><small>
 Amelia is named after this famous missing person.</small></p>
 
-</td><td valign='top'>
 
 <p>Amelia II "multiply imputes" missing data in a single cross-section
   (such as a survey), from a time series (like variables collected for
@@ -76,7 +74,8 @@ Joseph, Gary King, Kenneth Scheve, and Naunihal Singh.
     <li>Documentation:
     <a href="/amelia/docs/amelia.pdf">PDF</a> </li>
 	
-    <li>All <span class="orange">questions, bugs, and requests</span>:
+    <li><strong>All</strong> <span class="orange">questions, bugs, and
+    requests</span>:
     Amelia Mailing List, <a
 	href="http://lists.hmdc.harvard.edu/index.cgi?info=amelia"
 	target="gkingext">[Un]Subscribe</a>, or <a
@@ -85,7 +84,7 @@ Joseph, Gary King, Kenneth Scheve, and Naunihal Singh.
 
     <li>Installation of AmeliaView for Windows (for those who don't
 	know R): (1) <a href="http://www.r-project.org/">install the
-	current verison of R</a> if you haven't already, (2)
+	current version of R</a> if you haven't already, (2)
 	download and run <a href="/amelia/setup.exe">this
 	file</a>, and (3) use windows explorer to navigate to
 	c:/program files/ameila and click on amelia.bat</li>
@@ -116,13 +115,12 @@ Joseph, Gary King, Kenneth Scheve, and Naunihal Singh.
 	
     <li><a href="/amelia/" target="ChangeDetectionWiz"
 	onClick="doChangeDetectionPopup()"> Track Amelia changes</a></li>
+
+    <li>A <a
+    href="http://www.math.smith.edu/~nhorton/muchado.pdf">review</a>
+    of software for missing data.</li>
+
   </ul>
-  
-</td>
-</tr>
-</table>    
-    
-   
 
 <script language="Javascript">displayFooter()</script></BODY>
 </html>
