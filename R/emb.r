@@ -36,6 +36,7 @@
 ## 20/09/06 mb - new option (temp?) keep.data that will trash datasets from memory
 ## 01/10/06 mb - added additional info to p2s=2.
 ## 27/11/06 mb - new priors format
+## 01/15/07 jh/mb - final version changes, degrees of freedom messages, autoprior option, modified comments
 
 ## Draw from a multivariate normal distribution 
 ##   n: number of draws 
@@ -70,7 +71,6 @@ mpinv <- function(X, tol = sqrt(.Machine$double.eps)) {
 ## Rejects Bootstraps where an entire variable becomes missing
 ##   x:          data (matrix)
 ##   priors:     matrix of priors about means for observations
-##   sd.priors:  matrix of priors about standard deviations for observations
 bootx<-function(x,priors=NULL){
   flag=TRUE
   AMn=nrow(x)
@@ -148,7 +148,7 @@ startval<-function(x,startvals=0){
   return(thetast) 
 }
 
-## Certain indicies.  Only needs to be called once, not every pattern.
+## Create certain indicies.  Only needs to be called once, not every pattern.
 ## o,m,icap come from omiindxs
 ## ivector is i from indexm
 indxs<-function(x){
@@ -159,7 +159,7 @@ indxs<-function(x){
   o<- !AMr2            # (or o<-AMr2==1)  Maybe == is not robust to small fluctuations
   m<- AMr2             # so put in check procedure (m<-)
 
-########### This is replaced by fortran version #####
+## The following can be replaced by fortran .dll, although this has only moderate time savings ##
   ivector<-1  
   for(i in 2:AMn){
     ischange<- !identical(AMr1[i,],AMr1[i-1,])
@@ -172,7 +172,7 @@ indxs<-function(x){
   
 ##  ivector<-.Fortran("indxs",1*AMr1,as.integer(AMn),as.integer(ncol(x)),as.integer(nrow(AMr2)+1),ivector=integer(nrow(AMr2)+1))$ivector 
 
-  icap<-vector(mode="list",nrow(AMr2))                     # Must decide if we want to keep this index
+  icap<-vector(mode="list",nrow(AMr2))                     # This is a useful index, although no longer currently used
   for (i in 2:length(ivector)){
     icap[[i]]<-seq(ivector[i-1],ivector[i]-1)
   }
@@ -229,7 +229,7 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
   iter.hist<-matrix(0,nrow=1,ncol=3)
   if (nrow(packr(x))<nrow(x)){          # Check for fully observed data
 
-    if (identical(thetaold,NULL)) thetaold<-startval(x,startvals=startvals)    # This needs to be strengthened 
+    if (identical(thetaold,NULL)) thetaold<-startval(x,startvals=startvals)    
     indx<-indxs(x)                      # This needs x.NA
     if (!identical(priors,NULL)){
       priors[,4]<-1/priors[,4]          # change sd to 1/sd
@@ -274,17 +274,13 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
       if (diff > iter.hist[count,1] && count > 2) {                                #checks to see if step length has increased
         mono.flag<-1
 
-    ##################################
-    ## Should we make this optional???
-    #################################
         if (autopri > 0) {
           if (sum(iter.hist[count,3],iter.hist[(count-1),3],1) == 3) {
-                                        #if step length has increased for more 3 steps
-            if (is.null(empri)) {                                                        #the ridge prior is increased by 1%  of 
-              empri<-trunc(.01*nrow(x))                                                #the rows of data, up to 5% of the rows.
+                                                                                    #if step length has increased for more 3 steps
+            if (is.null(empri)) {                                                      #the ridge prior is increased by 1%  of 
+              empri<-trunc(.01*nrow(x))                                                #the rows of data, up to "autopri"% of the rows.
             } else {
-              if (empri < (autopri*nrow(x))) empri<-empri+trunc(.01*nrow(x))
-
+              if (empri < (autopri*nrow(x))) empri<-empri+trunc(.01*nrow(x))        # This does not necessarily need to be an integer
             }
           }
         }
@@ -319,8 +315,8 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
     thetanew[1,1]<-(-1)
     thetanew[2:pp1,1]<-means
     thetanew[1,2:pp1]<-means
-    thetanew[2:pp1,2:pp1]<-cov(x)              ## NEED TO ADD PRIORS TO THIS SPECIAL CASE TOO!
-    iter.hist<-NA
+    thetanew[2:pp1,2:pp1]<-cov(x)              # Need to consider Priors in these cases, 
+    iter.hist<-NA                              # Although not currently necessary. 
   }
   
   if (p2s) cat("\n")
@@ -396,15 +392,10 @@ impute<-function(x,thetareal,priors=NULL){
           columnsWithPriors <- c(1:AMp) %in% priorsForThisRow[, 2]
 
           # Calculate sd2
-          solve.Sigma  <- solve( theta[c(FALSE,columnsWithPriors),
-                                       c(FALSE,columnsWithPriors)] )
-                                 # NOT SURE THAT THIS IS CORRECT MATRIX
+          solve.Sigma  <- solve( theta[c(FALSE,columnsWithPriors),c(FALSE,columnsWithPriors)] )
        
-          solve.Lambda <- matrix(0, nrow(priorsForThisRow),
-                               nrow(priorsForThisRow))
+          solve.Lambda <- matrix(0, nrow(priorsForThisRow),nrow(priorsForThisRow))
         
-        
-
           #Calculate imputed values
           imputations <- ((x[jj, , drop=FALSE] %*%
                            theta[2:(AMp+1),2:(AMp+1) , drop=FALSE]) +
@@ -416,8 +407,8 @@ impute<-function(x,thetareal,priors=NULL){
                      (solve.Lambda %*% priorsForThisRow[,3] +
                       solve.Sigma  %*% imputations[columnsWithPriors])
         
-          imputations[columnsWithPriors]<-mu.miss     # Probably some
-                                                    #dropping goes on here
+          imputations[columnsWithPriors]<-mu.miss    
+                                                    
           # update **theta**
           copy.theta <- theta
           copy.theta[c(FALSE,columnsWithPriors),c(FALSE,columnsWithPriors)] <-
@@ -499,15 +490,10 @@ if (identical(priors,NULL)){                     # No Observation Level Priors i
         columnsWithPriors <- c(1:AMp) %in% priorsForThisRow[, 2]
 
         # Calculate sd2
-        solve.Sigma  <- solve( theta[c(FALSE,columnsWithPriors),
-                                     c(FALSE,columnsWithPriors)] )
-                                 # NOT SURE THAT THIS IS CORRECT MATRIX
+        solve.Sigma  <- solve( theta[c(FALSE,columnsWithPriors),c(FALSE,columnsWithPriors)] )
        
-        solve.Lambda <- matrix(0, nrow(priorsForThisRow),
-                               nrow(priorsForThisRow))
+        solve.Lambda <- matrix(0, nrow(priorsForThisRow),nrow(priorsForThisRow))
         
-        
-
         #Calculate imputed values
         imputations <- ((x[jj, , drop=FALSE] %*%
                          theta[2:(AMp+1),2:(AMp+1) , drop=FALSE]) +
@@ -519,9 +505,7 @@ if (identical(priors,NULL)){                     # No Observation Level Priors i
                    (solve.Lambda %*% priorsForThisRow[,3] +
                     solve.Sigma  %*% imputations[columnsWithPriors])
         
-        imputations[columnsWithPriors]<-mu.miss     # Probably some
-                                                    #dropping goes on here
-        
+        imputations[columnsWithPriors]<-mu.miss 
 
         # Update "hmcv" 
         copy.theta<-theta                                                                          # Make a copy of theta
@@ -572,8 +556,6 @@ if (returntype=="theta"){
   return(xplay)
   }
 }
-
-# try to minimize the number of copies of the dataset
 
 ## Core amelia function
 amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
@@ -653,14 +635,12 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     
     ximp<-impute(prepped$x, thetanew$thetanew, priors=prepped$priors)
     ximp<-amunstack(ximp,n.order=prepped$n.order,p.order=prepped$p.order)     
-    ximp<-unscale(ximp,mu=prepped$scaled.mu,sd=prepped$scaled.sd)
-    
+    ximp<-unscale(ximp,mu=prepped$scaled.mu,sd=prepped$scaled.sd)    
     ximp<-unsubset(x.orig=prepped$trans.x,x.imp=ximp,blanks=prepped$blanks,idvars=prepped$idvars,ts=prepped$ts,cs=prepped$cs,polytime=polytime,intercs=intercs,noms=prepped$noms,index=prepped$index,ords=prepped$ords)
     ximp<-untransform(ximp,logs=prepped$logs,xmin=prepped$xmin,sqrts=prepped$sqrts,lgstc=prepped$lgstc)
     
-    
     if (keep.data) {
-      impdata[[i]]<-impfill(x.orig=data,x.imp=ximp,noms=prepped$noms,ords=prepped$ords)  #I removed an xtemp here to cut down on memory. -mb
+      impdata[[i]]<-impfill(x.orig=data,x.imp=ximp,noms=prepped$noms,ords=prepped$ords)
       names(impdata)[i]<-paste("m",i,sep="")
     } else {
       impdata[[i]]<-NA
