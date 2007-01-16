@@ -313,7 +313,7 @@ adjusting the optional arguments from their default values.
 
 \subsection{AmeliaView}
 \label{sec:data-gui}
-AmeliaView uses the ``foreign'' package in $R$ to import and export
+AmeliaView uses the \texttt{foreign} package in $R$ to import and export
 various types of files.  In the Input box, you can choose the file
 type you wish to use from the group of supported file types: Comma
 Separated Values (.csv), Tab-Delimited (.txt), Stata (.dta), SPSS
@@ -333,7 +333,7 @@ variable.  This can help you get a graphical sense of the observed
 values in your dataset.
 
 Fewer options exist for the output data files due to the limitations
-of the ``foreign'' package.  You can only save the imputed datasets as
+of the \texttt{foreign} package.  You can only save the imputed datasets as
 either a CSV, Tab-Delimited, or Stata file. However, most statistical
 packages will allow you to read in datasets as either CSV or
 Tab-delimited.  The names of the files will be the name you specify,
@@ -352,7 +352,7 @@ Another output file that is produced when running ${\mathfrak Amelia}$
 is the Replication Archive.  This file can be used to reproduce the
 same set of options you ran ${\mathfrak Amelia}$ with so that you or
 anyone else can replicate the same findings.  This file automatically
-saves to ``amarchive.r''.  (If, as is becoming standard practice, you
+saves to \texttt{amarchive.r}.  (If, as is becoming standard practice, you
 create and archive replication data sets to accompany your papers
 \citep{King95}, you should include this file.)  This file can also serve
 as a session save that can be opened later to load the same options
@@ -423,21 +423,22 @@ in a new window.  It lists stages of the imputation model, including
 the number of iterations of the EM chain necessary in each of the
 bootstraps.
 
-Screen output in the $R$ command level can be adjusted with the
-``print to screen'' argument, \texttt{p2s}.  At a value of 0, no
-screen printing will occur.  This may be useful in large jobs or
-simulations where a very large number of imputation models may be
-required.  The default value of 1, lists each bootstrap, and displays
-the number of iterations required to reach convergence in that
-bootstrapped dataset.  The value of 2 gives more thorough screen
-output, including, at each iteration, the number of parameters that
-have significantly changed since the last iteration.  This may be
-
-useful when the EM chain length is very long, as it can provide an
-intuition for many parameters still need to converge in the EM chain,
-and a sense of the time remaining.  However, it is worth noting that
-the last several parameters can often take a significant fraction of
-the total number of iterations to converge.
+Screen output in the $R$ command level can be adjusted with the ``print to
+screen'' argument, \texttt{p2s}.  At a value of 0, no screen printing will
+occur.  This may be useful in large jobs or simulations where a very large
+number of imputation models may be required.  The default value of 1, lists each
+bootstrap, and displays the number of iterations required to reach convergence
+in that bootstrapped dataset.  The value of 2 gives more thorough screen output,
+including, at each iteration, the number of parameters that have significantly
+changed since the last iteration.  This may beuseful when the EM chain length is
+very long, as it can provide an intuition for many parameters still need to
+converge in the EM chain, and a sense of the time remaining.  However, it is
+worth noting that the last several parameters can often take a significant
+fraction of the total number of iterations to converge.  Setting \textt{p2s} to
+2 will also generate information on how EM algorithm is behaving, such as a
+\texttt{'!'} when the current estimated complete data covariance matrix is not
+invertible and a \texttt{'*'} when the likelihood has not monotonically
+increased in that step.  
 
 \subsection{Transformations of Variables}
 \label{sec:trans}
@@ -722,13 +723,11 @@ prior is specifically created for that observation (as in observation
 
 \section{Diagnostics}\label{sec:diag}
 
-\Amelia currently provides three diagnostic tools to inspect the
-imputations that are created.  These routines \texttt{compare},
-\texttt{overimpute} and \texttt{overdisperse} graphically investigate
-
-the distribution of the imputations, the fit of the imputation model,
-and modality of the Likelihood space optimized by the EM chain,
-respectively.
+\Amelia currently provides three diagnostic tools to inspect the imputations
+that are created.  These routines \texttt{compare}, \texttt{overimpute} and
+\texttt{overdisperse} graphically investigate the distribution of the
+imputations, the fit of the imputation model, and modality of the Likelihood
+space optimized by the EM chain, respectively.
 
 \subsection{Compare}
 
@@ -871,9 +870,8 @@ same value, and reasonably conclude that this is the likely global
 maximum.  On the other hand, we might see our EM chain converging to
 multiple locations.  The algorithm may also wander around portions of
 the parameter space that are not fully identified, such as a ridge of
-equal likelihood, as would happen for example, if the same variable
-
-were accidentally included in the imputation model twice.
+equal likelihood, as would happen for example, if the same variablewere
+accidentally included in the imputation model twice.
 
 \Amelia includes a diagnostic to run the EM chain from multiple
 starting values that are overdispersed from the estimated maximum.
@@ -930,11 +928,11 @@ This graph can also be called from $R$ as:
 where \texttt{dims} can be set to a value of either 1 (default) or 2,
 for one dimensional and two dimensional graphs, respectively.  The
 argument $m$ sets the number of EM chains to run to create the graph.
-In $R$ this routine can also be called before an amelia run has taken
-place, in which case output need not be declared, but any other amelia
+In $R$ this routine can also be called before an\Amelia run has taken
+place, in which case output need not be declared, but any other \Amelia
 options may be set in the same way they would be declared for the
-amelia function.  This allows you to check the likelihood surface
-\emph{before} running the amelia function.
+\texttt{amelia} function.  This allows you to check the likelihood surface
+\emph{before} running the \texttt{amelia} function.
 \begin{figure}
   \centering \includegraphics[scale=.7]{overdis2d}
   \caption{ A alternate way to visualize the plot visualizing the
@@ -951,11 +949,11 @@ amelia function.  This allows you to check the likelihood surface
 
 Setting options for some large datasets may take some time, especially
 with the presence of many observational priors and non-linear
-variables.  To ease this process, Amelia has the ability to save and
+variables.  To ease this process, \Amelia has the ability to save and
 load sessions.  A saved session includes all options set by the user
-in addition to any output information from Amelia.  Sessions are
+in addition to any output information from \Amelia.  Sessions are
 useful for setting large numbers of options over multiple instances of
-Amelia or imputing the data multiple times with the same setup.
+\Amelia or imputing the data multiple times with the same setup.
 
 In AmeliaView, you can save a session by opening the ``File'' menu and
 selecting ``Save Session.''  This will open a dialog that will ask for
@@ -963,17 +961,18 @@ a filename (the file extension must be ``.r'').  To load a saved
 session, simply navigate to the "File" menu and select "Load Session"
 and locate the saved session file.  Note that the data file referenced
 in the session file must be located in the same directory and have the
-same name when attempting to load the session.  Upon loading, Amelia
+same name when attempting to load the session.  Upon loading, \Amelia
 configures all options to same values as the saved session.
 
 In some cases you may wish to load a AmeliaView session at the R
 command line.  To do so, use the \texttt{source} command to load the
 session file which will add a list named \texttt{amelia.list} to your
 working environment.  You can use this list in the \texttt{arglist}
-options for the \texttt{amelia} function, which takes an Amelia output
-or session list as its argument.  An example of loading a session at
+options for the \texttt{amelia} function, which takes an \Amelia output
+or session list as its argument.  An example of loading a session at the command
+line would be:
 
-the command line would be:
+
 
 \begin{verbatim}
 > source("am-session.R") 
@@ -984,10 +983,10 @@ In this example \texttt{am-session.R} is the session file and
 \texttt{x} is the dataset that corresponds to the session file.  At
 the command line, you must load the data into $R$ separately as sessions
 are not tied to specific datasets at the command line.  When provided
-to Amelia, the argument list will take precedence over other
+to \Amelia, the argument list will take precedence over other
 arguments.  For example, specifying an identification variable with
 \texttt{idvars} while also using \texttt{arglist} will result in
-Amelia ignoring the \texttt{idvars} provided by the user and refer to
+\Amelia ignoring the \texttt{idvars} provided by the user and refer to
 the idvars setting in \texttt{arglist}.
 
 \section{Error Checking and Reference Guide}
@@ -1288,28 +1287,6 @@ Multiple imputation is a method for analyzing incomplete multivariate data.  Thi
   with the same dimensions as the original data, estimates the sufficient statistics (with priors if specified) by EM, and then imputes the missing
   values of sample.  It repeats this process \texttt{m} times to produces
   the $m$ complete datasets where the observed values are the same and the unobserved values are drawn from their posterior distributions.
-  
-  You can give Amelia your informational priors about the data in a number
-  of ways.    If you have a prior
-  belief about the values of a single observation or group of observations,
-  you can set them in one of two ways.  First, you can set a mean and 
-  standard deviation for the observation (this assumes a normal distribution)
-  by setting the \texttt{means} and \texttt{sds} matrices in the same location
-  as the observation.  For example, if you had a thought that the 
-  observation located at [50,7] in your data had a mean of 0 and a standard
-  deviation of 1, you would pass to \texttt{amelia} a \texttt{means} matrix
-  with a 0 in the [50,7] location and a separate \texttt{sds} matrix with
-  a 1 in the [50,7] location.  Observations for which no informational
-  prior exist, should be left as \texttt{NA} in both of these matrices.
-  
-  Second, you can set a range of values that you are confident the 
-  observation will fall in.  In a similar manner as above, you place the
-  minimum and maximum values in the location of the observation in the
-  \texttt{mins} and \texttt{maxs}, respectively.  We also require that you 
-  specify how confident you are about the range as a value between 0 and 1.
-  This goes in the \texttt{conf} matrix in the same location as observation.
-  
-  Finally, if you have information about the way in which two cross sectional elements are similar, you can use the \texttt{casepri} setting.
 
   If each imputation is taking a long time to converge, you can increase
   the empirical prior, \texttt{empri}.  This value has the effect of smoothing
