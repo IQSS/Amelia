@@ -220,7 +220,7 @@ if (identical(m,vector(mode='logical',length=length(m)))) # This is check for sw
 }
 
 ## EM chain architecture calls 
-emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NULL,empri=NULL,frontend=FALSE,collect=FALSE,allthetas=FALSE){
+emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NULL,empri=NULL,frontend=FALSE,collect=FALSE,allthetas=FALSE,autopri=0.05){
   if (p2s == 2) {
     cat("setting up EM chain indicies\n")
     flush.console()
@@ -276,12 +276,18 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
 
     ##################################
     ## Should we make this optional???
-    #################################    
-        if (sum(iter.hist[count,3],iter.hist[(count-1),3],1) == 3)  #if step length has increased for more 3 steps
-          if (is.null(empri))                                                        #the ridge prior is increased by 1%  of 
-            empri<-trunc(.01*nrow(x))                                                #the rows of data, up to 5% of the rows.
-          else
-            if (empri < (.05*nrow(x))) empri<-empri+trunc(.01*nrow(x))
+    #################################
+        if (autopri > 0) {
+          if (sum(iter.hist[count,3],iter.hist[(count-1),3],1) == 3) {
+                                        #if step length has increased for more 3 steps
+            if (is.null(empri)) {                                                        #the ridge prior is increased by 1%  of 
+              empri<-trunc(.01*nrow(x))                                                #the rows of data, up to 5% of the rows.
+            } else {
+              if (empri < (autopri*nrow(x))) empri<-empri+trunc(.01*nrow(x))
+
+            }
+          }
+        }
       } else {
         mono.flag<-0
       }
@@ -576,7 +582,7 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                  intercs=FALSE,archive=TRUE,sqrts=NULL,lgstc=NULL,
                  noms=NULL,incheck=T,ords=NULL,collect=FALSE,
                  outname="outdata",write.out=TRUE,arglist=NULL,
-                 keep.data=TRUE, priors=NULL) {
+                 keep.data=TRUE, priors=NULL, autopri=0.05) {
 
   #Generates the Amelia Output window for the frontend
   if (frontend) {
@@ -604,7 +610,7 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                        p2s=p2s,frontend=frontend,archive=archive,intercs=intercs,
                        noms=noms,startvals=startvals,ords=ords,incheck=incheck,
                        collect=collect,outname=outname,write.out=write.out,
-                       arglist=arglist,priors=priors)
+                       arglist=arglist,priors=priors,autopri=autopri)
   
   if (prepped$code!=1) {
     cat("Amelia Error Code: ",prepped$code,"\n",prepped$message,"\n")
@@ -625,7 +631,7 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     if (frontend) tkinsert(run.text,"end",paste("-- Imputation",i,"--\n"))
     flush.console()
 
-    thetanew<-emarch(x.stacked$x,p2s=p2s,thetaold=NULL,tolerance=tolerance,startvals=startvals,x.stacked$priors,empri=empri,frontend=frontend,collect=collect)
+    thetanew<-emarch(x.stacked$x,p2s=p2s,thetaold=NULL,tolerance=tolerance,startvals=startvals,x.stacked$priors,empri=empri,frontend=frontend,collect=collect, autopri=prepped$autopri)
     if (archive){
       prepped$archv[[paste("iter.hist",i,sep="")]]<-thetanew$iter.hist
     }

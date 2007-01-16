@@ -515,7 +515,7 @@ amelia.prep <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                         leads=NULL,intercs=FALSE,archive=TRUE,sqrts=NULL,
                         lgstc=NULL,noms=NULL,incheck=T,ords=NULL,collect=FALSE,
                         outname="outdata",write.out=TRUE,arglist=NULL,
-                        keep.data=TRUE, priors=NULL,var=NULL) {
+                        keep.data=TRUE, priors=NULL,var=NULL,autopri=0.05) {
 
 
   code <- 1
@@ -543,6 +543,7 @@ amelia.prep <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     startvals <- arglist$amelia.args$startvals
     ords      <- arglist$amelia.args$ords
     priors    <- arglist$amelia.args$priors
+    autopri   <- arglist$amelia.args$autopri
   }
   
   
@@ -584,7 +585,8 @@ amelia.prep <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                 casepri=casepri, empri=empri, tolerance=tolerance,
                 polytime=polytime, lags=numopts$lags, leads=numopts$leads,
                 intercs=intercs, sqrts=numopts$sqrts, lgstc=numopts$lgstc,
-                noms=numopts$noms, ords=numopts$ords, outname=outname, priors=priors)
+                noms=numopts$noms, ords=numopts$ords, outname=outname,
+                priors=priors, autopri=autopri)
   } else {
     archv<-NULL
   }
@@ -658,5 +660,6 @@ the dimenions of the time polynomials to reduce the number of parameters.")
     sqrts        = numopts$sqrts,
     lgstc        = numopts$lgstc,
     outname      = outname,
-    subset.index = d.subset$index))
+    subset.index = d.subset$index,
+    autopri      = autopri))
 }
