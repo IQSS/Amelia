@@ -41,8 +41,10 @@
 \label{sec:intro}
 
 This manual presents a brief introduction to the \AmeliaII software
-package for multiple imputation.  James Honaker, Anne Joseph, Gary
-King, Kenneth Scheve, and Naunihal Singh wrote the first version of
+package for multiple imputation.  \AmeliaII allows users to appropriately impute (``fill in'' or rectangularize) incomplete datasets so that analyses that require complete observations can use all the information present in a dataset with missingness, and avoid the biases and inefficiencies that can result from dropping all partially observed observations from the analysis.  
+
+
+James Honaker, Anne Joseph, Gary King, Kenneth Scheve, and Naunihal Singh (1998) wrote the first version of
 Amelia to remedy the discrepancy between the way social scientists
 then analyzed data with missing values and the recommendations of the
 statistics community.  With a few notable exceptions, statisticians
@@ -72,17 +74,16 @@ than waiting for others to do it for them.
 
 The \AmeliaII program goes several significant steps beyond the
 capabilities of the first version of Amelia.  For one, the
-boostrapping-based EMB algorithm included in \AmeliaII can impute many
+bootstrapping-based EMB algorithm included in \AmeliaII can impute many
 more variables, with many more observations, in much less time.  The
 great simplicity and power of the EMB algorithm made it possible to
-write \AmeliaII so that virtually never crashes --- which to our
+write \AmeliaII so that it virtually never crashes --- which to our
 knowledge makes it unique among all existing multiple imputation
-software.  (We have yet to find a data set that will crash \AmeliaII,
-but if you find one, please let us know!)
+software.  
 
 \AmeliaII also has features to make valid and much more accurate
 imputations for cross-sectional, time-series, and
-time-series-cross-section data.  This software implements the ideas
+time-series-cross-section data, and allows the incorporation of observation level prior information.  This software implements the ideas
 developed in \citet*{HonKin06}.  Please read this paper in conjunction
 with this manual.
 
@@ -115,7 +116,7 @@ the quantity of interest to compute, such as univariate mean,
 regression coefficient, predicted probability, or first difference.
 Then, the easiest way is to draw $1/m$ simulations of $q$ from each of
 the $m$ data sets, combine them into one set of $m$ simulations, and
-then to use the standard simulation-based methods of intepretation
+then to use the standard simulation-based methods of interpretation
 common for single data sets \citep{KinTomWit00}.
 
 Alternatively, you can combine directly and use as the multiple
@@ -144,29 +145,30 @@ variables to include in the imputation stage, how to keep imputations
 within logically possible ranges, etc.
 
 \section{Versions of ${\mathfrak Amelia}$}
+
 \label{sec:versions}
 Two versions of \AmeliaII are available, each with its own advantages
 and drawbacks.  First, \AmeliaII exists as a package, or collection of
-functions, for the R statistical software package.  Users can utilize
-their knowledge of the R language to run \AmeliaII at the command line
+functions, for the $R$ statistical software package.  Users can utilize
+their knowledge of the $R$ language to run \AmeliaII at the command line
 or to create scripts that will run \AmeliaII and preserve the commands
 for future use.  Alternatively, AmeliaView, an interactive Graphical
 User Interface (GUI), allows users to set options and run \Amelia
-without any knowledge of the R programming language.  AmeliaView
-enables users to set all of the \AmeliaII options and, thus, empowers
+without any knowledge of the $R$ programming language.  AmeliaView
+enables users to set all of the \AmeliaII options available and enables
 those with limited or no coding experience to create expert level
-imputations.
+imputations without knowledge of the $R$ language.
 
 Both versions of \AmeliaII are available on the Windows and Linux
-platforms and \AmeliaII for R runs in any environment that R can.  All
-versions of ${\mathfrak Amelia}$ require the R software, which is
+platforms and \AmeliaII for $R$ runs in any environment that $R$ can.  All
+versions of ${\mathfrak Amelia}$ require the $R$ software, which is
 freely available at \url{http://www.r-project.org/}.
 
 
 \section{Installation and Updates}
 \label{sec:install}
 
-Before installing \AmeliaII, you must have installed R version 2.1.0
+Before installing \AmeliaII, you must have installed $R$ version 2.1.0
 or higher, which is freely available at
 \url{http://www.r-project.org/}.
 \subsection{Windows --- AmeliaView}
@@ -179,7 +181,7 @@ installed $R$ with the default options, \AmeliaII will automatically
 find the location of R.  If the installer cannot find R, it will ask
 you to locate the directory of the most current version of R.  Make
 sure you choose the directory name that includes the version number of
-R (e.g. C:/Program Files/R/R-2.2.0) and contains a subdirectory named
+R (e.g. C:/Program Files/R/R-2.4.0) and contains a subdirectory named
 \texttt{bin}.  The installer will also put shortcuts on your Desktop
 and Start Menu.
 
@@ -188,11 +190,11 @@ and Start Menu.
 Users familiar with the $R$ language, and who intend to use \Amelia
 primarily as a function within other $R$ code can install all the
 Amelia functions as one would install any other $R$ library.  A
-package install can be called within R by:
+package install can be called within $R$ by:
   \begin{verbatim}
   > install.packages("Amelia",repos="http://gking.harvard.edu")
   \end{verbatim}
-While Amelia works in builds of $R$ beyond version $2.1.0$, the online package install will only be available for the most recent version of $R$, currently, $2.3.1$. 
+While Amelia works in builds of $R$ beyond version $2.1.0$, the online package install will only be available for the most recent version of $R$, currently, $2.4.0$. 
 
 
 Even users familiar with the $R$ language may find it useful to
@@ -215,12 +217,12 @@ the file, at the Linux/Unix command line type
   \end{verbatim}
 If you do not have access to the root, you can install the package
 locally.  Create a directory (i.e. myrlibrary) to be the local storage
-space for R packages.  Once this directory is created you can install
+space for $R$ packages.  Once this directory is created you can install
 the package to that local library:
   \begin{verbatim}
   > R CMD INSTALL --library=~/myrlibrary amelia_1.0.tar.gz .
   \end{verbatim}
-Once this is complete you need to edit or create your R profile.
+Once this is complete you need to edit or create your $R$ profile.
 Locate or create \texttt{~/.Rprofile} in your home directory and add
 this line:
 \begin{verbatim}
@@ -241,20 +243,20 @@ with the call:
 
 \subsection{AmeliaView}
 \label{sec:guioverview}
-Built around the core of the R library, AmeliaView has a graphic
+Built around the core of the $R$ library, AmeliaView has a graphical
 interface for users to input data, set options, create the imputed
 data sets, and run diagnostics.  The structure of the program moves
 logically through these steps.  In Windows, this can be accessed from
 the desktop shortcut created by the installer.  In Linux, accessing
 the GUI requires calling a function from within R\footnote{AmeliaView
-  can be called from within R in Windows, as well, using the
+  can be called from within $R$ in Windows, as well, using the
   \texttt{AmeliaView()} function.}.  Once AmeliaView is open, no direct
-use of R is required.
+use of $R$ is required.
 
 The main window of AmeliaView is divided into three steps.  In Step 1,
 you indicate the location of your data and load it into the program.
-In Step 2, you can set options about your data by using the Options
-dialogs.  In Step 3, you can set options about the output of
+In Step 2, you can specify options about your data by using the Options
+dialogs.  In Step 3, you can configure the output of
 ${\mathfrak Amelia}$ and execute the ${\mathfrak Amelia}$ code.  You
 have the option to save your output data files for further use.
 
@@ -303,7 +305,7 @@ adjusting the optional arguments from their default values.
 
 \subsection{AmeliaView}
 \label{sec:data-gui}
-AmeliaView uses the ``foreign'' package in R to import and export
+AmeliaView uses the ``foreign'' package in $R$ to import and export
 various types of files.  In the Input box, you can choose the file
 type you wish to use from the group of supported file types: Comma
 Separated Values (.csv), Tab-Delimited (.txt), Stata (.dta), SPSS
@@ -344,7 +346,7 @@ same set of options you ran ${\mathfrak Amelia}$ with so that you or
 anyone else can replicate the same findings.  This file automatically
 saves to ``amarchive.r''.  (If, as is becoming standard practice, you
 create and archive replication data sets to accompany your papers
-\citep{King95}, you should include this file.)This file can also serve
+\citep{King95}, you should include this file.)  This file can also serve
 as a session save that can be opened later to load the same options
 that you ran ${\mathfrak Amelia}$ under.  This allows you to pick up
 where you left off in the next run of ${\mathfrak Amelia}$, adjust
@@ -356,24 +358,24 @@ the diagnostic routines.
 Data input in the command-line version of ${\mathfrak Amelia}$ for R
 is identical to any data input in R.  You must have your data in
 either a text format such as Comma Separated Values (.csv) or
-Tab-Delimited (.txt) and then read them into R (generally this would
+Tab-Delimited (.txt) and then read them into $R$ (generally this would
 involve the functions \texttt{read.csv} or \texttt{read.table},
 respectively).  You can read about the specifics of how to load data
-into R in the R documentation or in Zelig
+into $R$ in the $R$ documentation or in Zelig
 (\url{http://gking.harvard.edu/zelig}).  Of course your data may be
 generated by code and amelia called as a function later in that code.
 
 Besides various commercial packages to transfer your data between
 formats, a viable option is using the \texttt{foreign} package.  This
-package can greatly expand the number of different formats that R can
+package can greatly expand the number of different formats that $R$ can
 input, including Stata, SPSS, and SAS transport.
 
-Whichever way you get your data into R, when passing it to the
+Whichever way you get your data into $R$, when passing it to the
 \texttt{amelia} function, it can either be in the form of a data frame
 or matrix.  After ${\mathfrak Amelia}$ has run, you will get datasets
 returned in the same type as the format of the dataset given to the
 amelia function.  Once you have these datasets, you can manipulate
-them in R or save them to files using the R function \texttt{write}.
+them in $R$ or save them to files using the $R$ function \texttt{write}.
 
 For example, a simple session or code fragment might be:
   \begin{verbatim}
@@ -422,6 +424,7 @@ the number of iterations required to reach convergence in that
 bootstrapped dataset.  The value of 2 gives more thorough screen
 output, including, at each iteration, the number of parameters that
 have significantly changed since the last iteration.  This may be
+
 useful when the EM chain length is very long, as it can provide an
 intuition for many parameters still need to converge in the EM chain,
 and a sense of the time remaining.  However, it is worth noting that
@@ -431,7 +434,7 @@ the total number of iterations to converge.
 \subsection{Transformations of Variables}
 \label{sec:trans}
 
-Social science data commonly includes variables that fail to fit into
+Social science data commonly includes variables that fail to fit to
 a multivariate normal distribution. Indeed, numerous models have been
 introduced specifically to deal with the problems they present.  As it
 turns out, much evidence in the literature (discussed in
@@ -444,13 +447,13 @@ deal directly with ordinal and nominal variables and to variables that
 require other transformations.  In general nominal and log transform
 variables must be declared to \Amelia, whereas ordinal (including
 dichotomous) variables often need not be, as described below.  (For
-harder cases, see Schafer, 1997, for specialized MCMC-based imputation
+harder cases, see \citep{Schafer97}, for specialized MCMC-based imputation
 models for discrete variables.)\nocite{KinHonJos01}
 
 Although these transformations are taken internally on these variables
 to better fit the data to the multivariate normal assumptions of the
 imputation model, all the imputations that are created will be
-returned in the original untransformed form of the data (If the user has \emph{already} performed transformations on their data (such as taking a log or square root) these do not need to be declared, as that would result in the transformation occuring \emph{doubly} in the imputation model).  The fully
+returned in the original untransformed form of the data (If the user has \emph{already} performed transformations on their data (such as taking a log or square root) these do not need to be declared, as that would result in the transformation occurring \emph{doubly} in the imputation model).  The fully
 imputed datasets that are returned will always be in the form of the
 original data that is passed to the amelia routine.
 
@@ -647,7 +650,7 @@ prior of up to 5 percent is moderate in most applications.
 \subsection{Observation-level priors}
 \label{sec:obspri}
 
-Reseachers often have additional prior information about missing data 
+Researchers often have additional prior information about missing data 
 values based on previous research, academic consensus, or personal 
 experience.  Amelia can incorporate this information to produce vastly 
 improved imputations.  The Amelia algorithm allows users to include 
@@ -659,13 +662,13 @@ The incorporation of priors follows basic Bayesian analysis where the
 imputation turns out to be a weighted average of the model-based 
 imputation and the prior mean, where the weights are functions of the 
 relative strength of the data and prior: when the model predicts very 
-well, the imputation will downweight the prior, and vice versa.  
+well, the imputation will down-weight the prior, and vice versa \citep{HonKin06}.  
 
 The priors about individual observations should describe the analyst's
 belief about the distribution of the missing data cell.  This can
 either take the form of a mean and a standard deviation or a
 confidence interval.  For instance, we might know that GDP growth for
-Ghana in a given year was somwhere around $3.5\%$, but we have some
+Ghana in a given year was somewhere around $3.5\%$, but we have some
 uncertainty as to the exact value.  Our prior belief about the
 distribution of the missing data cell, then, centers on $3.5$ with a
 standard deviation that reflects the amount of uncertainty we have
@@ -681,21 +684,21 @@ or one variable.  In any row, the entry in the first column is the row of the
 observation and the entry is the second column is the column of the
 observation.  In the four column priors matrix the third and fourth columns are
 the mean and standard deviation of the prior distribution of the missing value.
-For example, in the following example we would be indicating a prior mean of 500
-with a standard deviation of 50 on the missing cell in row 42, column 3:
+For example, in the following example the first row constructs a prior mean of 500 with a standard deviation of 50 on the missing cell in row 42, column 3:
 
 \begin{verbatim}
 > priors
      row column mean std dev
 [1,]  42      3  500      50
-[2,]  46      5    1       3
+[2,]  46      2    1       3
 [3,]   0      2    0       1
 \end{verbatim}
 
+
 In the five column matrix, the last three columns describe a confidence range of
-the data. The columns are a minimum value, a maximum value, and a confidence
-level between 0 and 1, not inclusive.  Whichever format you choose, it must be
-consistent across the entire matrix.  
+the data. The columns are a lower bound, an upper bound, and a confidence
+level between 0 and 1, exclusive.  Whichever format you choose, it must be
+consistent across the entire matrix.  The last prior create in the above example specifies a row number of 0.  This indicates that the prior created should be applied to all missing values in this variable (here variable 2), unless another prior is specifically created for that observation (as in observation 46 in this example).
 
 \section{Diagnostics}\label{sec:diag}
 
@@ -919,6 +922,7 @@ amelia function.  This allows you to check the likelihood surface
     number is no longer represented on the $y$-axis, although the
     distance between iterations is marked by the distance between
     arrowheads on each chain.}
+
 \end{figure}
 
 \section{Sessions}
@@ -934,7 +938,7 @@ Amelia or imputing the data multiple times with the same setup.
 
 In AmeliaView, you can save a session by opening the ``File'' menu and
 selecting ``Save Session.''  This will open a dialog that will ask for
-a filename (the file extenstion must be ``.r'').  To load a saved
+a filename (the file extension must be ``.r'').  To load a saved
 session, simply navigate to the "File" menu and select "Load Session"
 and locate the saved session file.  Note that the data file referenced
 in the session file must be located in the same directory and have the
@@ -957,9 +961,9 @@ the command line would be:
 
 In this example \texttt{am-session.R} is the session file and
 \texttt{x} is the dataset that corresponds to the session file.  At
-the command line, you must load the data into R seperately as sessions
+the command line, you must load the data into $R$ separately as sessions
 are not tied to specific datasets at the command line.  When provided
-to Amelia, the argument list will take precendence over other
+to Amelia, the argument list will take precedence over other
 arguments.  For example, specifying an identification variable with
 \texttt{idvars} while also using \texttt{arglist} will result in
 Amelia ignoring the \texttt{idvars} provided by the user and refer to
@@ -994,7 +998,7 @@ are sure you need to bypass a certain check.
 2  &  \adjparbox{5in}{One or more imputations ended with a non-invertible covariance
 matrix.  Check for highly collinear variables.}\\
 \hline
-3  &  \adjparbox{5in}{One of the arguments points to an R variables that does not
+3  &  \adjparbox{5in}{One of the arguments points to an $R$ variables that does not
 exists.} \\
 \hline
 4  &  \adjparbox{5in}{One variable in the data set is completely missing or only has
@@ -1005,6 +1009,7 @@ not match any variable name in the data.}\\
 \hline
 6  &  \adjparbox{5in}{One of the column numbers in an argument is outside the range of
 the data.}\\
+
 \hline
 7  &  \adjparbox{5in}{The priors matrix is not a matrix. }\\
 \hline
@@ -1015,7 +1020,7 @@ the data.}\\
 10 &  \adjparbox{5in}{A variable marked for a square root transformation has negative
 values.} \\
 \hline
-11 &  \adjparbox{5in}{A varaible marked for a logistic transformation has values
+11 &  \adjparbox{5in}{A variable marked for a logistic transformation has values
 outside of the 0-1 interval.}\\
 \hline
 12 &  \adjparbox{5in}{Confidence intervals on priors must be between 0 and 1.}\\
@@ -1038,22 +1043,22 @@ k$ matrix, where is $k$ is the number of cases.}\\
 \hline
 20 &  \adjparbox{5in}{Case prior values must be either 0, 1, 2, or 3.}\\
 \hline
-21 &  \adjparbox{5in}{The polynominals of time are longer than one variable.}\\
+21 &  \adjparbox{5in}{The polynomials of time are longer than one variable.}\\
 \hline
-22 &  \adjparbox{5in}{The polynominals of time argument is not a number.}\\
+22 &  \adjparbox{5in}{The polynomials of time argument is not a number.}\\
 \hline
-23 &  \adjparbox{5in}{The polynominals of time argument is not an integer.}\\
+23 &  \adjparbox{5in}{The polynomials of time argument is not an integer.}\\
 \hline
-24 &  \adjparbox{5in}{The polynominals of time arugment is not between 0 and 3.}\\
+24 &  \adjparbox{5in}{The polynomials of time argument is not between 0 and 3.}\\
 \hline
-25 &  \adjparbox{5in}{The polynominals of time argument is set without the time series
-varaible being set.}\\
+25 &  \adjparbox{5in}{The polynomials of time argument is set without the time series
+variable being set.}\\
 \hline
 26 &  \adjparbox{5in}{The interact with the cross-section argument (\texttt{intercs})
 is set without the cross-sectional variable being set.}\\
 \hline
 28 &  \adjparbox{5in}{There are too many cross sections to run \Amelia with an
-interaction between the cross section and the polynominals of time.}\\
+interaction between the cross section and the polynomials of time.}\\
 \hline
 29 &  \adjparbox{5in}{One of the logical arguments is longer than one.}\\
 \hline
@@ -1070,7 +1075,7 @@ transformation.}\\
 for transformation, but these cannot be transformed.}\\
 \hline
 34 &  \adjparbox{5in}{The number of observations is too small to estimate the
-imputations for the number of paramters included.  Drop some
+imputations for the number of parameters included.  Drop some
 parameters or increase the empirical prior.}\\
 \hline
 35 &  \adjparbox{5in}{The tolerance parameter is less than or equal to zero.  Your
@@ -1101,13 +1106,14 @@ variable.}\\
 to be more than one variable.}\\
 \hline
 43 &  \adjparbox{5in}{There is a variable in your data that does not vary.}\\
+
 \hline
 44 &  \adjparbox{5in}{A variable marked as an ordinal has non-integer values.}\\
 \hline
 45 &  \adjparbox{5in}{The output filename is in a location that \Amelia cannot write.
 Please check file permissions and try again.}\\
 \hline
-46 &  \adjparbox{5in}{The arugment list you provided was invalid.  The
+46 &  \adjparbox{5in}{The argument list you provided was invalid.  The
   \texttt{arglist} argument only takes output lists from the
   \texttt{amelia} function or session lists from AmeliaView
   sessions.}\\
@@ -1122,8 +1128,7 @@ Please check file permissions and try again.}\\
 
 \section{Command Line Argument Reference}
 \label{sec:cmdline}
-\subsection{\texttt{amelia}: Multiple Imputaton of Incomplete
-  Multivariate Data}
+\subsection{\texttt{amelia}: Multiple Imputation of Incomplete Data}
 \label{sec:amref-cline}
 
 \subsubsection*{Syntax}
@@ -1137,29 +1142,28 @@ amelia(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
 \end{verbatim}
 \subsubsection*{Arguments}
     \begin{itemize}
-      \item \texttt{data}:incomplete data, organized into either a
+      \item \texttt{data}: an incomplete dataset, organized into either a
         data frame or a matrix.
   
-       \item \texttt{m}: number of imputed datasets to create.
+       \item \texttt{m}: the number of imputed datasets to create.
   
-       \item \texttt{p2s} :an interger value taking either 0 for no
+       \item \texttt{p2s}: an integer value taking either 0 for no
          screen output, 1 for normal screen printing of iteration
          numbers, and 2 for detailed screen output.  See "Details" for
          specifics on output when p2s=2.
 
-      \item \texttt{frontend}:a logical value used internally for the GUI.
+      \item \texttt{frontend}: a logical value used internally for the GUI.
   
       \item \texttt{idvars}: a vector of column numbers or column
-        names that indicates identification variables.
+        names that indicates identification variables.  These will be dropped from the analysis but copied into the imputed datasets.
     
-      \item \texttt{logs}:a vector of column numbers or column names
+      \item \texttt{logs}: a vector of column numbers or column names
         that refer to variables that require log-linear
         transformation.
     
-      \item \texttt{ts}:number or name indicating column of the time
-        series variable.
+      \item \texttt{ts}: column number or variable name indicating the variable identifying time in time series data. 
   
-      \item \texttt{cs}: number or name indicating column of the cross
+      \item \texttt{cs}: column number or variable name indicating the cross
         section variable.
 
   
@@ -1175,17 +1179,17 @@ amelia(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
         values.
     
       \item \texttt{empri}: number indicating level of the empirical (or ridge)
-        prior.  This prior shinks the covariances of the data, but keeps the
+        prior.  This prior shrinks the covariances of the data, but keeps the
         means and variances the same for problems of high missingness, small N's
         or large correlations among the variables.  Should be kept small; a
         reasonable upper bound is around 10\% of the rows of the data.
   
-      \item \texttt{tolerance}: convergence requirement.
+      \item \texttt{tolerance}: the convergence threshold for the EM algorithm.
   
-      \item \texttt{polytime}: integet between 0 and 3 indicating what
+      \item \texttt{polytime}: integer between 0 and 3 indicating what
         power of polynomial should be included in the imputation model
         to account for the effects of time.  A setting of 0 would
-        indicate no time effects, 1 would indicate linear time
+        indicate constant levels, 1 would indicate linear time
         effects, 2 would indicate squared effects, and 3 would
         indicate cubic time effects.
   
@@ -1205,10 +1209,10 @@ amelia(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
         replication archive should be saved.  This archive includes
         all of the settings, the results of each imputation and some
         information about the convergence.  The output will be saved
-        as \texttt{'amarchive.R'} in your working directory.
+        as ``\texttt{amarchive.R}'' in your working directory.
     
       \item \texttt{sqrts}: a vector of numbers or names indicating
-        columns in the data that should be transformed by a sqaure
+        columns in the data that should be transformed by a square
         root function.  Data in this column cannot be less than zero.
   
       \item \texttt{lgstc}: a vector of numbers or names indicating
@@ -1220,19 +1224,18 @@ amelia(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
         columns in the data that are nominal variables.
         
       \item \texttt{ords}: a vector of numbers or names indicating
-        columns in the data that are ordinal variables.
+        columns in the data that should be treated as ordinal variables.
         
       \item \texttt{collect}: a logical value indicating whether or
-        not garbage collection should occur during the imputations.
-        Only set this to \texttt{TRUE} if you are experiencing memory
+        not the garbage collection frequency should be increased during the imputation model.  Only set this to \texttt{TRUE} if you are experiencing memory
         issues as it can significantly slow down the imputation
         process.
         
       \item \texttt{incheck}: a logical indicating whether or not the
         inputs to the function should be checked before running
         \texttt{amelia}.  This should only be set to \texttt{FALSE} if you
-        are extremely confident that your settings are non-problematic
-        and you are trying to save computational time.
+        are extremely confident that your settings are unproblematic
+        and you are trying to save computational time in large jobs.
         
       \item \texttt{outname}: a string indicating the prefix of the
         file to which Amelia will write the imputed datasets.  You can
@@ -1242,12 +1245,12 @@ amelia(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
         
       \item \texttt{write.out}: a logical value indicating whether or
         not you wish to have Amelia write your imputed datasets as
-        comma-seperated value files.  If \texttt{TRUE}, Amelia will use
-        the \texttt{outname} arugment as the file prefix.
+        comma-separated value files.  If \texttt{TRUE}, Amelia will use
+        the \texttt{outname} argument as the file prefix.
         
       \item{arglist}: an output list from the \texttt{amelia} function
         or from a saved session from AmeliaView.  Values from this
-        list take precendent over any individually set arugments.  See
+        list take precedent over any individually set arguments.  See
         the Amelia manual for more information.
         
       \item \texttt{keep.data}: a logical value indicating whether or
@@ -1258,17 +1261,15 @@ amelia(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     \end{itemize}
 
 \subsubsection*{Details}
-Multiple imputation is a method for analyzing incomplete
-  multivariate data.  This function will take an incomplete dataset in
-  either data frame or matrix form and return \texttt{m} imputed datatsets
-  with no missing values. The algorithm used will bootstrap a sample dataset
-  with the same dimensions as the original and then impute the missing
+Multiple imputation is a method for analyzing incomplete multivariate data.  This function will take an incomplete dataset in
+  either data frame or matrix form and return \texttt{m} imputed datasets
+  with no missing values. The algorithm used first bootstraps a sample dataset
+  with the same dimensions as the original data, estimates the sufficient statistics (with priors if specified) by EM, and then imputes the missing
   values of sample.  It repeats this process \texttt{m} times to produces
-  the output data.
+  the $m$ complete datasets where the observed values are the same and the unobserved values are drawn from their posterior distributions.
   
   You can give Amelia your informational priors about the data in a number
-  of ways.  If you have information about the way in which two cases 
-  interact, you can use the \texttt{casepri} setting.  If you have a prior
+  of ways.    If you have a prior
   belief about the values of a single observation or group of observations,
   you can set them in one of two ways.  First, you can set a mean and 
   standard deviation for the observation (this assumes a normal distribution)
@@ -1276,7 +1277,7 @@ Multiple imputation is a method for analyzing incomplete
   as the observation.  For example, if you had a thought that the 
   observation located at [50,7] in your data had a mean of 0 and a standard
   deviation of 1, you would pass to \texttt{amelia} a \texttt{means} matrix
-  with a 0 in the [50,7] location and a seperate \texttt{sds} matrix with
+  with a 0 in the [50,7] location and a separate \texttt{sds} matrix with
   a 1 in the [50,7] location.  Observations for which no informational
   prior exist, should be left as \texttt{NA} in both of these matrices.
   
@@ -1287,6 +1288,8 @@ Multiple imputation is a method for analyzing incomplete
   specify how confident you are about the range as a value between 0 and 1.
   This goes in the \texttt{conf} matrix in the same location as observation.
   
+  Finally, if you have information about the way in which two cross sectional elements are similar, you can use the \texttt{casepri} setting.
+
   If each imputation is taking a long time to converge, you can increase
   the empirical prior, \texttt{empri}.  This value has the effect of smoothing
   out the likelihood surface so that the EM algorithm can more easily find
@@ -1344,7 +1347,7 @@ A list containing the imputed datasets in objects 1 through \texttt{m}.
   \caption{Detail for step 1 on the front page of AmeliaView.}
 \end{figure}
 \begin{enumerate}
-\item \textbf{Input Data Format} - Pick the format for your dataset.
+\item \textbf{Input Data Format} - Choose the format for your dataset.
   The format you pick will be the default format that is shown when
   you open the ``Browse'' dialog.  Currently, ${\mathfrak Amelia}$
   supports five different file formats: Comma-Separated Values (.CSV),
@@ -1406,15 +1409,12 @@ A list containing the imputed datasets in objects 1 through \texttt{m}.
 \end{figure}
 \begin{enumerate}
 \item \textbf{Variable Transformations} - Choose the transformation
-  that best normalizes for the variable, if any exists.  See
-  \ref{sec:trans} on Transformations to see how each transformation is
-  useful.  You can also choose whether or not the variable is an ID
-  variable.  If so, it will be left out of the imputation model, but
-  will remain in the dataset.  This is useful for variables that have
+  that best tailors the variable to the multivariate normal, if appropriate.  See \ref{sec:trans} on Transformations to see how each transformation is
+  useful.  You can also choose whether or not the variable is an identification (ID) variable.  If so, it will be left out of the imputation model, but
+  will remain in the imputed datasets.  This is useful for variables that have
   no explanatory power like extra case identifiers.
 \item \textbf{Tolerance} - Adjust the level of tolerance that \Amelia
-  uses to check convergence of the EM algorithm.  If you imputations
-  seem to never converge, increasing this value will speed up convergence.
+  uses to check convergence of the EM algorithm.  In very large datasets, if your imputation chains run a long time without converging, increasing the tolerance will allow a lower threshold to judge convergence and end chains after fewer iterations. 
 \end{enumerate}
 
 
@@ -1441,18 +1441,8 @@ A list containing the imputed datasets in objects 1 through \texttt{m}.
   cases as well.  Using a 0 level polynomial and interacting with the
   cross section is the equivalent of using a fixed effects.  For more
   information see \ref{sec:tscs} above.
-\item \textbf{Variable Listbox} - Choose the variable whose lag you
-  would like to set.
-  condition for fitting the missing data.  The higher the level of
-  polynomial will allow more variation in the trend structure, yet it
-  will take more degrees of freedom to estimate.
-\item \textbf{Interact with Cross-Section} - Interacting this with the
-  cross section is way of allowing the trend of time to vary across
-  cases as well.  Using a 0 level polynomial and interacting with the
-  cross section is the equivalent of using a fixed effects.  For more
-  information see \ref{sec:tscs} above.
-\item \textbf{Variable Listbox} - Choose the variable whose lag you
-  would like to set.
+\item \textbf{Variable Listbox} - Choose the variables whose lag or lead you
+  would like to include in the imputation model. 
 \item \textbf{Lag Settings} - Choose to include lags and leads in the
   data set to handle the effects of time.  See \ref{sec:tscs} above.
 \end{enumerate}
@@ -1472,7 +1462,7 @@ A list containing the imputed datasets in objects 1 through \texttt{m}.
 \begin{enumerate}
 \item \textbf{Empirical Prior} - A prior that adds observations to
   your data in order to shrink the covariances.  A useful place to
-  start is around 5\% of the total observations in the dataset.
+  start is around 0.5\% of the total number of observations in the dataset.
 \item \textbf{Set Case Priors} -
   Tell ${\mathfrak Amelia}$ which cases are similar.  See
   \ref{sec:refcasepri} for more details about case priors.
@@ -1482,6 +1472,7 @@ A list containing the imputed datasets in objects 1 through \texttt{m}.
 \end{enumerate}
 
 \subsubsection{Case Priors}\label{sec:refcasepri}
+
 \begin{figure}[ht]
   \centering
  \begin{htmlonly} 
@@ -1523,7 +1514,7 @@ A list containing the imputed datasets in objects 1 through \texttt{m}.
   \caption{Detail for Observational Priors dialog}
 \end{figure}
 \begin{enumerate}
-\item \textbf{Current Priors} - A list of current priors in distribtutional
+\item \textbf{Current Priors} - A list of current priors in distributional
   form, with the variable and case name.  
 \item \textbf{Add Distributional Prior} - Add a prior belief about an
   observation or an entire variable with a mean and standard deviation about the
@@ -1548,7 +1539,7 @@ A list containing the imputed datasets in objects 1 through \texttt{m}.
 \begin{enumerate}
 \item \textbf{Case} - Select the case name or number you wish to set the prior
   about.  You can also choose to make the prior for the entire variable.  The
-  case names are generated from the rowname of the observation, the value of the
+  case names are generated from the row name of the observation, the value of the
   cross-section variable of the observation and the value of the time series
   variable of the observation.  
 \item \textbf{Variable} - The variable associated with the prior you would like
@@ -1575,7 +1566,7 @@ A list containing the imputed datasets in objects 1 through \texttt{m}.
 \begin{enumerate}
 \item \textbf{Case} - Select the case name or number you wish to set the prior
   about.  You can also choose to make the prior for the entire variable.  The
-  case names are generated from the rowname of the observation, the value of the
+  case names are generated from the row name of the observation, the value of the
   cross-section variable of the observation and the value of the time series
   variable of the observation.  
 \item \textbf{Variable} - The variable associated with the prior you would like
