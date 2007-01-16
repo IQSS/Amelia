@@ -434,7 +434,7 @@ changed since the last iteration.  This may beuseful when the EM chain length is
 very long, as it can provide an intuition for many parameters still need to
 converge in the EM chain, and a sense of the time remaining.  However, it is
 worth noting that the last several parameters can often take a significant
-fraction of the total number of iterations to converge.  Setting \textt{p2s} to
+fraction of the total number of iterations to converge.  Setting \texttt{p2s} to
 2 will also generate information on how EM algorithm is behaving, such as a
 \texttt{'!'} when the current estimated complete data covariance matrix is not
 invertible and a \texttt{'*'} when the likelihood has not monotonically
@@ -1287,6 +1287,35 @@ Multiple imputation is a method for analyzing incomplete multivariate data.  Thi
   with the same dimensions as the original data, estimates the sufficient statistics (with priors if specified) by EM, and then imputes the missing
   values of sample.  It repeats this process \texttt{m} times to produces
   the $m$ complete datasets where the observed values are the same and the unobserved values are drawn from their posterior distributions.
+
+  You can provide Amelia with informational priors about the missing
+  observations in your data.  To specify priors, pass a four or five
+  column matrix to the \texttt{priors} argument with each row specifying a
+  different priors as such:
+
+\begin{verbatim} 
+one.prior <- c(row, column, mean,standard deviation)
+\end{verbatim}
+
+or,
+
+\begin{verbatim} 
+one.prior <- c(row, column, minimum, maximum, confidence).
+\end{verbatim}
+
+  So, in the first and second column of the priors matrix should be the
+  row and column number of the prior being set.  In the other columns
+  should either be the mean and standard deviation of the prior, or a
+  minimum, maximum and confidence level for the prior. You must specify
+  your priors all as distributions or all as confidence ranges.  Note
+  that ranges are converted to distributions, so setting a confidence of
+  1 will generate an error.
+
+  Setting a priors for the missing values of an entire variable is done
+  in the same manner as above, but inputing a \texttt{0} for the row
+  instead of the row number.  If priors are set for both the entire
+  variable and an individual observation, the individual prior takes
+  precedence.
 
   If each imputation is taking a long time to converge, you can increase
   the empirical prior, \texttt{empri}.  This value has the effect of smoothing
