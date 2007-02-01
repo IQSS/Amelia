@@ -1,4 +1,4 @@
-## amcheck.r
+1## amcheck.r
 ## Function for checking for errors in coding
 ## of the data or input vectors
 ##
@@ -321,7 +321,7 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   #Error code: 11
   #0-1 Bounds on logistic transformations
   if (!identical(lgstc,NULL)) {
-    if (any(data[,lgstc] <= 0,data[,lgstc]>=1)) {
+    if (any(na.omit(data[,lgstc]) <= 0,na.omit(data[,lgstc]>=1))) {
       error.code<-11
       error.mess<-paste("The logistic transformation cannot be used on \n",
                         "variables with values out of the 0-1 range.")
