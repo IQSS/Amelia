@@ -317,7 +317,7 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
     blanks<-blanks[flag]
     x<-x[!flag,]
   
-    priors[,1] <- priors[,1] - colSums(sapply(priors[,1],">",blanks))
+    priors[,1] <- priors[,1,drop=FALSE] - colSums(sapply(priors[,1,drop=FALSE],">",blanks))
     
   
   
@@ -358,7 +358,7 @@ unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,intercs,noms,index,
   } else {
     x.orig <- x.imp[,1:ncol(x.orig)]
   }
-  
+
   if (!is.null(noms)) {
     for (i in noms) {
       y<-runif(nrow(x.imp))
@@ -371,7 +371,7 @@ unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,intercs,noms,index,
       p<-cbind(pzero,p)
       cump<-p%*%ifelse(upper.tri(matrix(0,nrow=ncol(p),ncol=ncol(p)),diag=T),1,0)
       yy<-(y<cump)*(y>cbind(matrix(0,nrow(cump),1),cump[,1:(ncol(cump)-1)]))
-      renom<-(yy%*%unique(na.omit(x.orig)[,i]))
+      renom<-(yy%*%unique(na.omit(x.orig[,i])))
       x.orig[,i]<-renom
     }
   }

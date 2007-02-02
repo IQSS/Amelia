@@ -537,7 +537,7 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       }
       
       if (length(unique(data[,i])) > 10)
-        warning("The number of catagories in one of the variables marked nominal has greater than 10 categories. Check nominal specification.")
+        warning("\n\nThe number of catagories in one of the variables marked nominal has greater than 10 categories. Check nominal specification.\n\n")
       
 
 
