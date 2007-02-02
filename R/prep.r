@@ -173,7 +173,7 @@ untransform<-function(x.imp,logs,xmin,sqrts,lgstc) {
 
   if (!is.null(lgstc))
     for (i in lgstc)
-      x.imp[,i]<-((e^(x.imp[,i]))(1-x.imp[,i]))/x.imp[,i]
+      x.imp[,i]<-exp(x.imp[,i])/(1 + exp(x.imp[,i]))
 
   return(x.imp)
 }
