@@ -8,12 +8,13 @@
 }
 \usage{
 
-amelia(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,ts=NULL,
-       cs=NULL,casepri=NULL,empri=NULL,tolerance=0.0001,polytime=NULL,
-       startvals=0,lags=NULL,leads=NULL,intercs=FALSE,archive=TRUE,
-       sqrts=NULL,lgstc=NULL,noms=NULL,incheck=T,ords=NULL,
-       collect=FALSE,outname="outdata",write.out=TRUE,arglist=NULL,
-       keep.data=TRUE, priors=NULL, autopri=0.05)}
+amelia(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
+       ts=NULL,cs=NULL,polytime=NULL,intercs=FALSE,
+       lags=NULL,leads=NULL,startvals=0,tolerance=0.0001,
+       logs=NULL,sqrts=NULL,lgstc=NULL,noms=NULL,ords=NULL,
+       incheck=TRUE,collect=FALSE,outname="outdata",
+       write.out=TRUE,archive=TRUE,arglist=NULL,keep.data=TRUE, 
+       empri=NULL,casepri=NULL,priors=NULL,autopri=0.05)}
 
 \arguments{
   \item{data}{an incomplete dataset, organized into either a data frame 
