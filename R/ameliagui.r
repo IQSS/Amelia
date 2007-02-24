@@ -463,7 +463,7 @@ amelia.save <- function(out,outname,m)  {
   if (output.select == 3)
     for (i in 1:m) 
       write.dta(out[[i]],file=paste(am.directory,"/",outname,i,".dta",sep=""),version=6)
-  if (output.select == 3)
+  if (output.select == 4)
     for (i in 1:m) 
       write.dta(out[[i]],file=paste(am.directory,"/",outname,i,".dta",sep=""),version=7)
 }

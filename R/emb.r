@@ -102,7 +102,7 @@ impfill<-function(x.orig,x.imp,noms,ords) {
       x.orig[,-noms][AMr1.orig]<-x.imp[,-noms][AMr1.orig]
       for (i in noms) {
         if (orig.class[i]=="factor")
-          x.orig[,i]<-as.factor(levels(x.orig[,i])[x.imp[,i]])
+          x.orig[is.na(x.orig[,i]),i]<- levels(x.orig[,i])[x.imp[is.na(x.orig[,i]),i]]
         else if (orig.class[i]=="character")
           x.orig[,i]<-unique(na.omit(x.orig[,i]))[x.imp[,i]]
         else

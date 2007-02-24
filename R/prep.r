@@ -196,6 +196,7 @@ frame.to.matrix<-function(x,idvars) {
 ## Remove rows and columns from dataset that do not belong
 amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
                   polytime=NULL,intercs=FALSE,lags=NULL,leads=NULL,noms=NULL) {
+
   lags   <- unique(lags)
   leads  <- unique(leads)
   noms   <- unique(noms)
