@@ -1261,7 +1261,7 @@ gui.pri.setup<-function() {
                          type="ok",icon="error")
             return()
           } 
-          prMean<- prMin + (prMax-prMin/2)
+          prMean<- prMin + ((prMax-prMin)/2)
           prSD  <-(prMax-prMin)/(2*qnorm(1-(1-prCon)/2))
           
                   
