@@ -167,25 +167,25 @@ save.session <-function() {
 #    return(NULL)
 #  } 
   amelia.list<-list()
-	outname1 <- tclvalue(outname)
-	outnum1 <- as.numeric(tclvalue(outnum))
-	empri1 <- as.numeric(tclvalue(empri))
-	amelia.list$amelia.args<-list()
-	amelia.list$amelia.args$outname <- outname1
-	amelia.list$amelia.args$m <- outnum1
-	amelia.list$amelia.args$empri <- empri1
-	amelia.list$amelia.args$ts <- tsvar
-	amelia.list$amelia.args$cs <- csvar
-	amelia.list$amelia.args$am.filename <- am.filename
-	amelia.list$amelia.args$file.type <- filetype.sess
+  outname1 <- tclvalue(outname)
+  outnum1 <- as.numeric(tclvalue(outnum))
+  empri1 <- as.numeric(tclvalue(empri))
+  amelia.list$amelia.args<-list()
+  amelia.list$amelia.args$outname <- outname1
+  amelia.list$amelia.args$m <- outnum1
+  amelia.list$amelia.args$empri <- empri1
+  amelia.list$amelia.args$ts <- tsvar
+  amelia.list$amelia.args$cs <- csvar
+  amelia.list$amelia.args$am.filename <- am.filename
+  amelia.list$amelia.args$file.type <- filetype.sess
   amelia.list$amelia.args$idvars <- c()
-	amelia.list$amelia.args$ords <- c()
-	amelia.list$amelia.args$noms <- c()
-	amelia.list$amelia.args$logs <- c()
-	amelia.list$amelia.args$sqrts <- c()
-	amelia.list$amelia.args$lgstc <- c()
-	amelia.list$amelia.args$lags <- c()
-	amelia.list$amelia.args$leads <- c()
+  amelia.list$amelia.args$ords <- c()
+  amelia.list$amelia.args$noms <- c()
+  amelia.list$amelia.args$logs <- c()
+  amelia.list$amelia.args$sqrts <- c()
+  amelia.list$amelia.args$lgstc <- c()
+  amelia.list$amelia.args$lags <- c()
+  amelia.list$amelia.args$leads <- c()
   
   for (i in 1:length(transmat)) {
     if (transmat[i] == 6)
@@ -207,71 +207,13 @@ save.session <-function() {
   }
   
   amelia.list$amelia.args$casepri <- store.pri
-	amelia.list$amelia.args$polytime <- as.numeric(tclvalue(num.poly))
-	amelia.list$amelia.args$intercs <- as.numeric(tclvalue(intercs))
-
-	amelia.list$amelia.args$output.select <- output.select
-  amelia.list$amelia.args$varmin <- varmin
-  amelia.list$amelia.args$varmax <- varmax
-  amelia.list$amelia.args$mins <- matrix(NA, nrow = nrow(amelia.data), ncol = ncol(amelia.data))
-  amelia.list$amelia.args$maxs <- matrix(NA, nrow = nrow(amelia.data), ncol = ncol(amelia.data))
-  amelia.list$amelia.args$conf <- matrix(NA, nrow = nrow(amelia.data), ncol = ncol(amelia.data))
-  amelia.list$amelia.args$means <- matrix(NA, nrow = nrow(amelia.data), ncol = ncol(amelia.data))
-  amelia.list$amelia.args$sds <- matrix(NA, nrow = nrow(amelia.data), ncol = ncol(amelia.data))
+  amelia.list$amelia.args$polytime <- as.numeric(tclvalue(num.poly))
+  amelia.list$amelia.args$intercs <- as.numeric(tclvalue(intercs))
+  amelia.list$amelia.args$output.select <- output.select
+  amelia.list$amelia.args$priors <- priorsmat
   
-  if (all(!is.null(varmin),!is.null(varmax))) {
-    for (i in 1:ncol(amelia.data)) {
-      if (all(!is.na(varmin[i]),!is.na(varmax[i]))) {
-        amelia.list$amelia.args$mins[,i]<-varmin[i]
-        amelia.list$amelia.args$maxs[,i]<-varmax[i]
-        amelia.list$amelia.args$conf[,i]<-.95
-      }
-    }
-  }
-  if (!is.null(r)) {  
-    for (i in 1:nrow(amelia.data)) {
-      for (j in 1:ncol(amelia.data))  {
-        if (all(r[i,j] != "MISS",r[i,j] != "--",j!=tsvar,j!=csvar)) {
-          numholder <- strsplit(r[i,j],split = ",")
-          if (length(numholder[[1]]) == 3) {
-            amelia.list$amelia.args$mins[i,j] <- numholder[[1]][1]
-            amelia.list$amelia.args$maxs[i,j] <- numholder[[1]][2]
-            amelia.list$amelia.args$conf[i,j] <- numholder[[1]][3]
-          } else {
-            if (length(numholder[[1]]) == 2) {
-              amelia.list$amelia.args$means[i,j] <- numholder[[1]][1]
-              amelia.list$amelia.args$sds[i,j] <- numholder[[1]][2]
-            } else {
-              obserror <- tkmessageBox(message="There is an error in the observational priors.  Would like to save without them?.",icon="error",type="yesno")
-              if (tclvalue(obserror) == "no") {
-                tkmessageBox(message="Your session has not been saved.", icon="error", type="ok")
-                return(NULL)
-              }
-            }
-          }
-        }
-      }
-    }
-    storage.mode(amelia.list$amelia.args$mins) <- "numeric"
-    storage.mode(amelia.list$amelia.args$maxs) <- "numeric"
-    storage.mode(amelia.list$amelia.args$conf) <- "numeric"
-    storage.mode(amelia.list$amelia.args$means) <- "numeric"
-    storage.mode(amelia.list$amelia.args$sds) <- "numeric"
-  }
-  
-  if (all(is.na(amelia.list$amelia.args$mins)))
-    amelia.list$amelia.args$mins<-NULL
-  if (all(is.na(amelia.list$amelia.args$maxs)))
-    amelia.list$amelia.args$maxs<-NULL
-  if (all(is.na(amelia.list$amelia.args$conf)))
-    amelia.list$amelia.args$conf<-NULL
-  if (all(is.na(amelia.list$amelia.args$means)))
-    amelia.list$amelia.args$means<-NULL
-  if (all(is.na(amelia.list$amelia.args$sds)))
-    amelia.list$amelia.args$sds<-NULL
-  
-	dump("amelia.list", file.select)
-	return(NULL)
+  dump("amelia.list", file.select)
+  return(NULL)
 }
 
 load.session <- function() { 
@@ -325,24 +267,8 @@ load.session <- function() {
       
   empri <<- tclVar(amelia.list$amelia.args$empri)
   store.pri <<- amelia.list$amelia.args$casepri
-  r <<- matrix(NA,nrow=nrow(amelia.data),ncol=ncol(amelia.data))
-  for (i in 1:nrow(amelia.data)) {
-    for (j in 1:ncol(amelia.data)) {
-      if (!is.na(amelia.data[i,j])) {
-        r[i,j] <<- "--"
-      } else {
-        r[i,j] <<- "MISS"
-        if (!is.null(amelia.list$amelia.args$means))
-          if (!is.na(amelia.list$amelia.args$means[i,j]))
-            r[i,j] <<- paste(amelia.list$amelia.args$means[i,j],amelia.list$amelia.args$sds[i,j],sep=",")
-        if (!is.null(amelia.list$amelia.args$mins))
-          if (!is.na(amelia.list$amelia.args$mins[i,j]))
-            r[i,j] <<- paste(amelia.list$amelia.args$mins[i,j],amelia.list$amelia.args$maxs[i,j],amelia.list$amelia.args$conf[i,j],sep=",") 
-      }
-    }
-  }
-  colnames(r)<<-colnames(amelia.data)
-  rownames(r)<<-rownames(amelia.data)
+
+  priorsmat <<- amelia.list$amelia.args$priors
   if ((tsvar != 0) && (csvar != 0)) {
     tkconfigure(options.tscs,state="active")
   }
