@@ -11,6 +11,7 @@
 ##  01/12/06 mb - can't compare non-numerics, only use the relevant columns when
 ##                building compare
 ##  13/12/06 mb - changed for new priors.
+##  26/03/07 jh - overimpute: excluded polynomials of time from missingness count, reordered ploting of ci's (smallest last), allow variable name as var argument
 
 compare.density <- function(data=NULL,output=NULL,var=NULL,col=1:2,lwd=1,main="",frontend=F,...) {
   
@@ -84,9 +85,22 @@ compare.density <- function(data=NULL,output=NULL,var=NULL,col=1:2,lwd=1,main=""
 
 
 overimpute <- function(data,output,var,frontend=FALSE) {
-  
-  
-  
+
+  # Allow character names as arguments for "var" with data.frames
+
+  if(is.character(var)){
+    if(!is.data.frame(data)){
+      stop("var must be identified by column number as dataset is not a data frame.")
+    } else {
+      varpos<-match(var,names(data))
+      if(is.na(varpos)){
+        stop("The name provided for var argument does not exist in the dataset provided.")
+      } else {
+      var<-varpos
+      }
+    }
+  }
+ 
   prepped<-amelia.prep(data=data,m=m,idvars=idvars,priors=priors,empri=empri,
                        ts=ts,cs=cs,tolerance=tolerance,casepri=casepri,
                        polytime=polytime, lags=lags,leads=leads,logs=logs,
@@ -94,7 +108,7 @@ overimpute <- function(data,output,var,frontend=FALSE) {
                        archive=F,intercs=intercs, noms=noms,
                        startvals=startvals,ords=ords,incheck=F, collect=F,
                        outname="outdata",write.out=F,var=var,arglist=output)
-  
+
   stacked.var<-match(var,prepped$subset.index[prepped$p.order])
   subset.var<-match(var,prepped$subset.index)
   if (is.na(stacked.var)) {
@@ -123,8 +137,9 @@ overimpute <- function(data,output,var,frontend=FALSE) {
     #o<-!AMr1[i,]
     #o[stacked.var]<-FALSE
     
-    pcntmiss<-sum(miss)/length(miss)  
-
+    pcntmiss<-(sum(miss))/(length(miss)-sum(prepped$index==0))   # Does not include time polynomials (index==0) in the denominator
+                                                                 # These are always fully observed by construction, but auxiliary.
+                                                                 # Leaves constructed lags and leads, and nominal variables in count, however.
     conf<-c()
     for (k in 1:prepped$m) {
       thetareal<-output[[paste("theta",k,sep="")]]
@@ -179,8 +194,9 @@ overimpute <- function(data,output,var,frontend=FALSE) {
 
   if (frontend)
     x11()
-  overplot<-plot(xplot,means,xlab="Observed values",ylab="Imputed values",ylim=range(c(lowers-addedroom,uppers)),type='p',main="Observed versus Imputed Values")
-  segments(xplot,lowers,xplot,uppers,col=color)
+  ci.order<-order(uppers-lowers,decreasing=TRUE)     # Allows smallest CI's to be printed last, and thus not buried in the plot.
+  overplot<-plot(xplot[ci.order],means[ci.order],xlab="Observed values",ylab="Imputed values",ylim=range(c(lowers-addedroom,uppers)),type='p',main="Observed versus Imputed Values")
+  segments(xplot[ci.order],lowers[ci.order],xplot[ci.order],uppers[ci.order],col=color[ci.order])
 
   legend("bottomright",legend=c(" 0-.2",".2-.4",".4-.6",".6-.8",".8-1"),
                   col=spectrum,lty=c(1,1),horiz=TRUE,bty="n")
@@ -205,6 +221,7 @@ gethull <- function(st,tol,rots) {
 disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=NULL,cs=NULL,casepri=NULL,priors=NULL,empri=NULL,tolerance=0.00001,polytime=NULL,startvals=0,
                   lags=NULL, leads=NULL, intercs=FALSE,archive=TRUE,sqrts=NULL,lgstc=NULL,noms=NULL,incheck=T,
                   ords=NULL,dims=1,output=NULL) {
+
 
   if (frontend) {
     require(tcltk)
