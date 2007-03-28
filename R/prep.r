@@ -19,6 +19,7 @@
 ## 18/10/06 mb incorporated confidence levels into generating priors
 ## 20/10/06 mb new format for priors
 ## 13/12/06 mb indiv. obs priors get priority in generatepriors
+## 28/03/07 jh added empri to prepped$archv, modified construction of timevars
 
 nametonumber<-function(x,ts,cs,idvars,noms,ords,logs,sqrts,lgstc,lags,leads)
 {
@@ -296,15 +297,15 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
         timevars<-cbind(timevars,dummy*polynomials)
         timevars<-timevars[,-1]
       }
+# CHECK THE FOLLOWING LINE WS.  [,-1] added      ALSO check that too clever dummy constru
+    timevars<-timevars[,-1]
     } else {
       timevars<-cbind(timevars,polynomials)
-      timevars<-timevars[,-c(1,2)]
+      timevars<-timevars[,-c(1,2)]  # first column is a holding variable, second is to have fixed effects identified
     }
-
-    
-    x<-cbind(x,timevars)  # first column is a holding variable, second is to have fixed effects identified
-    for (i in 1:ncol(as.matrix(timevars)))
-      index<-c(index,0)               #0 - timevars
+     x<-cbind(x,timevars)  
+     for (i in 1:ncol(as.matrix(timevars)))
+       index<-c(index,0)               #0 - timevars
   }
 
   if (!identical(idvars,NULL))
@@ -545,6 +546,7 @@ amelia.prep <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     ords      <- arglist$amelia.args$ords
     priors    <- arglist$amelia.args$priors
     autopri   <- arglist$amelia.args$autopri
+    empri     <- arglist$amelia.args$empri       #change 1
   }
   
   
@@ -587,7 +589,7 @@ amelia.prep <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                 polytime=polytime, lags=numopts$lags, leads=numopts$leads,
                 intercs=intercs, sqrts=numopts$sqrts, lgstc=numopts$lgstc,
                 noms=numopts$noms, ords=numopts$ords, outname=outname,
-                priors=priors, autopri=autopri)
+                priors=priors, autopri=autopri, empri=empri)        #change 2
   } else {
     archv<-NULL
   }
@@ -660,5 +662,7 @@ amelia.prep <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     lgstc        = numopts$lgstc,
     outname      = outname,
     subset.index = d.subset$index,
-    autopri      = autopri))
+    autopri      = autopri,
+    empri        = empri,    #change 3a 
+    tolerance    = tolerance))  #change 3b
 }
