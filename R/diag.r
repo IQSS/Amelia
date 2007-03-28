@@ -12,6 +12,7 @@
 ##                building compare
 ##  13/12/06 mb - changed for new priors.
 ##  26/03/07 jh - overimpute: excluded polynomials of time from missingness count, reordered ploting of ci's (smallest last), allow variable name as var argument
+##  28/03/07 jh - disperse: changed tolerance and empri handling.
 
 compare.density <- function(data=NULL,output=NULL,var=NULL,col=1:2,lwd=1,main="",frontend=F,...) {
   
@@ -220,7 +221,7 @@ gethull <- function(st,tol,rots) {
     
 disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=NULL,cs=NULL,casepri=NULL,priors=NULL,empri=NULL,tolerance=0.00001,polytime=NULL,startvals=0,
                   lags=NULL, leads=NULL, intercs=FALSE,archive=TRUE,sqrts=NULL,lgstc=NULL,noms=NULL,incheck=T,
-                  ords=NULL,dims=1,output=NULL) {
+                  ords=NULL,dims=1, output=NULL) {
 
 
   if (frontend) {
@@ -250,8 +251,10 @@ disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=N
   if (p2s) cat("-- Imputation", "1", "--")
   if (frontend) tkinsert(run.text,"end",paste("-- Imputation","1","--\n"))
   flush.console()
-  thetanew<-emarch(prepped$x,p2s=p2s,thetaold=NULL,tolerance=tolerance,startvals=0,priors=prepped$priors,empri=empri,frontend=frontend,allthetas=T,collect=FALSE)
+
+  thetanew<-emarch(prepped$x,p2s=p2s,thetaold=NULL,tolerance=prepped$tolerance,startvals=0,priors=prepped$priors,empri=prepped$empri,frontend=frontend,allthetas=T,collect=FALSE)  #change 4
   impdata<-thetanew$thetanew
+
   startsmat<-matrix(0,ncol(prepped$x)+1,ncol(prepped$x)+1)
   startsmat[upper.tri(startsmat,T)]<-c(-1,impdata[,ncol(impdata)])
   startsmat<-t(startsmat)
@@ -270,7 +273,7 @@ disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=N
     newstartsmat[1,2:nrow(startsmat)]<-startmus
     newstartsmat[2:nrow(startsmat),1]<-startmus
 
-    thetanew<-emarch(prepped$x,p2s=p2s,thetaold=newstartsmat,tolerance=tolerance,startvals=0,priors=prepped$priors,empri=empri,frontend=frontend,allthetas=T,collect=FALSE)
+    thetanew<-emarch(prepped$x,p2s=p2s,thetaold=newstartsmat,tolerance=prepped$tolerance,startvals=0,priors=prepped$priors,empri=prepped$empri,frontend=frontend,allthetas=T,collect=FALSE)  # change 5
     impdata<-cbind(impdata,thetanew$thetanew)
     iters<-c(iters,nrow(thetanew$iter.hist)+1)
   }
