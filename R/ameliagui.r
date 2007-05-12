@@ -338,7 +338,6 @@ run.amelia <- function() {
     if (transmat[i] == 5)
       lgstc <- c(lgstc,i)      
 
-  
 
 
   for (i in 1:ncol(amelia.data)) {
@@ -1673,7 +1672,7 @@ gui.diag.setup <- function() {
 }
 #tkwm.iconbitmap(gui,"~/amelia/setup/files/amelia.ico")
 tkwm.deiconify(gui)
-tkwait.window(gui)
+#tkwait.window(gui)
 
 }
 

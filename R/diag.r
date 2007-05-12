@@ -238,6 +238,8 @@ disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=N
   }
   
   code<-1
+
+  # prep the data and arguments
   prepped<-amelia.prep(data=data,m=m,idvars=idvars,priors=priors,empri=empri,ts=ts,cs=cs,
                         tolerance=tolerance,casepri=casepri,polytime=polytime,
                         lags=lags,leads=leads,logs=logs,sqrts=sqrts,lgstc=lgstc,
@@ -252,9 +254,14 @@ disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=N
   if (frontend) tkinsert(run.text,"end",paste("-- Imputation","1","--\n"))
   flush.console()
 
+  # run EM, but return it with the theta at each iteration
   thetanew<-emarch(prepped$x,p2s=p2s,thetaold=NULL,tolerance=prepped$tolerance,startvals=0,priors=prepped$priors,empri=prepped$empri,frontend=frontend,allthetas=T,collect=FALSE)  #change 4
-  impdata<-thetanew$thetanew
 
+  # thetanew is a matrix whose columns are vectorized upper triangles of theta
+  # matrices for each iteration. thus, there are k(k+1)/2 rows.
+  impdata<-thetanew$thetanew 
+
+  # we'll put the theta of the last iteration into a new starting theta
   startsmat<-matrix(0,ncol(prepped$x)+1,ncol(prepped$x)+1)
   startsmat[upper.tri(startsmat,T)]<-c(-1,impdata[,ncol(impdata)])
   startsmat<-t(startsmat)
@@ -264,7 +271,10 @@ disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=N
   for (i in 2:m){
 
     if (p2s) cat("-- Imputation", i, "--\n")
-    if (frontend) tkinsert(run.text,"end",paste("-- Imputation",i,"--\n"))    
+    if (frontend) tkinsert(run.text,"end",paste("-- Imputation",i,"--\n"))
+
+    # get a noisy sample of data from the that starting value (which is the
+    # Amelia answer) and use that to estimate a new starting theta (mus/vcov)
     newstarts<-rmvnorm(500,startsmat[1,2:ncol(startsmat)],startsmat[2:nrow(startsmat),2:nrow(startsmat)])
     startcov<-var(newstarts)
     startmus<-colMeans(newstarts)
@@ -273,6 +283,7 @@ disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=N
     newstartsmat[1,2:nrow(startsmat)]<-startmus
     newstartsmat[2:nrow(startsmat),1]<-startmus
 
+    # grab the iteration history of the thetas
     thetanew<-emarch(prepped$x,p2s=p2s,thetaold=newstartsmat,tolerance=prepped$tolerance,startvals=0,priors=prepped$priors,empri=prepped$empri,frontend=frontend,allthetas=T,collect=FALSE)  # change 5
     impdata<-cbind(impdata,thetanew$thetanew)
     iters<-c(iters,nrow(thetanew$iter.hist)+1)
@@ -281,8 +292,12 @@ disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=N
     comps<-c(1)
   else 
     comps<-c(1,2)
+
+  # reduce the dimenionality from k(k+1)/2 to 1 or 2 via principle components
   rotations<-prcomp(t(impdata))$rotation[,comps]
   reduced.imps<-t(rotations)%*%impdata
+
+  # plot the imputations
   if (frontend)
     x11()
   if (dims==1) {

@@ -36,7 +36,8 @@
 ## 20/09/06 mb - new option (temp?) keep.data that will trash datasets from memory
 ## 01/10/06 mb - added additional info to p2s=2.
 ## 27/11/06 mb - new priors format
-## 01/15/07 jh/mb - final version changes, degrees of freedom messages, autoprior option, modified comments, rearranged core arguments
+## 15/01/07 jh/mb - final version changes, degrees of freedom messages,autoprior option, modified comments, rearranged core arguments
+## 10/05/07 mb - changed 'impute' to 'amelia.impute'
 
 ## Draw from a multivariate normal distribution 
 ##   n: number of draws 
@@ -327,7 +328,7 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
 }
 
 ## Draw imputations for missing values from a given theta matrix
-impute<-function(x,thetareal,priors=NULL){
+amelia.impute<-function(x,thetareal,priors=NULL){
 
   indx<-indxs(x)                      # This needs x.NA 
   if (!identical(priors,NULL)){
@@ -370,6 +371,7 @@ impute<-function(x,thetareal,priors=NULL){
       
       imputations<-AMr1[is:isp, , drop=FALSE] * ((x[is:isp, , drop=FALSE] %*% theta[2:(AMp+1),2:(AMp+1) , drop=FALSE])
           + (matrix(1,1+isp-is,1) %*% theta[1,2:(AMp+1) , drop=FALSE]) )
+      
       xplay[is:isp,]<-x[is:isp,] + imputations + junk
     }
 
@@ -385,7 +387,7 @@ impute<-function(x,thetareal,priors=NULL){
       for (jj in is:isp){
       # Prior specified for this observation
         if (sum(priors[,1] == jj)) {              
-
+          browser()
           ## maybe we should sort priors earlier? do we need to?
           priorsForThisRow <- priors[priors[,1] == jj, , drop = FALSE] 
           priorsForThisRow <- priorsForThisRow[order(priorsForThisRow[,2]),,drop=FALSE]
@@ -424,7 +426,6 @@ impute<-function(x,thetareal,priors=NULL){
           xplay[jj,]<-x[jj,] + (AMr1[jj, , drop=FALSE] * (imputations + junk) )
 
         } else {                              # No Prior specified for this observation
-
           Ci<-matrix(0,AMp,AMp)
           hold<-chol(theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])])
           Ci[m[ss,],m[ss,]]<-hold
@@ -472,7 +473,7 @@ if (identical(priors,NULL)){                     # No Observation Level Priors i
 
   }
 } else {                                    # Observation Level Priors Used
-
+  
   for (ss in st:(length(i)-1)){
 
     theta<-amsweep(thetareal,c(FALSE,o[ss,]))
@@ -481,9 +482,8 @@ if (identical(priors,NULL)){                     # No Observation Level Priors i
     isp<-i[ss+1]-1
 
     for (jj in is:isp){
-      
       # Prior specified for this observation
-      if (sum(priors[,1] == jj)) {         
+      if (sum(priors[,1] == jj)) {
         ## maybe we should sort priors earlier? do we need to?
         priorsForThisRow <- priors[priors[,1] == jj, , drop = FALSE] 
         priorsForThisRow <- priorsForThisRow[order(priorsForThisRow[,2]),,drop=FALSE]
@@ -633,7 +633,7 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
       next()
     }
     
-    ximp<-impute(prepped$x, thetanew$thetanew, priors=prepped$priors)
+    ximp<-amelia.impute(prepped$x, thetanew$thetanew, priors=prepped$priors)
     ximp<-amunstack(ximp,n.order=prepped$n.order,p.order=prepped$p.order)     
     ximp<-unscale(ximp,mu=prepped$scaled.mu,sd=prepped$scaled.sd)    
     ximp<-unsubset(x.orig=prepped$trans.x,x.imp=ximp,blanks=prepped$blanks,idvars=prepped$idvars,ts=prepped$ts,cs=prepped$cs,polytime=polytime,intercs=intercs,noms=prepped$noms,index=prepped$index,ords=prepped$ords)

@@ -1,4 +1,4 @@
-1## amcheck.r
+## amcheck.r
 ## Function for checking for errors in coding
 ## of the data or input vectors
 ##
@@ -315,6 +315,18 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       error.mess<-paste("The square root transformation cannot be used on \n",
                         "variables with negative values.")
       return(list(code=error.code,mess=error.mess))
+    }
+  }
+
+  
+  #warning message
+  #logs with negative values
+  if (!identical(logs,NULL)) {
+    if (any(na.omit(data[,logs]) < 0)) { 
+      warning(paste("The log transformation is being used on \n",
+                    "variables with negative values. The values \n",
+                    "will be shifted up by 1 plus the minimum value \n",
+                    "of that variable."))
     }
   }
   
