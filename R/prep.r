@@ -23,6 +23,7 @@
 ## 10/05/07 mb logs now adds 1 instead of "epsilon" to avoid strange imputations.
 ##             fixed blanks problems when no priors specified.
 ## 11/05/07 mb added "combine.output" to combine multiple amelia outputs
+## 15/08/07 jh modified construction of timevars
 
 nametonumber<-function(x,ts,cs,idvars,noms,ords,logs,sqrts,lgstc,lags,leads)
 {
@@ -298,10 +299,8 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
       for (i in cstypes){
         dummy<-as.numeric(x[,cs]==i)
         timevars<-cbind(timevars,dummy*polynomials)
-        timevars<-timevars[,-1]
       }
-# CHECK THE FOLLOWING LINE WS.  [,-1] added      ALSO check that too clever dummy constru
-    timevars<-timevars[,-1]
+    timevars<-timevars[,c(-1,-2)]
     } else {
       timevars<-cbind(timevars,polynomials)
       timevars<-timevars[,-c(1,2)]  # first column is a holding variable, second is to have fixed effects identified
