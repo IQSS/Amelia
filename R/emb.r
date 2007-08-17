@@ -638,21 +638,36 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
     ximp<-unscale(ximp,mu=prepped$scaled.mu,sd=prepped$scaled.sd)    
     ximp<-unsubset(x.orig=prepped$trans.x,x.imp=ximp,blanks=prepped$blanks,idvars=prepped$idvars,ts=prepped$ts,cs=prepped$cs,polytime=polytime,intercs=intercs,noms=prepped$noms,index=prepped$index,ords=prepped$ords)
     ximp<-untransform(ximp,logs=prepped$logs,xmin=prepped$xmin,sqrts=prepped$sqrts,lgstc=prepped$lgstc)
-    
-    if (keep.data) {
-      impdata[[i]]<-impfill(x.orig=data,x.imp=ximp,noms=prepped$noms,ords=prepped$ords)
-      names(impdata)[i]<-paste("m",i,sep="")
-    } else {
+
+    if (p2s==2) {
+      cat("\n saving and cleaning\n")
+      flush.console()
+    }
+
+    ## here we deal with the imputed matrix.
+
+    # first, we put the data into the output list and name it
+    impdata[[i]]<-impfill(x.orig=data,x.imp=ximp,noms=prepped$noms,ords=prepped$ords)
+    names(impdata)[i]<-paste("m",i,sep="")
+
+    # if the user wants to save it, do that
+    if (write.out){
+      write.csv(impdata[[i]], file=paste(prepped$outname,i,".csv",sep=""))
+    }
+
+    # if the user wants to save memory, dump the copy in memory. 
+    if (!keep.data) {      
       impdata[[i]]<-NA
     }
+
     
-    if (write.out){
-      write.csv(impdata[[i]],file=paste(prepped$outname,i,".csv",sep=""))
-    }
     if (p2s) cat("\n")
     if (frontend) tkinsert(run.text,"end","\n")
 
+
+
   }
+  
 
   impdata$code<-code
   if (code == 2)
