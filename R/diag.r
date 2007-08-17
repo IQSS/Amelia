@@ -13,6 +13,8 @@
 ##  13/12/06 mb - changed for new priors.
 ##  26/03/07 jh - overimpute: excluded polynomials of time from missingness count, reordered ploting of ci's (smallest last), allow variable name as var argument
 ##  28/03/07 jh - disperse: changed tolerance and empri handling.
+##  03/04/07 jh - disperse: changed 1d plot settings, number of colors, minor edits to "patt" construction.
+##  10/04/07 jh - created sigalert function to view disperse principal components.
 
 compare.density <- function(data=NULL,output=NULL,var=NULL,col=1:2,lwd=1,main="",frontend=F,...) {
   
@@ -245,7 +247,10 @@ disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=N
                         lags=lags,leads=leads,logs=logs,sqrts=sqrts,lgstc=lgstc,
                         p2s=p2s,frontend=frontend,archive=archive,intercs=intercs,
                         noms=noms,startvals=startvals,ords=ords,incheck=incheck,arglist=output)
-  
+
+
+
+
   if (prepped$code!=1) {
     cat("Amelia Error Code: ",prepped$code,"\n",prepped$message,"\n")
     return(list(code=prepped$code,message=prepped$message))
@@ -259,23 +264,23 @@ disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=N
 
   # thetanew is a matrix whose columns are vectorized upper triangles of theta
   # matrices for each iteration. thus, there are k(k+1)/2 rows.
-  impdata<-thetanew$thetanew 
+  impdata<-thetanew$thetanew
 
   # we'll put the theta of the last iteration into a new starting theta
   startsmat<-matrix(0,ncol(prepped$x)+1,ncol(prepped$x)+1)
-  startsmat[upper.tri(startsmat,T)]<-c(-1,impdata[,ncol(impdata)])
+  startsmat[upper.tri(startsmat,T)]<-c(-1,impdata[,ncol(impdata)])     
   startsmat<-t(startsmat)
   startsmat[upper.tri(startsmat,T)]<-c(-1,impdata[,ncol(impdata)])
   iters<-nrow(thetanew$iter.hist)+1
-  
+
   for (i in 2:m){
 
     if (p2s) cat("-- Imputation", i, "--\n")
-    if (frontend) tkinsert(run.text,"end",paste("-- Imputation",i,"--\n"))
+    if (frontend) tkinsert(run.text,"end",paste("-- Imputation",i,"--\n"))    
 
     # get a noisy sample of data from the that starting value (which is the
     # Amelia answer) and use that to estimate a new starting theta (mus/vcov)
-    newstarts<-rmvnorm(500,startsmat[1,2:ncol(startsmat)],startsmat[2:nrow(startsmat),2:nrow(startsmat)])
+    newstarts<-rmvnorm(round(2.5*ncol(prepped$x)),startsmat[1,2:ncol(startsmat)],startsmat[2:nrow(startsmat),2:nrow(startsmat)])
     startcov<-var(newstarts)
     startmus<-colMeans(newstarts)
     newstartsmat<-matrix(-1,ncol(prepped$x)+1,ncol(prepped$x)+1)
@@ -305,14 +310,14 @@ disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=N
     x<-seq(iters[1])
     y<-reduced.imps[1,1:iters[1]]
     patt<-seq(1,length(x)-1)
-    plot(x,y,col=1,main="Overdispersed Start Values",xlab="Number of Iterations",ylab="Largest Principle Component",xlim=c(0,max(iters)),ylim=range(c(reduced.imps-addedroom,reduced.imps)))
+    plot(x,y,col=1,main="Overdispersed Start Values",xlab="Number of Iterations",ylab="Largest Principle Component",xlim=c(0,max(iters)),ylim=range(c(reduced.imps-addedroom,reduced.imps)),type="n")
     segments(x[patt],y[patt],x[patt+1],y[patt+1],col=1)
     for (i in 2:length(iters)) {      
       x<-seq(iters[i])
       y<-reduced.imps[1,(sum(iters[1:(i-1)])+1):(sum(iters[1:i]))]
-      patt<-patt<-seq(1,length(x)-1)
+      patt<-seq(1,length(x)-1)                          
       segments(x[patt],y[patt],x[patt+1],y[patt+1],col=i)
-      points(x,y,col=i)    
+      #points(x,y,col=i)    
     }
     abline(h=reduced.imps[iters[1]],lwd=2)
     legend("bottomright",legend=c("Convergence of original starting values"),lwd=2,bty="n")
@@ -347,7 +352,7 @@ disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=N
         patt<-c(patt,j)
     #if (!is.null(patt))
     #  arrows(x[patt],y[patt],x[patt+1],y[patt+1],length=.15,col=1,lwd=5)
-    patt<-patt<-seq(1,length(x)-1)
+    patt<-seq(1,length(x)-1)                                   
     segments(x[patt],y[patt],x[patt+1],y[patt+1],col=1,lwd=1)
     dists<-gethull(st=impdata[,iters[1]],tol=tolerance,rots=rotations)
     convexhull<-chull(t(dists))
@@ -358,7 +363,116 @@ disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=N
   }
   if (frontend)
     tkdestroy(tcl.window)
-  return(list(impdata=impdata,p.order=prepped$p.order,iters=iters))
+  
+  return(list(impdata=impdata,p.order=prepped$p.order,index=prepped$index,iters=iters,rotations=rotations,dims=dims))
 
 }    
+   
+
+sigalert<-function(data,disperse.list,output,notorious=5){
+
+  k<-length(disperse.list$p.order)+1
+
+  # Construct Variable Names for all variables constructed in Imputation Model. 
+  # This uses the "index" which details all the variables included in the imputation model.
+  # The index is in the unstacked variable order.
+  # Possibly, if this is useful elsewhere, this might be moved to "prep.r".
+
+  varnm<-NULL
+  lag.count<-0
+  lead.count<-0
+  poly.count<-0
+  unknown.count<-0
+  
+  for(i in 1:(k-1)){
+    if(identical(disperse.list$index[i],-0.5)){
+      lag.count<-lag.count+1
+      varnm<-c(varnm,paste("lag",lag.count))      
+    }else if(identical(disperse.list$index[i],0.5)){
+      lead.count<-lead.count+1
+      varnm<-c(varnm,paste("lead",lead.count))      
+    }else if(identical(disperse.list$index[i],0)){
+      poly.count<-poly.count+1
+      varnm<-c(varnm,paste("polytime",poly.count))      
+    }else if(disperse.list$index[i]>=1){
+      varnm<-c(varnm,names(data[disperse.list$index[i]]))      # Check what this does with matricies?
+    }else{
+      unknown.count<-unknown.count+1
+      varnm<-c(varnm,paste("unknown",unknown.count))      
+    }
+  }
+
+#  WARNING: Currently assumes rotations is a vector.  If dim=2, rotations is a matrix.
+#  if(!identical(disperse.list$dims,1)){
+#    disperse.list$rotations<-disperse.list$rotations[1,]
+#  }
+
+  # This is a flag vector that identifies the largest values in the first principal component.
+
+  largest.rotations<-disperse.list$rotations * 0
+  largest.rotations[order(abs(disperse.list$rotations),decreasing=TRUE)[1:notorious]]<-1
     
+  # This is a matrix of the size of theta, which has a 1 in the positions of the largest 
+  # contributions to the first principal component. 
+  # (largest corresponding elements of disperse.list$rotations)
+
+  map<-matrix(0,k,k)
+  map[upper.tri(map,T)]<-c(0,largest.rotations)     
+  map<-t(map)
+  map[upper.tri(map,T)]<-c(0,largest.rotations) 
+  map[c(1,disperse.list$p.order+1),c(1,disperse.list$p.order+1)]<-map                         # Rearrange to unstacked variable positions
+
+  print(abs(map))
+
+  gtz<-function(a)
+    return(sum(a)>0)
+  row.keep<-apply(map,1,gtz)
+  col.keep<-apply(map,2,gtz)
+
+  # This is the submatrix of rotations, reshaped as a theta matrix, with the largest elements.
+
+  prcomp.matrix<-matrix(0,k,k)
+  prcomp.matrix[upper.tri(prcomp.matrix,T)]<-c(0,disperse.list$rotations)     
+  prcomp.matrix<-t(prcomp.matrix)
+  prcomp.matrix[upper.tri(prcomp.matrix,T)]<-c(0,disperse.list$rotations) 
+  prcomp.matrix[c(1,disperse.list$p.order+1),c(1,disperse.list$p.order+1)]<-prcomp.matrix     # Rearrange to unstacked variable positions
+
+  # This is the submatrix that we want to represent
+  portal<-prcomp.matrix[row.keep,col.keep]
+  portalsize<-ncol(portal)
+
+  portal.row.names<-varnm[row.keep]               # In symmetric matricies, these are the same.
+  portal.col.names<-varnm[col.keep]               # In symmetric matricies, these are the same.
+
+  # This is a matrix that gives the relative rank of every element.
+  col.map<-matrix(0,portalsize,portalsize)
+  col.portal<-rank(abs(portal[upper.tri(portal,T)]))
+  col.map[upper.tri(col.map,T)]<-col.portal     
+  col.map<-t(col.map)
+  col.map[upper.tri(col.map,T)]<-col.portal 
+
+  # This creates a continuous color palette of the correct size.
+  n.unique<-sum(upper.tri(matrix(1,portalsize,portalsize),T))
+  Lab.palette<-colorRampPalette(c("white","yellow","red"), space = "Lab")
+  my.palette<-Lab.palette(n.unique)
+
+  # Plot the submatrix to be represented.
+
+  plot.new()
+  plot.window(xlim=c(-2,portalsize+1), ylim=c(1,portalsize+3))
+  for(i in 1:portalsize){
+    text(x=1,y=portalsize-i+1+0.5,pos=2,labels=portal.row.names[i])        # Row variable names
+    for(j in 1:portalsize){
+      rect(xleft=j, ybottom=portalsize-i+1, xright=j+1, ytop=portalsize-i+2, density = NULL, angle = 45,
+        col = my.palette[col.map[i,j]], border = NULL, lty = par("lty"), lwd = par("lwd"))
+      text(x=j+0.5,y=portalsize-i+1+0.5,labels=as.character(round(portal[i,j]*100)/100) )      # SHOULD FIND BETTER SIG FIGS HACK
+    }
+  }
+  for(j in 1:portalsize){
+    text(x=j+0.6,y=portalsize+1.1,pos=2,labels=portal.col.names[j],srt=270)  # Column variable names.
+  }
+
+  return(NULL)
+}
+
+
