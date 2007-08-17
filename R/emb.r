@@ -387,7 +387,7 @@ amelia.impute<-function(x,thetareal,priors=NULL){
       for (jj in is:isp){
       # Prior specified for this observation
         if (sum(priors[,1] == jj)) {              
-          browser()
+          #browser()
           ## maybe we should sort priors earlier? do we need to?
           priorsForThisRow <- priors[priors[,1] == jj, , drop = FALSE] 
           priorsForThisRow <- priorsForThisRow[order(priorsForThisRow[,2]),,drop=FALSE]
