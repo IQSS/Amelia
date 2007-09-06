@@ -38,6 +38,7 @@
 ## 27/11/06 mb - new priors format
 ## 15/01/07 jh/mb - final version changes, degrees of freedom messages,autoprior option, modified comments, rearranged core arguments
 ## 10/05/07 mb - changed 'impute' to 'amelia.impute'
+## 04/07/07 jh - added "emburn" option to modify convergence criteria
 
 ## Draw from a multivariate normal distribution 
 ##   n: number of draws 
@@ -221,7 +222,7 @@ if (identical(m,vector(mode='logical',length=length(m)))) # This is check for sw
 }
 
 ## EM chain architecture calls 
-emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NULL,empri=NULL,frontend=FALSE,collect=FALSE,allthetas=FALSE,autopri=0.05){
+emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NULL,empri=NULL,frontend=FALSE,collect=FALSE,allthetas=FALSE,autopri=0.05,emburn=c(0,0)){
   if (p2s == 2) {
     cat("setting up EM chain indicies\n")
     flush.console()
@@ -241,7 +242,7 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
     count<-0
     diff<- 1+tolerance
     thetahold<-c()
-    while (diff>0){
+    while ( (diff>0 | count<emburn[1] ) & (count<emburn[2] | emburn[2]<1) ){    # emburn[1] is a minimum EM chain length, emburn[2] is a maximum, ignored if less than 1.
       if (collect)
         gc()     
       count<-count+1
@@ -564,7 +565,7 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
                  logs=NULL,sqrts=NULL,lgstc=NULL,noms=NULL,ords=NULL,
                  incheck=TRUE,collect=FALSE,outname="outdata",
                  write.out=TRUE,archive=TRUE,arglist=NULL,keep.data=TRUE, 
-                 empri=NULL,casepri=NULL,priors=NULL,autopri=0.05) {
+                 empri=NULL,casepri=NULL,priors=NULL,autopri=0.05,emburn=c(0,0)) {
 
   #Generates the Amelia Output window for the frontend
   if (frontend) {
@@ -613,7 +614,7 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
     if (frontend) tkinsert(run.text,"end",paste("-- Imputation",i,"--\n"))
     flush.console()
 
-    thetanew<-emarch(x.stacked$x,p2s=p2s,thetaold=NULL,tolerance=tolerance,startvals=startvals,x.stacked$priors,empri=empri,frontend=frontend,collect=collect, autopri=prepped$autopri)
+    thetanew<-emarch(x.stacked$x,p2s=p2s,thetaold=NULL,tolerance=tolerance,startvals=startvals,x.stacked$priors,empri=empri,frontend=frontend,collect=collect,autopri=prepped$autopri,emburn=emburn)
     if (archive){
       prepped$archv[[paste("iter.hist",i,sep="")]]<-thetanew$iter.hist
     }
