@@ -688,7 +688,7 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
                  incheck=TRUE,collect=FALSE,outname="outdata",
                  write.out=TRUE,archive=TRUE,arglist=NULL,keep.data=TRUE, 
                  empri=NULL,casepri=NULL,priors=NULL,autopri=0.05,
-                 emburn=c(0,0),bounds=NULL,max.resample=NULL) {
+                 emburn=c(0,0),bounds=NULL,max.resample=100) {
 
   #Generates the Amelia Output window for the frontend
   if (frontend) {

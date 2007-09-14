@@ -727,7 +727,7 @@ check","that the directory exists and that you have permission to write.",sep="\
   # checks for bounds
   if (!identical(bounds,NULL)) {
     b.size <- is.matrix(bounds) && ncol(bounds)==3 && nrow(bounds) > 0
-    b.cols <- sum(bounds[,1] %in% c(1:AMp)) == nrow(b.cols)
+    b.cols <- sum(bounds[,1] %in% c(1:AMp)) == nrow(bounds)
     maxint <- max.resample > 0 && (max.resample %% 1)==0
     
 
