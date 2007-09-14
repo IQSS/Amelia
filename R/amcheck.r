@@ -20,7 +20,8 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                         leads=NULL,intercs=FALSE,archive=TRUE,sqrts=NULL,
                         lgstc=NULL,noms=NULL,incheck=T,ords=NULL,collect=FALSE,
                         outname="outdata",write.out=TRUE,arglist=NULL,
-                        keep.data=TRUE, priors=NULL) {
+                        keep.data=TRUE, priors=NULL,bounds=NULL,
+                        max.resample=1000) {
 
   #Checks for errors in list variables
   listcheck<-function(vars,optname) {
@@ -667,6 +668,8 @@ nominal\n",
       }
     }    
   }
+
+ 
   
   #checks for outname
   if (write.out==T) {
@@ -721,6 +724,38 @@ check","that the directory exists and that you have permission to write.",sep="\
   }
 
 
+  # checks for bounds
+  if (!identical(bounds,NULL)) {
+    b.size <- is.matrix(bounds) && ncol(bounds)==3 && nrow(bounds) > 0
+    b.cols <- sum(bounds[,1] %in% c(1:AMp)) == nrow(b.cols)
+    maxint <- max.resample > 0 && (max.resample %% 1)==0
+    
 
+    # Error 50:
+    # wrong sized bounds matrix
+    if (!b.size) {
+      error.code<-50
+      error.mess<-paste("The bounds argument is a three-column matrix.")
+      return(list(code=error.code,mess=error.mess))
+    }
+
+    # Error 51:
+    # nonexistant columns in bounds.
+    if (!b.cols) {
+      error.code<-51
+      error.mess<-paste("One of the bounds is on a non-existant column.")
+      return(list(code=error.code,mess=error.mess))
+    }
+
+    # Error 52:
+    # max.resample needs to be positive integer.
+    if (!maxint) {
+      error.code<-52
+      error.mess<-paste("The max.resample argument needs to be a positive integer.")
+      return(list(code=error.code,mess=error.mess))
+    }      
+  }
+
+  
   return(list(m=m,outname=outname,priors=priors))
 }

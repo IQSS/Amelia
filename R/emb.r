@@ -329,7 +329,7 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
 }
 
 ## Draw imputations for missing values from a given theta matrix
-amelia.impute<-function(x,thetareal,priors=NULL){
+amelia.impute<-function(x,thetareal,priors=NULL,bounds=NULL,max.resample=NULL){
 
   indx<-indxs(x)                      # This needs x.NA 
   if (!identical(priors,NULL)){
@@ -368,12 +368,19 @@ amelia.impute<-function(x,thetareal,priors=NULL){
       Ci<-matrix(0,AMp,AMp)
       hold<-chol(theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])])
       Ci[m[ss,],m[ss,]]<-hold
-      junk<-matrix(rnorm((i[ss+1]-is) * AMp), i[ss+1]-is, AMp) %*% Ci
+
       
       imputations<-AMr1[is:isp, , drop=FALSE] * ((x[is:isp, , drop=FALSE] %*% theta[2:(AMp+1),2:(AMp+1) , drop=FALSE])
           + (matrix(1,1+isp-is,1) %*% theta[1,2:(AMp+1) , drop=FALSE]) )
-      
-      xplay[is:isp,]<-x[is:isp,] + imputations + junk
+
+      if (!identical(bounds,NULL)) {
+        xplay[is:isp,] <- am.resample(x.ss=x[is:isp,], ci=Ci, imps=imputations,
+                                      m.ss=m[ss,], bounds=bounds,
+                                      max.resample=max.resample)
+      } else {
+        junk<-matrix(rnorm((i[ss+1]-is) * AMp), i[ss+1]-is, AMp) %*% Ci
+        xplay[is:isp,]<-x[is:isp,] + imputations + junk
+      }
     }
 
   } else {                                    # Observation Level Priors Used
@@ -421,28 +428,142 @@ amelia.impute<-function(x,thetareal,priors=NULL){
           Ci<-matrix(0,AMp,AMp)
           hold<-chol(copy.theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])])
           Ci[m[ss,],m[ss,]]<-hold
-          junk<-matrix(rnorm(AMp), 1, AMp) %*% Ci
+
+          # fork for the bounds resampler
+          if (!identical(bounds,NULL)) {
+            xplay[jj,] <- am.resample(x.ss=x[jj,,drop=FALSE], ci=Ci, imps=imputations,
+                                      m.ss=m[ss,], bounds=bounds,
+                                      max.resample=max.resample)            
+                                      
+          } else {
+            junk<-matrix(rnorm(AMp), 1, AMp) %*% Ci
  
-          # Piece together this observation
-          xplay[jj,]<-x[jj,] + (AMr1[jj, , drop=FALSE] * (imputations + junk) )
+            # Piece together this observation
+            xplay[jj,]<-x[jj,] + (AMr1[jj, , drop=FALSE] * (imputations + junk))
+          }
 
         } else {                              # No Prior specified for this observation
           Ci<-matrix(0,AMp,AMp)
           hold<-chol(theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])])
           Ci[m[ss,],m[ss,]]<-hold
-          junk<-matrix(rnorm(AMp), 1, AMp) %*% Ci
  
           imputations<-AMr1[jj, , drop=FALSE] * ((x[jj, , drop=FALSE] %*% theta[2:(AMp+1),2:(AMp+1) , drop=FALSE])
               + theta[1,2:(AMp+1) , drop=FALSE] )
 
-          xplay[jj,]<-x[jj, ] + imputations + junk
+          if (!identical(bounds,NULL)) {
+            xplay[jj,] <- am.resample(x.ss=x[jj,,drop=FALSE], ci=Ci, imps=imputations,
+                                      m.ss=m[ss,], bounds=bounds,
+                                      max.resample=max.resample)
+          } else {
+            junk<-matrix(rnorm(AMp), 1, AMp) %*% Ci
+            xplay[jj,]<-x[jj,] + imputations + junk
+          }
         }
       }
     }
   }
 
 return(xplay)
-} 
+}
+
+
+
+
+## resampler - takes in data with a single miss. pattern and resamples;
+##   returns an xplay for this pattern. 
+am.resample <- function(x.ss, ci, imps, m.ss, bounds, max.resample) {
+
+  # create some holders for the bounds
+  AMn.ss <- nrow(x.ss)
+  AMp    <- ncol(x.ss)
+  ub.mat <- matrix(NA, nrow=AMn.ss, ncol=AMp)
+  lb.mat <- matrix(NA, nrow=AMn.ss, ncol=AMp)
+  xp.ss  <- matrix(0,  nrow=AMn.ss, ncol=AMp)
+
+  junk <- matrix(rnorm(AMn.ss*AMp), AMn.ss, AMp) %*% ci
+  # b.cols selects the columns that have bounds 
+  b.cols <- c(1:AMp) %in% bounds[,1]
+
+  # patt.bounds selects the rows of 'bounds' that are used in this pattern
+  patt.bounds <- bounds[(bounds[,1] %in% c(1:AMp)[m.ss]),,drop=FALSE]
+
+  # we only need to redraw if there are missing variables w/ bounds in
+  # this pattern
+  if (length(patt.bounds) > 0) {
+
+    # put them in the right order so that we can 
+    patt.bounds <- patt.bounds[order(patt.bounds[,1]),,drop=FALSE]
+
+    # fill the holders (only in the columns that are missing and have bounds)
+    lb.mat[,(b.cols & m.ss)] <- t(matrix(patt.bounds[,2],
+                                           nrow=nrow(patt.bounds),ncol=AMn.ss))
+
+    ub.mat[,(b.cols & m.ss)] <- t(matrix(patt.bounds[,3],
+                                           nrow=nrow(patt.bounds),ncol=AMn.ss))
+          
+    # create an index of those rows left
+    left <- seq(1,AMn.ss)
+    samp <- 1
+          
+    while ((length(left) > 0) & (samp < max.resample)) {
+
+      #if (length(left) == 1)
+        #browser()      
+      # these are matrices where T means it's in the bound, F means it's out
+      utest <- (imps + junk) < ub.mat
+      ltest <- (imps + junk) > lb.mat
+
+      # this matrix combines the two
+      btest <- utest & ltest
+
+      # get the failing/passing cells
+      fail.cells <- which(!btest, arr.ind=TRUE)
+      fail.rows  <- rowSums(!btest, na.rm=T) > 0
+      pass.rows  <- rowSums(!btest, na.rm=T) == 0
+
+      # record the rows that we have left
+      new.left <- left[fail.rows]
+      
+      if (sum(pass.rows) > 0) {
+        xp.ss[left[pass.rows],] <- x.ss[pass.rows,,drop=F] +
+                                   imps[pass.rows,,drop=F] +
+                                   junk[pass.rows,,drop=F]
+      }
+
+      left <- new.left
+      
+      junk <- matrix(rnorm(length(left)*AMp), length(left), AMp) %*% ci
+      
+      imps   <-  imps[fail.rows,,drop=FALSE]  
+      ub.mat <- ub.mat[fail.rows,,drop=FALSE]
+      lb.mat <- lb.mat[fail.rows,,drop=FALSE]
+      x.ss   <-   x.ss[fail.rows,,drop=FALSE]
+      samp <- samp+1
+    }
+
+    
+    # set failing cells to their bounds
+    if (samp==max.resample && length(left) > 0) {
+      xp.ss[left,] <- x.ss + imps + junk
+      utest <- (imps + junk) < ub.mat
+      ltest <- (imps + junk) > lb.mat
+      u.fails <- which(!utest, arr.ind=TRUE)
+      l.fails <- which(!ltest, arr.ind=TRUE)
+      xp.left <- xp.ss[left,,drop=FALSE]
+      xp.left[u.fails] <- ub.mat[u.fails]
+      xp.left[l.fails] <- lb.mat[l.fails]
+      xp.ss[left,] <- xp.left
+    }
+          
+  } else {
+    xp.ss <- x.ss + imps + junk 
+  }
+  return(xp.ss)
+}
+      
+
+
+
 
 ## Single EM step (returns updated theta)
 ## the "x" passed to emfred is x.0s (missing values replaced with zeros)
@@ -558,6 +679,7 @@ if (returntype=="theta"){
   }
 }
 
+
 ## Core amelia function
 amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
                  ts=NULL,cs=NULL,polytime=NULL,intercs=FALSE,
@@ -565,7 +687,8 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
                  logs=NULL,sqrts=NULL,lgstc=NULL,noms=NULL,ords=NULL,
                  incheck=TRUE,collect=FALSE,outname="outdata",
                  write.out=TRUE,archive=TRUE,arglist=NULL,keep.data=TRUE, 
-                 empri=NULL,casepri=NULL,priors=NULL,autopri=0.05,emburn=c(0,0)) {
+                 empri=NULL,casepri=NULL,priors=NULL,autopri=0.05,
+                 emburn=c(0,0),bounds=NULL,max.resample=NULL) {
 
   #Generates the Amelia Output window for the frontend
   if (frontend) {
@@ -593,7 +716,8 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
                        p2s=p2s,frontend=frontend,archive=archive,intercs=intercs,
                        noms=noms,startvals=startvals,ords=ords,incheck=incheck,
                        collect=collect,outname=outname,write.out=write.out,
-                       arglist=arglist,priors=priors,autopri=autopri)
+                       arglist=arglist,priors=priors,autopri=autopri,bounds=bounds,
+                       max.resample=max.resample)
   
   if (prepped$code!=1) {
     cat("Amelia Error Code: ",prepped$code,"\n",prepped$message,"\n")
@@ -634,7 +758,7 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
       next()
     }
     
-    ximp<-amelia.impute(prepped$x, thetanew$thetanew, priors=prepped$priors)
+    ximp<-amelia.impute(prepped$x, thetanew$thetanew,priors=prepped$priors,bounds=prepped$bounds,max.resample)
     ximp<-amunstack(ximp,n.order=prepped$n.order,p.order=prepped$p.order)     
     ximp<-unscale(ximp,mu=prepped$scaled.mu,sd=prepped$scaled.sd)    
     ximp<-unsubset(x.orig=prepped$trans.x,x.imp=ximp,blanks=prepped$blanks,idvars=prepped$idvars,ts=prepped$ts,cs=prepped$cs,polytime=polytime,intercs=intercs,noms=prepped$noms,index=prepped$index,ords=prepped$ords)

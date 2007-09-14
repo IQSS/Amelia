@@ -24,6 +24,7 @@
 ##             fixed blanks problems when no priors specified.
 ## 11/05/07 mb added "combine.output" to combine multiple amelia outputs
 ## 15/08/07 jh modified construction of timevars
+## 14/09/07 mb added 'bounds' support
 
 nametonumber<-function(x,ts,cs,idvars,noms,ords,logs,sqrts,lgstc,lags,leads)
 {
@@ -200,7 +201,8 @@ frame.to.matrix<-function(x,idvars) {
 
 ## Remove rows and columns from dataset that do not belong
 amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
-                  polytime=NULL,intercs=FALSE,lags=NULL,leads=NULL,noms=NULL) {
+                  polytime=NULL,intercs=FALSE,lags=NULL,
+                   leads=NULL,noms=NULL, bounds=NULL) {
 
   lags   <- unique(lags)
   leads  <- unique(leads)
@@ -323,7 +325,7 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
     if (!is.null(priors)) 
       priors[,1] <- priors[,1,drop=FALSE] - colSums(sapply(priors[,1,drop=FALSE],">",blanks))
     
-  
+
   
 
     if (p2s) cat("Warning: There are observations in the data that are completely missing.","\n",
@@ -332,8 +334,9 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
     blanks<-NULL
   }
   priors[,2] <- match(priors[,2], index)
+  bounds[,1] <- match(bounds[,1], index)
 
-return(list(x=x,index=index,idvars=idvars,blanks=blanks,priors=priors))
+return(list(x=x,index=index,idvars=idvars,blanks=blanks,priors=priors,bounds=bounds))
 }
 
 ## Replace rows and columns removed in "amsubset"
@@ -422,7 +425,7 @@ unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,intercs,noms,index,
 
 }
 ## Rescale Dataset
-scalecenter<-function(x,priors=NULL){
+scalecenter<-function(x,priors=NULL,bounds=NULL){
 
   AMn<-nrow(x)
   ones<-matrix(1,AMn,1)
@@ -433,7 +436,12 @@ scalecenter<-function(x,priors=NULL){
     priors[,3]<-(priors[,3]-meanx[priors[,2]])/stdvx[priors[,2]]
     priors[,4]<- (priors[,4]/stdvx[priors[,2]])^2
   }
-return(list(x=x.ztrans,mu=meanx,sd=stdvx,priors=priors))
+  if (!identical(bounds,NULL)) {
+    bounds[,2] <- (bounds[,2]-meanx[bounds[,1]])/stdvx[bounds[,1]]
+    bounds[,3] <- (bounds[,3]-meanx[bounds[,1]])/stdvx[bounds[,1]]
+  }
+    
+return(list(x=x.ztrans,mu=meanx,sd=stdvx,priors=priors,bounds=bounds))
 }
 
 unscale<-function(x,mu,sd){
@@ -446,7 +454,7 @@ return(x.unscale)
 
 ## Stack dataset and return vectors for sorting
 ## NOTE:  THIS ORDERS TIES IN A SLIGHTLY DIFFERENT WAY THAN "stack.g" IN GAUSS AMELIA
-amstack<-function(x,colorder=TRUE,priors=NULL){
+amstack<-function(x,colorder=TRUE,priors=NULL,bounds=NULL){
 
   AMp<-ncol(x)
   AMr1<-is.na(x)
@@ -467,7 +475,10 @@ amstack<-function(x,colorder=TRUE,priors=NULL){
     priors[,2]<-match(priors[,2],p.order)
   }
 
-  return(list(x=x,n.order=n.order,p.order=p.order,priors=priors))
+  if (!identical(bounds,NULL))
+    bounds[,1]<-match(bounds[,1],p.order)
+
+  return(list(x=x,n.order=n.order,p.order=p.order,priors=priors,bounds=bounds))
 }
 
 
@@ -564,7 +575,9 @@ amelia.prep <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                         leads=NULL,intercs=FALSE,archive=TRUE,sqrts=NULL,
                         lgstc=NULL,noms=NULL,incheck=T,ords=NULL,collect=FALSE,
                         outname="outdata",write.out=TRUE,arglist=NULL,
-                        keep.data=TRUE, priors=NULL,var=NULL,autopri=0.05) {
+                        keep.data=TRUE,
+                        priors=NULL,var=NULL,autopri=0.05,bounds=NULL,
+                        max.resample=NULL) {
 
 
   code <- 1
@@ -613,7 +626,8 @@ amelia.prep <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                        =numopts$lgstc, p2s = p2s, frontend = frontend, archive =
                        archive, intercs = intercs, noms = numopts$noms,
                        startvals = startvals, ords = numopts$ords, collect =
-                       collect, outname = outname, write.out = write.out)
+                       collect, outname = outname, write.out = write.out,
+                       bounds=bounds, max.resample=max.resample)
     #check.call <- match.call()
     #check.call[[1]] <- as.name("amcheck")
     #checklist <- eval(check.call, parent.frame())
@@ -635,7 +649,8 @@ amelia.prep <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                 polytime=polytime, lags=numopts$lags, leads=numopts$leads,
                 intercs=intercs, sqrts=numopts$sqrts, lgstc=numopts$lgstc,
                 noms=numopts$noms, ords=numopts$ords, outname=outname,
-                priors=priors, autopri=autopri, empri=empri)        #change 2
+                priors=priors, autopri=autopri, empri=empri, bounds=bounds,
+                max.resample=max.resample)        #change 2
   } else {
     archv<-NULL
   }
@@ -646,9 +661,9 @@ amelia.prep <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
 
   
   d.trans<-amtransform(data,logs=numopts$logs,sqrts=numopts$sqrts,lgstc=numopts$lgstc)  
-  d.subset<-amsubset(d.trans$x,idvars=numopts$idvars,p2s=p2s,ts=numopts$ts,cs=numopts$cs,polytime=polytime,intercs=intercs,noms=numopts$noms,priors=priors)
-  d.scaled<-scalecenter(d.subset$x,priors=d.subset$priors)
-  d.stacked<-amstack(d.scaled$x,colorder=TRUE,priors=d.scaled$priors)
+  d.subset<-amsubset(d.trans$x,idvars=numopts$idvars,p2s=p2s,ts=numopts$ts,cs=numopts$cs,polytime=polytime,intercs=intercs,noms=numopts$noms,priors=priors,bounds=bounds)
+  d.scaled<-scalecenter(d.subset$x,priors=d.subset$priors,bounds=d.subset$bounds)
+  d.stacked<-amstack(d.scaled$x,colorder=TRUE,priors=d.scaled$priors,bounds=d.scaled$bounds)
 
   if (incheck) {
     realAMp <- ncol(d.stacked$x)
@@ -709,6 +724,7 @@ amelia.prep <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     outname      = outname,
     subset.index = d.subset$index,
     autopri      = autopri,
+    bounds       = d.stacked$bounds,
     empri        = empri,    #change 3a 
     tolerance    = tolerance))  #change 3b
 }
