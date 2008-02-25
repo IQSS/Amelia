@@ -660,11 +660,14 @@ nominal\n",
   if (!is.null(ords)) {
     for (i in ords) {
       #Error code: 44
-      #Ordinal variable with non-integers
-      if (any(unique(na.omit(data[,i])) %% 1 != 0 )) {
-        error.code<-44
-        error.mess<-paste("You have designated a variable as ordinal when it has non-integer values.")
-        return(list(code=error.code,mess=error.mess))
+      # Ordinal variable with non-integers (factors work by design, and they're
+      # harder to check
+      if (!is.factor(data[,i])) {
+        if (any(unique(na.omit(data[,i])) %% 1 != 0 )) {
+          error.code<-44
+          error.mess<-paste("You have designated a variable as ordinal when it has non-integer values.")
+          return(list(code=error.code,mess=error.mess))
+        }
       }
     }    
   }
