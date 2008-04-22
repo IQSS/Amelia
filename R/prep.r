@@ -341,31 +341,32 @@ return(list(x=x,index=index,idvars=idvars,blanks=blanks,priors=priors,bounds=bou
 
 ## Replace rows and columns removed in "amsubset"
 ## Create integer values for nominals and ordinals
+##
+##   x.orig: the original data-matrix. transformed, but not subsetted,
+##           scaled or centered, thus all variables are as they are in the
+##           user-submitted data.
+##   x.imp:  the imputed data. has been unscaled, uncentered, but its
+##           it still has excess variables (polynomials of time, nominal
+##           categories, etc) and ordinal variables still have non-integer
+##           values.
+##   index:  denotes what each column of x.imp is.
+##            a positive integer (i): ith column of x.orig.
+##            0: polynomial of time
+##            .5: leads
+##            -.5: lags
+##            a negative integer (-i): a dummy used for the nominal var in
+##                                     the ith column of x.orig
+
 unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,intercs,noms,index,ords){
 
-#  if (!identical(polytime,NULL)){
-#
-#    if (intercs){
-#      dimtspoly<- (polytime+1)*length(unique(x.orig[,cs])) - 1
-#    } else {
-#      dimtspoly<- polytime
-#    }
-#    x.imp<-x.imp[,1:(ncol(x.imp)-dimtspoly)]
-#  }
-
+  ## create 
   if (is.data.frame(x.orig)) {
     oldidvars<-idvars[-match(cs,idvars)]
     x.orig<-frame.to.matrix(x.orig,oldidvars)
   }
   AMr1.orig<-is.na(x.orig)
-  if (!identical(c(blanks,idvars),c(NULL,NULL))){
-    if (identical(blanks,NULL)) {blanks<- -(1:nrow(x.orig))}
-    if (identical(idvars,NULL)) {idvars<- -(1:ncol(x.orig))}
-    x.orig[-blanks,-idvars]<-x.imp[,1:ncol(x.orig[,-idvars])]
-  } else {
-    x.orig <- x.imp[,1:ncol(x.orig)]
-  }
 
+  ## noms are idvars, so we'll fill them in manually
   if (!is.null(noms)) {
     for (i in noms) {
       y<-runif(nrow(x.imp))
@@ -383,9 +384,13 @@ unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,intercs,noms,index,
     }
   }
 
+  ## here we force the ords into integer values
   if (!is.null(ords)) {
     ords <- unique(ords)
-    x <- x.imp[,ords] * AMr1.orig[,ords]
+
+    # find where the ordinals are in the 
+    impords <- match(ords,index)
+    x <- x.imp[,impords] * AMr1.orig[,ords]
 
 ############ revision #####################
     minmaxords<-matrix(0,length(ords),2)
@@ -401,7 +406,6 @@ unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,intercs,noms,index,
 #   minord <- apply(ifelse(AMr1.orig[,ords]==1,NA,x.orig[,ords]),2,min,na.rm=T)
 #   maxord <- apply(ifelse(AMr1.orig[,ords]==1,NA,x.orig[,ords]),2,max,na.rm=T)
 
-
     ordrange <- maxord - minord
 
     p <- t((t(x)-minord)/ordrange) * AMr1.orig[,ords]
@@ -413,14 +417,25 @@ unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,intercs,noms,index,
     }
 
 ############# revision #############################
+
+    ## replace the imputations with the ordinal values
     for(jj in 1:length(ords)){
-      x.orig[AMr1.orig[,ords[jj]]==1, ords[jj]]<-newimp[AMr1.orig[,ords[jj]]==1,jj]
+      x.imp[AMr1.orig[,ords[jj]]==1, impords[jj]]<-newimp[AMr1.orig[,ords[jj]]==1,jj]
     }                                        # MAYBE CAN REMOVE LOOP
 
 ############# replaces #############################
 #   x.orig[,ords] <- ifelse(AMr1.orig[,ords]==1,0,x.orig[,ords]) + newimp
 
   }
+  ## now we'll fill the imputations back into the original. 
+  if (!identical(c(blanks,idvars),c(NULL,NULL))){
+    if (identical(blanks,NULL)) {blanks<- -(1:nrow(x.orig))}
+    if (identical(idvars,NULL)) {idvars<- -(1:ncol(x.orig))}
+    x.orig[-blanks,-idvars]<-x.imp[,1:ncol(x.orig[,-idvars])]
+  } else {
+    x.orig <- x.imp[,1:ncol(x.orig)]
+  }
+
   return(x.orig)
 
 }
