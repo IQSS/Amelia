@@ -6,6 +6,7 @@ Date: 2006-01-23
 Author: James Honaker, Matthew Blackwell, and Gary King
 Maintainer: Matthew Blackwell <blackwel@fas.harvard.edu>
 Depends: R (>= 2.2.0), foreign
+Suggests: tcltk
 Description: Amelia multiply imputes data from a single cross-section,
 	     or from time-series-cross-sectional data.
 License: GNU v.2

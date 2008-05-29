@@ -405,8 +405,6 @@ addTclPath(libdir)
 tclRequire("combobox")
 .Tcl("catch {namespace import ::combobox::*}")
 tclRequire("BWidget")
-if (.Platform$OS.type == "windows") 
-  tclRequire("Tktable")
 
 outname <<- tclVar("outdata")
 outnum <<- tclVar("5")

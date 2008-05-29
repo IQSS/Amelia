@@ -14,7 +14,8 @@ amelia(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
        logs=NULL,sqrts=NULL,lgstc=NULL,noms=NULL,ords=NULL,
        incheck=TRUE,collect=FALSE,outname="outdata",
        write.out=TRUE,archive=TRUE,arglist=NULL,keep.data=TRUE, 
-       empri=NULL,casepri=NULL,priors=NULL,autopri=0.05)}
+       empri=NULL,casepri=NULL,priors=NULL,autopri=0.05, emburn=c(0,0),
+       bounds=NULL,max.resample=100)}
 
 \arguments{
   \item{data}{an incomplete dataset, organized into either a data frame 
@@ -126,7 +127,24 @@ amelia(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
     either individual missing observations or variable-wide missing
     values.  See "Details" for more information.}
 
-  \item{autopri}{allows the EM chain to increase the empirical prior if the path strays into an nonpositive definite covariance matrix, up to a maximum empirical prior of the value of this argument times $n$, the number of observations.  Must be between 0 and 1, and at zero this turns off this feature.}
+  \item{autopri}{allows the EM chain to increase the empirical prior if
+    the path strays into an nonpositive definite covariance matrix, up
+    to a maximum empirical prior of the value of this argument times
+    $n$, the number of observations.  Must be between 0 and 1, and at
+    zero this turns off this feature.}
+  
+  \item{emburn}{a numeric vector of length 2, where \code{emburn[1]} is
+    a the minimum EM chain length and \code{emburn[2]} is the
+    maximum EM chain length. These are ignored if they are less than 1.}
+
+  \item{bounds}{a three column matrix to hold logical bounds on the
+    imputations. Each row of the matrix should be of the form
+    \code{c(column.number, lower.bound,upper.bound)} See Details below.}
+
+  \item{max.resample}{an integer that specifies how many times Amelia
+    should redraw the imputed values when trying to meet the logical
+    constraints of \code{bounds}. After this value, imputed values are
+    set to the bounds.}
 
 }
 

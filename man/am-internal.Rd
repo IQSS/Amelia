@@ -9,7 +9,7 @@
 \alias{emarch}
 \alias{emfred}
 \alias{generatepriors}
-\alias{impute}
+\alias{amelia.impute}
 \alias{indxs}
 \alias{packr}
 \alias{rmvnorm}
@@ -36,4 +36,6 @@
 \alias{mpinv}
 \alias{nametonumber}
 \alias{overimpute}
+\alias{sigalert}
+\alias{am.resample}
 \keyword{internal}
