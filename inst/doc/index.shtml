@@ -9,7 +9,7 @@
 
 <a
 href="http://www.polisci.ucla.edu/menu/people/faculty/james_honaker.htm">James
-Honaker</a>, <a href="/">Gary King</a>, <a href="">Matthew
+Honaker</a>, <a href="/">Gary King</a>, <a href="http://www.gov.harvard.edu/student/blackwell/">Matthew
 Blackwell</a>
 
 <br /><br />
@@ -85,9 +85,9 @@ Joseph, Gary King, Kenneth Scheve, and Naunihal Singh.
     <li>Installation of AmeliaView for Windows (for those who don't
 	know R): (1) <a href="http://www.r-project.org/">install the
 	current version of R</a> if you haven't already, (2)
-	download and run <a href="/amelia/setup.exe">this
+	download and run <a href="/amelia/amelia-setup.exe">this
 	file</a>, and (3) use windows explorer to navigate to
-	c:/program files/ameila and click on amelia.bat</li>
+	c:/program files/AmeliaView and click on amelia.bat</li>
 	
     <li>Installation of Amelia for R on any system: at the R command
 	line, type
