@@ -39,6 +39,8 @@
 ## 15/01/07 jh/mb - final version changes, degrees of freedom messages,autoprior option, modified comments, rearranged core arguments
 ## 10/05/07 mb - changed 'impute' to 'amelia.impute'
 ## 04/07/07 jh - added "emburn" option to modify convergence criteria
+## 04/06/08 mb - changed the writing to GUI ('if (frontend)' calls) to remove globals
+
 
 ## Draw from a multivariate normal distribution 
 ##   n: number of draws 
@@ -260,11 +262,11 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
       }
       if (frontend) {
         if (identical((count %% 20),1)) {
-          tkinsert(run.text,"end",paste("\n"))
-          tksee(run.text,"end")  #Makes the window scroll down as new lines appear.
+          tkinsert(getAmelia("run.text"),"end",paste("\n"))
+          tksee(getAmelia("run.text"),"end")  #Makes the window scroll down as new lines appear.
         }
-        if (count<10) tkinsert(run.text,"end"," ")
-        tkinsert(run.text,"end",paste(count," ",sep=""))
+        if (count<10) tkinsert(getAmelia("run.text"),"end"," ")
+        tkinsert(getAmelia("run.text"),"end",paste(count," ",sep=""))
         tcl("update")   #Forces tcltk to update the text widget that holds the amelia output
       }
 
@@ -322,7 +324,7 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
   }
   
   if (p2s) cat("\n")
-  if (frontend) tkinsert(run.text,"end",paste("\n"))
+  if (frontend) tkinsert(getAmelia("run.text"),"end",paste("\n"))
   if (allthetas)
     return(list(thetanew=cbind(thetahold,(thetanew[upper.tri(thetanew,diag=T)])[-1]),iter.hist=iter.hist))
   return(list(thetanew=thetanew,iter.hist=iter.hist))
@@ -693,14 +695,14 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
   #Generates the Amelia Output window for the frontend
   if (frontend) {
     require(tcltk)
-    tt<<-tktoplevel()
-    scr <- tkscrollbar(tt, repeatinterval=5,
-          command=function(...)tkyview(run.text,...))
-    run.text<<-tktext(tt,font=c("Courier",10),
-          yscrollcommand=function(...)tkset(scr,...))
-    tkgrid(run.text,scr)
+    putAmelia("gui.container",tktoplevel())
+    scr <- tkscrollbar(getAmelia("gui.container"), repeatinterval=5,
+          command=function(...)tkyview(getAmelia("run.text"),...))
+    putAmelia("run.text", tktext(getAmelia("gui.container"),font=c("Courier",10),
+          yscrollcommand=function(...)tkset(scr,...)))
+    tkgrid(getAmelia("run.text"),scr)
     tkgrid.configure(scr,sticky="ns")
-    tkwm.title(tt,"Amelia Output")
+    tkwm.title(getAmelia("gui.container"),"Amelia Output")
     tcl("update")
   }
   if (p2s==2) {
@@ -735,7 +737,7 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
     x.stacked<-amstack(x.boot$x,colorder=FALSE,x.boot$priors)   # Don't reorder columns thetanew will not align with d.stacked$x
 
     if (p2s) cat("-- Imputation", i, "--\n")
-    if (frontend) tkinsert(run.text,"end",paste("-- Imputation",i,"--\n"))
+    if (frontend) tkinsert(getAmelia("run.text"),"end",paste("-- Imputation",i,"--\n"))
     flush.console()
 
     thetanew<-emarch(x.stacked$x,p2s=p2s,thetaold=NULL,tolerance=tolerance,startvals=startvals,x.stacked$priors,empri=empri,frontend=frontend,collect=collect,autopri=prepped$autopri,emburn=emburn)
@@ -787,7 +789,7 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
 
     
     if (p2s) cat("\n")
-    if (frontend) tkinsert(run.text,"end","\n")
+    if (frontend) tkinsert(getAmelia("run.text"),"end","\n")
 
 
 
