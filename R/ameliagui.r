@@ -18,7 +18,7 @@
 ##              - added RData save output option
 ##              - added "hold in R memory" output option
 ##              - sesssions are now saved as .RData files for compression
-
+## 17/07/08 mb - fixed frontend error bug (dumping output to screen
 
 AmeliaView<-function() {
 
@@ -381,7 +381,7 @@ run.amelia <- function() {
   }
 
   ##
-  if (getAmelia(tclvalue(getAmelia("outname")))$code!=1) {
+  if (all(getAmelia(tclvalue(getAmelia("outname")))$code!=c(1,2))) {
     tkinsert(run.text,"end","\n")
     tkinsert(run.text,"end",paste("Amelia Error Code:",
                                   getAmelia(tclvalue(getAmelia("outname")))[[1]],"\n",

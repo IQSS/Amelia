@@ -40,6 +40,7 @@
 ## 10/05/07 mb - changed 'impute' to 'amelia.impute'
 ## 04/07/07 jh - added "emburn" option to modify convergence criteria
 ## 04/06/08 mb - changed the writing to GUI ('if (frontend)' calls) to remove globals
+## 17/07/08 mb - fixed frontend error bug (dumping output to screen
 
 
 ## Draw from a multivariate normal distribution 
@@ -756,8 +757,13 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
     (any(eigen(thetanew$thetanew[2:nrow(thetanew$thetanew),2:ncol(thetanew$thetanew)], only.values=TRUE, symmetric=TRUE)$values < .Machine$double.eps)) {
       impdata[[i]]<-NA
       code<-2
-      cat("\n\nThe resulting variance matrix was not invertible.  Please check your data for highly collinear variables.\n\n")
+      cat("\n\nThe resulting variance matrix was not invertible.  Please check
+your data for highly collinear variables.\n\n")
+      if (frontend) {
+        tkinsert(getAmelia("run.text"),"end","\n\nThe resulting variance matrix was not invertible.  Please check your data for highly collinear variables.\n\n")
+      }
       next()
+        
     }
     
     ximp<-amelia.impute(prepped$x, thetanew$thetanew,priors=prepped$priors,bounds=prepped$bounds,max.resample)
@@ -798,7 +804,9 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
 
   impdata$code<-code
   if (code == 2)
-    impdata$message<-paste("One or more of the imputations resulted in a covariance matrix that was not invertible.")
+    impdata$message<-paste("One or more of the imputations resulted in a
+covariance matrix that was not invertible.")
+  if (frontend) tkinsert(getAmelia("run.text"),"end",paste(impdata$message,"\n"))
   if (archive)
     impdata$amelia.args<-prepped$archv
 
