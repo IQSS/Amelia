@@ -10,6 +10,7 @@
 ## 25/09/06 mb - fixed handling of errors in output writing.
 ## 13/12/06 mb - removed dropping of extra priors, added new priors
 ## 15/12/06 mb - fixed problem of nrow(priors)==5
+## 22/07/08 mb - good coding update: T->TRUE/F->FALSE
 
 
 
@@ -18,7 +19,7 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                         mins=NULL,maxs=NULL,conf=NULL,empri=NULL,
                         tolerance=0.0001,polytime=NULL,startvals=0,lags=NULL,
                         leads=NULL,intercs=FALSE,archive=TRUE,sqrts=NULL,
-                        lgstc=NULL,noms=NULL,incheck=T,ords=NULL,collect=FALSE,
+                        lgstc=NULL,noms=NULL,incheck=TRUE,ords=NULL,collect=FALSE,
                         outname="outdata",write.out=TRUE,arglist=NULL,
                         keep.data=TRUE, priors=NULL,bounds=NULL,
                         max.resample=1000) {
@@ -90,90 +91,90 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
 
   #Error Code: 3
   #Arguments point to variables that do not exist.
-  if (inherits(try(get("data"),silent=T),"try-error"))
+  if (inherits(try(get("data"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the data argument doesn't exist.")))
-  if (inherits(try(get("m"),silent=T),"try-error"))
+  if (inherits(try(get("m"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'm' argument doesn't exist.")))
  
-  if (inherits(try(get("idvars"),silent=T),"try-error"))
+  if (inherits(try(get("idvars"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'idvars' argument doesn't exist.")))
  
-  if (inherits(try(get("means"),silent=T),"try-error"))
+  if (inherits(try(get("means"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'means' argument doesn't exist.")))
 
-  if (inherits(try(get("sds"),silent=T),"try-error"))
+  if (inherits(try(get("sds"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'sds' argument doesn't exist.")))
 
-  if (inherits(try(get("mins"),silent=T),"try-error"))
+  if (inherits(try(get("mins"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'mins' argument doesn't exist.")))
 
-  if (inherits(try(get("maxs"),silent=T),"try-error"))
+  if (inherits(try(get("maxs"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'maxs' argument doesn't exist.")))
  
-  if (inherits(try(get("conf"),silent=T),"try-error"))
+  if (inherits(try(get("conf"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'conf' argument doesn't exist.")))
 
-  if (inherits(try(get("empri"),silent=T),"try-error"))
+  if (inherits(try(get("empri"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'empri' argument doesn't exist.")))
 
-  if (inherits(try(get("ts"),silent=T),"try-error"))
+  if (inherits(try(get("ts"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'ts' argument doesn't exist.")))
 
-  if (inherits(try(get("cs"),silent=T),"try-error"))
+  if (inherits(try(get("cs"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'cs' argument doesn't exist.")))
 
-  if (inherits(try(get("tolerance"),silent=T),"try-error"))
+  if (inherits(try(get("tolerance"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'tolerance' argument doesn't exist.")))
 
-  if (inherits(try(get("casepri"),silent=T),"try-error"))
+  if (inherits(try(get("casepri"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'casepri' argument doesn't exist.")))
 
-  if (inherits(try(get("polytime"),silent=T),"try-error"))
+  if (inherits(try(get("polytime"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'polytime' argument doesn't exist.")))
 
-  if (inherits(try(get("lags"),silent=T),"try-error"))
+  if (inherits(try(get("lags"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'lags' argument doesn't exist.")))
 
-  if (inherits(try(get("leads"),silent=T),"try-error") )
+  if (inherits(try(get("leads"),silent=TRUE),"try-error") )
     return(list(code=3,mess=paste("The setting for the 'leads' argument doesn't exist.")))
 
-  if (inherits(try(get("logs"),silent=T),"try-error"))
+  if (inherits(try(get("logs"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'logs' argument doesn't exist.")))
 
-  if (inherits(try(get("sqrts"),silent=T),"try-error"))
+  if (inherits(try(get("sqrts"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'sqrts' argument doesn't exist.")))
 
-  if (inherits(try(get("lgstc"),silent=T),"try-error"))
+  if (inherits(try(get("lgstc"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'lgstc' argument doesn't exist.")))
   
-  if (inherits(try(get("p2s"),silent=T),"try-error"))
+  if (inherits(try(get("p2s"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'p2s' argument doesn't exist.")))
 
-  if (inherits(try(get("frontend"),silent=T),"try-error"))
+  if (inherits(try(get("frontend"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'frontend' argument doesn't exist.")))
 
-  if (inherits(try(get("archive"),silent=T),"try-error"))
+  if (inherits(try(get("archive"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'archive' argument doesn't exist.")))
 
-  if (inherits(try(get("intercs"),silent=T),"try-error"))
+  if (inherits(try(get("intercs"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'intercs' argument doesn't exist.")))
 
-  if (inherits(try(get("noms"),silent=T),"try-error"))
+  if (inherits(try(get("noms"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'noms' argument doesn't exist.")))
 
-  if (inherits(try(get("startvals"),silent=T),"try-error"))
+  if (inherits(try(get("startvals"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'startvals' argument doesn't exist.")))
 
-  if (inherits(try(get("ords"),silent=T),"try-error"))
+  if (inherits(try(get("ords"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'ords' argument doesn't exist.")))
   
-  if (inherits(try(get("collect"),silent=T),"try-error"))
+  if (inherits(try(get("collect"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'collect' argument doesn't exist.")))
     
-  if (inherits(try(get("outname"),silent=T),"try-error"))
+  if (inherits(try(get("outname"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'outname' argument doesn't exist.")))
     
-  if (inherits(try(get("write.out"),silent=T),"try-error"))
+  if (inherits(try(get("write.out"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'write.out' argument doesn't exist.")))
     
     
@@ -554,7 +555,7 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       
 
 
-      if (all(i==cs,intercs==T)) {
+      if (all(i==cs,intercs==TRUE)) {
         noms<-noms[noms!=i]
         warning("The cross sectional variable was set as a nominal variable.  Its nominal status has been dropped.")
       }  
@@ -633,21 +634,21 @@ nominal\n",
   #Variable that doesn't vary
   if (is.data.frame(data)) {
     
-      if (any(sapply(data[,idcheck,drop=FALSE],var,na.rm=T)==0)) {
+      if (any(sapply(data[,idcheck,drop=FALSE],var,na.rm=TRUE)==0)) {
         error.code<-43
         error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
         return(list(code=error.code,mess=error.mess))
       }     
   } else {
     if (nrow(na.omit(data)) > 1) {
-      if (any(diag(var(data[,idcheck],na.rm=T))==0)) {
+      if (any(diag(var(data[,idcheck],na.rm=TRUE))==0)) {
         error.code<-43
         error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
         return(list(code=error.code,mess=error.mess))
       }
     } else {
       for (i in 1:ncol(data[,idcheck])) {
-        if (var(data[,i],na.rm=T) == 0) {
+        if (var(data[,i],na.rm=TRUE) == 0) {
           error.code<-43
           error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
           return(list(code=error.code,mess=error.mess))
@@ -675,7 +676,7 @@ nominal\n",
  
   
   #checks for outname
-  if (write.out==T) {
+  if (write.out==TRUE) {
     if (!is.character(outname)) {
       outname<-"outdata"
       warning("The output filename (outname) was not a character.  It has been set it 
@@ -683,7 +684,7 @@ its default 'outdata' in the working directory.")
     }
     #Error code: 45
     #output file errors
-    outtest<-try(write.csv("test",file=paste(outname,"1.csv",sep="")),silent=T)
+    outtest<-try(write.csv("test",file=paste(outname,"1.csv",sep="")),silent=TRUE)
     if (inherits(outtest,"try-error")) {
       error.code<-45
       error.mess<-paste("R cannot write to the outname you have specified.  Please 

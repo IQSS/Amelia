@@ -15,8 +15,9 @@
 ##  28/03/07 jh - disperse: changed tolerance and empri handling.
 ##  03/04/07 jh - disperse: changed 1d plot settings, number of colors, minor edits to "patt" construction.
 ##  10/04/07 jh - created sigalert function to view disperse principal components.
+##  22/07/08 mb - good coding update: T->TRUE/F->FALSE
 
-compare.density <- function(data=NULL,output=NULL,var=NULL,col=1:2,lwd=1,main="",frontend=F,...) {
+compare.density <- function(data=NULL,output=NULL,var=NULL,col=1:2,lwd=1,main="",frontend=FALSE,...) {
   
   if (all(!is.data.frame(data),!is.matrix(data)))
     stop("The 'data' is not a data frame or matrix.")
@@ -67,15 +68,15 @@ compare.density <- function(data=NULL,output=NULL,var=NULL,col=1:2,lwd=1,main=""
   if (is.null(main))
     main<-""
   if (sum(is.na(vars)) > 0) {
-    xmiss <- density(varimp[is.na(vars)],na.rm=T)
-    xobs<- density(varimp[!is.na(vars)],na.rm=T)
+    xmiss <- density(varimp[is.na(vars)],na.rm=TRUE)
+    xobs<- density(varimp[!is.na(vars)],na.rm=TRUE)
     compplot <- matplot(x=cbind(xmiss$x,xobs$x),y=cbind(ratio*xmiss$y,xobs$y), xlab=main, ylab="relative density",type="l",lwd=lwd, lty=1,main=paste("Observed and Imputed values of",main),col=col,...)
     
     legend("topright",legend=c("Mean Imputations","Observed Values"),
                   col=col,lty=c(1,1),bg='gray90',lwd=lwd)
   } else {
-    compplot <- plot(density(varimp,na.rm=T),
-      xlim=c(min(varimp,na.rm=T),max(varimp,na.rm=T)), col = "blue",
+    compplot <- plot(density(varimp,na.rm=TRUE),
+      xlim=c(min(varimp,na.rm=TRUE),max(varimp,na.rm=TRUE)), col = "blue",
       main = main,...)
     col.none=c("gray","blue")
     legend("topright",legend=c("Mean Imputations (None)","Observed Values"),
@@ -107,10 +108,10 @@ overimpute <- function(data,output,var,frontend=FALSE) {
   prepped<-amelia.prep(data=data,m=m,idvars=idvars,priors=priors,empri=empri,
                        ts=ts,cs=cs,tolerance=tolerance,casepri=casepri,
                        polytime=polytime, lags=lags,leads=leads,logs=logs,
-                       sqrts=sqrts,lgstc=lgstc, p2s=F,frontend=frontend,
-                       archive=F,intercs=intercs, noms=noms,
-                       startvals=startvals,ords=ords,incheck=F, collect=F,
-                       outname="outdata",write.out=F,var=var,arglist=output)
+                       sqrts=sqrts,lgstc=lgstc, p2s=FALSE,frontend=frontend,
+                       archive=FALSE,intercs=intercs, noms=noms,
+                       startvals=startvals,ords=ords,incheck=FALSE, collect=FALSE,
+                       outname="outdata",write.out=FALSE,var=var,arglist=output)
 
   stacked.var<-match(var,prepped$subset.index[prepped$p.order])
   subset.var<-match(var,prepped$subset.index)
@@ -131,7 +132,7 @@ overimpute <- function(data,output,var,frontend=FALSE) {
     if (is.na(prepped$x[i,stacked.var]))
       next()
 
-    x<-prepped$x[i,,drop=F]
+    x<-prepped$x[i,,drop=FALSE]
     x[1,stacked.var]<-NA
     o<-!is.na(x)
     miss<-!o
@@ -146,7 +147,7 @@ overimpute <- function(data,output,var,frontend=FALSE) {
     conf<-c()
     for (k in 1:prepped$m) {
       thetareal<-output[[paste("theta",k,sep="")]]
-      theta<-amsweep(thetareal,c(F,o))
+      theta<-amsweep(thetareal,c(FALSE,o))
       
       Ci<-matrix(0,AMp,AMp)
       hold<-chol(theta[c(FALSE,miss),c(FALSE,miss)])
@@ -222,7 +223,7 @@ gethull <- function(st,tol,rots) {
 
     
 disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=NULL,cs=NULL,casepri=NULL,priors=NULL,empri=NULL,tolerance=0.00001,polytime=NULL,startvals=0,
-                  lags=NULL, leads=NULL, intercs=FALSE,archive=TRUE,sqrts=NULL,lgstc=NULL,noms=NULL,incheck=T,
+                  lags=NULL, leads=NULL, intercs=FALSE,archive=TRUE,sqrts=NULL,lgstc=NULL,noms=NULL,incheck=TRUE,
                   ords=NULL,dims=1, output=NULL) {
 
 
@@ -260,7 +261,7 @@ disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=N
   flush.console()
 
   # run EM, but return it with the theta at each iteration
-  thetanew<-emarch(prepped$x,p2s=p2s,thetaold=NULL,tolerance=prepped$tolerance,startvals=0,priors=prepped$priors,empri=prepped$empri,frontend=frontend,allthetas=T,collect=FALSE)  #change 4
+  thetanew<-emarch(prepped$x,p2s=p2s,thetaold=NULL,tolerance=prepped$tolerance,startvals=0,priors=prepped$priors,empri=prepped$empri,frontend=frontend,allthetas=TRUE,collect=FALSE)  #change 4
 
   # thetanew is a matrix whose columns are vectorized upper triangles of theta
   # matrices for each iteration. thus, there are k(k+1)/2 rows.
@@ -268,9 +269,9 @@ disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=N
 
   # we'll put the theta of the last iteration into a new starting theta
   startsmat<-matrix(0,ncol(prepped$x)+1,ncol(prepped$x)+1)
-  startsmat[upper.tri(startsmat,T)]<-c(-1,impdata[,ncol(impdata)])     
+  startsmat[upper.tri(startsmat,TRUE)]<-c(-1,impdata[,ncol(impdata)])     
   startsmat<-t(startsmat)
-  startsmat[upper.tri(startsmat,T)]<-c(-1,impdata[,ncol(impdata)])
+  startsmat[upper.tri(startsmat,TRUE)]<-c(-1,impdata[,ncol(impdata)])
   iters<-nrow(thetanew$iter.hist)+1
 
   for (i in 2:m){
@@ -289,7 +290,7 @@ disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=N
     newstartsmat[2:nrow(startsmat),1]<-startmus
 
     # grab the iteration history of the thetas
-    thetanew<-emarch(prepped$x,p2s=p2s,thetaold=newstartsmat,tolerance=prepped$tolerance,startvals=0,priors=prepped$priors,empri=prepped$empri,frontend=frontend,allthetas=T,collect=FALSE)  # change 5
+    thetanew<-emarch(prepped$x,p2s=p2s,thetaold=newstartsmat,tolerance=prepped$tolerance,startvals=0,priors=prepped$priors,empri=prepped$empri,frontend=frontend,allthetas=TRUE,collect=FALSE)  # change 5
     impdata<-cbind(impdata,thetanew$thetanew)
     iters<-c(iters,nrow(thetanew$iter.hist)+1)
   }
@@ -417,9 +418,9 @@ sigalert<-function(data,disperse.list,output,notorious=5){
   # (largest corresponding elements of disperse.list$rotations)
 
   map<-matrix(0,k,k)
-  map[upper.tri(map,T)]<-c(0,largest.rotations)     
+  map[upper.tri(map,TRUE)]<-c(0,largest.rotations)     
   map<-t(map)
-  map[upper.tri(map,T)]<-c(0,largest.rotations) 
+  map[upper.tri(map,TRUE)]<-c(0,largest.rotations) 
   map[c(1,disperse.list$p.order+1),c(1,disperse.list$p.order+1)]<-map                         # Rearrange to unstacked variable positions
 
   print(abs(map))
@@ -432,9 +433,9 @@ sigalert<-function(data,disperse.list,output,notorious=5){
   # This is the submatrix of rotations, reshaped as a theta matrix, with the largest elements.
 
   prcomp.matrix<-matrix(0,k,k)
-  prcomp.matrix[upper.tri(prcomp.matrix,T)]<-c(0,disperse.list$rotations)     
+  prcomp.matrix[upper.tri(prcomp.matrix,TRUE)]<-c(0,disperse.list$rotations)     
   prcomp.matrix<-t(prcomp.matrix)
-  prcomp.matrix[upper.tri(prcomp.matrix,T)]<-c(0,disperse.list$rotations) 
+  prcomp.matrix[upper.tri(prcomp.matrix,TRUE)]<-c(0,disperse.list$rotations) 
   prcomp.matrix[c(1,disperse.list$p.order+1),c(1,disperse.list$p.order+1)]<-prcomp.matrix     # Rearrange to unstacked variable positions
 
   # This is the submatrix that we want to represent
@@ -446,13 +447,13 @@ sigalert<-function(data,disperse.list,output,notorious=5){
 
   # This is a matrix that gives the relative rank of every element.
   col.map<-matrix(0,portalsize,portalsize)
-  col.portal<-rank(abs(portal[upper.tri(portal,T)]))
-  col.map[upper.tri(col.map,T)]<-col.portal     
+  col.portal<-rank(abs(portal[upper.tri(portal,TRUE)]))
+  col.map[upper.tri(col.map,TRUE)]<-col.portal     
   col.map<-t(col.map)
-  col.map[upper.tri(col.map,T)]<-col.portal 
+  col.map[upper.tri(col.map,TRUE)]<-col.portal 
 
   # This creates a continuous color palette of the correct size.
-  n.unique<-sum(upper.tri(matrix(1,portalsize,portalsize),T))
+  n.unique<-sum(upper.tri(matrix(1,portalsize,portalsize),TRUE))
   Lab.palette<-colorRampPalette(c("white","yellow","red"), space = "Lab")
   my.palette<-Lab.palette(n.unique)
 

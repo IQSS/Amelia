@@ -25,6 +25,7 @@
 ## 11/05/07 mb added "combine.output" to combine multiple amelia outputs
 ## 15/08/07 jh modified construction of timevars
 ## 14/09/07 mb added 'bounds' support
+## 22/07/08 mb - good coding update: T->TRUE/F->FALSE
 
 nametonumber<-function(x,ts,cs,idvars,noms,ords,logs,sqrts,lgstc,lags,leads)
 {
@@ -138,7 +139,7 @@ amtransform<-function(x,logs,sqrts,lgstc) {
   if (!is.null(logs)) {
     for (i in 1:length(logs)) {
       j<-logs[[i]]
-      xmin<-c(xmin,min(x[,j],na.rm=T))  #we need mins to avoid creating NAs
+      xmin<-c(xmin,min(x[,j],na.rm=TRUE))  #we need mins to avoid creating NAs
       x[,j]<-log(x[,j]-xmin[[i]]+1)     #by taking a log of a negative number
     }
   }
@@ -377,7 +378,7 @@ unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,intercs,noms,index,
       p<-p/psub
       pzero<-1-rowSums(as.matrix(p))
       p<-cbind(pzero,p)
-      cump<-p%*%ifelse(upper.tri(matrix(0,nrow=ncol(p),ncol=ncol(p)),diag=T),1,0)
+      cump<-p%*%ifelse(upper.tri(matrix(0,nrow=ncol(p),ncol=ncol(p)),diag=TRUE),1,0)
       yy<-(y<cump)*(y>cbind(matrix(0,nrow(cump),1),cump[,1:(ncol(cump)-1)]))
       renom<-(yy%*%unique(na.omit(x.orig[,i])))
       x.orig[,i]<-renom
@@ -588,7 +589,7 @@ amelia.prep <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                         ts=NULL,cs=NULL,casepri=NULL,empri=NULL,
                         tolerance=0.0001,polytime=NULL,startvals=0,lags=NULL,
                         leads=NULL,intercs=FALSE,archive=TRUE,sqrts=NULL,
-                        lgstc=NULL,noms=NULL,incheck=T,ords=NULL,collect=FALSE,
+                        lgstc=NULL,noms=NULL,incheck=TRUE,ords=NULL,collect=FALSE,
                         outname="outdata",write.out=TRUE,arglist=NULL,
                         keep.data=TRUE,
                         priors=NULL,var=NULL,autopri=0.05,bounds=NULL,

@@ -19,6 +19,7 @@
 ##              - added "hold in R memory" output option
 ##              - sesssions are now saved as .RData files for compression
 ## 17/07/08 mb - fixed frontend error bug (dumping output to screen
+## 22/07/08 mb - good coding update: T->TRUE/F->FALSE
 
 AmeliaView<-function() {
 
@@ -53,7 +54,7 @@ get.filename<-function(entry) {
   tkinsert(input.entry,"end",getAmelia("am.filename"))
 }
 
-load.data <- function(session=F) {
+load.data <- function(session=FALSE) {
   if (!session) {
     if (!is.null(getAmelia("amelia.data"))) {
       sure<-tkmessageBox(message="If you load another dataset, your current settings will be erased.  Are you sure you want to load the new data?",icon="question",type="yesno")    
@@ -70,13 +71,13 @@ load.data <- function(session=F) {
   }
   ds <- getAmelia("drop.select")
   if (ds == 0)
-    putAmelia("amelia.data",try(read.csv(am.filename,header=T)))
+    putAmelia("amelia.data",try(read.csv(am.filename,header=TRUE)))
   if (ds == 1)
-    putAmelia("amelia.data",try(read.table(am.filename,header=T)))
+    putAmelia("amelia.data",try(read.table(am.filename,header=TRUE)))
   if (ds == 2)
-    putAmelia("amelia.data",try(read.dta(am.filename,convert.factors=F)))
+    putAmelia("amelia.data",try(read.dta(am.filename,convert.factors=FALSE)))
   if (ds == 3)
-    putAmelia("amelia.data",try(read.spss(am.filename,use.value.labels=F,to.data.frame=TRUE)))
+    putAmelia("amelia.data",try(read.spss(am.filename,use.value.labels=FALSE,to.data.frame=TRUE)))
   if (ds == 4)
     putAmelia("amelia.data",try(read.xport(am.filename)))
   if (ds == 5)
@@ -237,7 +238,7 @@ load.session <- function() {
   putAmelia("drop.select", getAmelia("amelia.list")$amelia.args$file.type)
   putAmelia("inname",      tclVar(getAmelia("amelia.list")$amelia.args$am.filename))
   putAmelia("am.filename", getAmelia("amelia.list")$amelia.args$am.filename)
-  load.data(session=T)
+  load.data(session=TRUE)
   putAmelia("tsvar", getAmelia("amelia.list")$amelia.args$ts)
   putAmelia("csvar", getAmelia("amelia.list")$amelia.args$cs)
 
@@ -371,7 +372,7 @@ run.amelia <- function() {
                        noms     = nom,
                        write.out= FALSE,
                        tolerance= as.numeric(tclvalue(getAmelia("tol")))),
-                silent=T))
+                silent=TRUE))
 
   ## check for errors in the process.
   if (inherits(getAmelia(tclvalue(getAmelia("outname"))),"try-error")) {
@@ -851,15 +852,15 @@ sum.data <-function() {
     }
     else {
       tkconfigure(var.info.mean,text=paste("Mean:",
-                  signif(mean(as.numeric(getAmelia("amelia.data")[,getAmelia("sum.var")]),na.rm=T),digits=4)))
+                  signif(mean(as.numeric(getAmelia("amelia.data")[,getAmelia("sum.var")]),na.rm=TRUE),digits=4)))
       tkconfigure(var.info.sd,text=paste("SD: ",
-                  signif(sd(as.numeric(getAmelia("amelia.data")[,getAmelia("sum.var")]),na.rm=T),digits=4)))
+                  signif(sd(as.numeric(getAmelia("amelia.data")[,getAmelia("sum.var")]),na.rm=TRUE),digits=4)))
 		  tkconfigure(var.info.miss,text=paste("Missing: ",nrow(getAmelia("amelia.data"))-nrow(as.matrix(packr(as.matrix(getAmelia("amelia.data")[,getAmelia("sum.var")])))),"/",nrow(getAmelia("amelia.data")),sep=""))
       tkconfigure(var.but.plot, state="active")
       tkconfigure(var.info.min, text = paste("Min:", 
-        signif(min(getAmelia("amelia.data")[,getAmelia("sum.var")],na.rm=T),digits = 4)))
+        signif(min(getAmelia("amelia.data")[,getAmelia("sum.var")],na.rm=TRUE),digits = 4)))
       tkconfigure(var.info.max, text = paste("Max:", 
-        signif(max(getAmelia("amelia.data")[,getAmelia("sum.var")],na.rm=T),digits = 4)))
+        signif(max(getAmelia("amelia.data")[,getAmelia("sum.var")],na.rm=TRUE),digits = 4)))
     }
   }
   draw.miss<-function() {
@@ -926,9 +927,9 @@ sum.data <-function() {
   if (!any(is.factor(getAmelia("amelia.data")[,getAmelia("sum.var")]),
            is.character(getAmelia("amelia.data")[,getAmelia("sum.var")]))) {
     var.info.mean<-tklabel(gui.sum.right,text=paste("Mean:",
-	  	signif(mean(as.numeric(getAmelia("amelia.data")[,getAmelia("sum.var")]),na.rm=T),digits=4)))
+	  	signif(mean(as.numeric(getAmelia("amelia.data")[,getAmelia("sum.var")]),na.rm=TRUE),digits=4)))
     var.info.sd<-tklabel(gui.sum.right,text=paste("SD:",
-      signif(sd(as.numeric(getAmelia("amelia.data")[,getAmelia("sum.var")]),na.rm=T),digits=4)))
+      signif(sd(as.numeric(getAmelia("amelia.data")[,getAmelia("sum.var")]),na.rm=TRUE),digits=4)))
     var.info.miss<-tklabel(gui.sum.right,text=paste("Missing: ",
       nrow(getAmelia("amelia.data"))-nrow(as.matrix(packr(as.matrix(getAmelia("amelia.data")[,getAmelia("sum.var")])))),"/",nrow(getAmelia("amelia.data")),sep=""))
     var.info.min<-tklabel(gui.sum.right, text = paste("Min:", 
@@ -1647,13 +1648,13 @@ gui.diag.setup <- function() {
   diag.but.compare <- tkbutton(diag.var, text="Compare",
     command = function() compare.density(data=getAmelia("amelia.data"),
                                          output=getAmelia(tclvalue(getAmelia("outname"))),
-                                         var=getAmelia("diag.sel.var"),frontend=T))
+                                         var=getAmelia("diag.sel.var"),frontend=TRUE))
   if (is.factor(getAmelia("amelia.data")[,getAmelia("diag.sel.var")]))
     tkconfigure(diag.but.compare, state="disabled")
   diag.overimp <- tkbutton(diag.var,text="Overimpute",state="normal",
     command = function() overimpute(data=getAmelia("amelia.data"),
                                     output=getAmelia(tclvalue(getAmelia("outname"))),
-                                    var=getAmelia("diag.sel.var"),frontend=T))
+                                    var=getAmelia("diag.sel.var"),frontend=TRUE))
   diag.disp<-tkframe(tt, relief = "groove", borderwidth = 2)
   dimvalue<-tclVar("1")
   onedim<-tkradiobutton(diag.disp, variable=dimvalue, value="1")
@@ -1662,7 +1663,7 @@ gui.diag.setup <- function() {
   disp.imps<-tkentry(diag.disp,width="5",textvariable=disp.imps.tcl)
   disp.but<-tkbutton(diag.disp,text="Overdisperse",state="normal",
     command = function() disperse(data=getAmelia("amelia.data"),m=as.numeric(tclvalue(disp.imps.tcl)),
-    dims=as.numeric(tclvalue(dimvalue)),frontend=T,output=getAmelia(tclvalue(getAmelia("outname")))))
+    dims=as.numeric(tclvalue(dimvalue)),frontend=TRUE,output=getAmelia(tclvalue(getAmelia("outname")))))
   tkgrid(tklabel(diag.disp, text="Overdispersed Starting Values", 
     font="Arial 12 bold"),row=1, column=1, columnspan=2,padx=3,pady=5)
   tkgrid(tklabel(diag.disp,text="Number of dispersions: "),row=2,column=1,

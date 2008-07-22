@@ -41,7 +41,7 @@
 ## 04/07/07 jh - added "emburn" option to modify convergence criteria
 ## 04/06/08 mb - changed the writing to GUI ('if (frontend)' calls) to remove globals
 ## 17/07/08 mb - fixed frontend error bug (dumping output to screen
-
+## 22/07/08 mb - good coding update: T->TRUE/F->FALSE
 
 ## Draw from a multivariate normal distribution 
 ##   n: number of draws 
@@ -206,7 +206,7 @@ if (identical(m,vector(mode='logical',length=length(m)))) # This is check for sw
     g21<-t(g12)
     g22<-g[kcompl,kcompl , drop=FALSE]
     
-    h11a<-try(solve(g11),silent=T)   
+    h11a<-try(solve(g11),silent=TRUE)   
     if (inherits(h11a,"try-error"))
       h11a<-mpinv(g11)     # This is where significant time is spent!  About as much time as in the rest of the EM step
     h11<-as.matrix((-h11a))
@@ -292,7 +292,7 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
       } else {
         mono.flag<-0
       }
-      if (all(eigen(thetanew[2:nrow(thetanew),2:ncol(thetanew)],only.values=T, symmetric=TRUE)$values > .Machine$double.eps))
+      if (all(eigen(thetanew[2:nrow(thetanew),2:ncol(thetanew)],only.values=TRUE, symmetric=TRUE)$values > .Machine$double.eps))
         sing.flag<-0
       else
         sing.flag<-1
@@ -308,7 +308,7 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
 
       iter.hist<-rbind(iter.hist,c(diff,sing.flag,mono.flag))
       if (allthetas)
-        thetahold<-cbind(thetahold,(thetanew[upper.tri(thetanew,diag=T)])[-1])
+        thetahold<-cbind(thetahold,(thetanew[upper.tri(thetanew,diag=TRUE)])[-1])
       thetaold<-thetanew
     }
     iter.hist<-iter.hist[2:nrow(iter.hist),]
@@ -327,7 +327,7 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
   if (p2s) cat("\n")
   if (frontend) tkinsert(getAmelia("run.text"),"end",paste("\n"))
   if (allthetas)
-    return(list(thetanew=cbind(thetahold,(thetanew[upper.tri(thetanew,diag=T)])[-1]),iter.hist=iter.hist))
+    return(list(thetanew=cbind(thetahold,(thetanew[upper.tri(thetanew,diag=TRUE)])[-1]),iter.hist=iter.hist))
   return(list(thetanew=thetanew,iter.hist=iter.hist))
 }
 
@@ -522,15 +522,15 @@ am.resample <- function(x.ss, ci, imps, m.ss, bounds, max.resample) {
       # get the failing/passing cells
       fail.cells <- which(!btest, arr.ind=TRUE)
       fail.rows  <- rowSums(!btest, na.rm=T) > 0
-      pass.rows  <- rowSums(!btest, na.rm=T) == 0
+      pass.rows  <- rowSums(!btest, na.rm=TRUE) == 0
 
       # record the rows that we have left
       new.left <- left[fail.rows]
       
       if (sum(pass.rows) > 0) {
-        xp.ss[left[pass.rows],] <- x.ss[pass.rows,,drop=F] +
-                                   imps[pass.rows,,drop=F] +
-                                   junk[pass.rows,,drop=F]
+        xp.ss[left[pass.rows],] <- x.ss[pass.rows,,drop=FALSE] +
+                                   imps[pass.rows,,drop=FALSE] +
+                                   junk[pass.rows,,drop=FALSE]
       }
 
       left <- new.left
