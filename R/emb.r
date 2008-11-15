@@ -206,7 +206,8 @@ if (identical(m,vector(mode='logical',length=length(m)))) # This is check for sw
     g21<-t(g12)
     g22<-g[kcompl,kcompl , drop=FALSE]
     
-    h11a<-try(solve(g11),silent=TRUE)   
+    h11a<-try(solve(g11),silent=TRUE)
+    
     if (inherits(h11a,"try-error"))
       h11a<-mpinv(g11)     # This is where significant time is spent!  About as much time as in the rest of the EM step
     h11<-as.matrix((-h11a))
@@ -238,6 +239,7 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
     indx<-indxs(x)                      # This needs x.NA
     if (!identical(priors,NULL)){
       priors[,4]<-1/priors[,4]          # change sd to 1/sd
+      priors[,3]<-priors[,3]*priors[,4] # get the precision-weighted mus
     }    
 
     x[is.na(x)]<-0                      # Change x.NA to x.0s       
@@ -272,6 +274,7 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
       }
 
       thetanew<-emfred(x,thetaold,indx$o,indx$m,indx$ivector,indx$icap,indx$AMr1,indx$AMr2,pr=pr,AM1stln=AM1stln,returntype="theta",priors=priors,empri=empri,collect=collect)
+#browser()
       diff2<-sqrt(sum((thetanew-thetaold)^2))   
       diff<-(abs(thetanew-thetaold)>tolerance)
       diff<-sum(diff*upper.tri(diff,diag=TRUE))
@@ -337,8 +340,11 @@ amelia.impute<-function(x,thetareal,priors=NULL,bounds=NULL,max.resample=NULL){
   indx<-indxs(x)                      # This needs x.NA 
   if (!identical(priors,NULL)){
     priors[,4]<-1/priors[,4]
+    priors[,3]<-priors[,3]*priors[,4]
   }    
 
+
+  
   x[is.na(x)]<-0                      # Change x.NA to x.0s       
 
   AM1stln<-sum(indx$m[1])==0          # Create sundry simple indicators
@@ -351,6 +357,8 @@ amelia.impute<-function(x,thetareal,priors=NULL,bounds=NULL,max.resample=NULL){
   AMp<-ncol(x)
   AMn<-nrow(x)
 
+  I <- diag(1,AMp)                    # A reference identity matrix for speed
+  
   xplay<-matrix(0,nrow=AMn,ncol=AMp)
   if (!AM1stln){
     st<-1
@@ -394,73 +402,80 @@ amelia.impute<-function(x,thetareal,priors=NULL,bounds=NULL,max.resample=NULL){
 
       is<-i[ss]
       isp<-i[ss+1]-1
-   
-      for (jj in is:isp){
-      # Prior specified for this observation
-        if (sum(priors[,1] == jj)) {              
-          #browser()
-          ## maybe we should sort priors earlier? do we need to?
-          priorsForThisRow <- priors[priors[,1] == jj, , drop = FALSE] 
-          priorsForThisRow <- priorsForThisRow[order(priorsForThisRow[,2]),,drop=FALSE]
-          columnsWithPriors <- c(1:AMp) %in% priorsForThisRow[, 2]
 
-          # Calculate sd2
-          solve.Sigma  <- solve( theta[c(FALSE,columnsWithPriors),c(FALSE,columnsWithPriors)] )
+      
+      imputations<- AMr1[is:isp, , drop=FALSE] * ((x[is:isp, , drop=FALSE] %*%
+        theta[2:(AMp+1),2:(AMp+1) , drop=FALSE]) + (matrix(1,1+isp-is,1) %*%
+        theta[1,2:(AMp+1) , drop=FALSE]) )
+
+      ## get the prior rows and non-prior rows
+      priorsinpatt <- which(is:isp %in% priors[,1])
+      nopri <- !(is:isp %in% priors[,1])
+
+      ## fill in xplay for non-prior rows
+      Ci<-matrix(0,AMp,AMp)
+      hold<-chol(theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])])
+      Ci[m[ss,],m[ss,]]<-hold
+
+      junk <- matrix(0,nrow(imputations),AMp)
+      
+      if (!identical(bounds,NULL)) {
+        xplay[nopri,] <- am.resample(x.ss=x[nopri,,drop=FALSE], ci=Ci,
+                                     imps=imputations[nopri,],
+                                      m.ss=m[ss,], bounds=bounds,
+                                      max.resample=max.resample)
+      } else {
+        junk[nopri,] <- matrix(rnorm(sum(nopri)*AMp), sum(nopri), AMp) %*% Ci
+        xplay[(is:isp)[nopri],]<-x[(is:isp)[nopri],,drop=FALSE] +
+                      imputations[nopri,,drop=FALSE] + junk[nopri,,drop=FALSE]
+      }
+      
+      for (jj in priorsinpatt){
+        or <- (is:isp)[jj]  ## original rows
+          
+        priorsForThisRow <- priors[priors[,1] == or, , drop = FALSE] 
+        priorsForThisRow <- priorsForThisRow[order(priorsForThisRow[,2]),,drop=FALSE]
+        columnsWithPriors <- c(1:AMp) %in% priorsForThisRow[, 2]
+
+        npr <- nrow(priorsForThisRow)
+          
+        # Calculate sd2
+        solve.Sigma  <- am.inv(theta[c(FALSE,columnsWithPriors),
+                                     c(FALSE,columnsWithPriors),drop=FALSE],
+                               I[1:npr,1:npr,drop=FALSE])
        
-          solve.Lambda <- matrix(0, nrow(priorsForThisRow),nrow(priorsForThisRow))
-        
-          #Calculate imputed values
-          imputations <- ((x[jj, , drop=FALSE] %*%
-                           theta[2:(AMp+1),2:(AMp+1) , drop=FALSE]) +
-                           theta[1,2:(AMp+1) , drop=FALSE] )
-          
-          # Weight these together
-          diag(solve.Lambda) <- priorsForThisRow[,4]
-          mu.miss <- (solve(solve.Lambda + solve.Sigma)) %*%
-                     (solve.Lambda %*% priorsForThisRow[,3] +
-                      solve.Sigma  %*% imputations[columnsWithPriors])
-        
-          imputations[columnsWithPriors]<-mu.miss    
-                                                    
-          # update **theta**
-          copy.theta <- theta
-          copy.theta[c(FALSE,columnsWithPriors),c(FALSE,columnsWithPriors)] <-
-            solve(solve.Lambda + solve.Sigma)
-          
-          # Create "noise" term from updated theta
-          Ci<-matrix(0,AMp,AMp)
-          hold<-chol(copy.theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])])
-          Ci[m[ss,],m[ss,]]<-hold
+        solve.Lambda <- matrix(0,npr,npr)
+        diag(solve.Lambda) <- priorsForThisRow[,4]
 
-          # fork for the bounds resampler
-          if (!identical(bounds,NULL)) {
-            xplay[jj,] <- am.resample(x.ss=x[jj,,drop=FALSE], ci=Ci, imps=imputations,
+        wvar <-am.inv(solve.Lambda + solve.Sigma, I[1:npr,1:npr,drop=FALSE])
+          
+        # Weight these together
+          
+        mu.miss <- (wvar) %*% (priorsForThisRow[,3] +
+                   solve.Sigma  %*% imputations[jj,columnsWithPriors])
+        
+        imputations[jj,columnsWithPriors]<-mu.miss    
+                                                    
+        # update **theta**
+        copy.theta <- theta
+        copy.theta[c(FALSE,columnsWithPriors),c(FALSE,columnsWithPriors)]<-wvar
+          
+        ## Create "noise" term from updated theta
+        Ci<-matrix(0,AMp,AMp)
+        hold<-chol(copy.theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])])
+        Ci[m[ss,],m[ss,]]<-hold
+
+        # fork for the bounds resampler
+        if (!identical(bounds,NULL)) {
+          xplay[or,] <- am.resample(x.ss=x[or,,drop=FALSE], ci=Ci, imps=imputations[jj,],
                                       m.ss=m[ss,], bounds=bounds,
                                       max.resample=max.resample)            
                                       
-          } else {
-            junk<-matrix(rnorm(AMp), 1, AMp) %*% Ci
+        } else {
+          junk[jj,]<-matrix(rnorm(AMp), 1, AMp) %*% Ci
  
-            # Piece together this observation
-            xplay[jj,]<-x[jj,] + (AMr1[jj, , drop=FALSE] * (imputations + junk))
-          }
-
-        } else {                              # No Prior specified for this observation
-          Ci<-matrix(0,AMp,AMp)
-          hold<-chol(theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])])
-          Ci[m[ss,],m[ss,]]<-hold
- 
-          imputations<-AMr1[jj, , drop=FALSE] * ((x[jj, , drop=FALSE] %*% theta[2:(AMp+1),2:(AMp+1) , drop=FALSE])
-              + theta[1,2:(AMp+1) , drop=FALSE] )
-
-          if (!identical(bounds,NULL)) {
-            xplay[jj,] <- am.resample(x.ss=x[jj,,drop=FALSE], ci=Ci, imps=imputations,
-                                      m.ss=m[ss,], bounds=bounds,
-                                      max.resample=max.resample)
-          } else {
-            junk<-matrix(rnorm(AMp), 1, AMp) %*% Ci
-            xplay[jj,]<-x[jj,] + imputations + junk
-          }
+          # Piece together this observation
+          xplay[or,]<-x[or,] + (AMr1[or, , drop=FALSE] * (imputations[jj,] + junk[jj,]))
         }
       }
     }
@@ -574,6 +589,8 @@ emfred<-function(x,thetareal,o,m,i,iii,AMr1,AMr2,pr=NULL,AM1stln,returntype="the
 AMp<-ncol(x)
 AMn<-nrow(x)
 
+I <- diag(1,AMp)
+
 hmcv<-matrix(0,nrow=AMp,ncol=AMp)
 xplay<-matrix(0,nrow=AMn,ncol=AMp)
 if (!AM1stln){
@@ -602,54 +619,71 @@ if (identical(priors,NULL)){                     # No Observation Level Priors i
   for (ss in st:(length(i)-1)){
 
     theta<-amsweep(thetareal,c(FALSE,o[ss,]))
-
+    
     is<-i[ss]
     isp<-i[ss+1]-1
 
-    for (jj in is:isp){
-      # Prior specified for this observation
-      if (sum(priors[,1] == jj)) {
-        ## maybe we should sort priors earlier? do we need to?
-        priorsForThisRow <- priors[priors[,1] == jj, , drop = FALSE] 
-        priorsForThisRow <- priorsForThisRow[order(priorsForThisRow[,2]),,drop=FALSE]
-        columnsWithPriors <- c(1:AMp) %in% priorsForThisRow[, 2]
-
-        # Calculate sd2
-        solve.Sigma  <- solve( theta[c(FALSE,columnsWithPriors),c(FALSE,columnsWithPriors)] )
-       
-        solve.Lambda <- matrix(0, nrow(priorsForThisRow),nrow(priorsForThisRow))
-        
-        #Calculate imputed values
-        imputations <- ((x[jj, , drop=FALSE] %*%
-                         theta[2:(AMp+1),2:(AMp+1) , drop=FALSE]) +
-                         theta[1,2:(AMp+1) , drop=FALSE] )
-
-        # Weight these together
-        diag(solve.Lambda) <- priorsForThisRow[,4]
-        mu.miss <- (solve(solve.Lambda + solve.Sigma)) %*%
-                   (solve.Lambda %*% priorsForThisRow[,3] +
-                    solve.Sigma  %*% imputations[columnsWithPriors])
-        
-        imputations[columnsWithPriors]<-mu.miss 
-
-        # Update "hmcv" 
-        copy.theta<-theta                                                                          # Make a copy of theta
-        copy.theta[ c(FALSE,columnsWithPriors) ,c(FALSE,columnsWithPriors) ] <- solve(solve.Lambda + solve.Sigma)                    # Overwrite prior locations
-        hmcv[m[ss,],m[ss,]]<-hmcv[m[ss,],m[ss,]] + copy.theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])]     # Add to hmcv in missing locations
-
-        # Add into dataset of expected values
-        xplay[jj,]<-AMr1[jj, , drop=FALSE] * imputations + x[jj, ]
-      
-      } else {                              # No Prior specified for this observation
-
-        hmcv[m[ss,],m[ss,]]<-hmcv[m[ss,],m[ss,]] + theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])]
     
-        imputations<-AMr1[jj, , drop=FALSE] * ((x[jj, , drop=FALSE] %*% theta[2:(AMp+1),2:(AMp+1) , drop=FALSE])
-            + theta[1,2:(AMp+1) , drop=FALSE] ) 
-        xplay[jj,]<-x[jj,] + imputations 
+    
+    
+    imputations <- AMr1[is:isp, , drop=FALSE] * ((x[is:isp, , drop=FALSE] %*% theta[2:(AMp+1),2:(AMp+1) , drop=FALSE])
+        + (matrix(1,1+isp-is,1) %*% theta[1,2:(AMp+1) , drop=FALSE]) ) 
 
-      }
+    # find the priors for this pattern
+    priorsinpatt <- which(is:isp %in% priors[,1])
+
+    
+    # update hmcv for non-prior obs
+    hmcv[m[ss,],m[ss,]] <- hmcv[m[ss,],m[ss,]] +
+                          (1+isp-is-length(priorsinpatt))*theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])]
+
+    
+    # for rows with priors: change the relevant imputation cells
+    # and update the hmcv properly
+    for (jj in priorsinpatt) {
+      # Prior specified for this observation
+
+      or <- (is:isp)[jj]  ## original row 
+        
+      ## maybe we should sort priors earlier? do we need to?
+      priorsForThisRow <- priors[priors[,1] == or, , drop = FALSE] 
+      priorsForThisRow <- priorsForThisRow[order(priorsForThisRow[,2]),,drop=FALSE]
+      columnsWithPriors <- c(1:AMp) %in% priorsForThisRow[, 2]
+
+      npr <- nrow(priorsForThisRow)
+
+      # Calculate sd2
+      solve.Sigma  <- am.inv(theta[c(FALSE,columnsWithPriors),
+                                   c(FALSE,columnsWithPriors),drop=FALSE] ,
+                             I[1:npr,1:npr,drop=FALSE])
+       
+      solve.Lambda <- matrix(0, nrow(priorsForThisRow),nrow(priorsForThisRow))
+      diag(solve.Lambda) <- priorsForThisRow[,4]
+      
+      # Update "hmcv" 
+      copy.theta<-theta
+
+      # Make a copy of theta
+      copy.theta[ c(FALSE,columnsWithPriors) ,c(FALSE,columnsWithPriors) ] <- am.inv(solve.Lambda + solve.Sigma,I[1:nrow(priorsForThisRow),1:nrow(priorsForThisRow),drop=FALSE])                    
+
+      
+      # Weight these together
+      
+      mu.miss <- (copy.theta[c(FALSE,columnsWithPriors),c(FALSE,columnsWithPriors)]) %*%
+                 (priorsForThisRow[,3] +
+                  solve.Sigma  %*% imputations[jj,columnsWithPriors])
+        
+      imputations[jj,columnsWithPriors]<-mu.miss 
+
+      # Overwrite prior locations
+      hmcv[m[ss,],m[ss,]] <- hmcv[m[ss,],m[ss,]] + copy.theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])]
+
+
+      
     }
+
+    ## now that we've updated the imputations, add them to xplay
+    xplay[is:isp,]<-x[is:isp,] + imputations 
     if (collect)
       gc()
   }
@@ -682,6 +716,18 @@ if (returntype=="theta"){
   }
 }
 
+
+am.inv <- function(a,b,tol=.Machine$double.eps) {
+  if (length(a)==1)
+    return(1/a)
+  storage.mode(a) <- "double"
+  size <- ncol(a)
+  .Call("La_chol2inv",.Call("La_chol",a,PACKAGE="base"),size,PACKAGE="base")
+  
+  #storage.mode(a) <- "double"
+  #storage.mode(b) <- "double"
+  #.Call("La_dgesv",a,b,tol)
+}
 
 ## Core amelia function
 amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,

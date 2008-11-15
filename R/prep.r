@@ -229,7 +229,6 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
     x.sort<-x[tssort,]
     for (i in lags) {
       lagged<-c(NA,x.sort[1:(nrow(x)-1),i])
-      #lagged<-c(NA,lagged)
       if (!identical(cs,NULL)) {
         for (i in 2:nrow(x.sort))
           if (x.sort[i,cs]!=x.sort[i-1,cs])
@@ -249,21 +248,20 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
     }
     tssort<-do.call("order",tsarg)
     x.sort<-x[tssort,]
-    for (i in lags) {
-      lagged<-x.sort[2:nrow(x),i]
-      lagged<-c(lagged,NA)
-      if (!identical(cs,NA)) {
+    for (i in leads) {
+      led<-x.sort[2:nrow(x),i]
+      led<-c(led,NA)
+      if (!identical(cs,NULL)) {
         for (i in 1:(nrow(x.sort)-1))
           if (x.sort[i,cs]!=x.sort[i+1,cs])
-            is.na(lagged)<-i
+            is.na(led)<-i
       }
-      x.sort<-cbind(x.sort,lagged)
+      x.sort<-cbind(x.sort,led)
       x<-cbind(x,1)
       index<-c(index,.5)  #.5=leads
     }
     x[tssort,]<-x.sort
   }
-  
   #puts timeseries and crosssection into the id variable to avoid singularity
   if (!is.null(ts)) {
     index<-index[index!=ts]
@@ -432,7 +430,7 @@ unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,intercs,noms,index,
   if (!identical(c(blanks,idvars),c(NULL,NULL))){
     if (identical(blanks,NULL)) {blanks<- -(1:nrow(x.orig))}
     if (identical(idvars,NULL)) {idvars<- -(1:ncol(x.orig))}
-    x.orig[-blanks,-idvars]<-x.imp[,1:ncol(x.orig[,-idvars])]
+    x.orig[-blanks,-idvars]<-x.imp[,1:ncol(x.orig[,-idvars, drop=FALSE])]
   } else {
     x.orig <- x.imp[,1:ncol(x.orig)]
   }
@@ -677,7 +675,7 @@ amelia.prep <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
 
   
   d.trans<-amtransform(data,logs=numopts$logs,sqrts=numopts$sqrts,lgstc=numopts$lgstc)  
-  d.subset<-amsubset(d.trans$x,idvars=numopts$idvars,p2s=p2s,ts=numopts$ts,cs=numopts$cs,polytime=polytime,intercs=intercs,noms=numopts$noms,priors=priors,bounds=bounds)
+  d.subset<-amsubset(d.trans$x,idvars=numopts$idvars,p2s=p2s,ts=numopts$ts,cs=numopts$cs,polytime=polytime,intercs=intercs,noms=numopts$noms,priors=priors,bounds=bounds, lags=numopts$lags, leads=numopts$leads)
   d.scaled<-scalecenter(d.subset$x,priors=d.subset$priors,bounds=d.subset$bounds)
   d.stacked<-amstack(d.scaled$x,colorder=TRUE,priors=d.scaled$priors,bounds=d.scaled$bounds)
 
