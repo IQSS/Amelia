@@ -505,7 +505,7 @@ amunstack<-function(x,n.order,p.order){
 
 # This function is in miserable shape.  Need to clean up how lack of priors are dealt with.
 
-generatepriors<-function(AMr1,casepri=NULL,empri=NULL,priors=NULL){
+generatepriors<-function(AMr1,empri=NULL,priors=NULL){
   if (!identical(priors,NULL)) {
     if (ncol(priors) == 5){
       new.priors<-matrix(NA, nrow = nrow(priors), ncol = 4)
@@ -584,7 +584,7 @@ combine.output <- function(...) {
 
 
 amelia.prep <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
-                        ts=NULL,cs=NULL,casepri=NULL,empri=NULL,
+                        ts=NULL,cs=NULL,empri=NULL,
                         tolerance=0.0001,polytime=NULL,startvals=0,lags=NULL,
                         leads=NULL,intercs=FALSE,archive=TRUE,sqrts=NULL,
                         lgstc=NULL,noms=NULL,incheck=TRUE,ords=NULL,collect=FALSE,
@@ -607,7 +607,7 @@ amelia.prep <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     ts        <- arglist$amelia.args$ts
     cs        <- arglist$amelia.args$cs
     tolerance <- arglist$amelia.args$tolerance
-    casepri   <- arglist$amelia.args$casepri
+#    casepri   <- arglist$amelia.args$casepri
     polytime  <- arglist$amelia.args$polytime
     lags      <- arglist$amelia.args$lags
     leads     <- arglist$amelia.args$leads
@@ -634,7 +634,7 @@ amelia.prep <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
 
     checklist<-amcheck(data = data, m = m, idvars = numopts$idvars, priors =
                        priors, empri = empri, ts = numopts$ts, cs = numopts$cs,
-                       tolerance = tolerance, casepri = casepri, polytime =
+                       tolerance = tolerance, polytime =
                        polytime, lags = numopts$lags,leads = numopts$leads, logs
                        = numopts$logs, sqrts = numopts$sqrts, lgstc
                        =numopts$lgstc, p2s = p2s, frontend = frontend, archive =
@@ -654,12 +654,11 @@ amelia.prep <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     outname <- checklist$outname
   }
   
-  priors <- generatepriors(AMr1 = is.na(data) ,casepri = casepri,
-                           empri = empri, priors = priors)
+  priors <- generatepriors(AMr1 = is.na(data),empri = empri, priors = priors)
   
   if (archive) {
     archv<-list(m=m, idvars=numopts$idvars, logs=numopts$logs, ts=numopts$ts, cs=numopts$cs,
-                casepri=casepri, empri=empri, tolerance=tolerance,
+                empri=empri, tolerance=tolerance,
                 polytime=polytime, lags=numopts$lags, leads=numopts$leads,
                 intercs=intercs, sqrts=numopts$sqrts, lgstc=numopts$lgstc,
                 noms=numopts$noms, ords=numopts$ords, outname=outname,

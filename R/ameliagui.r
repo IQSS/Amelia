@@ -65,33 +65,32 @@ load.data <- function(session=FALSE) {
   
   if (is.null(getAmelia("am.filename")))
     putAmelia("am.filename",tclvalue(getAmelia("inname")))
-  if (!file.exists(am.filename)) {
+  if (!file.exists(getAmelia("am.filename"))) {
     tkmessageBox(message="The file doesn't exist.  Try Again.",icon="error",type="ok")
     return(NULL)
   }
   ds <- getAmelia("drop.select")
   if (ds == 0)
-    putAmelia("amelia.data",try(read.csv(am.filename,header=TRUE)))
+    putAmelia("amelia.data",try(read.csv(getAmelia("am.filename"),header=TRUE)))
   if (ds == 1)
-    putAmelia("amelia.data",try(read.table(am.filename,header=TRUE)))
+    putAmelia("amelia.data",try(read.table(getAmelia("am.filename"),header=TRUE)))
   if (ds == 2)
-    putAmelia("amelia.data",try(read.dta(am.filename,convert.factors=FALSE)))
+    putAmelia("amelia.data",try(read.dta(getAmelia("am.filename"),convert.factors=FALSE)))
   if (ds == 3)
-    putAmelia("amelia.data",try(read.spss(am.filename,use.value.labels=FALSE,to.data.frame=TRUE)))
+    putAmelia("amelia.data",try(read.spss(getAmelia("am.filename"),use.value.labels=FALSE,to.data.frame=TRUE)))
   if (ds == 4)
-    putAmelia("amelia.data",try(read.xport(am.filename)))
+    putAmelia("amelia.data",try(read.xport(getAmelia("am.filename"))))
   if (ds == 5)
-    putAmelia("amelia.data",try(load(am.filename)))
+    putAmelia("amelia.data",try(load(getAmelia("am.filename"))))
   
   putAmelia("filetype.sess",ds)
   if (inherits(getAmelia("amelia.data"), "try-error")) {
     tkmessageBox(message="Failure in loading the data.  Try again.",icon="error",type="ok")
     return(NULL)
   }
-  temp.list<- strsplit(getAmelia("am.filename"),"/")
-  putAmelia("am.directory",temp.list[[1]][1])
-  for (i in 2:(length(temp.list[[1]])-1))
-    putAmelia("am.directory",paste(getAmelia("am.directory"), temp.list[[1]][i], sep = "/"))
+  temp.list<- strsplit(getAmelia("am.filename"),"/")[[1]]
+  putAmelia("am.directory",
+            paste(temp.list[-length(temp.list)],"",sep="/",collapse=""))                         
   setwd(getAmelia("am.directory"))
   putAmelia("varnames" , names(getAmelia("amelia.data")))
   tcl("set","varnames",c("(none)",getAmelia("varnames")))
@@ -115,7 +114,7 @@ load.data <- function(session=FALSE) {
   putAmelia("future.lags",vector("numeric",ncol(getAmelia("amelia.data"))))
   putAmelia("num.poly",tclVar("0"))
   putAmelia("intercs",tclVar("0"))
-  putAmelia("store.pri",  NULL)
+#  putAmelia("store.pri",  NULL)
   putAmelia("obs.prior",  NULL)
   putAmelia("r",NULL)
   putAmelia("priorsmat",  NULL)
@@ -128,8 +127,8 @@ load.data <- function(session=FALSE) {
   putAmelia("varmax",NULL)
   putAmelia("tclvarmin",list())
   putAmelia("tclvarmax",list())
-  tkconfigure(output.entry, textvariable=outname)
-  tkconfigure(output.num, textvariable=outnum)
+  tkconfigure(output.entry, textvariable=getAmelia("outname"))
+  tkconfigure(output.num, textvariable=getAmelia("outnum"))
   #tkconfigure(input.load,state="disabled",text="Data Loaded")
   
 }
@@ -195,7 +194,7 @@ save.session <-function() {
   amelia.list$amelia.args$lags <- (1:nn)[getAmelia("amelia.lags") == 1]
   amelia.list$amelia.args$leads <-(1:nn)[getAmelia("future.lags") == 1]
  
-  amelia.list$amelia.args$casepri <- getAmelia("store.pri")
+#  amelia.list$amelia.args$casepri <- getAmelia("store.pri")
   amelia.list$amelia.args$polytime <- as.numeric(tclvalue(getAmelia("num.poly")))
   amelia.list$amelia.args$intercs <- as.numeric(tclvalue(getAmelia("intercs")))
   amelia.list$amelia.args$output.select <- getAmelia("output.select")
@@ -231,8 +230,8 @@ load.session <- function() {
   
   
   ## check that the data is where it's supposed to be.
-  if (!file.exists(amelia.list$amelia.args$am.filename)) {
-    tkmessageBox(message=paste("Dataset file not found at:",amelia.list$amelia.args$am.filename,"Cannot load session.",sep="\n"),icon="error",type="ok")
+  if (!file.exists(getAmelia("amelia.list")$amelia.args$am.filename)) {
+    tkmessageBox(message=paste("Dataset file not found at:",getAmelia("amelia.list")$amelia.args$am.filename,"Cannot load session.",sep="\n"),icon="error",type="ok")
     return(NULL)
   }
   putAmelia("drop.select", getAmelia("amelia.list")$amelia.args$file.type)
@@ -263,20 +262,20 @@ load.session <- function() {
   putAmelia("intercs",tclVar(getAmelia("amelia.list")$amelia.args$intercs))
       
   putAmelia("empri",tclVar(getAmelia("amelia.list")$amelia.args$empri))
-  putAmelia("store.pri",getAmelia("amelia.list")$amelia.args$casepri)
+#  putAmelia("store.pri",getAmelia("amelia.list")$amelia.args$casepri)
 
   putAmelia("priorsmat",getAmelia("amelia.list")$amelia.args$priors)
-  if ((tsvar != 0) && (csvar != 0)) {
+  if ((getAmelia("tsvar") != 0) && (getAmelia("csvar") != 0)) {
     tkconfigure(options.tscs,state="active")
   }
-  tkselect(options.tsvar,tsvar)
-  tkselect(options.csvar,csvar)
+  tkselect(options.tsvar,getAmelia("tsvar"))
+  tkselect(options.csvar,getAmelia("csvar"))
   set.tsvar()
   set.csvar()
-  if (!is.null(getAmelia("amelia.list")$amelia.args$casepri))
-    tkconfigure(options.csvar, state="disabled")
+##   if (!is.null(getAmelia("amelia.list")$amelia.args$casepri))
+##     tkconfigure(options.csvar, state="disabled")
   putAmelia("output.select",getAmelia("amelia.list")$amelia.args$output.select)
-  tkselect(output.drop.box, output.select)
+  tkselect(output.drop.box, getAmelia("output.select"))
   putAmelia("outname",tclVar(getAmelia("amelia.list")$amelia.args$outname))
   putAmelia("outnum",tclVar(getAmelia("amelia.list")$amelia.args$m))
   putAmelia("seed", tclVar(getAmelia("amelia.list")$amelia.args$seed))
@@ -355,7 +354,7 @@ run.amelia <- function() {
                        m        = as.numeric(tclvalue(getAmelia("outnum"))),
                        p2s      = FALSE,
                        idvars   = id,
-                       casepri  = getAmelia("store.pri"),
+                     #  casepri  = getAmelia("store.pri"),
                        ts       = ts,
                        cs       = cs,
                        priors   = pmat,
@@ -376,23 +375,23 @@ run.amelia <- function() {
 
   ## check for errors in the process.
   if (inherits(getAmelia(tclvalue(getAmelia("outname"))),"try-error")) {
-    tkinsert(run.text,"end","\nThere was an unexpected error in the execution of Amelia.  \nDouble check all inputs for errors and take note of the error message:\n\n")
-    tkinsert(run.text,"end",paste(getAmelia(tclvalue(getAmelia("outname")))))
+    tkinsert(getAmelia("run.text"),"end","\nThere was an unexpected error in the execution of Amelia.  \nDouble check all inputs for errors and take note of the error message:\n\n")
+    tkinsert(getAmelia("run.text"),"end",paste(getAmelia(tclvalue(getAmelia("outname")))))
     return(NULL)
   }
 
   ##
   if (all(getAmelia(tclvalue(getAmelia("outname")))$code!=c(1,2))) {
-    tkinsert(run.text,"end","\n")
-    tkinsert(run.text,"end",paste("Amelia Error Code:",
+    tkinsert(getAmelia("run.text"),"end","\n")
+    tkinsert(getAmelia("run.text"),"end",paste("Amelia Error Code:",
                                   getAmelia(tclvalue(getAmelia("outname")))[[1]],"\n",
                                   getAmelia(tclvalue(getAmelia("outname")))[[2]]))
-    tkinsert(run.text,"end","\n\nYou have recieved an error.  You can close this window and reset\n various options to correct the error.")
+    tkinsert(getAmelia("run.text"),"end","\n\nYou have recieved an error.  You can close this window and reset\n various options to correct the error.")
   }
   else {
-    tkinsert(run.text,"end","\nAmelia has run successfully.  You can close this window and \nuse the diagnostics button to see how your imputations ran.")
+    tkinsert(getAmelia("run.text"),"end","\nAmelia has run successfully.  You can close this window and \nuse the diagnostics button to see how your imputations ran.")
     tkconfigure(output.diag, state = "active")
-    tksee(run.text,"end")
+    tksee(getAmelia("run.text"),"end")
     amelia.save(getAmelia(tclvalue(getAmelia("outname"))),tclvalue(getAmelia("outname")),as.numeric(tclvalue(getAmelia("outnum"))))
   }
 }
@@ -400,19 +399,19 @@ run.amelia <- function() {
 amelia.save <- function(out,outname,m)  {
   if (getAmelia("output.select") == 1)
     for (i in 1:m) 
-      write.csv(out[[i]],file=paste(am.directory,"/",outname,i,".csv",sep=""),row.names=FALSE)
+      write.csv(out[[i]],file=paste(getAmelia("am.directory"),"/",outname,i,".csv",sep=""),row.names=FALSE)
   if (getAmelia("output.select") == 2)
     for (i in 1:m) 
-      write.table(out[[i]],file=paste(am.directory,"/",outname,i,".txt",sep=""),sep="\t",row.names=FALSE)
+      write.table(out[[i]],file=paste(getAmelia("am.directory"),"/",outname,i,".txt",sep=""),sep="\t",row.names=FALSE)
   if (getAmelia("output.select") == 3)
     for (i in 1:m) 
-      write.dta(out[[i]],file=paste(am.directory,"/",outname,i,".dta",sep=""),version=6)
+      write.dta(out[[i]],file=paste(getAmelia("am.directory"),"/",outname,i,".dta",sep=""),version=6)
   if (getAmelia("output.select") == 4)
     for (i in 1:m) 
-      write.dta(out[[i]],file=paste(am.directory,"/",outname,i,".dta",sep=""),version=7)
+      write.dta(out[[i]],file=paste(getAmelia("am.directory"),"/",outname,i,".dta",sep=""),version=7)
   if (getAmelia("output.select") == 5)
     save(list=tclvalue(getAmelia("outname")), envir=ameliaEnv(),
-         file=paste(am.directory,"/",outname,".RData",sep=""))
+         file=paste(getAmelia("am.directory"),"/",outname,".RData",sep=""))
   if (getAmelia("output.select") == 6)
     assign(x=tclvalue(getAmelia("outname")), value=out,envir=.GlobalEnv)
 }
@@ -495,12 +494,12 @@ input.drop.label<-tklabel(gui.input,text="Input Data Format:")
 
 input.drop.box<-tkwidget(gui.input,"combobox", borderwidth=1,
     editable="FALSE",listvar= "filetypes",width=15)
-tkselect(input.drop.box,drop.select)
+tkselect(input.drop.box,getAmelia("drop.select"))
 tkconfigure(input.drop.box,command=function(...)file.type())
 
 
 #Data entry and Load
-input.entry <- tkentry(gui.input, width="45", textvariable = inname)
+input.entry <- tkentry(gui.input, width="45", textvariable = getAmelia("inname"))
 input.browse <- tkbutton(gui.input, text="Browse...", command=function()get.filename())
 input.label <- tklabel(gui.input, text="Input Data File:                     ")
 input.load <- tkbutton(gui.input, text="Load Data", width = 10, command = function() load.data())
@@ -534,7 +533,7 @@ tkgrid.columnconfigure(gui.input, 4, weight = 1)
 ##TS/CS, Option buttons
 
 #tscs comboboxes
-if (is.null(varnames)) {
+if (is.null(getAmelia("varnames"))) {
   putAmelia("varnames","  .     .       .       .   .     .   .  ..   .  . . . . . . ")
   tcl("set","varnames",getAmelia("varnames"))
 }
@@ -597,7 +596,7 @@ output.drop.label<-tklabel(gui.output,text="Output Data Format:")
 
 output.drop.box<-tkwidget(gui.output,"combobox",borderwidth=1,
     editable="FALSE",listvar= "outtypes",width=13)
-tkselect(output.drop.box,output.select)
+tkselect(output.drop.box,getAmelia("output.select"))
 tkconfigure(output.drop.box,command = function(...)set.out())
 
 
@@ -743,7 +742,7 @@ gui.var.setup<-function() {
   gui.frame<-tkframe(tt)
   var.save <- function() {
     putAmelia("transmat",getAmelia("temp.trans"))
-    putAmelia("tol",tclVar(tclvalue(temptol)))
+    putAmelia("tol",tclVar(tclvalue(getAmelia("temptol"))))
     tkdestroy(tt)
   }
   set.trans <- function(index, ind) {
@@ -759,7 +758,7 @@ gui.var.setup<-function() {
 
   var.link <-tkbutton(tt, text = "?", 
     command = function()browseURL("http://gking.harvard.edu/amelia/docs/Variables_Dialog.html"))
-	
+  nc <- ncol(getAmelia("amelia.data"))
   #ScrollableFrame for variable options
   sw <- tkwidget(tt,"ScrolledWindow",relief="sunken",borderwidth=2)
   sf <- tkwidget(sw,"ScrollableFrame")
@@ -767,10 +766,10 @@ gui.var.setup<-function() {
   subfID <- tclvalue(tcl(sf,"getframe"))
   tcltrans <- list()
   trans.radio.buts <- list()
-  indexmat<-matrix(1:((ncol(amelia.data))*7),ncol(amelia.data),7)
+  indexmat<-matrix(1:(nc*7),nc,7)
   transnames<-c("No Transformations","Ordinal","Nominal","Log-Linear","Square Root","Logistic","ID Variable")
   tcl("set","varhelp","")
-  for (i in 0:(ncol(amelia.data))) {    
+  for (i in 0:(nc)) {    
     if (i == 0) {
       tkgrid(tcl("label",paste(subfID,".top",2,sep=""),text="No Transformation"),row=1,column=2)
       tkgrid(tcl("label",paste(subfID,".top",3,sep=""),text="Ordinal"),row=1,column=3)
@@ -780,10 +779,10 @@ gui.var.setup<-function() {
       tkgrid(tcl("label",paste(subfID,".top",7,sep=""),text="Logistic"),row=1,column=7)
       tkgrid(tcl("label",paste(subfID,".top",8,sep=""),text="ID Variable"),row=1,column=8)
     } else {
-      tcltrans[[i]]<-tclVar(init=paste(temp.trans[[i]]))
+      tcltrans[[i]]<-tclVar(init=paste(getAmelia("temp.trans")[[i]]))
       for (j in 0:7) {
         if (j == 0) {
-          tkgrid(tcl("label",paste(subfID,".left",i,sep=""),text=names(amelia.data)[i]),row=i+1,column=1)
+          tkgrid(tcl("label",paste(subfID,".left",i,sep=""),text=names(getAmelia("amelia.data"))[i]),row=i+1,column=1)
         } else {
           trans.radio.buts[[indexmat[i,j]]]<-tcl("radiobutton",
             paste(subfID,".but",indexmat[i,j],sep=""), variable=tcltrans[[i]],
@@ -893,7 +892,7 @@ sum.data <-function() {
     else
       x11()
     hist(getAmelia("amelia.data")[,getAmelia("sum.var")],
-         main = paste("Histogram of",sum.var.name), ylab = "Frequnecy",
+         main = paste("Histogram of",getAmelia("sum.var.name")), ylab = "Frequnecy",
          xlab ="", col="wheat")
   }
   gui.sum.left <-tkframe(gui.frame, relief = "groove", borderwidth = 2)
@@ -1121,105 +1120,105 @@ gui.tscs.setup<-function() {
 
 gui.pri.setup<-function() {
 
-  case.priors <- function() {
-    reset.case <- function() {
-      putAmelia("store.pri",NULL)
-      tkdestroy(ss)
-      case.priors()
-      return(NULL)
-    }
-    pri.toggle <- function(ii,jj) {
-      ind <- ii + sum(seq(from = 1, to = (jj - 1)))
-      pre.state <- hold.pri[ii,jj]
-      if (pre.state == 3)
-        new.state <- 0
-      else
-        new.state <- pre.state + 1
-      tkconfigure(button.list[[ind]], text = new.state,
-            background = bground[new.state+1],activebackground=bground[new.state+1])
-      hold.pri[ii,jj] <<- new.state
-    }
-    case.save<-function() {
-      store.pri<<-hold.pri
-      tkdestroy(ss)
-    }
-    ss <- tktoplevel()
-    tkwm.title(ss, "Case Priors")
-    sw <- tkwidget(ss,"ScrolledWindow",relief="sunken",borderwidth=2)
-    sf <- tkwidget(sw,"ScrollableFrame")
-    tcl(sw,"setwidget",sf)
-    subfID <- tclvalue(tcl(sf,"getframe"))
-    reset.c<-tkbutton(ss, text = "Reset All", command = function() reset.case(), width = 10)
-    case.ok<-tkbutton(ss, text = "OK", command = function() case.save(), width = 10)
-    case.can<-tkbutton(ss, text = "Cancel", command = function() tkdestroy(ss), width = 10)
-    legend<-tkframe(ss, relief = "groove", borderwidth = 2)
-    grey.zero<-tklabel(legend, text = "0 - No relationship", bg = "grey")
-    green.one<-tklabel(legend, text = "1 - Slightly similar", bg = "green")
-    yellow.two<-tklabel(legend, text = "2 - Midly similar", bg = "yellow")
-    red.three<-tklabel(legend, text = "3 - Highly similar", bg = "red")
-    tkgrid(grey.zero, green.one, yellow.two, red.three, padx = 5, pady = 5)
-    caselist <- unique(getAmelia("amelia.data")[,getAmelia("csvar")])
-    casenum <- nrow(as.matrix(caselist))
-    if (is.null(getAmelia("store.pri")))
-      putAmelia("store.pri",matrix(0,nrow = casenum, ncol = casenum))
-    putAmelia("hold.pri",store.pri)
-    bground <- c("grey","green", "yellow", "red")
-    leg <- matrix(0,nrow = casenum, ncol= casenum)
-    button.list <- list()
-    tkgrid(legend, row = 1, columnspan = 5, padx = 3, pady = 3) 
-    tkgrid(case.ok, padx = 3, pady = 3, column = 1, sticky = "es", row = 3)
-    tkgrid(case.can, padx = 3, pady = 3, column = 2, sticky = "es", row = 3)
-    tkgrid(reset.c, padx = 3, pady = 3, column = 3, sticky = "es", row = 3)
-    tkconfigure(options.csvar, state="disabled")
-    for (i in 1:casenum) {
-      if (i !=1)
-        if (storage.mode(caselist) == "character")  {
-          tkgrid(tcl("label",paste(subfID,".top",i,sep=""), 
-            text = substr(as.list(caselist)[[i]],1,3), font=c("Courier",10)), row = 1, column = (i + 1))
-        }
-        else {
-          tkgrid(tcl("label",paste(subfID,".top",i,sep=""), 
-            text = substr(as.character(as.list(caselist)[[i]]),1,3), font=c("Courier",10)), row = 1, column = (i + 1))
-        }
-        tkgrid(tcl("label",paste(subfID,".left",i,sep=""), 
-          text = as.list(caselist)[[i]], font = c("Courier",10)), row = (i+1), column = 1,
-          columnspan=(i+1),sticky="e")
-    }
-    for (i in 1:casenum) {
-      for (j in 1:casenum) {
-        if (i > j)
-          next
-        if ((i == 1) && (j == 1))  {
-          ind <- 1
-          leg[i,j] <- 1
-        }
-        else {
-          ind <- i + sum(seq(from = 1, to = (j - 1)))
-          leg[i,j] <- i + sum(seq(from = 1, to = (j - 1)))
-        }
-        button.list[[ind]] <- tcl("button",paste(subfID,".but",ind,sep=""), 
-          text = paste(getAmelia("hold.pri")[i,j]), background = bground[hold.pri[i,j]+1], activebackground=bground[hold.pri[i,j]+1])
-        if (i != j)
-          tkgrid(button.list[[ind]], row = (i + 1) , column = (j + 1), pady = 2)
-        local ({
-          temp <- ind
-          ii <- i
-          jj <- j
-          tkconfigure(button.list[[temp]], command = function() pri.toggle(ii,jj))
-        })
-      }
-    }
-    tkgrid(sw,sticky = "news", columnspan = 5, row = 2)
-    tkgrid.rowconfigure(ss,2,weight = 1)
-    tkgrid.columnconfigure(ss,1,weight=1)
-    tkfocus(ss)
-    tkgrab.set(ss)
-    tkbind(ss,"<Destroy>",function(){tkgrab.release(ss);tkfocus(tt)})
-  }
+##   case.priors <- function() {
+##     reset.case <- function() {
+##       putAmelia("store.pri",NULL)
+##       tkdestroy(ss)
+##       case.priors()
+##       return(NULL)
+##     }
+##     pri.toggle <- function(ii,jj) {
+##       ind <- ii + sum(seq(from = 1, to = (jj - 1)))
+##       pre.state <- getAmelia("hold.pri")[ii,jj]
+##       if (pre.state == 3)
+##         new.state <- 0
+##       else
+##         new.state <- pre.state + 1
+##       tkconfigure(button.list[[ind]], text = new.state,
+##             background = bground[new.state+1],activebackground=bground[new.state+1])
+##       hold.pri[ii,jj] <<- new.state
+##     }
+##     case.save<-function() {
+##       putAmelia("store.pri",getAmelia("hold.pri"))
+##       tkdestroy(ss)
+##     }
+##     ss <- tktoplevel()
+##     tkwm.title(ss, "Case Priors")
+##     sw <- tkwidget(ss,"ScrolledWindow",relief="sunken",borderwidth=2)
+##     sf <- tkwidget(sw,"ScrollableFrame")
+##     tcl(sw,"setwidget",sf)
+##     subfID <- tclvalue(tcl(sf,"getframe"))
+##     reset.c<-tkbutton(ss, text = "Reset All", command = function() reset.case(), width = 10)
+##     case.ok<-tkbutton(ss, text = "OK", command = function() case.save(), width = 10)
+##     case.can<-tkbutton(ss, text = "Cancel", command = function() tkdestroy(ss), width = 10)
+##     legend<-tkframe(ss, relief = "groove", borderwidth = 2)
+##     grey.zero<-tklabel(legend, text = "0 - No relationship", bg = "grey")
+##     green.one<-tklabel(legend, text = "1 - Slightly similar", bg = "green")
+##     yellow.two<-tklabel(legend, text = "2 - Midly similar", bg = "yellow")
+##     red.three<-tklabel(legend, text = "3 - Highly similar", bg = "red")
+##     tkgrid(grey.zero, green.one, yellow.two, red.three, padx = 5, pady = 5)
+##     caselist <- unique(getAmelia("amelia.data")[,getAmelia("csvar")])
+##     casenum <- nrow(as.matrix(caselist))
+##     if (is.null(getAmelia("store.pri")))
+##       putAmelia("store.pri",matrix(0,nrow = casenum, ncol = casenum))
+##     putAmelia("hold.pri",store.pri)
+##     bground <- c("grey","green", "yellow", "red")
+##     leg <- matrix(0,nrow = casenum, ncol= casenum)
+##     button.list <- list()
+##     tkgrid(legend, row = 1, columnspan = 5, padx = 3, pady = 3) 
+##     tkgrid(case.ok, padx = 3, pady = 3, column = 1, sticky = "es", row = 3)
+##     tkgrid(case.can, padx = 3, pady = 3, column = 2, sticky = "es", row = 3)
+##     tkgrid(reset.c, padx = 3, pady = 3, column = 3, sticky = "es", row = 3)
+##     tkconfigure(options.csvar, state="disabled")
+##     for (i in 1:casenum) {
+##       if (i !=1)
+##         if (storage.mode(caselist) == "character")  {
+##           tkgrid(tcl("label",paste(subfID,".top",i,sep=""), 
+##             text = substr(as.list(caselist)[[i]],1,3), font=c("Courier",10)), row = 1, column = (i + 1))
+##         }
+##         else {
+##           tkgrid(tcl("label",paste(subfID,".top",i,sep=""), 
+##             text = substr(as.character(as.list(caselist)[[i]]),1,3), font=c("Courier",10)), row = 1, column = (i + 1))
+##         }
+##         tkgrid(tcl("label",paste(subfID,".left",i,sep=""), 
+##           text = as.list(caselist)[[i]], font = c("Courier",10)), row = (i+1), column = 1,
+##           columnspan=(i+1),sticky="e")
+##     }
+##     for (i in 1:casenum) {
+##       for (j in 1:casenum) {
+##         if (i > j)
+##           next
+##         if ((i == 1) && (j == 1))  {
+##           ind <- 1
+##           leg[i,j] <- 1
+##         }
+##         else {
+##           ind <- i + sum(seq(from = 1, to = (j - 1)))
+##           leg[i,j] <- i + sum(seq(from = 1, to = (j - 1)))
+##         }
+##         button.list[[ind]] <- tcl("button",paste(subfID,".but",ind,sep=""), 
+##           text = paste(getAmelia("hold.pri")[i,j]), background = bground[hold.pri[i,j]+1], activebackground=bground[hold.pri[i,j]+1])
+##         if (i != j)
+##           tkgrid(button.list[[ind]], row = (i + 1) , column = (j + 1), pady = 2)
+##         local ({
+##           temp <- ind
+##           ii <- i
+##           jj <- j
+##           tkconfigure(button.list[[temp]], command = function() pri.toggle(ii,jj))
+##         })
+##       }
+##     }
+##     tkgrid(sw,sticky = "news", columnspan = 5, row = 2)
+##     tkgrid.rowconfigure(ss,2,weight = 1)
+##     tkgrid.columnconfigure(ss,1,weight=1)
+##     tkfocus(ss)
+##     tkgrab.set(ss)
+##     tkbind(ss,"<Destroy>",function(){tkgrab.release(ss);tkfocus(tt)})
+##   }
 
   obs.priors2 <- function() {
     removePriors <- function() {
-      if (is.null(priorsmat)) {
+      if (is.null(getAmelia("priorsmat"))) {
         tkmessageBox(title="No priors",
                      message="There are no priors to remove.",
                      icon="error", type="ok")
@@ -1322,8 +1321,8 @@ gui.pri.setup<-function() {
           
         }
         newPrior <- c(rowSelection, colSelection,prMean,prSD)
-        if (!is.null(priorsmat)) {
-          matchPrior <- apply(priorsmat, 1,
+        if (!is.null(getAmelia("priorsmat"))) {
+          matchPrior <- apply(getAmelia("priorsmat"), 1,
                               function(x) all(x[1]==rowSelection,
                                               x[2]==colSelection))
         } else {
@@ -1370,8 +1369,8 @@ gui.pri.setup<-function() {
         if (currentSelection==0)
           missVars <- anyMissing
         else
-          missVars    <- is.na(amelia.data[currentCase,])
-        missVarNames<- colnames(amelia.data)[missVars]
+          missVars    <- is.na(getAmelia("amelia.data")[currentCase,])
+        missVarNames<- colnames(getAmelia("amelia.data"))[missVars]
         tcl("set","priVarNames",missVarNames)
         tkselect(varsBox,0)
       }
@@ -1490,10 +1489,10 @@ gui.pri.setup<-function() {
                                   width=20)
     obsOK <- tkbutton(pp, text="OK", command=function() {tkdestroy(pp)},width=10)
     
-    if (is.null(priorsmat))
+    if (is.null(getAmelia("priorsmat")))
       localPriors <- matrix(NA,1,1)
     else
-      localPriors <- priorsmat
+      localPriors <- getAmelia("priorsmat")
     tkgrid(tcl("label",paste(subfID,".1h",sep=""), text="case",
                width=20),row=0,column=2)
     tkgrid(tcl("label",paste(subfID,".1k",sep=""), text="variable",
@@ -1514,14 +1513,14 @@ gui.pri.setup<-function() {
       if ((localPriors[i,1]==0))
         case <- "(whole variable)"
       else
-        case <- paste(as.character(amelia.data[localPriors[i,1],csvar]),
-                      as.character(amelia.data[localPriors[i,1],tsvar]))
+        case <- paste(as.character(getAmelia("amelia.data")[localPriors[i,1],getAmelia("csvar")]),
+                      as.character(getAmelia("amelia.data")[localPriors[i,1],getAmelia("tsvar")]))
       
       tkgrid(tcl("label",paste(subfID,".",i,"i",sep=""),text=case,
                  relief="sunken", width=20),row=i,column=2)
 
       tkgrid(tcl("label",paste(subfID,".",i,"i2",sep=""),text=
-             names(amelia.data)[localPriors[i,2]], relief="sunken",
+             names(getAmelia("amelia.data"))[localPriors[i,2]], relief="sunken",
                  width=20),row=i,column=3)
 
       
@@ -1565,11 +1564,11 @@ gui.pri.setup<-function() {
   temp.empri<-tclVar(as.numeric(tclvalue(getAmelia("empri"))))
   empri.ent<-tkentry(priors,width=4,textvariable = temp.empri)
   empri.label<-tklabel(priors,text="Empirical prior:")
-  case.but<-tkbutton(gui.frame,text="Set case priors",
-                     command = function() case.priors())
+##   case.but<-tkbutton(gui.frame,text="Set case priors",
+##                      command = function() case.priors())
   
-  if (getAmelia("csvar") == 0)
-    tkconfigure(case.but, state="disabled")
+##   if (getAmelia("csvar") == 0)
+##     tkconfigure(case.but, state="disabled")
 
   data.but<-tkbutton(gui.frame,text="Set observation priors")
   tkconfigure(data.but, command = function() obs.priors2())	
@@ -1580,7 +1579,7 @@ gui.pri.setup<-function() {
   
   
   pri.status <- tkframe(tt, relief = "groove", borderwidth = 2)
-  prihelp<-tklabel(pri.status, textvariable="prihelp", font=helpfont)
+  prihelp<-tklabel(pri.status, textvariable="prihelp", font=getAmelia("helpfont"))
   
   pri.ok<-tkbutton(tt,text="   OK   ", command = function() pri.save())
   pri.cancel<-tkbutton(tt,text="Cancel", command = function()tkdestroy(tt))
@@ -1590,7 +1589,7 @@ gui.pri.setup<-function() {
   tkgrid(empri.label, empri.ent,row = 1, padx = 5, pady = 5) 
   tkgrid(tklabel(priors, text = paste("(N for current dataset is ",
                            nrow(getAmelia("amelia.data")),")",sep="")), row = 2)
-  tkgrid(case.but,data.but, row = 1, padx = 5, pady = 5, sticky = "ew")
+  tkgrid(data.but, row = 1, padx = 5, pady = 5, sticky = "ew")
 	
 	
   
@@ -1610,8 +1609,8 @@ gui.pri.setup<-function() {
   tkbind(empri.ent, "<Leave>","set prihelp \"\"")
  	tkbind(empri.label, "<Motion>","set prihelp \"Ridge prior that shrinks the covariances. 5 percent of the number of obs. is a useful default.\"")
   tkbind(empri.label, "<Leave>","set prihelp \"\"")
- 	tkbind(case.but, "<Motion>","set prihelp \"Set prior beliefs about the similarity between different cross-sectional units.\"")
-  tkbind(case.but, "<Leave>","set prihelp \"\"")
+ ## 	tkbind(case.but, "<Motion>","set prihelp \"Set prior beliefs about the similarity between different cross-sectional units.\"")
+##   tkbind(case.but, "<Leave>","set prihelp \"\"")
  	tkbind(data.but, "<Motion>","set prihelp \"Set priors about individual observations or whole variables.\"")
   tkbind(data.but, "<Leave>","set prihelp \"\"")                
 }
@@ -1641,9 +1640,9 @@ gui.diag.setup <- function() {
                    command = function(...) tkyview(diag.list,...))
   diag.list<-tklistbox(diag.var,height=10,selectmode="single",
                        yscrollcommand = function(...) tkset(scr,...))
-  for (i in 1:ncol(amelia.data))
-    tkinsert(diag.list,"end",names(amelia.data)[i])
-  tkselection.set(diag.list,(diag.sel.var-1))
+  for (i in 1:ncol(getAmelia("amelia.data")))
+    tkinsert(diag.list,"end",names(getAmelia("amelia.data"))[i])
+  tkselection.set(diag.list,(getAmelia("diag.sel.var")-1))
   tkbind(diag.list,"<Button-1>",function(y)select.var(y))
   diag.but.compare <- tkbutton(diag.var, text="Compare",
     command = function() compare.density(data=getAmelia("amelia.data"),

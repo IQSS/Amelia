@@ -15,7 +15,7 @@
 
 
 amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
-                        ts=NULL,cs=NULL,casepri=NULL,means=NULL,sds=NULL,
+                        ts=NULL,cs=NULL,means=NULL,sds=NULL,
                         mins=NULL,maxs=NULL,conf=NULL,empri=NULL,
                         tolerance=0.0001,polytime=NULL,startvals=0,lags=NULL,
                         leads=NULL,intercs=FALSE,archive=TRUE,sqrts=NULL,
@@ -125,9 +125,6 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
 
   if (inherits(try(get("tolerance"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'tolerance' argument doesn't exist.")))
-
-  if (inherits(try(get("casepri"),silent=TRUE),"try-error"))
-    return(list(code=3,mess=paste("The setting for the 'casepri' argument doesn't exist.")))
 
   if (inherits(try(get("polytime"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'polytime' argument doesn't exist.")))
@@ -395,37 +392,37 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     }
   }
 
-  if (!identical(casepri,NULL)) {
-    #Error code: 17
-    #Case prior must be in a matrix
-    if (!is.matrix(casepri)) {
-      error.code<-17
-      error.mess<-paste("The case priors should be in a martix form.")
-      return(list(code=error.code,mess=error.mess))
-    }
-    #Error code: 18
-    #CS must be specified with case priors
-    if (identical(cs,NULL)) {
-      error.code<-18
-      error.mess<-paste("The cross-sectional variable must be set in order to use case priors.")
-      return(list(code=error.code,mess=error.mess))
-    }
-    #Error code: 19
-    #Case priors have the wrong dimensions
-    if (sum(dim(casepri) == c(length(unique(data[,cs])),length(unique(data[,cs])))) != 2) {
-      error.code<-19
-      error.mess<-paste("The case priors have the wrong dimensions.  It should \n", 
-                           "have rows and columns equal to the number of cases.")
-      return(list(code=error.code,mess=error.mess))
-    }
-    #Error code: 20
-    #Case prior values are out of bounds
-    if (all(casepri != 0,casepri!=1,casepri!=2,casepri!=3)) {
-      error.code<-20
-      error.mess<-paste("The case priors can only have values 0, 1, 2, or 3.")
-      return(list(code=error.code,mess=error.mess))
-    } 
-  }
+##   if (!identical(casepri,NULL)) {
+##     #Error code: 17
+##     #Case prior must be in a matrix
+##     if (!is.matrix(casepri)) {
+##       error.code<-17
+##       error.mess<-paste("The case priors should be in a martix form.")
+##       return(list(code=error.code,mess=error.mess))
+##     }
+##     #Error code: 18
+##     #CS must be specified with case priors
+##     if (identical(cs,NULL)) {
+##       error.code<-18
+##       error.mess<-paste("The cross-sectional variable must be set in order to use case priors.")
+##       return(list(code=error.code,mess=error.mess))
+##     }
+##     #Error code: 19
+##     #Case priors have the wrong dimensions
+##     if (sum(dim(casepri) == c(length(unique(data[,cs])),length(unique(data[,cs])))) != 2) {
+##       error.code<-19
+##       error.mess<-paste("The case priors have the wrong dimensions.  It should \n", 
+##                            "have rows and columns equal to the number of cases.")
+##       return(list(code=error.code,mess=error.mess))
+##     }
+##     #Error code: 20
+##     #Case prior values are out of bounds
+##     if (all(casepri != 0,casepri!=1,casepri!=2,casepri!=3)) {
+##       error.code<-20
+##       error.mess<-paste("The case priors can only have values 0, 1, 2, or 3.")
+##       return(list(code=error.code,mess=error.mess))
+##     } 
+##   }
 
   #check polynomials
   if (!identical(polytime,NULL)) {

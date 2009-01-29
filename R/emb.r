@@ -273,7 +273,7 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
         tcl("update")   #Forces tcltk to update the text widget that holds the amelia output
       }
 
-      thetanew<-emfred(x,thetaold,indx$o,indx$m,indx$ivector,indx$icap,indx$AMr1,indx$AMr2,pr=pr,AM1stln=AM1stln,returntype="theta",priors=priors,empri=empri,collect=collect)
+      thetanew<-emfred(x,thetaold,indx$o,indx$m,indx$ivector,indx$icap,indx$AMr1,indx$AMr2,AM1stln=AM1stln,returntype="theta",priors=priors,empri=empri,collect=collect)
 #browser()
       diff2<-sqrt(sum((thetanew-thetaold)^2))   
       diff<-(abs(thetanew-thetaold)>tolerance)
@@ -536,7 +536,7 @@ am.resample <- function(x.ss, ci, imps, m.ss, bounds, max.resample) {
 
       # get the failing/passing cells
       fail.cells <- which(!btest, arr.ind=TRUE)
-      fail.rows  <- rowSums(!btest, na.rm=T) > 0
+      fail.rows  <- rowSums(!btest, na.rm=TRUE) > 0
       pass.rows  <- rowSums(!btest, na.rm=TRUE) == 0
 
       # record the rows that we have left
@@ -561,7 +561,7 @@ am.resample <- function(x.ss, ci, imps, m.ss, bounds, max.resample) {
 
     
     # set failing cells to their bounds
-    if (samp==max.resample && length(left) > 0) {
+    if ((samp==max.resample) && (length(left) > 0)) {
       xp.ss[left,] <- x.ss + imps + junk
       utest <- (imps + junk) < ub.mat
       ltest <- (imps + junk) > lb.mat
@@ -585,7 +585,7 @@ am.resample <- function(x.ss, ci, imps, m.ss, bounds, max.resample) {
 
 ## Single EM step (returns updated theta)
 ## the "x" passed to emfred is x.0s (missing values replaced with zeros)
-emfred<-function(x,thetareal,o,m,i,iii,AMr1,AMr2,pr=NULL,AM1stln,returntype="theta",priors=NULL,empri=NULL,collect=FALSE){
+emfred<-function(x,thetareal,o,m,i,iii,AMr1,AMr2,AM1stln,returntype="theta",priors=NULL,empri=NULL,collect=FALSE){
 AMp<-ncol(x)
 AMn<-nrow(x)
 
@@ -736,7 +736,7 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
                  logs=NULL,sqrts=NULL,lgstc=NULL,noms=NULL,ords=NULL,
                  incheck=TRUE,collect=FALSE,outname="outdata",
                  write.out=TRUE,archive=TRUE,arglist=NULL,keep.data=TRUE, 
-                 empri=NULL,casepri=NULL,priors=NULL,autopri=0.05,
+                 empri=NULL,priors=NULL,autopri=0.05,
                  emburn=c(0,0),bounds=NULL,max.resample=100) {
 
   #Generates the Amelia Output window for the frontend
@@ -760,7 +760,7 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
   code<-1   
   
   prepped<-amelia.prep(data=data,m=m,idvars=idvars,empri=empri,ts=ts,cs=cs,
-                       tolerance=tolerance,casepri=casepri,polytime=polytime,
+                       tolerance=tolerance,polytime=polytime,
                        lags=lags,leads=leads,logs=logs,sqrts=sqrts,lgstc=lgstc,
                        p2s=p2s,frontend=frontend,archive=archive,intercs=intercs,
                        noms=noms,startvals=startvals,ords=ords,incheck=incheck,

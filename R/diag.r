@@ -104,14 +104,8 @@ overimpute <- function(data,output,var,frontend=FALSE) {
       }
     }
   }
- 
-  prepped<-amelia.prep(data=data,m=m,idvars=idvars,priors=priors,empri=empri,
-                       ts=ts,cs=cs,tolerance=tolerance,casepri=casepri,
-                       polytime=polytime, lags=lags,leads=leads,logs=logs,
-                       sqrts=sqrts,lgstc=lgstc, p2s=FALSE,frontend=frontend,
-                       archive=FALSE,intercs=intercs, noms=noms,
-                       startvals=startvals,ords=ords,incheck=FALSE, collect=FALSE,
-                       outname="outdata",write.out=FALSE,var=var,arglist=output)
+  
+  prepped<-amelia.prep(data=data,arglist=output)
 
   stacked.var<-match(var,prepped$subset.index[prepped$p.order])
   subset.var<-match(var,prepped$subset.index)
@@ -222,21 +216,21 @@ gethull <- function(st,tol,rots) {
 }  
 
     
-disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=NULL,cs=NULL,casepri=NULL,priors=NULL,empri=NULL,tolerance=0.00001,polytime=NULL,startvals=0,
+disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=NULL,cs=NULL,priors=NULL,empri=NULL,tolerance=0.00001,polytime=NULL,startvals=0,
                   lags=NULL, leads=NULL, intercs=FALSE,archive=TRUE,sqrts=NULL,lgstc=NULL,noms=NULL,incheck=TRUE,
                   ords=NULL,dims=1, output=NULL) {
 
 
   if (frontend) {
     require(tcltk)
-    tcl.window<<-tktoplevel()
-    scr <- tkscrollbar(tcl.window, repeatinterval=5,
-          command=function(...)tkyview(run.text,...))
-    run.text<<-tktext(tcl.window,font=c("Courier",10),
-          yscrollcommand=function(...)tkset(scr,...))
-    tkgrid(run.text,scr)
+    putAmelia("tcl.window",tktoplevel())
+    scr <- tkscrollbar(getAmelia("tcl.window"), repeatinterval=5,
+          command=function(...)tkyview(getAmelia("run.text"),...))
+    putAmelia("run.text",tktext(getAmelia("tcl.window"),font=c("Courier",10),
+          yscrollcommand=function(...)tkset(scr,...)))
+    tkgrid(getAmelia("run.text"),scr)
     tkgrid.configure(scr,sticky="ns")
-    tkwm.title(tcl.window,"Overdisperse Output")
+    tkwm.title(getAmelia("tcl.window"),"Overdisperse Output")
     tcl("update")
   }
   
@@ -244,7 +238,7 @@ disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=N
 
   # prep the data and arguments
   prepped<-amelia.prep(data=data,m=m,idvars=idvars,priors=priors,empri=empri,ts=ts,cs=cs,
-                        tolerance=tolerance,casepri=casepri,polytime=polytime,
+                        tolerance=tolerance,polytime=polytime,
                         lags=lags,leads=leads,logs=logs,sqrts=sqrts,lgstc=lgstc,
                         p2s=p2s,frontend=frontend,archive=archive,intercs=intercs,
                         noms=noms,startvals=startvals,ords=ords,incheck=incheck,arglist=output)
@@ -257,7 +251,7 @@ disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=N
     return(list(code=prepped$code,message=prepped$message))
   }
   if (p2s) cat("-- Imputation", "1", "--")
-  if (frontend) tkinsert(run.text,"end",paste("-- Imputation","1","--\n"))
+  if (frontend) tkinsert(getAmelia("run.text"),"end",paste("-- Imputation","1","--\n"))
   flush.console()
 
   # run EM, but return it with the theta at each iteration
@@ -277,7 +271,7 @@ disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=N
   for (i in 2:m){
 
     if (p2s) cat("-- Imputation", i, "--\n")
-    if (frontend) tkinsert(run.text,"end",paste("-- Imputation",i,"--\n"))    
+    if (frontend) tkinsert(getAmelia("run.text"),"end",paste("-- Imputation",i,"--\n"))    
 
     # get a noisy sample of data from the that starting value (which is the
     # Amelia answer) and use that to estimate a new starting theta (mus/vcov)
@@ -363,7 +357,7 @@ disperse <- function(data,m=5,p2s=TRUE,frontend=FALSE,idvars=NULL,logs=NULL,ts=N
     abline(v=0,lty=2)  
   }
   if (frontend)
-    tkdestroy(tcl.window)
+    tkdestroy(getAmelia("tcl.window"))
   
   return(list(impdata=impdata,p.order=prepped$p.order,index=prepped$index,iters=iters,rotations=rotations,dims=dims))
 
