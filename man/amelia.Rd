@@ -14,7 +14,7 @@ amelia(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
        logs=NULL,sqrts=NULL,lgstc=NULL,noms=NULL,ords=NULL,
        incheck=TRUE,collect=FALSE,outname="outdata",
        write.out=TRUE,archive=TRUE,arglist=NULL,keep.data=TRUE, 
-       empri=NULL,casepri=NULL,priors=NULL,autopri=0.05, emburn=c(0,0),
+       empri=NULL,priors=NULL,autopri=0.05, emburn=c(0,0),
        bounds=NULL,max.resample=100)}
 
 \arguments{
@@ -82,7 +82,7 @@ amelia(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
     time.}
 
   \item{collect}{a logical value indicating whether or
-        not the garbage collection frequency should be increased during the imputation model.  Only set this to \texttt{TRUE} if you are experiencing memory
+        not the garbage collection frequency should be increased during the imputation model.  Only set this to \code{TRUE} if you are experiencing memory
         issues as it can significantly slow down the imputation
         process.}
 
@@ -116,12 +116,6 @@ amelia(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
     and variances the same for problems of high missingness, small N's or
     large correlations among the variables.  Should be kept small; a 
     reasonable upper bound is around 10\% of the rows of the data.}
-
-  \item{casepri}{indicator matrix of size \emph{kxk} (where \emph{k} is 
-    the number of cases) for the degree of similarity between two cases.  
-    For example, the [2,3] entry would indicate how similar cases 2 and 3 
-    were.  The indicators can be 0, 1, 2, or 3.  Values should only appear
-    in the upper triangle, as values in the lower triangle are ignored.}
 
   \item{priors}{a four or five column matrix containing the priors for
     either individual missing observations or variable-wide missing
@@ -224,5 +218,4 @@ or,
   \item{thetas}{a matrix of the output parameter matrices used to
     generate the imputed datasets.}
 }
-
 \keyword{models}

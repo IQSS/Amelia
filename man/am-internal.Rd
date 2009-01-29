@@ -38,4 +38,5 @@
 \alias{overimpute}
 \alias{sigalert}
 \alias{am.resample}
+\alias{am.inv}
 \keyword{internal}
