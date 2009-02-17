@@ -593,7 +593,17 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
                               bounds = prepped$bounds,
                               max.resample = output$arguments$max.resample)[,stacked.var]
   }
+  
   imps <- imps*prepped$scaled.sd[subset.var] + prepped$scaled.mu[subset.var]
+  if (var %in% output$arguments$logs) {
+    imps <- exp(imps)+prepped$xmin[which(var==output$arguments$logs)]
+  }
+  if (var %in% output$arguments$sqrt) {
+    imps <- imps^2
+  }
+  if (var %in% output$arguments$lgstc) {
+    imps <- exp(imps)/(1+exp(imps))
+  }
   
   outoforder <- match(prepped$n.order, unit.rows)[!is.na(match(prepped$n.order, unit.rows))]
   imps <- imps[order(outoforder),]
