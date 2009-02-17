@@ -350,7 +350,7 @@ run.amelia <- function() {
   ## run amelia! or at least try, and put the output in a list
   ## the name of the list will be the output name set by user
   putAmelia(tclvalue(getAmelia("outname")),
-            try(amelia(data     = getAmelia("amelia.data"),
+            try(amelia.default(x        = getAmelia("amelia.data"),
                        m        = as.numeric(tclvalue(getAmelia("outnum"))),
                        p2s      = FALSE,
                        idvars   = id,
@@ -369,7 +369,6 @@ run.amelia <- function() {
                        lgstc    = lgstc,
                        ords     = ord,
                        noms     = nom,
-                       write.out= FALSE,
                        tolerance= as.numeric(tclvalue(getAmelia("tol")))),
                 silent=TRUE))
 
@@ -399,16 +398,16 @@ run.amelia <- function() {
 amelia.save <- function(out,outname,m)  {
   if (getAmelia("output.select") == 1)
     for (i in 1:m) 
-      write.csv(out[[i]],file=paste(getAmelia("am.directory"),"/",outname,i,".csv",sep=""),row.names=FALSE)
+      write.csv(out$imputations[[i]],file=paste(getAmelia("am.directory"),"/",outname,i,".csv",sep=""),row.names=FALSE)
   if (getAmelia("output.select") == 2)
     for (i in 1:m) 
-      write.table(out[[i]],file=paste(getAmelia("am.directory"),"/",outname,i,".txt",sep=""),sep="\t",row.names=FALSE)
+      write.table(out$imputations[[i]],file=paste(getAmelia("am.directory"),"/",outname,i,".txt",sep=""),sep="\t",row.names=FALSE)
   if (getAmelia("output.select") == 3)
     for (i in 1:m) 
-      write.dta(out[[i]],file=paste(getAmelia("am.directory"),"/",outname,i,".dta",sep=""),version=6)
+      write.dta(out$imputations[[i]],file=paste(getAmelia("am.directory"),"/",outname,i,".dta",sep=""),version=6)
   if (getAmelia("output.select") == 4)
     for (i in 1:m) 
-      write.dta(out[[i]],file=paste(getAmelia("am.directory"),"/",outname,i,".dta",sep=""),version=7)
+      write.dta(out$imputations[[i]],file=paste(getAmelia("am.directory"),"/",outname,i,".dta",sep=""),version=7)
   if (getAmelia("output.select") == 5)
     save(list=tclvalue(getAmelia("outname")), envir=ameliaEnv(),
          file=paste(getAmelia("am.directory"),"/",outname,".RData",sep=""))
@@ -1645,14 +1644,12 @@ gui.diag.setup <- function() {
   tkselection.set(diag.list,(getAmelia("diag.sel.var")-1))
   tkbind(diag.list,"<Button-1>",function(y)select.var(y))
   diag.but.compare <- tkbutton(diag.var, text="Compare",
-    command = function() compare.density(data=getAmelia("amelia.data"),
-                                         output=getAmelia(tclvalue(getAmelia("outname"))),
+    command = function() compare.density(output=getAmelia(tclvalue(getAmelia("outname"))),
                                          var=getAmelia("diag.sel.var"),frontend=TRUE))
   if (is.factor(getAmelia("amelia.data")[,getAmelia("diag.sel.var")]))
     tkconfigure(diag.but.compare, state="disabled")
   diag.overimp <- tkbutton(diag.var,text="Overimpute",state="normal",
-    command = function() overimpute(data=getAmelia("amelia.data"),
-                                    output=getAmelia(tclvalue(getAmelia("outname"))),
+    command = function() overimpute(output=getAmelia(tclvalue(getAmelia("outname"))),
                                     var=getAmelia("diag.sel.var"),frontend=TRUE))
   diag.disp<-tkframe(tt, relief = "groove", borderwidth = 2)
   dimvalue<-tclVar("1")
@@ -1661,7 +1658,7 @@ gui.diag.setup <- function() {
   disp.imps.tcl<-tclVar("5")
   disp.imps<-tkentry(diag.disp,width="5",textvariable=disp.imps.tcl)
   disp.but<-tkbutton(diag.disp,text="Overdisperse",state="normal",
-    command = function() disperse(data=getAmelia("amelia.data"),m=as.numeric(tclvalue(disp.imps.tcl)),
+    command = function() disperse(m=as.numeric(tclvalue(disp.imps.tcl)),
     dims=as.numeric(tclvalue(dimvalue)),frontend=TRUE,output=getAmelia(tclvalue(getAmelia("outname")))))
   tkgrid(tklabel(diag.disp, text="Overdispersed Starting Values", 
     font="Arial 12 bold"),row=1, column=1, columnspan=2,padx=3,pady=5)

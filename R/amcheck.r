@@ -14,25 +14,23 @@
 
 
 
-amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
+amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                         ts=NULL,cs=NULL,means=NULL,sds=NULL,
                         mins=NULL,maxs=NULL,conf=NULL,empri=NULL,
                         tolerance=0.0001,polytime=NULL,startvals=0,lags=NULL,
                         leads=NULL,intercs=FALSE,archive=TRUE,sqrts=NULL,
                         lgstc=NULL,noms=NULL,incheck=TRUE,ords=NULL,collect=FALSE,
-                        outname="outdata",write.out=TRUE,arglist=NULL,
-                        keep.data=TRUE, priors=NULL,bounds=NULL,
-                        max.resample=1000) {
+                        arglist=NULL, priors=NULL,bounds=NULL, max.resample=1000) {
 
   #Checks for errors in list variables
   listcheck<-function(vars,optname) {
     if (identical(vars,NULL))
       return(0)
     if (mode(vars) == "character") { 
-      if (any(is.na(match(vars,colnames(data))))) {
+      if (any(is.na(match(vars,colnames(x))))) {
         mess<-paste("The following variables are refered to in the",
                     optname,"argument, but don't are not columns in the data:",
-                    vars[is.na(match(vars,colnames(data)))])
+                    vars[is.na(match(vars,colnames(x)))])
           return(list(1,mess))
         }
        return(0)
@@ -75,7 +73,7 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                           "Please change it to a numeric matrix.")
         return(list(2,mess))
       }
-      if (any(dim(opt)!=dim(data))) {
+      if (any(dim(opt)!=dim(x))) {
         mess<-paste("The", optname,"matrices must have the same dimensions\n",
                         "as the data.")
         return(list(3,mess))
@@ -91,7 +89,7 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
 
   #Error Code: 3
   #Arguments point to variables that do not exist.
-  if (inherits(try(get("data"),silent=TRUE),"try-error"))
+  if (inherits(try(get("x"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the data argument doesn't exist.")))
   if (inherits(try(get("m"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'm' argument doesn't exist.")))
@@ -150,9 +148,6 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   if (inherits(try(get("frontend"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'frontend' argument doesn't exist.")))
 
-  if (inherits(try(get("archive"),silent=TRUE),"try-error"))
-    return(list(code=3,mess=paste("The setting for the 'archive' argument doesn't exist.")))
-
   if (inherits(try(get("intercs"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'intercs' argument doesn't exist.")))
 
@@ -168,20 +163,14 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   if (inherits(try(get("collect"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'collect' argument doesn't exist.")))
     
-  if (inherits(try(get("outname"),silent=TRUE),"try-error"))
-    return(list(code=3,mess=paste("The setting for the 'outname' argument doesn't exist.")))
     
-  if (inherits(try(get("write.out"),silent=TRUE),"try-error"))
-    return(list(code=3,mess=paste("The setting for the 'write.out' argument doesn't exist.")))
-    
-    
-  AMn<-nrow(data)
-  AMp<-ncol(data)
+  AMn<-nrow(x)
+  AMp<-ncol(x)
   subbedout<-c(idvars,cs,ts)
   
   #Error Code: 4
   #Completely missing columns
-  if (any(colSums(!is.na(data)) <= 1)) {
+  if (any(colSums(!is.na(x)) <= 1)) {
     error.code<-4
     error.mess<-paste("The data has a column that is completely missing or only has one \n",
                       "observation.  Remove this column from the data and retry amelia.")
@@ -260,7 +249,7 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       return(list(code=error.code, mess=error.mess))
     }
 
-    if (nrow(priors) > nrow(data)*ncol(data)) {
+    if (nrow(priors) > nrow(x)*ncol(x)) {
       error.code <- 47
       error.mess <- "There are more priors than there are observations."
       return(list(code=error.code, mess=error.mess))
@@ -283,8 +272,8 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       return(list(code=error.code,mess=error.mess))
     }
     
-    prior.cols <- priors[,2] %in% c(1:ncol(data))
-    prior.rows <- priors[,1] %in% c(0:nrow(data))
+    prior.cols <- priors[,2] %in% c(1:ncol(x))
+    prior.rows <- priors[,1] %in% c(0:nrow(x))
 
     # Error code: 9
     # priors set for cells that aren't in the data
@@ -309,7 +298,7 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   #Error code: 10
   #Square roots with negative values
   if (!identical(sqrts,NULL)) {
-    if (any(na.omit(data[,sqrts]) < 0)) {
+    if (any(na.omit(x[,sqrts]) < 0)) {
       error.code<-10
       error.mess<-paste("The square root transformation cannot be used on \n",
                         "variables with negative values.")
@@ -321,7 +310,7 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   #warning message
   #logs with negative values
   if (!identical(logs,NULL)) {
-    if (any(na.omit(data[,logs]) < 0)) { 
+    if (any(na.omit(x[,logs]) < 0)) { 
       warning(paste("The log transformation is being used on \n",
                     "variables with negative values. The values \n",
                     "will be shifted up by 1 plus the minimum value \n",
@@ -332,7 +321,7 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   #Error code: 11
   #0-1 Bounds on logistic transformations
   if (!identical(lgstc,NULL)) {
-    if (any(na.omit(data[,lgstc]) < 0,na.omit(data[,lgstc]>1))) {
+    if (any(na.omit(x[,lgstc]) < 0,na.omit(x[,lgstc]>1))) {
       error.code<-11
       error.mess<-paste("The logistic transformation can only be used on \n",
                         "values between 0 and 1.")
@@ -469,7 +458,7 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                         "without setting the cross section variable.")
       return(list(code=error.code,mess=error.mess))
     }
-    if (length(unique(data[,cs])) > (1/3)*(AMn)) {
+    if (length(unique(x[,cs])) > (1/3)*(AMn)) {
       error.code<-28
       error.mess<-paste("There are too many cross-sections in the data to use an \n",
                         "interaction between polynomial of time and the cross-section.")
@@ -492,17 +481,9 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   if (!identical(frout,0))
     return(list(code=(frout[[1]]+28),mess=frout[[2]]))
   
-  archout<-logiccheck(archive,"archive")
-  if (!identical(archout,0))
-    return(list(code=(archout[[1]]+28),mess=archout[[2]]))
-  
   collout<-logiccheck(collect,"archive")
   if (!identical(collout,0))
     return(list(code=(collout[[1]]+28),mess=collout[[2]]))
-  
-  writeout<-logiccheck(write.out,"archive")
-  if (!identical(writeout,0))
-    return(list(code=(writeout[[1]]+28),mess=writeout[[2]]))  
   
   #Error code: 32
   #Transformations must be mutually exclusive 
@@ -539,7 +520,7 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     for (i in noms) {
       #Error code: 36
       #too many levels on noms
-      if (length(unique(data[,i])) > (1/3)*(AMn)) {
+      if (length(unique(x[,i])) > (1/3)*(AMn)) {
         error.code<-36
         error.mess<-paste("The number of categories in your variables set in noms is \n",
                           "greater than one-third the number of observations.  Check \n",
@@ -547,7 +528,7 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
         return(list(code=error.code,mess=error.mess))
       }
       
-      if (length(unique(data[,i])) > 10)
+      if (length(unique(x[,i])) > 10)
         warning("\n\nThe number of catagories in one of the variables marked nominal has greater than 10 categories. Check nominal specification.\n\n")
       
 
@@ -565,7 +546,7 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     fact<--c(noms,ords,idvars,cs)
   #Error code: 37
   #factors out of the noms,ids,ords,cs
-  if (any(sapply(data[,fact],class)=="factor")) {
+  if (any(sapply(x[,fact],class)=="factor")) {
     error.code<-37
     error.mess<-paste("You have a \"factor\" variable in the data.  You may \n",
                       "have wanted to set this as a ID variable to remove it \n",
@@ -578,7 +559,7 @@ amcheck <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     idcheck<-c(1:AMp)
   else
     idcheck<--c(cs,idvars,noms)
-  if (any(sapply(data[,idcheck],class)=="character")) {
+  if (any(sapply(x[,idcheck],class)=="character")) {
     error.code<-38
     error.mess<-paste("You have a \"character\" variable in the data.  You may \n",
                       "have wanted to set this as a ID variable,
@@ -590,7 +571,7 @@ nominal\n",
   
   #Error code: 39
   #No missing observation
-  if (!any(is.na(data))) {
+  if (!any(is.na(x))) {
     error.code<-39
     error.mess<-paste("Your data has no missing values.  Make sure the code for \n",
                       "missing data is set to the code for R, which is NA.")
@@ -629,23 +610,23 @@ nominal\n",
 
   #Error code: 43
   #Variable that doesn't vary
-  if (is.data.frame(data)) {
+  if (is.data.frame(x)) {
     
-      if (any(sapply(data[,idcheck,drop=FALSE],var,na.rm=TRUE)==0)) {
+      if (any(sapply(x[,idcheck,drop=FALSE],var,na.rm=TRUE)==0)) {
         error.code<-43
         error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
         return(list(code=error.code,mess=error.mess))
       }     
   } else {
-    if (nrow(na.omit(data)) > 1) {
-      if (any(diag(var(data[,idcheck],na.rm=TRUE))==0)) {
+    if (nrow(na.omit(x)) > 1) {
+      if (any(diag(var(x[,idcheck],na.rm=TRUE))==0)) {
         error.code<-43
         error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
         return(list(code=error.code,mess=error.mess))
       }
     } else {
-      for (i in 1:ncol(data[,idcheck])) {
-        if (var(data[,i],na.rm=TRUE) == 0) {
+      for (i in 1:ncol(x[,idcheck])) {
+        if (var(x[,i],na.rm=TRUE) == 0) {
           error.code<-43
           error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
           return(list(code=error.code,mess=error.mess))
@@ -660,8 +641,8 @@ nominal\n",
       #Error code: 44
       # Ordinal variable with non-integers (factors work by design, and they're
       # harder to check
-      if (!is.factor(data[,i])) {
-        if (any(unique(na.omit(data[,i])) %% 1 != 0 )) {
+      if (!is.factor(x[,i])) {
+        if (any(unique(na.omit(x[,i])) %% 1 != 0 )) {
           error.code<-44
           error.mess<-paste("You have designated a variable as ordinal when it has non-integer values.")
           return(list(code=error.code,mess=error.mess))
@@ -672,29 +653,29 @@ nominal\n",
 
  
   
-  #checks for outname
-  if (write.out==TRUE) {
-    if (!is.character(outname)) {
-      outname<-"outdata"
-      warning("The output filename (outname) was not a character.  It has been set it 
-its default 'outdata' in the working directory.")
-    }
-    #Error code: 45
-    #output file errors
-    outtest<-try(write.csv("test",file=paste(outname,"1.csv",sep="")),silent=TRUE)
-    if (inherits(outtest,"try-error")) {
-      error.code<-45
-      error.mess<-paste("R cannot write to the outname you have specified.  Please 
-check","that the directory exists and that you have permission to write.",sep="\n")
-      return(list(code=error.code,mess=error.mess))
-    }
-    tmpdir<- strsplit(paste(outname,"1.csv",sep=""),.Platform$file.sep)
-    am.dir <- tmpdir[[1]][1]
-    if (length(tmpdir[[1]]) > 1)
-      for (i in 2:(length(tmpdir[[1]])))
-        am.dir <- file.path(am.dir, tmpdir[[1]][i])
-    file.remove(am.dir)
-  }
+##   #checks for outname
+##   if (write.out==TRUE) {
+##     if (!is.character(outname)) {
+##       outname<-"outdata"
+##       warning("The output filename (outname) was not a character.  It has been set it 
+## its default 'outdata' in the working directory.")
+##     }
+##     #Error code: 45
+##     #output file errors
+##     outtest<-try(write.csv("test",file=paste(outname,"1.csv",sep="")),silent=TRUE)
+##     if (inherits(outtest,"try-error")) {
+##       error.code<-45
+##       error.mess<-paste("R cannot write to the outname you have specified.  Please 
+## check","that the directory exists and that you have permission to write.",sep="\n")
+##       return(list(code=error.code,mess=error.mess))
+##     }
+##     tmpdir<- strsplit(paste(outname,"1.csv",sep=""),.Platform$file.sep)
+##     am.dir <- tmpdir[[1]][1]
+##     if (length(tmpdir[[1]]) > 1)
+##       for (i in 2:(length(tmpdir[[1]])))
+##         am.dir <- file.path(am.dir, tmpdir[[1]][i])
+##     file.remove(am.dir)
+##   }
       
 
 #  if (xor(!identical(means,NULL),!identical(sds,NULL))) {
@@ -758,5 +739,5 @@ check","that the directory exists and that you have permission to write.",sep="\
   }
 
   
-  return(list(m=m,outname=outname,priors=priors))
+  return(list(m=m,priors=priors))
 }

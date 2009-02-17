@@ -583,48 +583,52 @@ combine.output <- function(...) {
 }
 
 
-amelia.prep <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
+amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                         ts=NULL,cs=NULL,empri=NULL,
                         tolerance=0.0001,polytime=NULL,startvals=0,lags=NULL,
-                        leads=NULL,intercs=FALSE,archive=TRUE,sqrts=NULL,
+                        leads=NULL,intercs=FALSE,sqrts=NULL,
                         lgstc=NULL,noms=NULL,incheck=TRUE,ords=NULL,collect=FALSE,
-                        outname="outdata",write.out=TRUE,arglist=NULL,
-                        keep.data=TRUE,
-                        priors=NULL,var=NULL,autopri=0.05,bounds=NULL,
+                        arglist=NULL, priors=NULL,var=NULL,autopri=0.05,bounds=NULL,
                         max.resample=NULL) {
 
 
   code <- 1
+
+  ## If there is an ameliaArgs passed, then we should use
+  ## those. 
+  
   if (!identical(arglist,NULL)) {
-    if (!is.list(arglist) || identical(arglist$amelia.args,NULL)) {
+    if (!("ameliaArgs" %in% class(arglist))) {
       error.code <- 46
       error.mess <- paste("The argument list you provided is invalid.")
       return(list(code=error.code, message=error.mess))
     }
-    m         <- arglist$amelia.args$m
-    idvars    <- arglist$amelia.args$idvars
-    empri     <- arglist$amelia.args$empri
-    ts        <- arglist$amelia.args$ts
-    cs        <- arglist$amelia.args$cs
-    tolerance <- arglist$amelia.args$tolerance
+    #m         <- arglist$m
+    idvars    <- arglist$idvars
+    empri     <- arglist$empri
+    ts        <- arglist$ts
+    cs        <- arglist$cs
+    tolerance <- arglist$tolerance
 #    casepri   <- arglist$amelia.args$casepri
-    polytime  <- arglist$amelia.args$polytime
-    lags      <- arglist$amelia.args$lags
-    leads     <- arglist$amelia.args$leads
-    logs      <- arglist$amelia.args$logs
-    sqrts     <- arglist$amelia.args$sqrts
-    lgstc     <- arglist$amelia.args$lgstc
-    intercs   <- arglist$amelia.args$intercs
-    noms      <- arglist$amelia.args$noms
-    startvals <- arglist$amelia.args$startvals
-    ords      <- arglist$amelia.args$ords
-    priors    <- arglist$amelia.args$priors
-    autopri   <- arglist$amelia.args$autopri
-    empri     <- arglist$amelia.args$empri       #change 1
+    polytime  <- arglist$polytime
+    lags      <- arglist$lags
+    leads     <- arglist$leads
+    logs      <- arglist$logs
+    sqrts     <- arglist$sqrts
+    lgstc     <- arglist$lgstc
+    intercs   <- arglist$intercs
+    noms      <- arglist$noms
+    startvals <- arglist$startvals
+    ords      <- arglist$ords
+    priors    <- arglist$priors
+    autopri   <- arglist$autopri
+    empri     <- arglist$empri       #change 1
+    bounds    <- arglist$bounds
+    max.resample <- arglist$max.resample
   }
   
   
-  numopts<-nametonumber(x=data,ts=ts,cs=cs,idvars=idvars,noms=noms,ords=ords,
+  numopts<-nametonumber(x=x,ts=ts,cs=cs,idvars=idvars,noms=noms,ords=ords,
                         logs=logs,sqrts=sqrts,lgstc=lgstc,lags=lags,leads=leads)
   if (numopts$code == 1) {
     return(list(code=44,message=numopts$mess))
@@ -632,16 +636,15 @@ amelia.prep <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   
   if (incheck) {
 
-    checklist<-amcheck(data = data, m = m, idvars = numopts$idvars, priors =
+    checklist<-amcheck(x = x, m = m, idvars = numopts$idvars, priors =
                        priors, empri = empri, ts = numopts$ts, cs = numopts$cs,
                        tolerance = tolerance, polytime =
                        polytime, lags = numopts$lags,leads = numopts$leads, logs
                        = numopts$logs, sqrts = numopts$sqrts, lgstc
-                       =numopts$lgstc, p2s = p2s, frontend = frontend, archive =
-                       archive, intercs = intercs, noms = numopts$noms,
+                       =numopts$lgstc, p2s = p2s, frontend = frontend,
+                       intercs = intercs, noms = numopts$noms,
                        startvals = startvals, ords = numopts$ords, collect =
-                       collect, outname = outname, write.out = write.out,
-                       bounds=bounds, max.resample=max.resample)
+                       collect,  bounds=bounds, max.resample=max.resample)
     #check.call <- match.call()
     #check.call[[1]] <- as.name("amcheck")
     #checklist <- eval(check.call, parent.frame())
@@ -651,29 +654,26 @@ amelia.prep <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     }
     m <- checklist$m
     priors <- checklist$priors
-    outname <- checklist$outname
   }
   
   priors <- generatepriors(AMr1 = is.na(data),empri = empri, priors = priors)
   
-  if (archive) {
-    archv<-list(m=m, idvars=numopts$idvars, logs=numopts$logs, ts=numopts$ts, cs=numopts$cs,
+  archv <- list(idvars=numopts$idvars, logs=numopts$logs, ts=numopts$ts, cs=numopts$cs,
                 empri=empri, tolerance=tolerance,
                 polytime=polytime, lags=numopts$lags, leads=numopts$leads,
                 intercs=intercs, sqrts=numopts$sqrts, lgstc=numopts$lgstc,
-                noms=numopts$noms, ords=numopts$ords, outname=outname,
-                priors=priors, autopri=autopri, empri=empri, bounds=bounds,
-                max.resample=max.resample)        #change 2
-  } else {
-    archv<-NULL
-  }
+                noms=numopts$noms, ords=numopts$ords,
+                priors=priors, autopri=autopri, bounds=bounds,
+                max.resample=max.resample, startvals=startvals)        #change 2
+  
+  
   if (p2s==2) {
     cat("beginning prep functions\n")
     flush.console()
   }
 
   
-  d.trans<-amtransform(data,logs=numopts$logs,sqrts=numopts$sqrts,lgstc=numopts$lgstc)  
+  d.trans<-amtransform(x,logs=numopts$logs,sqrts=numopts$sqrts,lgstc=numopts$lgstc)  
   d.subset<-amsubset(d.trans$x,idvars=numopts$idvars,p2s=p2s,ts=numopts$ts,cs=numopts$cs,polytime=polytime,intercs=intercs,noms=numopts$noms,priors=priors,bounds=bounds, lags=numopts$lags, leads=numopts$leads)
   d.scaled<-scalecenter(d.subset$x,priors=d.subset$priors,bounds=d.subset$bounds)
   d.stacked<-amstack(d.scaled$x,colorder=TRUE,priors=d.scaled$priors,bounds=d.scaled$bounds)
@@ -734,7 +734,7 @@ amelia.prep <- function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     xmin         = d.trans$xmin,
     sqrts        = numopts$sqrts,
     lgstc        = numopts$lgstc,
-    outname      = outname,
+#    outname      = outname,
     subset.index = d.subset$index,
     autopri      = autopri,
     bounds       = d.stacked$bounds,

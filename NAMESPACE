@@ -1,0 +1,17 @@
+export(amelia,
+       write.amelia,
+       AmeliaView,
+##       amelia.prep,
+       ameliabind,
+       compare.density,
+       overimpute,
+       disperse,
+       tscsPlot,
+       missmap)
+
+
+S3method(print, amelia)
+S3method(plot, amelia)
+S3method(summary, amelia)
+S3method(amelia, amelia)
+S3method(amelia, default)

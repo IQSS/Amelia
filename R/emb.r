@@ -102,10 +102,12 @@ impfill<-function(x.orig,x.imp,noms,ords) {
       if (class(x.orig[,i]) == "logical") 
         x.imp[,i]<-as.logical(x.imp[,i]>0.5) 
 
-    if (!is.null(noms)) {
-      AMr1.orig <-is.na(x.orig[,-noms])
-      x.orig[,-noms][AMr1.orig]<-x.imp[,-noms][AMr1.orig]
-      for (i in noms) {
+    possibleFactors <- unique(c(noms,ords))
+    
+    if (!is.null(possibleFactors)) {
+      AMr1.orig <-is.na(x.orig[,-possibleFactors])
+      x.orig[,-possibleFactors][AMr1.orig]<-x.imp[,-possibleFactors][AMr1.orig]
+      for (i in possibleFactors) {
         if (orig.class[i]=="factor")
           x.orig[is.na(x.orig[,i]),i]<- levels(x.orig[,i])[x.imp[is.na(x.orig[,i]),i]]
         else if (orig.class[i]=="character")
@@ -201,15 +203,20 @@ if (identical(m,vector(mode='logical',length=length(m)))) # This is check for sw
     kseq<-1:p
     k<-kseq[m]    
     kcompl<-kseq[-k]     # we could do everything with m and !m, but only with small numbers of variables
-    g11<-g[k,k]          # can not subset matricies with long logical vectors
+    g11<-g[k,k,drop=FALSE]          # can not subset matricies with long logical vectors
     g12<-g[k,kcompl, drop=FALSE]   
     g21<-t(g12)
     g22<-g[kcompl,kcompl , drop=FALSE]
+
+    ## this doesn't actually save us much time.
+    #h11a <- am.inv(a = g11)
     
     h11a<-try(solve(g11),silent=TRUE)
-    
-    if (inherits(h11a,"try-error"))
-      h11a<-mpinv(g11)     # This is where significant time is spent!  About as much time as in the rest of the EM step
+    if (inherits(h11a,"try-error")) {
+      h11a<-mpinv(g11)     # This is where significant time is spent!
+                           # About as much time as in the rest of the EM
+                           # step
+    }
     h11<-as.matrix((-h11a))
     if (reverse) {sgn2<- -1} else {sgn2<- 1}   
     h12<-as.matrix(sgn2 * (h11a %*% g12))
@@ -274,7 +281,7 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
       }
 
       thetanew<-emfred(x,thetaold,indx$o,indx$m,indx$ivector,indx$icap,indx$AMr1,indx$AMr2,AM1stln=AM1stln,returntype="theta",priors=priors,empri=empri,collect=collect)
-#browser()
+
       diff2<-sqrt(sum((thetanew-thetaold)^2))   
       diff<-(abs(thetanew-thetaold)>tolerance)
       diff<-sum(diff*upper.tri(diff,diag=TRUE))
@@ -560,7 +567,8 @@ am.resample <- function(x.ss, ci, imps, m.ss, bounds, max.resample) {
     }
 
     
-    # set failing cells to their bounds
+    # set failing cells to their bounds of the last failure
+    # this is probably okay, as if the n
     if ((samp==max.resample) && (length(left) > 0)) {
       xp.ss[left,] <- x.ss + imps + junk
       utest <- (imps + junk) < ub.mat
@@ -579,7 +587,6 @@ am.resample <- function(x.ss, ci, imps, m.ss, bounds, max.resample) {
   return(xp.ss)
 }
       
-
 
 
 
@@ -603,8 +610,8 @@ if (!AM1stln){
 if (identical(priors,NULL)){                     # No Observation Level Priors in Dataset
   for (ss in st:(length(i)-1)){
 
+    
     theta<-amsweep(thetareal,c(FALSE,o[ss,]))
-
     is<-i[ss]
     isp<-i[ss+1]-1
     hmcv[m[ss,],m[ss,]]<-hmcv[m[ss,],m[ss,]] + ((1+isp-is) * theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])])
@@ -708,7 +715,6 @@ if (returntype=="theta"){
   thetanew<-thetanew/AMn
   sweeppos<-(1:(AMp+1)==1)
   thetanew<-amsweep(thetanew,sweeppos)
-  
   return(thetanew)
 
   } else {
@@ -717,7 +723,7 @@ if (returntype=="theta"){
 }
 
 
-am.inv <- function(a,b,tol=.Machine$double.eps) {
+am.inv <- function(a,tol=.Machine$double.eps) {
   if (length(a)==1)
     return(1/a)
   storage.mode(a) <- "double"
@@ -729,15 +735,111 @@ am.inv <- function(a,b,tol=.Machine$double.eps) {
   #.Call("La_dgesv",a,b,tol)
 }
 
-## Core amelia function
-amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
+##
+## ameliabind - combines multiple Amelia outputs
+##
+## INPUTS: >1 amelia output
+##
+## OUTPUTS: a merged amelia output with all inputted lists
+##
+
+ameliabind <- function(...) {
+  args <- list(...)
+
+  if (length(args) < 2)
+    stop("We need at least two amelia outputs to bind")
+  
+  if (any(lapply(args, class)!="amelia"))
+    stop("All arguments must be amelia output.")
+
+  ## test that data is the same. we'll just compare the missMatrices.
+  ## this will allow datasets with the same size and missingness
+  ## matrix to be combined unintentionally, but this seems unlikely.
+  datacheck <- lapply(args,
+                      function(x) isTRUE(identical(x$missMatrix,args[[1]]$missMatrix)))
+  if (any(!unlist(datacheck)))
+    stop("Non-compatible datasets.")
+  
+  ## test that all the arguments are the same
+  check <- lapply(args,
+                  function(x) isTRUE(identical(x$arguments, args[[1]]$arguments)))
+  if (any(!unlist(check)))
+    stop("Non-compatible amelia arguments")
+
+  imps <- unlist(lapply(args, function(x) return(x$m)))
+  newm <- sum(imps)
+  impindex <- c(0,cumsum(imps))
+  
+  k <- nrow(args[[1]]$mu)
+  out  <- list(imputations = list(),
+               m           = integer(0),
+               missMatrix  = matrix(NA,0,0),
+               theta       = array(NA, dim = c(k+1,k+1,newm) ),
+               mu          = matrix(NA, nrow = k, ncol = newm),
+               covMatrices = array(NA, dim = c(k,k,newm)),
+               code        = integer(0),
+               message     = character(0),
+               iterHist    = list(),
+               arguments   = list())
+
+  out$m <- newm
+  out$missMatrix <- args[[1]]$missMatrix
+  out$arguments <- args[[1]]$arguments
+
+  ## since code==1 is good and code==2 means we have an NA,
+  ## then our new output should inherit a 2 if there are any
+  out$code <- max(unlist(lapply(args,function(x) return(x$code))))
+
+  if (out$code > 2)
+    stop("Amelia output contains error.")
+  if (out$code==2)
+    out$message <- "One or more of the imputations resulted in a covariance matrix that was not invertible."
+  else
+    out$message <- "Normal EM convergence"
+
+  for (i in 1:length(args)) {
+    currimps <- (impindex[i]+1):impindex[i+1]
+    out$mu[,currimps] <- args[[i]]$mu
+    out$theta[,,currimps] <- args[[i]]$theta
+    out$covMatrices[,,currimps] <- args[[i]]$covMatrices
+    out$imputations <- c(out$imputation, args[[i]]$imputations)
+    out$iterHist    <- c(out$iterHist, args[[i]]$iterHist)
+    
+  }
+  class(out) <- "amelia"
+  class(out$imputations) <- c("mi","list")
+  return(out)
+}
+
+
+## amelia - multiple imputation. core function
+##
+
+amelia <- function(x, ...) {
+  UseMethod("amelia", x)
+}
+
+amelia.amelia <- function(x, m = 5, p2s = 1, frontend = FALSE, ...) {
+  
+  ## The original data is the imputed data with the
+  ## imputations marked to NA. These two lines do that
+  data <- x$imputations[[1]]
+  is.na(data) <- x$missMatrix
+
+  out <- amelia.default(x = data, m = m, arglist=x$arguments, p2s=p2s,
+                        frontend = frontend, incheck=FALSE)
+  ret <- ameliabind(x, out)
+  return(ret)
+}
+  
+
+amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
                  ts=NULL,cs=NULL,polytime=NULL,intercs=FALSE,
                  lags=NULL,leads=NULL,startvals=0,tolerance=0.0001,
                  logs=NULL,sqrts=NULL,lgstc=NULL,noms=NULL,ords=NULL,
-                 incheck=TRUE,collect=FALSE,outname="outdata",
-                 write.out=TRUE,archive=TRUE,arglist=NULL,keep.data=TRUE, 
+                 incheck=TRUE,collect=FALSE,arglist=NULL, 
                  empri=NULL,priors=NULL,autopri=0.05,
-                 emburn=c(0,0),bounds=NULL,max.resample=100) {
+                 emburn=c(0,0),bounds=NULL,max.resample=100, ...) {
 
   #Generates the Amelia Output window for the frontend
   if (frontend) {
@@ -759,12 +861,12 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
              
   code<-1   
   
-  prepped<-amelia.prep(data=data,m=m,idvars=idvars,empri=empri,ts=ts,cs=cs,
+  prepped<-amelia.prep(x=x,m=m,idvars=idvars,empri=empri,ts=ts,cs=cs,
                        tolerance=tolerance,polytime=polytime,
                        lags=lags,leads=leads,logs=logs,sqrts=sqrts,lgstc=lgstc,
-                       p2s=p2s,frontend=frontend,archive=archive,intercs=intercs,
+                       p2s=p2s,frontend=frontend,intercs=intercs,
                        noms=noms,startvals=startvals,ords=ords,incheck=incheck,
-                       collect=collect,outname=outname,write.out=write.out,
+                       collect=collect,
                        arglist=arglist,priors=priors,autopri=autopri,bounds=bounds,
                        max.resample=max.resample)
   
@@ -772,7 +874,23 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
     cat("Amelia Error Code: ",prepped$code,"\n",prepped$message,"\n")
     return(list(code=prepped$code,message=prepped$message))
   }
-  impdata<-vector(mode="list",(2*m))
+
+  k <- ncol(prepped$x) 
+  impdata <- list(imputations = list(),
+                  m           = integer(0),
+                  missMatrix  = is.na(x),
+                  theta       = array(NA, dim = c(k+1,k+1,m) ),
+                  mu          = matrix(NA, nrow = k, ncol = m),
+                  covMatrices = array(NA, dim = c(k,k,m)),
+                  code        = integer(0),
+                  message     = character(0),
+                  iterHist    = list(),
+                  arguments   = list()) 
+
+  impdata$m <- m
+  class(impdata) <- "amelia"
+  class(impdata$imputations) <- c("mi","list")
+
   for (i in 1:m){
     
     if (p2s==2) {
@@ -788,21 +906,17 @@ amelia<-function(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
     flush.console()
 
     thetanew<-emarch(x.stacked$x,p2s=p2s,thetaold=NULL,tolerance=tolerance,startvals=startvals,x.stacked$priors,empri=empri,frontend=frontend,collect=collect,autopri=prepped$autopri,emburn=emburn)
-    if (archive){
-      prepped$archv[[paste("iter.hist",i,sep="")]]<-thetanew$iter.hist
-    }
-
-    if (keep.data) {
-      impdata[[m+i]]<-thetanew$thetanew
-      names(impdata)[m+i]<-paste("theta",i,sep="")
-    } else {
-      impdata[[m+i]]<-NA
-    }
-
-    if
+    
+    ## update the amelia ouptut
+    impdata$iterHist[[i]]    <- thetanew$iter.hist
+    impdata$theta[,,i]       <- thetanew$thetanew
+    impdata$mu[,i]           <- thetanew$thetanew[-1,1]
+    impdata$covMatrices[,,i] <- thetanew$thetanew[-1,-1]
+    
+    if 
     (any(eigen(thetanew$thetanew[2:nrow(thetanew$thetanew),2:ncol(thetanew$thetanew)], only.values=TRUE, symmetric=TRUE)$values < .Machine$double.eps)) {
-      impdata[[i]]<-NA
-      code<-2
+      impdata$imputations[[i]] <- NA
+      code <- 2
       cat("\n\nThe resulting variance matrix was not invertible.  Please check
 your data for highly collinear variables.\n\n")
       if (frontend) {
@@ -826,18 +940,17 @@ your data for highly collinear variables.\n\n")
     ## here we deal with the imputed matrix.
 
     # first, we put the data into the output list and name it
-    impdata[[i]]<-impfill(x.orig=data,x.imp=ximp,noms=prepped$noms,ords=prepped$ords)
-    names(impdata)[i]<-paste("m",i,sep="")
+    impdata$imputations[[i]]<-impfill(x.orig=x,x.imp=ximp,noms=prepped$noms,ords=prepped$ords)
 
     # if the user wants to save it, do that
-    if (write.out){
-      write.csv(impdata[[i]], file=paste(prepped$outname,i,".csv",sep=""))
-    }
+#    if (write.out) {
+#      write.csv(impdata$imputations, file=paste(prepped$outname,i,".csv",sep=""))
+#    }
 
     # if the user wants to save memory, dump the copy in memory. 
-    if (!keep.data) {      
-      impdata[[i]]<-NA
-    }
+#    if (!keep.data) {      
+#      impdata[[i]]<-NA
+#    }
 
     
     if (p2s) cat("\n")
@@ -848,13 +961,18 @@ your data for highly collinear variables.\n\n")
   }
   
 
-  impdata$code<-code
-  if (code == 2)
-    impdata$message<-paste("One or more of the imputations resulted in a
-covariance matrix that was not invertible.")
+  impdata$code <- code
+  if (code == 2) {
+    impdata$message<-paste("One or more of the imputations resulted in a covariance matrix that was not invertible.") 
+  } else {
+    impdata$message <- paste("Normal EM convergence.")
+  }
   if (frontend) tkinsert(getAmelia("run.text"),"end",paste(impdata$message,"\n"))
-  if (archive)
-    impdata$amelia.args<-prepped$archv
+#  if (archive)
+  
+  impdata$arguments <- prepped$archv
+  class(impdata$arguments) <- c("ameliaArgs", "list")
+  
 
   return(impdata)  
 }                            

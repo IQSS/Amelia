@@ -1,0 +1,52 @@
+\name{compare.density}
+\alias{compare.density}
+
+\title{Compare observed versus imputed densities}
+\description{
+Plots smoothed density plots of observed and imputed values from output
+from the \code{amelia} function.
+}
+\usage{
+compare.density(output, var, col = c("red","black"), scaled = FALSE,
+ lwd = 1, main, xlab, ylab, legend = TRUE, frontend = FALSE, \dots)
+}
+
+
+\arguments{
+  \item{output}{output from the function \code{amelia}.}
+  \item{var}{column number or variable name of the variable to plot.}
+  \item{col}{a vector of length 2 containing the color to plot the (1)
+    imputed density and (2) the observed density.}
+  \item{scaled}{a logical indicating if the two densities should be
+    scaled to reflect the difference in number of units in each.}
+  \item{lwd}{the line width of the density plots.}
+  \item{main}{main title of the plot. The default is to title the plot
+    using the variable name.}
+  \item{xlab}{the label for the x-axis. The default is the name of the
+    variable.}
+  \item{ylab}{the label for the y-axis. The default is "Relative Density."}
+  \item{legend}{a logical value indicating if a legend should be
+    plotted.}
+  \item{frontend}{a logical value used internally for the Amelia GUI.}
+  \item{\dots}{further graphical parameters for the plot.}
+    
+}
+
+\details{
+  This function first plots a density plot of the observed units for the
+  variable \code{var} in \code{col[2]}. The the function plots a density plot of the mean
+  imputations for the missing units in \code{col[1]}. If \code{legend}
+  is \code{TRUE}, then a legend is plotted as well. 
+}
+
+\references{
+Abayomi, K. and Gelman, A. and Levy, M. 2005 "Diagnostics for
+Multivariate Imputations," \emph{Applied Statistics}. \bold{57},3: 273--291.
+}
+
+\seealso{For more information on how densities are computed,
+  \code{\link{density}}; Other imputation diagnostics are
+  \code{\link{overimpute}}, \code{\link{disperse}}, and
+  \code{\link{tscsPlot}}.
+}
+

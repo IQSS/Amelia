@@ -1,4 +1,4 @@
-.First.lib <- function(...) {
+.onAttach <- function(...) {
   mylib     <- dirname(system.file(package = "Amelia"))
   ver       <- packageDescription("Amelia", lib = mylib)$Version
   builddate <- packageDescription("Amelia", lib = mylib)$Date
@@ -8,5 +8,5 @@
   cat(paste("## Copyright (C) 2005-",curryear,
             " James Honaker, Gary King and Matthew Blackwell\n",sep=""))
   cat(paste("## Refer to http://gking.harvard.edu/amelia/",
-            "for more information\n##"))
+            "for more information\n##\n"))
 }

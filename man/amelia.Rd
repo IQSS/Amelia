@@ -1,5 +1,7 @@
 \name{amelia}
 \alias{amelia}
+\alias{amelia.amelia}
+\alias{amelia.default}
 
 \title{AMELIA: Mutliple Imputation of Incomplete Multivariate Data}
 \description{
@@ -8,18 +10,21 @@
 }
 \usage{
 
-amelia(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
-       ts=NULL,cs=NULL,polytime=NULL,intercs=FALSE,
-       lags=NULL,leads=NULL,startvals=0,tolerance=0.0001,
-       logs=NULL,sqrts=NULL,lgstc=NULL,noms=NULL,ords=NULL,
-       incheck=TRUE,collect=FALSE,outname="outdata",
-       write.out=TRUE,archive=TRUE,arglist=NULL,keep.data=TRUE, 
-       empri=NULL,priors=NULL,autopri=0.05, emburn=c(0,0),
-       bounds=NULL,max.resample=100)}
+\method{amelia}{default}(x, m = 5, p2s = 1,frontend = FALSE, idvars = NULL,
+       ts = NULL, cs = NULL, polytime = NULL, intercs = FALSE,
+       lags = NULL, leads = NULL, startvals = 0, tolerance = 0.0001,
+       logs = NULL, sqrts = NULL, lgstc = NULL, noms = NULL, ords = NULL,
+       incheck = TRUE, collect = FALSE, arglist = NULL, empri = NULL,
+       priors = NULL, autopri = 0.05, emburn = c(0,0), bounds = NULL,
+       max.resample = 100, ...)
 
+\method{amelia}{amelia}(x, m = 5, p2s = 1, frontend = FALSE, ...)
+} 
 \arguments{
-  \item{data}{an incomplete dataset, organized into either a data frame 
-    or a matrix.}
+  \item{x}{either a matrix, data.frame or a object of class
+    "amelia". The first two will call the default S3 method. The third
+    a convenient way to perform more imputations with the same
+    parameters.}
   
   \item{m}{the number of imputed datasets to create.}
   
@@ -86,30 +91,8 @@ amelia(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
         issues as it can significantly slow down the imputation
         process.}
 
-  \item{outname}{a string indicating the prefix of the file to which
-    Amelia will write the imputed datasets.  You can also specify a path
-    in front of the prefix if you do not wish your items stored in the
-    working directory.  The files will be written as .csv files.}
-
-  \item{write.out}{a logical value indicating whether or not you wish to
-    have Amelia write your imputed datasets as comma-seperated value files.
-    If \code{TRUE}, Amelia will use the \code{outname} arugment as the
-    file prefix.}
-
-  \item{archive}{a logical variable indicating whether a replication archive
-    should be saved.  This archive includes all of the settings, the results
-    of each imputation and some information about the convergence.  The
-    output will be saved as \code{'amarchive.R'} in your working directory.}
-
-  \item{arglist}{an output list from the \code{amelia} function or from
-    a saved session from AmeliaView.  Values from this list take precendent
-    over any individually set arugments.   See the Amelia manual for more
-    information.}
-
-  \item{keep.data}{a logical value indicating whether or not to keep the
-    imputed datasets after each imputation.  Useful if the datasets are
-    large and you wish to avoid keeping them in memory after they have been
-    written to a file.}
+  \item{arglist}{an object of class "ameliaArgs" from a previous run of
+    Amelia. Including this object will use the arguments from that run.}
 
   \item{empri}{number indicating level of the empirical (or ridge) prior.
     This prior shinks the covariances of the data, but keeps the means
@@ -140,6 +123,8 @@ amelia(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
     constraints of \code{bounds}. After this value, imputed values are
     set to the bounds.}
 
+  \item{...}{further arguments to be passed.}
+
 }
 
 \details{ Multiple imputation is a method for analyzing incomplete
@@ -150,6 +135,12 @@ amelia(data,m=5,p2s=1,frontend=FALSE,idvars=NULL,
   values of sample.  It repeats this process \code{m} times to produce
   the \code{m} complete datasets where the observed values are the same and the unobserved values are drawn from their posterior distributions.
 
+  The function will start a "fresh" run of the algorithm if \code{x} is
+  either a incomplete matrix or data.frame. In this method, all of the
+  options will be user-defined or set to their default. If \code{x} the output of
+  a previous Amelia run (that is, an object of class "amelia"), then
+  Amelia will run with the options used in that previous run. This is a
+  convenient way to run more imputations of the same model.
   
   You can provide Amelia with informational priors about the missing
   observations in your data.  To specify priors, pass a four or five
@@ -175,6 +166,17 @@ or,
   instead of the row number.  If priors are set for both the entire
   variable and an individual observation, the individual prior takes
   precedence.
+
+  In addition to priors, Amelia allows for logical bounds on
+  variables. The \code{bounds} argument should be a matrix with 3
+  columns, with each row referring to a logical bound on a variable. The
+  first column should be the column number of the variable to be
+  bounded, the second column should be the lower bounds for that
+  variable, and the third column should be the upper bound for that
+  variable. As Amelia enacts these bounds by resampling, particularly
+  poor bounds will end up resampling forever. Amelia will stop
+  resampling after \code{max.resample} attempts and simply set the
+  imputation to the relevant bound. 
   
   If each imputation is taking a long time to converge, you can increase
   the empirical prior, \code{empri}.  This value has the effect of smoothing
@@ -194,28 +196,50 @@ or,
 
 \author{James Honaker, Gary King, Matt Blackwell}
  
-\value{A list containing the imputed datasets in objects 1 through \code{m}.
-  Thus, you can refer to any of the datasets by referencing 
-  \code{output[[i]]}, where \code{i} is the number of the dataset you wish
-  to reference.
-  
-  These datasets will be returned in the same format which you passed them.
-  For example, if you passed a data frame to \code{amelia} you will have
-  \code{m} data frames in the output list.  If you passed a matrix, you 
-  will have \code{m} matrices in the output.  
-  
-  Other objects in the list:
-  
-  \item{code}{return code for the function.  0 indicates a successful run
-    of Amelia.  Other codes refer to various problems in data or settings.
-    Please refer to the error message and the Amelia manual for help with
-    errors.}
-  
-  \item{message}{error message.  Only appears if return code is not 0.}
+\value{An instance of S3 class "amelia" with the following objects:
+\item{imputations}{a list of length \code{m} with an imputed dataset in
+  each entry. The class (matrix or data.frame) of these entries will
+  match \code{x}.}
+\item{m}{an integer indicating the number of imputations run.}
+\item{missMatrix}{a matrix identical in size to the original dataset
+  with 1 indicating a missing observation and a 0 indicating an observed
+  observation.}
+\item{theta}{An array with dimensions \eqn{(p+1)} by \eqn{(p+1)} by \eqn{m}  (where
+  \eqn{p} is the number of variables in the imputations model) holding
+  the converged parameters for each of the \code{m} EM chains. See the
+  manual for more information.}
+\item{mu}{A \eqn{p} by \eqn{m} matrix of of the posterior modes for the
+  complete-data means in each of the EM chains.}
+\item{covMatrices}{An array with dimensions \eqn{(p)} by \eqn{(p)} by
+  \eqn{m} where the first two dimensions hold the posterior modes of the
+  covariance matrix of the complete data for each of the EM chains.}
+\item{code}{a integer indicating the exit code of the Amelia run. See
+  the manual for a code reference.}
+\item{message}{an exit message for the Amelia run}
+\item{iterHist}{a list of iteration histories for each EM chain. See
+  documentation for details.}
+\item{arguments}{a instance of the class "ameliaArgs" which holds the
+  arguments used in the Amelia run.}
 
-  \item{amelia.args}{list of the arguments used in the imputation along
-    with a few diagnostics on each imputation.}
-  \item{thetas}{a matrix of the output parameter matrices used to
-    generate the imputed datasets.}
+Note that the \code{theta}, \code{mu} and \code{covMatrcies} objects
+refers to the data as seen by the EM algorithm and is thusly centered,
+scaled, stacked, tranformed and rearranged. See the manual for details
+and how to access this information.
+
 }
+
+\seealso{
+  For imputation diagnostics, \code{\link{missmap}}, \code{\link{compare.density}},
+  \code{\link{overimpute}} and \code{\link{disperse}}. For time series
+  plots, \code{\link{tscsPlot}}. Also: \code{\link{plot.amelia}},
+  \code{\link{write.amelia}}, and \code{\link{ameliabind}}. 
+
+}
+\examples{
+data(africa)
+a.out <- amelia(x = africa, cs = "country", ts = "year", logs = "gdp_pc")
+summary(a.out)
+plot(a.out)
+}
+
 \keyword{models}
