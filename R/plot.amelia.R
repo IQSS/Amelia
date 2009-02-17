@@ -52,7 +52,7 @@ set.mfrow <- function(nvars = 1, overimpute = FALSE) {
     ## If we are overimputing as well, we need
     ## two plots per variable
     mfrow <- switch(min(nvars, 13),
-                    c(1,2), ## 2  plot : 1x2
+                    c(2,1), ## 2  plot : 1x2
                     c(2,2), ## 4  plots: 2x2
                     c(3,2), ## 6  plots: 3x2
                     c(4,2), ## 8  plots: 4x2
@@ -68,7 +68,7 @@ set.mfrow <- function(nvars = 1, overimpute = FALSE) {
   } else {
     mfrow <- switch(min(nvars, 13),
                     c(1,1), ## 1  plot : 1x1
-                    c(1,2), ## 2  plots: 2x1
+                    c(2,1), ## 2  plots: 2x1
                     c(2,2), ## 3  plots: 2x2
                     c(2,2), ## 4  plots: 2x2
                     c(3,2), ## 5  plots: 3x2

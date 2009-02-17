@@ -545,7 +545,7 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
                       misscol = "red", obscol = "black", xlab, ylab, main,
                       pch, ylim, xlim, ...) {
 
-  if (output$arguments$ts == NULL || output$arguments$cs == NULL)
+  if (is.null(output$arguments$ts) || is.null(output$arguments$cs))
     stop("both 'ts' and 'cs' need to be set in the amelia output")
   if (!("amelia" %in% class(output)))
     stop("the 'output' is not Amelia output")
