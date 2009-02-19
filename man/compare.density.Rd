@@ -35,8 +35,13 @@ compare.density(output, var, col = c("red","black"), scaled = FALSE,
 \details{
   This function first plots a density plot of the observed units for the
   variable \code{var} in \code{col[2]}. The the function plots a density plot of the mean
-  imputations for the missing units in \code{col[1]}. If \code{legend}
-  is \code{TRUE}, then a legend is plotted as well. 
+  or modal imputations for the missing units in \code{col[1]}. If a
+  variable is marked "ordinal" or "nominal" with the \code{ords} or
+  \code{noms} options in \code{amelia}, then the modal imputation will
+  be used. If \code{legend} is \code{TRUE}, then a legend is plotted as well.
+
+  
+  
 }
 
 \references{

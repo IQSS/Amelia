@@ -41,8 +41,8 @@ compare.density <- function(output,var,col=c("red","black"),scaled=FALSE,lwd=1,m
       var<-match(var,names(data))
   if (any(var>ncol(data),var<0,var%%1!=0))
     stop("The 'var' option points to a non-existant column.")
-  if (!is.numeric(data[,var]))
-    stop("The variable selected is not a numeric variable.")
+  if (var %in% output$arguments$idvar)
+    stop("the variable selected was marked as an idvar")
   
   ## We need to clean the data to make sure that
   ## we're not going to run into NAs
@@ -50,12 +50,18 @@ compare.density <- function(output,var,col=c("red","black"),scaled=FALSE,lwd=1,m
   imputed <- (1:output$m)[!is.na(output$imputations)]
 
   ## create an empty vector to sum across
-  varimp <- rep(0, times = nrow(data))
+  varimp <- matrix(NA, nrow(data), mcount)
   
-  for (i in imputed) {
-    varimp <- varimp + output$imputations[[i]][,var]
+  for (i in 1:mcount) {
+    varimp[,i] <- output$imputations[[imputed[i]]][,var]
   }
-  varimp<-varimp/mcount
+  if (var %in% c(output$arguments$noms, output$arguments$ords)) {
+    leg.text <- "Modal Imputations"
+    varimp <- apply(varimp, 1, function(x) as.numeric(names(which.max(table(x)))))
+  } else {
+    leg.tex <- "Mean Imputations"
+    varimp <- rowMeans(varimp)
+  }
   
   if (frontend)
     x11()
@@ -87,7 +93,7 @@ compare.density <- function(output,var,col=c("red","black"),scaled=FALSE,lwd=1,m
     xobs  <- density(varimp[!is.na(vars)],na.rm=TRUE)
     compplot <- matplot(x=cbind(xmiss$x,xobs$x),y=cbind(ratio*xmiss$y,xobs$y), xlab=xlab, ylab=ylab,type="l",lwd=lwd, lty=1,main=main,col=col,...)
     if (legend) {
-      legend("topright",legend=c("Mean Imputations","Observed Values"),
+      legend("topright",legend=c(leg.text,"Observed Values"),
              col=col,lty=c(1,1),bg='gray90',lwd=lwd)
     }
   } else {

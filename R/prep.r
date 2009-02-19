@@ -138,9 +138,9 @@ amtransform<-function(x,logs,sqrts,lgstc) {
   xmin<-c()
   if (!is.null(logs)) {
     for (i in 1:length(logs)) {
-      j<-logs[[i]]
-      xmin<-c(xmin,min(x[,j],na.rm=TRUE))  #we need mins to avoid creating NAs
-      x[,j]<-log(x[,j]-xmin[[i]]+1)     #by taking a log of a negative number
+      j<-logs[i]
+      xmin<-c(xmin,min(c(0,min(x[,j],na.rm=TRUE))))  #we need mins to avoid creating NAs
+      x[,j]<-log(x[,j]-xmin[i]+1)     #by taking a log of a negative number
     }
   }
 
@@ -440,7 +440,6 @@ unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,intercs,noms,index,
 }
 ## Rescale Dataset
 scalecenter<-function(x,priors=NULL,bounds=NULL){
-
   AMn<-nrow(x)
   ones<-matrix(1,AMn,1)
   meanx<-colMeans(x,na.rm=TRUE)
@@ -656,6 +655,7 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     priors <- checklist$priors
   }
   
+  
   priors <- generatepriors(AMr1 = is.na(data),empri = empri, priors = priors)
   
   archv <- list(idvars=numopts$idvars, logs=numopts$logs, ts=numopts$ts, cs=numopts$cs,
@@ -671,7 +671,6 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     cat("beginning prep functions\n")
     flush.console()
   }
-
   
   d.trans<-amtransform(x,logs=numopts$logs,sqrts=numopts$sqrts,lgstc=numopts$lgstc)  
   d.subset<-amsubset(d.trans$x,idvars=numopts$idvars,p2s=p2s,ts=numopts$ts,cs=numopts$cs,polytime=polytime,intercs=intercs,noms=numopts$noms,priors=priors,bounds=bounds, lags=numopts$lags, leads=numopts$leads)
