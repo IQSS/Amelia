@@ -365,6 +365,11 @@ unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,intercs,noms,index,
   }
   AMr1.orig<-is.na(x.orig)
 
+  ## since we're going to use the blanks in noms/ords
+  ## we need these changed here.
+  if (identical(blanks,NULL)) {blanks<- -(1:nrow(x.orig))}
+  if (identical(idvars,NULL)) {idvars<- -(1:ncol(x.orig))}
+  
   ## noms are idvars, so we'll fill them in manually
   ## (mb 2 Apr 09 -- fixed handling of "blanks")
   if (!is.null(noms)) {
@@ -430,8 +435,6 @@ unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,intercs,noms,index,
   }
   ## now we'll fill the imputations back into the original. 
   if (!identical(c(blanks,idvars),c(NULL,NULL))){
-    if (identical(blanks,NULL)) {blanks<- -(1:nrow(x.orig))}
-    if (identical(idvars,NULL)) {idvars<- -(1:ncol(x.orig))}
     x.orig[-blanks,-idvars]<-x.imp[,1:ncol(x.orig[,-idvars, drop=FALSE])]
   } else {
     x.orig <- x.imp[,1:ncol(x.orig)]
