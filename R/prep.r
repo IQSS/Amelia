@@ -366,6 +366,7 @@ unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,intercs,noms,index,
   AMr1.orig<-is.na(x.orig)
 
   ## noms are idvars, so we'll fill them in manually
+  ## (mb 2 Apr 09 -- fixed handling of "blanks")
   if (!is.null(noms)) {
     for (i in noms) {
       y<-runif(nrow(x.imp))
@@ -379,17 +380,18 @@ unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,intercs,noms,index,
       cump<-p%*%ifelse(upper.tri(matrix(0,nrow=ncol(p),ncol=ncol(p)),diag=TRUE),1,0)
       yy<-(y<cump)*(y>cbind(matrix(0,nrow(cump),1),cump[,1:(ncol(cump)-1)]))
       renom<-(yy%*%unique(na.omit(x.orig[,i])))
-      x.orig[,i]<-renom
+      x.orig[-blanks,i]<-renom
     }
   }
 
   ## here we force the ords into integer values
+  ## (mb 2 Apr 09 -- fixed handling of "blanks")
   if (!is.null(ords)) {
     ords <- unique(ords)
 
     # find where the ordinals are in the 
     impords <- match(ords,index)
-    x <- x.imp[,impords] * AMr1.orig[,ords]
+    x <- x.imp[,impords] * AMr1.orig[-blanks,ords]
 
 ############ revision #####################
     minmaxords<-matrix(0,length(ords),2)
@@ -407,19 +409,19 @@ unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,intercs,noms,index,
 
     ordrange <- maxord - minord
 
-    p <- t((t(x)-minord)/ordrange) * AMr1.orig[,ords]
+    p <- t((t(x)-minord)/ordrange) * AMr1.orig[-blanks,ords]
     p <- p*(p>0)*(p<1) + ((p-1)>=0)
-    newimp <- matrix(0,nrow(x.orig),length(ords))
+    newimp <- matrix(0,nrow(x.imp),length(ords))
     for (k in 1:length(ords)) {
-      reordnl <- rbinom(nrow(x.orig),ordrange[k],p[,k])
-      newimp[,k] <- reordnl + minord[k] * AMr1.orig[,ords[k]]
+      reordnl <- rbinom(nrow(x.imp),ordrange[k],p[,k])
+      newimp[,k] <- reordnl + minord[k] * AMr1.orig[-blanks,ords[k]]
     }
 
 ############# revision #############################
 
     ## replace the imputations with the ordinal values
     for(jj in 1:length(ords)){
-      x.imp[AMr1.orig[,ords[jj]]==1, impords[jj]]<-newimp[AMr1.orig[,ords[jj]]==1,jj]
+      x.imp[AMr1.orig[-blanks,ords[jj]]==1, impords[jj]]<-newimp[AMr1.orig[-blanks,ords[jj]]==1,jj]
     }                                        # MAYBE CAN REMOVE LOOP
 
 ############# replaces #############################
