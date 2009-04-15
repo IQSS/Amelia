@@ -209,9 +209,9 @@ if (identical(m,vector(mode='logical',length=length(m)))) # This is check for sw
     g22<-g[kcompl,kcompl , drop=FALSE]
 
     ## this doesn't actually save us much time.
-    #h11a <- am.inv(a = g11)
+    h11a <- am.inv(a = g11)
     
-    h11a<-try(solve(g11),silent=TRUE)
+    #h11a<-try(solve(g11),silent=TRUE)
     if (inherits(h11a,"try-error")) {
       h11a<-mpinv(g11)     # This is where significant time is spent!
                            # About as much time as in the rest of the EM
