@@ -43,6 +43,7 @@
 ## 17/07/08 mb - fixed frontend error bug (dumping output to screen
 ## 22/07/08 mb - good coding update: T->TRUE/F->FALSE
 
+
 ## Draw from a multivariate normal distribution 
 ##   n: number of draws 
 ##   mu: vector of means 
@@ -209,7 +210,7 @@ if (identical(m,vector(mode='logical',length=length(m)))) # This is check for sw
     g22<-g[kcompl,kcompl , drop=FALSE]
 
     ## this doesn't actually save us much time.
-    h11a <- am.inv(a = g11)
+    h11a <- try(am.inv(a = g11), silent = TRUE)
     
     #h11a<-try(solve(g11),silent=TRUE)
     if (inherits(h11a,"try-error")) {
@@ -392,7 +393,7 @@ amelia.impute<-function(x,thetareal,priors=NULL,bounds=NULL,max.resample=NULL){
           + (matrix(1,1+isp-is,1) %*% theta[1,2:(AMp+1) , drop=FALSE]) )
 
       if (!identical(bounds,NULL)) {
-        xplay[is:isp,] <- am.resample(x.ss=x[is:isp,], ci=Ci, imps=imputations,
+        xplay[is:isp,] <- am.resample(x.ss=x[is:isp,,drop=FALSE], ci=Ci, imps=imputations,
                                       m.ss=m[ss,], bounds=bounds,
                                       max.resample=max.resample)
       } else {
