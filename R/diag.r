@@ -59,7 +59,7 @@ compare.density <- function(output,var,col=c("red","black"),scaled=FALSE,lwd=1,m
     leg.text <- "Modal Imputations"
     varimp <- apply(varimp, 1, function(x) as.numeric(names(which.max(table(x)))))
   } else {
-    leg.tex <- "Mean Imputations"
+    leg.text <- "Mean Imputations"
     varimp <- rowMeans(varimp)
   }
   
