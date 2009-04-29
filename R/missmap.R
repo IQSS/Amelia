@@ -11,7 +11,7 @@
 ## OUPUTS: none
 ##
 
-missmap <- function(obj, legend = TRUE, col = c("darkred","wheat"), main,
+missmap <- function(obj, legend = TRUE, col = c("wheat","darkred"), main,
                     y.cex = 0.8, x.cex = 0.8, y.labels, y.at, ...) {
   vnames <- colnames(obj$imputations[[1]])
   n <- nrow(obj$missMatrix)
@@ -61,10 +61,6 @@ missmap <- function(obj, legend = TRUE, col = c("darkred","wheat"), main,
   missrank <- rev(order(percent.missing))
   
   y.at <- (n:1)[y.at]
-  
-  
-  
-  
 
   if (missing(main))
     main <- "Missingness Map"

@@ -8,7 +8,7 @@ the dataset passed to \code{amelia}.}
 
 \usage{
 
-missmap(obj, legend = TRUE, col = c("darkred","wheat"), main,
+missmap(obj, legend = TRUE, col = c("wheat","darkred"), main,
         y.cex = 0.8, x.cex = 0.8, y.labels, y.at, ...)
 
 }
