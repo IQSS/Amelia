@@ -11,6 +11,6 @@
   from the Africa Research Program. A few cells are missing.}
 
 \usage{africa}
-\format{A data frame with 7 variables and 120 variables.}
+\format{A data frame with 7 variables and 120 observations.}
 \source{Africa Research Program \url{http://africa.gov.harvard.edu}}
 \keyword{datasets}
