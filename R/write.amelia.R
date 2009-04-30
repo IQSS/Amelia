@@ -29,6 +29,7 @@ write.amelia <- function(obj, file.stem, extension=NULL, format="csv", ...) {
   Call$obj <- NULL
   Call$file.stem <- NULL
   Call$extension <- NULL
+  Call$format <- NULL
   
   for (i in 1:m) {
     if (format == "dta")
