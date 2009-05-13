@@ -59,15 +59,6 @@ pdflatex amelia-vign
 pdflatex amelia-vign
 pdflatex amelia-vign
 
-
-#create the manual
-pdflatex amelia
-bibtex amelia
-pdflatex amelia
-pdflatex amelia
-pdflatex amelia
-pdflatex amelia
-
 ## report errors:
 grep Warning amelia-vign.log
 grep "I'm skipping" amelia-vign.blg
@@ -83,6 +74,11 @@ grep -i Error amelia.blg
 
 ## cleanup
 rm -f *.aux *.toc *.log *.out *.blg *.bbl
+rm -f amelia-vign-*.pdf
+rm -f amelia-vign-*.eps
+rm -f Rplots.pdf
+rm -f varopts.* tscs.* step*.* rangepri.* priors.* obsprior.*
+rm -f distpri.* diag.*
 rm -f amelia-vign.tex a007.tex
 
 rm -rf Rd
