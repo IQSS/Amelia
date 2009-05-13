@@ -1,0 +1,72 @@
+#!/bin/sh
+
+##
+# Convert Rd files to latex and make them available for inclusion in 
+# some other tex file (e.g. package manual)
+# 
+# Usage:  If you have an Rd file called "xxx.Rd" then in your manual use
+# /include{xxx}
+#
+#
+# 
+
+
+R_CMD="R";
+
+# Work around for HMDC servers
+if [ -x "/usr/bin/R" ]; then
+    R_CMD="/usr/bin/R";
+fi
+
+
+# create a directory where latex files will take place
+
+#if [ ! -d Rd ]
+#then
+#    mkdir Rd
+#    cp /usr/share/R/texmf/Rd.sty Rd
+#    cp /usr/share/R/texmf/upquote.sty Rd
+#    cp /usr/share/R/texmf/upquote.sty .
+#fi
+
+${R_CMD} CMD BATCH copyRd
+
+Rdfiles=`ls ../../man/*.Rd`
+for rd in ${Rdfiles}
+  do
+    newname=`basename ${rd} .Rd`
+    ${R_CMD} CMD Rdconv -t=latex ${rd} -o Rd/${newname}.tex
+  
+    ### basically replace "HeaderA" with "section*" 
+    perl -i -pe 's#HeaderA{(.*)}{(.*)}{(.*)}#subsection{{\\tt \1}: \2}\\label{ss:\3}#i' Rd/${newname}.tex 
+
+done
+
+
+#echo "Sweave(\"cem.Rnw\")" | ${R_CMD} --slave
+echo "library(\"utils\"); options(\"width\"=80); Sweave(\"amelia-vign.Rnw\")"  | ${R_CMD} --no-save --no-restore 
+if [ $? -ne 0 ]
+then
+	echo "Error in Sweave: $!";
+	exit 1;
+fi
+
+#create the manual
+pdflatex amelia-vign
+bibtex amelia-vign
+pdflatex amelia-vign
+pdflatex amelia-vign
+pdflatex amelia-vign
+pdflatex amelia-vign
+
+## report errors:
+grep Warning amelia-vign.log
+grep "I'm skipping" amelia-vign.blg
+grep Warning amelia-vign.blg
+grep -i Error amelia-vign.blg
+
+## cleanup
+rm -f *.aux *.toc *.log *.out *.blg *.bbl
+rm -f amelia-vign.tex a007.tex
+
+rm -rf Rd
