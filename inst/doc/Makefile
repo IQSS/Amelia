@@ -13,5 +13,8 @@
 all:
 	/bin/sh ./makeDocs rbuild
 
+amelia.pdf:
+	/bin/sh rbuild
+
 amelia-vign.pdf:
 	/bin/sh ./makeDocs rbuild
