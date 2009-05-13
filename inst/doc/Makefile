@@ -16,5 +16,5 @@ all:
 amelia.pdf:
 	/bin/sh ./makeManual rbuild
 
-amelia-vign.tex:
+amelia-vign.pdf:
 	/bin/sh ./makeDocs rbuild
