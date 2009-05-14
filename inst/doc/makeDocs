@@ -44,12 +44,12 @@ done
 
 
 #echo "Sweave(\"cem.Rnw\")" | ${R_CMD} --slave
-echo "library(\"utils\"); options(\"width\"=80); Sweave(\"amelia-vign.Rnw\")"  | ${R_CMD} --no-save --no-restore 
-if [ $? -ne 0 ]
-then
-	echo "Error in Sweave: $!";
-	exit 1;
-fi
+#echo "library(\"utils\"); options(\"width\"=80); Sweave(\"amelia-vign.Rnw\")"  | ${R_CMD} --no-save --no-restore 
+#if [ $? -ne 0 ]
+#then
+#	echo "Error in Sweave: $!";
+#	exit 1;
+#fi
 
 #create the manual
 pdflatex amelia-vign
@@ -67,7 +67,7 @@ grep -i Error amelia-vign.blg
 
 ## cleanup
 rm -f *.aux *.toc *.log *.out *.blg *.bbl
-#rm -f amelia-vign-*.pdf
+rm -f amelia-vign-*.pdf
 rm -f amelia-vign-*.eps
 rm -f Rplots.pdf
 rm -f varopts.* tscs.* step*.* rangepri.* priors.* obsprior.*
