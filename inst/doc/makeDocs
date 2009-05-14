@@ -65,20 +65,13 @@ grep "I'm skipping" amelia-vign.blg
 grep Warning amelia-vign.blg
 grep -i Error amelia-vign.blg
 
-
-## report errors:
-grep Warning amelia.log
-grep "I'm skipping" amelia.blg
-grep Warning amelia.blg
-grep -i Error amelia.blg
-
 ## cleanup
 rm -f *.aux *.toc *.log *.out *.blg *.bbl
 rm -f amelia-vign-*.pdf
 rm -f amelia-vign-*.eps
 rm -f Rplots.pdf
-rm -f varopts.* tscs.* step*.* rangepri.* priors.* obsprior.*
-rm -f distpri.* diag.*
-rm -f amelia-vign.tex a007.tex
+#rm -f varopts.* tscs.* step*.* rangepri.* priors.* obsprior.*
+#rm -f distpri.* diag.* obspri.*
+#rm -f amelia-vign.tex a007.tex
 
 rm -rf Rd
