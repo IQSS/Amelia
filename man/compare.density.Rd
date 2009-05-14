@@ -46,7 +46,7 @@ compare.density(output, var, col = c("red","black"), scaled = FALSE,
 
 \references{
 Abayomi, K. and Gelman, A. and Levy, M. 2005 "Diagnostics for
-Multivariate Imputations," \emph{Applied Statistics}. \bold{57},3: 273--291.
+Multivariate Imputations," \emph{Applied Statistics}. 57,3: 273--291.
 }
 
 \seealso{For more information on how densities are computed,
