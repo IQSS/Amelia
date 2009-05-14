@@ -6,9 +6,9 @@
 % === for bad lm output === 
 \usepackage[utf8]{inputenc}
 
-\usepackage{Rd}
-\usepackage{Sweave}
-\usepackage{upquote}
+\usepackage{Rd/Rd}
+\usepackage{Rd/Sweave}
+\usepackage{Rd/upquote}
 
 \SweaveOpts{width=70}
 
