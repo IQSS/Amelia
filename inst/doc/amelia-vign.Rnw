@@ -3,8 +3,11 @@
 %\usepackage{/usr/lib64/R/share/texmf/Sweave}
 %\usepackage{/usr/lib64/R/share/texmf/upquote}
 
+
 % === for bad lm output === 
-\usepackage[utf8]{inputenc}
+% this wasn't working with rbuild 
+%% so i took out the signficance stars
+%\usepackage[utf8]{inputenc}
 
 \usepackage{Rd/Rd}
 \usepackage{Rd/Sweave}
@@ -371,7 +374,8 @@ variables used in the analysis model of \citet{MilKub05} in table 2.
 
 <<echo=FALSE, print=FALSE>>=
 options("digits"=4)
-options("width"=80)
+options("width"=70)
+options("show.signif.stars" = FALSE)
 set.seed(12345)
 @
 

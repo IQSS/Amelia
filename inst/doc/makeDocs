@@ -51,8 +51,6 @@ done
 #	exit 1;
 #fi
 
-cp /usr/share/texmf/tex/latex/base/*.dfu ./
-
 #create the manual
 pdflatex amelia
 bibtex amelia
@@ -86,14 +84,13 @@ grep Warning amelia-vign.blg
 grep -i Error amelia-vign.blg
 
 ## cleanup
-#rm -f *.aux *.toc *.log *.out *.blg *.bbl
+rm -f *.aux *.toc *.log *.out *.blg *.bbl
 rm -f amelia-vign-*.pdf
 rm -f amelia-vign-*.eps
 rm -f Rplots.pdf
 rm -f varopts.* tscs.* step*.* rangepri.* priors.* obsprior.*
 rm -f distpri.* diag.* obspri.*
 rm -f amelia-vign.tex a007.tex
-rm -f *.dfu
 
 ## rm figures
 rm -f disp-2d-good.* disperse-bad.* disperse-good.* overdis1d.* overdis2d.* overimp.* 
