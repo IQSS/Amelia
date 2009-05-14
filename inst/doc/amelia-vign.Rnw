@@ -1,14 +1,14 @@
 \documentclass[12pt,letterpaper]{article}
-\usepackage{/usr/lib64/R/share/texmf/Rd}
-\usepackage{/usr/lib64/R/share/texmf/Sweave}
-\usepackage{/usr/lib64/R/share/texmf/upquote}
+%\usepackage{/usr/lib64/R/share/texmf/Rd}
+%\usepackage{/usr/lib64/R/share/texmf/Sweave}
+%\usepackage{/usr/lib64/R/share/texmf/upquote}
 
 % === for bad lm output === 
 \usepackage[utf8]{inputenc}
 
-%\usepackage{Rd}
-%\usepackage{Sweave}
-%\usepackage{upquote}
+\usepackage{Rd}
+\usepackage{Sweave}
+\usepackage{upquote}
 
 \SweaveOpts{width=70}
 
@@ -39,7 +39,6 @@
 \setcounter{tocdepth}{4}
 
 %% \VingetteIndexEntry{A Guide to Amelia}
-
 \usepackage{color}
 \usepackage[pdftex, bookmarksopen=true, bookmarksnumbered=true,
 pdfstartview=FitH, breaklinks=true, urlbordercolor={0 1 0},
