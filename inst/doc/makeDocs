@@ -74,4 +74,4 @@ rm -f Rplots.pdf
 #rm -f distpri.* diag.* obspri.*
 #rm -f amelia-vign.tex a007.tex
 
-rm -rf Rd
+#rm -rf Rd

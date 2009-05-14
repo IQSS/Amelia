@@ -32,6 +32,7 @@
 
 \author{James Honaker, Gary King, and Matthew Blackwell}
 
+\usepackage{Sweave}
 \begin{document}
 \maketitle
 
@@ -93,7 +94,7 @@ software.
 imputations for cross-sectional, time-series, and
 time-series-cross-section data, and allows the incorporation of
 observation and data-matrix-cell level prior information.  This
-software implements the ideas developed in \citet*{HonKin09}.  Please
+software implements the ideas developed in \citet*{HonKin06}.  Please
 read this paper in conjunction with this manual.
 
 \section{What ${\mathfrak Amelia}$ Does}
@@ -679,7 +680,7 @@ imputation turns out to be a weighted average of the model-based
 imputation and the prior mean, where the weights are functions of the
 relative strength of the data and prior: when the model predicts very
 well, the imputation will down-weight the prior, and vice versa
-\citep{HonKin09}.
+\citep{HonKin06}.
 
 The priors about individual observations should describe the analyst's
 belief about the distribution of the missing data cell.  This can
@@ -1485,6 +1486,36 @@ A list containing the imputed datasets in objects 1 through \texttt{m}.
  about observational priors, see \ref{sec:obspri}.
 \end{enumerate}
 
+\subsubsection{Case Priors}\label{sec:refcasepri}
+
+\begin{figure}[ht]
+  \centering
+ \begin{htmlonly} 
+   \includegraphics[scale=1]{case} 
+ \end{htmlonly}
+ \begin{latexonly}
+   \includegraphics[scale=.75]{case}
+ \end{latexonly}
+\caption{Detail for Case Priors dialog.}
+\end{figure}
+\begin{enumerate}
+\item \textbf{Case Names} - The row and column name for each button
+  indicate the relationship that the button controls.  For instance,
+  the top-left button in the ``Burkina Faso'' row and the ``Burundi''
+  column; thus, the setting on this button will indicate the strength
+  of the similarity prior between these two cross-sections.
+\item \textbf{Buttons} - Toggling the buttons will change the setting
+  for each case.  The higher the number on the button, the stronger
+  the indicated relationship is believed to be.  Find the column of
+  the first country and then follow it down to the row of the similar
+  country.  Press the button to raise the level similarity from 0 to 1
+  to 2 to 3.  You can reset the case priors by hitting the ``Reset
+  All'' button in the top left corner.
+\item \textbf{OK} - Close the window and save any changes.
+\item \textbf{Cancel} - Close the window and discard any changes.
+\item \textbf{Reset All} - Sets all case priors to the default 0
+  setting.
+\end{enumerate}
 
 \subsubsection{Observational Priors}\label{sec:refobspri}
 \begin{figure}[h]
