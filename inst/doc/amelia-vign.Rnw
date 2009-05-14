@@ -1617,6 +1617,10 @@ not work, simply open an \R\ session and use the approach above.
 \item \textbf{Input Data File} - Enter the location of your dataset.
   If your file is located in a high level directory, it might be
   you are trying to access for more information.
+\item \textbf{Browse} - Find files on the system. 
+\item \textbf{Load Data} - Loads the data in the ``Input Data File''
+  line. Once the file is loaded, you can reload a different file, but you
+  will lose any work on currently loaded file.
 \item \textbf{Summarize Data} - View plots and summary statistics for
   the individual variables.  This button will bring up a dialog box
   with a list of variables.  Clicking on each variable will display
@@ -1690,7 +1694,7 @@ not work, simply open an \R\ session and use the approach above.
 \item \textbf{Variable Listbox} - Choose the variables whose lag or lead you
   would like to include in the imputation model. 
 \item \textbf{Lag Settings} - Choose to include lags and leads in the
-  data set to handle the effects of time.  See \ref{sec:tscs} above.
+  data set to handle the effects of time.  See \ref{sec:lags} above.
 \end{enumerate}
 
 \subsubsection{Priors Dialog}
@@ -1804,7 +1808,9 @@ not work, simply open an \R\ session and use the approach above.
   long filenames.
 \item \textbf{Number of Imputed Datasets} - Set the number of
   imputations you would like.  In most cases, 5 will be enough to make
-  accurate predictions about the means and variances.
+  accurate predictions about the means and variances.  
+\item \textbf{Seed} - Sets the seed for the random number generator used
+  by \Amelia. Useful if you need to have the same output twice. 
 \item \textbf{Run Amelia} - Runs the \Amelia\ procedure on
   the input data.  A dialog will open marking the progress of
   \Amelia.  Once it is finished, it will tell you that
