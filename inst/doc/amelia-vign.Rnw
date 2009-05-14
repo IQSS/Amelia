@@ -1853,17 +1853,17 @@ not work, simply open an \R\ session and use the approach above.
 
 \section{Reference to Amelia's Functions}
 
-%\include{Rd/africa}
-%\include{Rd/amelia}
-%\include{Rd/compare.density}
-%\include{Rd/disperse}
-%\include{Rd/freetrade}
-%\include{Rd/missmap}
-%\include{Rd/overimpute}
-%\include{Rd/plot.amelia}
-%\include{Rd/summary.amelia}
-%\include{Rd/tscsPlot}
-%\include{Rd/write.amelia}
+\include{Rd/africa}
+\include{Rd/amelia}
+\include{Rd/compare.density}
+\include{Rd/disperse}
+\include{Rd/freetrade}
+\include{Rd/missmap}
+\include{Rd/overimpute}
+\include{Rd/plot.amelia}
+\include{Rd/summary.amelia}
+\include{Rd/tscsPlot}
+\include{Rd/write.amelia}
 
 \bibliographystyle{apsr}
 \bibsep=0in
