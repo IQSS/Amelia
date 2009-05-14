@@ -51,7 +51,23 @@ done
 #	exit 1;
 #fi
 
+
 #create the manual
+pdflatex amelia
+bibtex amelia
+pdflatex amelia
+pdflatex amelia
+pdflatex amelia
+pdflatex amelia
+
+## report errors:
+grep Warning amelia.log
+grep "I'm skipping" amelia.blg
+grep Warning amelia.blg
+grep -i Error amelia.blg
+
+#create the manual
+echo "pdflatex up in here"
 pdflatex amelia-vign
 bibtex amelia-vign
 pdflatex amelia-vign

@@ -10,10 +10,7 @@
 ##
 
 
-all: amelia.pdf amelia-vign.pdf
+all:
 
 amelia.pdf: 
-	/bin/sh ./makeManual rbuild
-
-amelia-vign.pdf:
 	/bin/sh ./makeDocs rbuild
