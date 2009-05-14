@@ -51,6 +51,7 @@ done
 #	exit 1;
 #fi
 
+cp /usr/share/texmf/tex/latex/base/*.dfu ./
 
 #create the manual
 pdflatex amelia
@@ -65,6 +66,9 @@ grep Warning amelia.log
 grep "I'm skipping" amelia.blg
 grep Warning amelia.blg
 grep -i Error amelia.blg
+
+
+
 
 #create the manual
 echo "pdflatex up in here"
@@ -89,6 +93,7 @@ rm -f Rplots.pdf
 rm -f varopts.* tscs.* step*.* rangepri.* priors.* obsprior.*
 rm -f distpri.* diag.* obspri.*
 rm -f amelia-vign.tex a007.tex
+rm -f *.dfu
 
 ## rm figures
 rm -f disp-2d-good.* disperse-bad.* disperse-good.* overdis1d.* overdis2d.* overimp.* 
