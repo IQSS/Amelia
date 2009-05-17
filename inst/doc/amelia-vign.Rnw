@@ -75,63 +75,67 @@ citebordercolor={0 0 1}]{hyperref}
 
 \section{Introduction}
 \label{sec:intro}
-Missing data is a perennial problem in social science data. Respondents do
-not answer every question, countries do not collect statistics in every
-years and, most unfortunately, researchers do not always have the
-resources to collect every piece of data. Most statistical analysis
-methods, however, assume the absence of missing data. \AmeliaII\ allows
-users to appropriately impute (``fill in'' or rectangularize) incomplete
-data sets so that analyses which require complete observations can use all
-the information present in a dataset with missingness, and avoid the
-biases and inefficiencies that can result from dropping all partially
-observed observations from the analysis.
+Missing data is a perennial problem in social science data.
+Respondents do not answer every question, countries do not collect
+statistics in every year and, most unfortunately, researchers do not
+always have the resources to collect every piece of available data.
+Most statistical analysis methods, however, assume the absence of
+missing data. \AmeliaII\ allows users to impute (``fill in'' or
+rectangularize) incomplete data sets so that analyses which require
+complete observations can appropriately use all the information
+present in a dataset with missingness, and avoid the biases,
+inefficiencies, and incorrect uncertainty estimates that can result
+from dropping all partially observed observations from the analysis.
 
-\AmeliaII\ performs \emph{multiple imputation}, a general-purpose approach
-to data with missing values. Multiple imputation has been shown to reduce
-bias and increase efficiency compared to listwise deletion. Furthermore,
-ad-hoc methods of imputation, such as mean imputation, can lead to serious
-biases in variances and covariances.  Unfortunately, creating multiple
-imputations can be a burdensome process due to technical nature of
-algorithms involved. \Amelia provides users with a simple way to create an
-imputation model, implement it and check its fit using diagnostics.
+\AmeliaII\ performs \emph{multiple imputation}, a general-purpose
+approach to data with missing values. Multiple imputation has been
+shown to reduce bias and increase efficiency compared to listwise
+deletion. Furthermore, ad-hoc methods of imputation, such as mean
+imputation, can lead to serious biases in variances and covariances.
+Unfortunately, creating multiple imputations can be a burdensome
+process due to technical nature of algorithms involved. \Amelia
+provides users with a simple way to create an imputation model,
+implement it, and check its fit using diagnostics.
 
 The \AmeliaII\ program goes several significant steps beyond the
-capabilities of the first version of \Amelia\ \citep*{HonJosKin98}.  For
-one, the bootstrap-based EMB algorithm included in \AmeliaII\ can impute
-many more variables, with many more observations, in much less time.  The
-great simplicity and power of the EMB algorithm made it possible to write
-\AmeliaII\ so that it virtually never crashes --- which to our knowledge
-makes it unique among all existing multiple imputation software. \AmeliaII\
-also has features to make valid and much more accurate imputations for
-cross-sectional, time-series, and time-series-cross-section data, and
-allows the incorporation of observation and data-matrix-cell level prior
-information. In addition to all of this, \AmeliaII\ provides many
-diagnostic functions that help users check the validity of their
-imputation model.  This software implements the ideas developed in
-\citet*{HonKin09}.
+capabilities of the first version of \Amelia\ \citep*{HonJosKin98}.
+For one, the bootstrap-based EMB algorithm included in \AmeliaII\ can
+impute many more variables, with many more observations, in much less
+time.  The great simplicity and power of the EMB algorithm made it
+possible to write \AmeliaII\ so that it virtually never crashes ---
+which to our knowledge makes it unique among all existing multiple
+imputation software --- and is much faster than the alternatives too.
+\AmeliaII\ also has features to make valid and much more accurate
+imputations for cross-sectional, time-series, and
+time-series-cross-section data, and allows the incorporation of
+observation and data-matrix-cell level prior information. In addition
+to all of this, \AmeliaII\ provides many diagnostic functions that
+help users check the validity of their imputation model.  This
+software implements the ideas developed in \citet*{HonKin09}.
 
 \section{What \Amelia\ Does}
 \label{sec:what}
 
-Multiple imputation involves imputing $m$ values for each missing cell in
-your data matrix and creating $m$ ``completed'' data sets.  (Across these
-completed data sets, the observed values are the same, but the missing
-values are filled in with different imputations that reflect the
-uncertainty about the missing data.)  After imputation with \AmeliaII's
-EMB algorithm, you can apply whatever statistical method you would have
-used if there had been no missing values to each of the $m$ data sets, and
-use a simple procedure, described below, to combine the results\footnote{(You can
-combine the results automatically by doing your data analyses within
-Zelig, or within Clarify for Stata; see
-\url{http://gking.harvard.edu/stats.shtml}.}.  Under normal circumstances,
-you only need to impute once and can then analyze the $m$ imputed data
-sets as many times and for as many purposes as you wish.  The advantage of
-\AmeliaII\ is that it combines the comparative speed and ease-of-use of
-our algorithm with the power of multiple imputation, to let you focus on
-your substantive research questions rather than spending time developing
-complex application-specific models for nonresponse in each new data set.
-Unless the rate of missingness is very high, $m = 5$ (the program default)
-is probably adequate.
+Multiple imputation involves imputing $m$ values for each missing cell
+in your data matrix and creating $m$ ``completed'' data sets.  (Across
+these completed data sets, the observed values are the same, but the
+missing values are filled in with different imputations that reflect
+the uncertainty about the missing data.)  After imputation with
+\AmeliaII's EMB algorithm, you can apply whatever statistical method
+you would have used if there had been no missing values in each of the
+$m$ data sets, and use a simple procedure, described below, to combine
+the results\footnote{(You can combine the results automatically by
+  doing your data analyses within Zelig for R, or within Clarify for
+  Stata; see \url{http://gking.harvard.edu/stats.shtml}.}.  Under
+normal circumstances, you only need to impute once and can then
+analyze the $m$ imputed data sets as many times and for as many
+purposes as you wish.  The advantage of \AmeliaII\ is that it combines
+the comparative speed and ease-of-use of our algorithm with the power
+of multiple imputation, to let you focus on your substantive research
+questions rather than spending time developing complex
+application-specific models for nonresponse in each new data set.
+Unless the rate of missingness is very high, $m = 5$ (the program
+default) is probably adequate.
 
 \subsection{Assumptions}
 
@@ -152,25 +156,28 @@ more complicated models even in the face of categorical or mixed data
 can often make this normality assumption more plausible (see
 \ref{sec:trans} for more information on how to implement this in \Amelia).
 
-The essential problem of imputation is that we only observe $D^{\obs}$,
-not all of $D$. In order to gain traction, we need to make the usual
-assumption in multiple imputation that the data is \emph{missing at
-  random} (MAR). This assumption means that the pattern of missingness
-only depends on the observed data $D^{\obs}$, not the unobserved data
-$D^{\mis}$. Let $M$ to be the missingness matrix, with cells $m_{ij} = 1$
-if $d_{ij} \in D^{\mis}$ and $m_{ij} = 0$ otherwise.  Put simply, $M$ is a
-matrix that indicates whether or not a cell is missing in the data. With
-this, we can define the MAR assumption as
+The essential problem of imputation is that we only observe
+$D^{\obs}$, not all of $D$. In order to gain traction, we need to make
+the usual assumption in multiple imputation that the data are
+\emph{missing at random} (MAR). This assumption means that the pattern
+of missingness only depends on the observed data $D^{\obs}$, not the
+unobserved data $D^{\mis}$. Let $M$ to be the missingness matrix, with
+cells $m_{ij} = 1$ if $d_{ij} \in D^{\mis}$ and $m_{ij} = 0$
+otherwise.  Put simply, $M$ is a matrix that indicates whether or not
+a cell is missing in the data. With this, we can define the MAR
+assumption as
 \begin{equation}
   \label{eq:mar}
   p(M|D) = p(M|D^{\obs}).
 \end{equation}
-Note that MAR includes the case when missing values are created randomly
-by, say, coin flips. When missingness is not dependent on the data at all,
-we say that the data is \emph{missing completely at random} (MCAR).
-\Amelia\ requires both the multivariate normality and the MAR assumption.
-Note that the MAR assumption can be made more plausible by including more
-information into the imputation model.
+Note that MAR includes the case when missing values are created
+randomly by, say, coin flips, but it also includes many more
+sophisticated missingness models.  When missingness is not dependent
+on the data at all, we say that the data are \emph{missing completely
+  at random} (MCAR).  \Amelia\ requires both the multivariate
+normality and the MAR assumption (or the simpler special case of
+MCAR).  Note that the MAR assumption can be made more plausible by
+including more information into the imputation model.
 
 
 \subsection{Algorithm}
@@ -200,18 +207,22 @@ posterior is
   p(\theta | D^{\obs}) \propto p(D^{\obs}|\theta) = \int p(D|\theta)
   dD^{\mis}. 
 \end{equation}
-The main computation difficulty in the analysis of incomplete data is
-taking draws from this posterior. The EM algorithm \citep*{DemLaiRub77} is
-a simple computational approach to finding the mode of the
-posterior. Our EMB algorithm combines the classic EM algorithm with a
-bootstrap approach to take draws from this posterior. For each draw, we
-bootstrap the data and run the EM algorithm to find the mode of the
-posterior for the bootstrapped data (see \citet{HonKin09} for details of
-the EMB algorithm).
+The main computational difficulty in the analysis of incomplete data
+is taking draws from this posterior. The EM algorithm
+\citep*{DemLaiRub77} is a simple computational approach to finding the
+mode of the posterior. Our EMB algorithm combines the classic EM
+algorithm with a bootstrap approach to take draws from this posterior.
+For each draw, we bootstrap the data to simulate estimation
+uncertainty and then run the EM algorithm to find the mode of the
+posterior for the bootstrapped data, which gives us fundamental
+uncertainty too (see \citet{HonKin09} for details of the EMB
+algorithm).
 
-One we have draws of the posterior of the complete-data parameters, we
-make imputations by drawing values of $D^{\mis}$ from its distribution
-conditional on $D^{\obs}$ and the draws of $\theta$. 
+Once we have draws of the posterior of the complete-data parameters,
+we make imputations by drawing values of $D^{\mis}$ from its
+distribution conditional on $D^{\obs}$ and the draws of $\theta$,
+which is a linear regression with parameters that can be calculated
+directly from $\theta$.
 
 \subsection{Analysis}
 
@@ -225,7 +236,7 @@ common for single data sets \citep{KinTomWit00}.
 
 Alternatively, you can combine directly and use as the multiple
 imputation estimate of this parameter, $\bar{q}$, the average of the
-$m$ separate estimates, $q_j$ $(j=1,...,m)$:
+$m$ separate estimates, $q_j$ $(j=1,\dots,m)$:
 \begin{equation}
   \bar{q}=\frac{1}{m}\sum^{m}_{j=1}q_j.  
 \end{equation}
@@ -246,16 +257,15 @@ SE(q)^2=\frac{1}{m}\sum^{m}_{j=1}SE(q_j)^2+S^2_q(1+1/m).
 \section{Versions of \Amelia\ }
 
 \label{sec:versions}
-Two versions of \AmeliaII\ are available, each with its own advantages and
-drawbacks.  First, \AmeliaII\ exists as a package for the \R\ statistical
-software package.  Users can utilize their knowledge of the \R\ language
-to run \AmeliaII\ at the command line or to create scripts that will run
+Two versions of \AmeliaII\ are available, each with its own advantages
+and drawbacks, but both of which use the same underyling code.  First,
+\AmeliaII\ exists as a package for the \R\ statistical software
+package.  Users can utilize their knowledge of the \R\ language to run
+\AmeliaII\ at the command line or to create scripts that will run
 \AmeliaII\ and preserve the commands for future use.  Alternatively,
-\AmeliaView, an interactive Graphical User Interface (GUI), allows users to
-set options and run \Amelia\ without any knowledge of the \R\ programming
-language.  \AmeliaView\ enables users to set all of the \AmeliaII\ options
-available and enables those with limited or no coding experience to create
-expert level imputations without knowledge of the \R\ language.
+you may prefer \AmeliaView, where a interactive Graphical User
+Interface (GUI) allows you to set options and run \Amelia\ without any
+knowledge of the \R\ programming language.
 
 Both versions of \AmeliaII\ are available on the Windows, Mac OS X,
 and Linux platforms and \AmeliaII\ for \R\ runs in any environment that \R\
@@ -411,17 +421,20 @@ better inferences.
 
 
 When performing multiple imputation, the first step is to identify the
-variables to include in the model.  It is crucial to include at least as
-much information as in the analysis model. That is, any variable that will
-be in the analysis model should also be in the imputation model. In fact,
-it is often crucial to add more information. Since imputation is
-predictive, any variables that would increase predictive power should be
-included in the model. In our case, we include all the variables in
+variables to include in the model.  It is crucial to include at least
+as much information as in the analysis model. That is, any variable
+that will be in the analysis model should also be in the imputation
+model. In fact, it is often useful to add more information. Since
+imputation is predictive, any variables that would increase predictive
+power should be included in the model, even if including them in the
+analysis model would produce bias (such as for post-treatment
+variables). In our case, we include all the variables in
 \code{freetrade} in the imputation model, even though we our analysis
-model focuses on \code{polity}, \code{pop} and \code{gdp.pc}\footnote{Note
-that this specification does not utilize time or spatial data yet. The
-\texttt{ts} and \texttt{cs} arguments only have force when we also include
-\texttt{polytime} or \texttt{intercs}, discussed in section \ref{sec:tscs}}.
+model focuses on \code{polity}, \code{pop} and
+\code{gdp.pc}\footnote{Note that this specification does not utilize
+  time or spatial data yet. The \texttt{ts} and \texttt{cs} arguments
+  only have force when we also include \texttt{polytime} or
+  \texttt{intercs}, discussed in section \ref{sec:tscs}}.
 
 To create multiple imputations in \Amelia, we can simply run 
 <<echo=TRUE, print=FALSE>>=
@@ -572,13 +585,13 @@ models for discrete variables.)\nocite{KinHonJos01}
 Although these transformations are taken internally on these variables
 to better fit the data to the multivariate normal assumptions of the
 imputation model, all the imputations that are created will be
-returned in the original untransformed form of the data (If the user
-has \emph{already} performed transformations on their data (such as
-taking a log or square root) these do not need to be declared, as that
-would result in the transformation occurring \emph{doubly} in the
-imputation model).  The fully imputed datasets that are returned will
-always be in the form of the original data that is passed to the
-\code{amelia} routine.
+returned in the original untransformed form of the data.  If the user
+has already performed transformations on their data (such as by taking
+a log or square root prior to feeding the data to \code{amelia}) these
+do not need to be declared, as that would result in the transformation
+occurring \emph{doubly} in the imputation model.  The fully imputed
+data sets that are returned will always be in the form of the original
+data that is passed to the \code{amelia} routine.
 
 \subsubsection{Ordinal}
 \label{sec:ord}
@@ -1585,7 +1598,11 @@ described in \ref{sec:saving} and use statistical packages other than {\sf
 \label{sec:menu}
 Below is a guide to the \AmeliaView\ menus with references back to the
 users's guide. The same principles from the user's guide apply to
-\AmeliaView. The only difference is how you interact with the program. 
+\AmeliaView. The only difference is how you interact with the program.
+Whether you use the GUI or the command line versions, the same
+underlying code is being called, and so you can read the command
+line-oriented versions of this manual even if you intend to use the
+GUI.
 
 \subsection{Loading \AmeliaView}
 
