@@ -210,10 +210,12 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
   noms   <- unique(noms)
   idvars <- unique(idvars)
   index  <- c(1:ncol(x))
+  theta.names <- colnames(x)
 
-
-  if (!is.null(idvars))
-    index<-index[-idvars]
+  if (!is.null(idvars)) {
+    index <- index[-idvars]
+    theta.names <- theta.names[-idvars]
+  }
 
   if (is.data.frame(x))
     x<-frame.to.matrix(x,idvars)
@@ -237,6 +239,7 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
       x.sort<-cbind(x.sort,lagged)
       x<-cbind(x,1)
       index<-c(index,-.5)  #-.5=lags
+      theta.names <- c(theta.names, paste("lag",colnames(x)[i],sep="."))
     }
     x[tssort,]<-x.sort
   }
@@ -259,15 +262,18 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
       x.sort<-cbind(x.sort,led)
       x<-cbind(x,1)
       index<-c(index,.5)  #.5=leads
+      theta.names <- c(theta.names, paste("lead",colnames(x)[i],sep="."))
     }
     x[tssort,]<-x.sort
   }
   #puts timeseries and crosssection into the id variable to avoid singularity
   if (!is.null(ts)) {
+    theta.names <- theta.names[index != ts]
     index<-index[index!=ts]
     idvars<-c(idvars,ts)
   }
   if (!is.null(cs)) {
+    theta.names <- theta.names[index != cs]
     index<-index[index!=cs]
     idvars<-c(idvars,cs)
   }
@@ -277,14 +283,16 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
     for (i in noms) {
       values<-unique(na.omit(x[,i]))
       newx<-matrix(0,nrow=nrow(x),ncol=length(values)-1)
-      index<-index[index!=i]
+      theta.names <- theta.names[index != i]
+      index<-index[index!=i]      
       for (j in 2:length(values)) {
         newx[,j-1]<-ifelse(x[,i] == values[j],1,0)
-        index<-c(index,-i) 
+        index<-c(index,-i)
+        theta.names <- c(theta.names, paste("noms",colnames(x)[i],j,sep="."))
       }
       x<-cbind(x,newx)
       idvars<-c(idvars,i)
-
+      
     }
   }
 
@@ -301,19 +309,24 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
         dummy<-as.numeric(x[,cs]==i)
         timevars<-cbind(timevars,dummy*polynomials)
       }
-    timevars<-timevars[,c(-1,-2)]
+      timevars<-timevars[,c(-1,-2)]
     } else {
       timevars<-cbind(timevars,polynomials)
       timevars<-timevars[,-c(1,2)]  # first column is a holding variable, second is to have fixed effects identified
     }
-     x<-cbind(x,timevars)  
-     for (i in 1:ncol(as.matrix(timevars)))
-       index<-c(index,0)               #0 - timevars
+    x<-cbind(x,timevars)  
+    for (i in 1:ncol(as.matrix(timevars))) {
+      index<-c(index,0)               #0 - timevars
+      theta.names <- c(theta.names, paste("time",i,sep="."))
+    }
   }
 
   if (!identical(idvars,NULL))
     x<-x[,-idvars]   
 
+  if (p2s == 2) {
+    cat("Variables used: ", theta.names,"\n")
+  }
 
   AMr1<-is.na(x)
   flag<-rowSums(AMr1)==ncol(x)
@@ -324,7 +337,7 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
     if (!is.null(priors)) 
       priors[,1] <- priors[,1,drop=FALSE] - colSums(sapply(priors[,1,drop=FALSE],">",blanks))
     
-
+    
   
 
     if (p2s) cat("Warning: There are observations in the data that are completely missing.","\n",
@@ -335,7 +348,7 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
   priors[,2] <- match(priors[,2], index)
   bounds[,1] <- match(bounds[,1], index)
 
-return(list(x=x,index=index,idvars=idvars,blanks=blanks,priors=priors,bounds=bounds))
+return(list(x=x,index=index,idvars=idvars,blanks=blanks,priors=priors,bounds=bounds,theta.names=theta.names))
 }
 
 ## Replace rows and columns removed in "amsubset"
@@ -742,6 +755,7 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     subset.index = d.subset$index,
     autopri      = autopri,
     bounds       = d.stacked$bounds,
+    theta.names  = d.subset$theta.names,
     empri        = empri,    #change 3a 
     tolerance    = tolerance))  #change 3b
 }
