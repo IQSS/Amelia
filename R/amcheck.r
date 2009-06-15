@@ -167,13 +167,18 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   AMn<-nrow(x)
   AMp<-ncol(x)
   subbedout<-c(idvars,cs,ts)
-  
+
+
   #Error Code: 4
   #Completely missing columns
   if (any(colSums(!is.na(x)) <= 1)) {
+    all.miss <- colnames(x)[colSums(!is.na(x)) <= 1]
+    if (is.null(all.miss)) {
+      all.miss <- which(colSums(!is.na(x)) <= 1)
+    }
+    all.miss <- paste(all.miss, collapse = ", ")
     error.code<-4
-    error.mess<-paste("The data has a column that is completely missing or only has one \n",
-                      "observation.  Remove this column from the data and retry amelia.")
+    error.mess<-paste("The data has a column that is completely missing or only has one,observation.  Remove these columns:", all.miss)
     return(list(code=error.code,mess=error.mess))
   }
   
@@ -297,11 +302,16 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   }
   #Error code: 10
   #Square roots with negative values
-  if (!identical(sqrts,NULL)) {
-    if (any(na.omit(x[,sqrts]) < 0)) {
+  if (!is.null(sqrts)) {
+    if (sum(colSums(x[,sqrts, drop = FALSE] < 0, na.rm = T))) { 
+      neg.vals <- colnames(x[,sqrts, drop = FALSE])[colSums(x[,sqrts, drop
+                                       = FALSE] < 0, na.rm = T) > 1]
+      if (is.null(neg.vals))
+        neg.vals <- sqrts[colSums(x[,sqrts, drop = FALSE] < 0, na.rm = T)
+                          > 1]
+      neg.vals <- paste(neg.vals, collapse = ", ")
       error.code<-10
-      error.mess<-paste("The square root transformation cannot be used on \n",
-                        "variables with negative values.")
+      error.mess<-paste("The square root transformation cannot be used on variables with negative values. See column(s):", neg.vals)
       return(list(code=error.code,mess=error.mess))
     }
   }
@@ -309,7 +319,7 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   
   #warning message
   #logs with negative values
-  if (!identical(logs,NULL)) {
+  if (!is.null(logs)) {
     if (any(na.omit(x[,logs]) < 0)) { 
       warning(paste("The log transformation is being used on \n",
                     "variables with negative values. The values \n",
@@ -321,10 +331,15 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   #Error code: 11
   #0-1 Bounds on logistic transformations
   if (!identical(lgstc,NULL)) {
-    if (any(na.omit(x[,lgstc]) < 0,na.omit(x[,lgstc]>1))) {
+    lgstc.check <- colSums(x[,lgstc,drop=FALSE] < 0 |
+                           x[,lgstc,drop=FALSE] > 1, na.rm = TRUE)
+    if (sum(lgstc.check)) {
+      neg.vals <- colnames(x[,lgstc,drop=FALSE])[lgstc.check > 0]
+      if (is.null(neg.vals))
+        neg.vals <- lgstc[lgstc.check > 0]
+      neg.vals <- paste(neg.vals, collapse = ", ")
       error.code<-11
-      error.mess<-paste("The logistic transformation can only be used on \n",
-                        "values between 0 and 1.")
+      error.mess<-paste("The logistic transformation can only be used on values between 0 and 1. See column(s):", neg.vals)
       return(list(code=error.code,mess=error.mess))
     }
     
@@ -521,10 +536,10 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       #Error code: 36
       #too many levels on noms
       if (length(unique(x[,i])) > (1/3)*(AMn)) {
+        bad.var <- colnames(x)[noms[i]]
+        if (is.null(bad.var)) bad.var <- noms[i]
         error.code<-36
-        error.mess<-paste("The number of categories in your variables set in noms is \n",
-                          "greater than one-third the number of observations.  Check \n",
-                          "that noms is set correctly.")
+        error.mess<-paste("The number of categories in the nominal variable \'",bad.var,"\' is greater than one-third of the observations.", sep = "")
         return(list(code=error.code,mess=error.mess))
       }
       
@@ -544,31 +559,62 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     fact<-c(1:AMp)
   else
     fact<--c(noms,ords,idvars,cs)
-  #Error code: 37
-  #factors out of the noms,ids,ords,cs
-  if (any(sapply(x[,fact],class)=="factor")) {
-    error.code<-37
-    error.mess<-paste("You have a \"factor\" variable in the data.  You may \n",
-                      "have wanted to set this as a ID variable to remove it \n",
-                      "from the imputation model or as an ordinal or nominal \n", 
-                      "variable to be imputed.  Please set it as either and \n",
-                      "try again.") 
-    return(list(code=error.code,mess=error.mess))
-  }
+
   if (is.null(c(cs,idvars,noms)))
     idcheck<-c(1:AMp)
   else
     idcheck<--c(cs,idvars,noms)
-  if (any(sapply(x[,idcheck],class)=="character")) {
-    error.code<-38
-    error.mess<-paste("You have a \"character\" variable in the data.  You may \n",
-                      "have wanted to set this as a ID variable,
-nominal\n",
-                      "or the cross sectional variable.  Please either remove it from \n",
-                      "the data or set it as an ID variable.") 
-    return(list(code=error.code,mess=error.mess))
-  }
   
+  #Error code: 37
+  #factors out of the noms,ids,ords,cs
+
+  if (is.data.frame(x)) {
+    if (sum(sapply(x[,fact],is.factor))) {
+      bad.var <- colnames(x[,fact])[sapply(x[,fact],is.factor)]
+      if (is.null(bad.var))
+        bad.var <- setdiff(which(sapply(x,is.factor)), -fact)
+      bad.var <- paste(bad.var, collapse = ", ")
+      error.code<-37
+      error.mess<-paste("The variable(s) ",bad.var," are \"factors\".  You may \n",
+                        "have wanted to set this as a ID variable to remove it \n",
+                        "from the imputation model or as an ordinal or nominal \n", 
+                        "variable to be imputed.  Please set it as either and \n",
+                        "try again.") 
+    return(list(code=error.code,mess=error.mess))
+    }
+    if (sum(sapply(x[,fact],is.ordered))) {
+      bad.var <- colnames(x[,fact])[sapply(x[,fact],is.ordered)]
+      if (is.null(bad.var))
+        bad.var <- setdiff(which(sapply(x,is.ordered)), -fact)
+      bad.var <- paste(bad.var, collapse = ", ")
+      error.code<-37
+      error.mess<-paste("The variable(s) ",bad.var," are \"factors\".  You may \n",
+                        "have wanted to set this as a ID variable to remove it \n",
+                        "from the imputation model or as an ordinal or nominal \n", 
+                        "variable to be imputed.  Please set it as either and \n",
+                        "try again.") 
+      return(list(code=error.code,mess=error.mess))
+    }
+
+    if (sum(sapply(x[,fact],is.character))) {
+      bad.var <- colnames(x[,fact])[sapply(x[,fact],is.character)]
+      if (is.null(bad.var))
+        bad.var <- setdiff(which(sapply(x,is.character)), -fact)
+      bad.var <- paste(bad.var, collapse = ", ")
+      error.code<-38
+      error.mess<-paste("The variable(s)",bad.var,"are \"characters\".  You may",
+                        "have wanted to set this as a ID variable, nominal",
+                        "or the cross sectional variable.  Please either remove it from",
+                        "the data or set it as an ID variable.") 
+      return(list(code=error.code,mess=error.mess))
+    }
+  } else {
+    if (!is.numeric(x)) {
+      error.code <- 38
+      error.mess <- paste("The \'x\' matrix is not numeric.")
+      return(list(code=error.code,mess=error.mess))
+    }
+  }
   #Error code: 39
   #No missing observation
   if (!any(is.na(x))) {
@@ -580,8 +626,8 @@ nominal\n",
   
   #Error code: 40
   #lags require ts
-  if (!identical(lags,NULL)) {
-    if (identical(ts,NULL)) {
+  if (!is.null(lags)) {
+    if (is.null(ts)) {
       error.code<-40
       error.mess<-paste("You need to specify the time variable in order to create lags.")
       return(list(code=error.code,mess=error.mess))
@@ -590,8 +636,8 @@ nominal\n",
   
   #Error code: 41
   #leads require ts
-  if (!identical(leads,NULL)) {
-    if (identical(ts,NULL)) {
+  if (!is.null(leads)) {
+    if (is.null(ts)) {
       error.code<-41
       error.mess<-paste("You need to specify the time variable in order to create leads.")
       return(list(code=error.code,mess=error.mess))
@@ -610,30 +656,50 @@ nominal\n",
 
   #Error code: 43
   #Variable that doesn't vary
+
+  ## note that this will allow the rare case that a user only has
+  ## variation in a variable when all of the other variables are missing
+  ## in addition to having no variation in the listwise deleted
+  ## dataset. Our starting value function should be robust to this.
+  
   if (is.data.frame(x)) {
-    
-      if (any(sapply(x[,idcheck,drop=FALSE],var,na.rm=TRUE)==0)) {
-        error.code<-43
-        error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
-        return(list(code=error.code,mess=error.mess))
-      }     
+    non.vary <- sapply(x[,idcheck], var, na.rm = TRUE)
   } else {
-    if (nrow(na.omit(x)) > 1) {
-      if (any(diag(var(x[,idcheck],na.rm=TRUE))==0)) {
-        error.code<-43
-        error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
-        return(list(code=error.code,mess=error.mess))
-      }
-    } else {
-      for (i in 1:ncol(x[,idcheck])) {
-        if (var(x[,i],na.rm=TRUE) == 0) {
-          error.code<-43
-          error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
-          return(list(code=error.code,mess=error.mess))
-        }
-      }
-    }
+    non.vary <- apply(x[,idcheck], 2, var, na.rm = TRUE)
   }
+  
+  if (sum(non.vary == 0)) {
+    non.names <- colnames(x[,idcheck])[non.vary == 0]
+    if (is.null(non.names)) {
+      hold <- rep(-1, ncol(x))
+      hold[-idcheck] <- non.vary
+      non.names <- which(hold == 0)
+    }
+    non.names <- paste(non.names, collapse = ", ")
+    error.code<-43
+    error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable. Variables that do not vary: ", non.names)
+    return(list(code=error.code,mess=error.mess))
+  }
+  
+##   } else {
+
+    
+##     if (nrow(na.omit(x)) > 1) {
+##       if (any(diag(var(x[,idcheck],na.rm=TRUE))==0)) {
+##         error.code<-43
+##         error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
+##         return(list(code=error.code,mess=error.mess))
+##       }
+##     } else {
+##       for (i in 1:ncol(x[,idcheck])) {
+##         if (var(x[,i],na.rm=TRUE) == 0) {
+##           error.code<-43
+##           error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
+##           return(list(code=error.code,mess=error.mess))
+##         }
+##       }
+##     }
+##   }
     
   #checks for ordinals
   if (!is.null(ords)) {
@@ -643,8 +709,12 @@ nominal\n",
       # harder to check
       if (!is.factor(x[,i])) {
         if (any(unique(na.omit(x[,i])) %% 1 != 0 )) {
-          error.code<-44
-          error.mess<-paste("You have designated a variable as ordinal when it has non-integer values.")
+          non.ints <- colnames(x)[i]
+          if (is.null(non.ints)) non.ints <- i
+          error.code<-44          
+          error.mess<-paste("You have designated the variable \'",non.ints,
+                            "\' as ordinal when it has non-integer values.",
+                            sep = "")
           return(list(code=error.code,mess=error.mess))
         }
       }
@@ -707,7 +777,7 @@ nominal\n",
 
 
   # checks for bounds
-  if (!identical(bounds,NULL)) {
+  if (!is.null(bounds)) {
     b.size <- is.matrix(bounds) && ncol(bounds)==3 && nrow(bounds) > 0
     b.cols <- sum(bounds[,1] %in% c(1:AMp)) == nrow(bounds)
     maxint <- max.resample > 0 && (max.resample %% 1)==0
