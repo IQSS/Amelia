@@ -206,15 +206,13 @@ or,
   observation.}
 \item{theta}{An array with dimensions \eqn{(p+1)} by \eqn{(p+1)} by \eqn{m}  (where
   \eqn{p} is the number of variables in the imputations model) holding
-  the converged parameters for each of the \code{m} EM chains. See the
-  manual for more information.}
+  the converged parameters for each of the \code{m} EM chains.}
 \item{mu}{A \eqn{p} by \eqn{m} matrix of of the posterior modes for the
   complete-data means in each of the EM chains.}
 \item{covMatrices}{An array with dimensions \eqn{(p)} by \eqn{(p)} by
   \eqn{m} where the first two dimensions hold the posterior modes of the
   covariance matrix of the complete data for each of the EM chains.}
-\item{code}{a integer indicating the exit code of the Amelia run. See
-  the manual for a code reference.}
+\item{code}{a integer indicating the exit code of the Amelia run.}
 \item{message}{an exit message for the Amelia run}
 \item{iterHist}{a list of iteration histories for each EM chain. See
   documentation for details.}

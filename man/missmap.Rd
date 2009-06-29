@@ -9,12 +9,12 @@ the dataset passed to \code{amelia}.}
 \usage{
 
 missmap(obj, legend = TRUE, col = c("wheat","darkred"), main,
-        y.cex = 0.8, x.cex = 0.8, y.labels, y.at, ...)
+        y.cex = 0.8, x.cex = 0.8, y.labels, y.at, csvar = NULL, tsvar = NULL, ...)
 
 }
 \arguments{
   \item{obj}{an object of class "amelia"; typically output from the
-    function \code{amelia}.}
+    function \code{amelia}, a matrix or a dataframe.}
   \item{legend}{should a legend be drawn?}
   \item{col}{a vector of length two where the first element specifies
     the color for missing cells and the second element specifies
@@ -25,6 +25,11 @@ missmap(obj, legend = TRUE, col = c("wheat","darkred"), main,
   \item{y.labels}{a vector of row labels to print on the y-axis}
   \item{y.at}{a vector of the same length as \code{y.labels} with row
     nmumbers associated with the labels.}
+  \item{csvar}{column number or name of the variable corresponding to
+    the unit indicator. Only used when the \code{obj} is not of class
+    \code{amelia}.}
+  \item{tsvar}{column number or name of the variable corresponding to
+    the time indicator. Only used when the \code{obj} is not of class \code{amelia}.}
   \item{\dots}{further graphical arguments.}
 }
 
