@@ -1591,6 +1591,28 @@ described in \ref{sec:saving} and use statistical packages other than {\sf
 
 %% add example loop here?
 
+
+\subsection{The \texttt{amelia} class}
+\label{sec:out}
+
+The output from the \code{amelia} function is an instance of the S3 class
+``amelia.'' Instances of the \code{amelia} class contain much more than
+simply the imputed datasets. The \code{mu} object of the class contains
+the posterior draws of the means of the complete data. The
+\code{covMatrices} contains the posterior draws of the covariance
+matrices of the complete data. Note that these correspond to the variables
+as they are sent to the EM algorithm. Namely, they refer to the variables
+after being transformed, centered and scaled. 
+
+The \code{iterHist} object is a list of \code{m} 3-column matrices. Each
+row of the matrices corresponds to an iteration of the EM algorithm. The
+first column indicates how many parameters had yet to converge at that
+iteration. The second column indicates if the EM algorithm made a step
+that decreased the number of converged parameters. The third column
+indicates whether the covariance matrix at this iteration was
+singular. Clearly, the last two columns are meant to indicate when the EM
+algorithm enters a problematic part of the parameter space. 
+
 \clearpage
 
 
