@@ -147,7 +147,7 @@ startval<-function(x,startvals=0){
     cmpr<-packr(x)
     if (nrow(cmpr)>AMp){
       means<-colMeans(cmpr)
-      if (all(eigen(cov(cmpr))$values > .Machine$double.eps)) {   #Checks for positive definiteness (positive eigenvalues)
+      if (all(eigen(cov(cmpr))$values > 10*.Machine$double.eps)) {   #Checks for positive definiteness (positive eigenvalues)
         thetast[2:(AMp+1),2:(AMp+1)]<-cov(cmpr)                   #.Machine$double.eps instead of 0 to account for rounding.
         thetast[2:(AMp+1),1]<-means
         thetast[1,2:(AMp+1)]<-means
@@ -449,25 +449,27 @@ amelia.impute<-function(x,thetareal,priors=NULL,bounds=NULL,max.resample=NULL){
         npr <- nrow(priorsForThisRow)
           
         # Calculate sd2
-        solve.Sigma  <- am.inv(theta[c(FALSE,columnsWithPriors),
-                                     c(FALSE,columnsWithPriors),drop=FALSE],
-                               I[1:npr,1:npr,drop=FALSE])
+        solve.Sigma  <- am.inv(theta[c(FALSE,m[ss,]),
+                                     c(FALSE,m[ss,]),drop=FALSE])
        
-        solve.Lambda <- matrix(0,npr,npr)
-        diag(solve.Lambda) <- priorsForThisRow[,4]
-
-        wvar <-am.inv(solve.Lambda + solve.Sigma, I[1:npr,1:npr,drop=FALSE])
+        solve.Lambda <- matrix(0,sum(m[ss,]),sum(m[ss,]))
+        diag.Lambda <- rep(0, sum(m[ss,]))
+        diag.Lambda[columnsWithPriors[m[ss,]]] <- priorsForThisRow[,4]
+        diag(solve.Lambda) <- diag.Lambda
+        
+        wvar <- am.inv(solve.Lambda + solve.Sigma)
           
         # Weight these together
-          
-        mu.miss <- (wvar) %*% (priorsForThisRow[,3] +
-                   solve.Sigma  %*% imputations[jj,columnsWithPriors])
+        mu.prior <- rep(0, sum(m[ss,]))
+        mu.prior[columnsWithPriors[m[ss,]]] <- priorsForThisRow[,3]
+        mu.miss <- (wvar) %*% (mu.prior +
+                   solve.Sigma  %*% imputations[jj,m[ss,]])
         
-        imputations[jj,columnsWithPriors]<-mu.miss    
+        imputations[jj,m[ss,]] <- mu.miss    
                                                     
         # update **theta**
         copy.theta <- theta
-        copy.theta[c(FALSE,columnsWithPriors),c(FALSE,columnsWithPriors)]<-wvar
+        copy.theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])] <- wvar
           
         ## Create "noise" term from updated theta
         Ci<-matrix(0,AMp,AMp)
@@ -661,28 +663,31 @@ if (identical(priors,NULL)){                     # No Observation Level Priors i
 
       npr <- nrow(priorsForThisRow)
 
-      # Calculate sd2
-      solve.Sigma  <- am.inv(theta[c(FALSE,columnsWithPriors),
-                                   c(FALSE,columnsWithPriors),drop=FALSE] ,
-                             I[1:npr,1:npr,drop=FALSE])
+      try.out <- try(chol(theta[c(FALSE,m[ss,]),
+                                     c(FALSE,m[ss,])]))
+      if (inherits(try.out,"try-error")) browser()
+                                        # Calculate sd2
+      solve.Sigma  <- am.inv(theta[c(FALSE,m[ss,]),
+                                     c(FALSE,m[ss,]),drop=FALSE])
        
-      solve.Lambda <- matrix(0, nrow(priorsForThisRow),nrow(priorsForThisRow))
-      diag(solve.Lambda) <- priorsForThisRow[,4]
-      
-      # Update "hmcv" 
-      copy.theta<-theta
-
-      # Make a copy of theta
-      copy.theta[ c(FALSE,columnsWithPriors) ,c(FALSE,columnsWithPriors) ] <- am.inv(solve.Lambda + solve.Sigma,I[1:nrow(priorsForThisRow),1:nrow(priorsForThisRow),drop=FALSE])                    
-
-      
-      # Weight these together
-      
-      mu.miss <- (copy.theta[c(FALSE,columnsWithPriors),c(FALSE,columnsWithPriors)]) %*%
-                 (priorsForThisRow[,3] +
-                  solve.Sigma  %*% imputations[jj,columnsWithPriors])
+      solve.Lambda <- matrix(0,sum(m[ss,]),sum(m[ss,]))
+      diag.Lambda <- rep(0, sum(m[ss,]))
+      diag.Lambda[columnsWithPriors[m[ss,]]] <- priorsForThisRow[,4]
+      diag(solve.Lambda) <- diag.Lambda
         
-      imputations[jj,columnsWithPriors]<-mu.miss 
+      wvar <- am.inv(solve.Lambda + solve.Sigma)
+          
+        # Weight these together
+      mu.prior <- rep(0, sum(m[ss,]))
+      mu.prior[columnsWithPriors[m[ss,]]] <- priorsForThisRow[,3]
+      mu.miss <- (wvar) %*% (mu.prior +
+                             solve.Sigma  %*% imputations[jj,m[ss,]])
+        
+      imputations[jj,m[ss,]] <- mu.miss    
+                                                    
+      # update **theta**
+      copy.theta <- theta
+      copy.theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])] <- wvar
 
       # Overwrite prior locations
       hmcv[m[ss,],m[ss,]] <- hmcv[m[ss,],m[ss,]] + copy.theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])]

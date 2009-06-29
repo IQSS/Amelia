@@ -331,8 +331,8 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   #Error code: 11
   #0-1 Bounds on logistic transformations
   if (!identical(lgstc,NULL)) {
-    lgstc.check <- colSums(x[,lgstc,drop=FALSE] < 0 |
-                           x[,lgstc,drop=FALSE] > 1, na.rm = TRUE)
+    lgstc.check <- colSums(x[,lgstc,drop=FALSE] <= 0 |
+                           x[,lgstc,drop=FALSE] >= 1, na.rm = TRUE)
     if (sum(lgstc.check)) {
       neg.vals <- colnames(x[,lgstc,drop=FALSE])[lgstc.check > 0]
       if (is.null(neg.vals))
@@ -808,6 +808,17 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     }      
   }
 
+  if (is.data.frame(x)) {
+    if (sum(sapply(x, length) == 0)) {
+      bad.var <- colnames(x)[sapply(x,length) == 0]
+      if (is.null(bad.var))
+        bad.var <- which(sapply(x,length) == 0)
+      bad.var <- paste(bad.var, collapse = ", ")
+      error.code <- 53
+      error.mess<-paste("The variable(s)",bad.var,"have length 0 in the data frame. Try removing these variables or reimporting the data.")
+      return(list(code=error.code,mess=error.mess))
+    }
+  }
   
   return(list(m=m,priors=priors))
 }
