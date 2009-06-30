@@ -65,32 +65,15 @@ grep "I'm skipping" amelia.blg
 grep Warning amelia.blg
 grep -i Error amelia.blg
 
-
-
-
-#create the manual
-echo "pdflatex up in here"
-pdflatex amelia-vign
-bibtex amelia-vign
-pdflatex amelia-vign
-pdflatex amelia-vign
-pdflatex amelia-vign
-pdflatex amelia-vign
-
-## report errors:
-grep Warning amelia-vign.log
-grep "I'm skipping" amelia-vign.blg
-grep Warning amelia-vign.blg
-grep -i Error amelia-vign.blg
-
 ## cleanup
 rm -f *.aux *.toc *.log *.out *.blg *.bbl
-rm -f amelia-vign-*.pdf
-rm -f amelia-vign-*.eps
+rm -f amelia-*.pdf
+rm -f amelia-*.eps
+rm -f comp*
 rm -f Rplots.pdf
 rm -f varopts.* tscs.* step*.* rangepri.* priors.* obsprior.*
 rm -f distpri.* diag.* obspri.*
-rm -f amelia-vign.tex a007.tex
+rm -f amelia.tex a007.tex
 
 ## rm figures
 rm -f disp-2d-good.* disperse-bad.* disperse-good.* overdis1d.* overdis2d.* overimp.* 
