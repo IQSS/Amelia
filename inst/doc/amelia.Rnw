@@ -934,7 +934,7 @@ the number of observations, $n$, is a reasonable starting value, and often
 useful in large datasets to add some numerical stability.  For example, in
 a dataset of two thousand observations, this would translate to a prior
 value of 10 or 20 respectively.  A prior of up to 5 percent is moderate in
-most applications.
+most applications and 10 percent is reasonable upper bound.
 
 For our data, it is easy to code up a 1 percent ridge prior:
 <<>>=
@@ -1656,7 +1656,9 @@ not work, simply open an \R\ session and use the approach above.
   you open the ``Browse'' dialog.  Currently,\Amelia\ 
   supports five different file formats: Comma-Separated Values (.CSV),
   Tab-Delimited Text (.TXT), Stata v.5-8 (.DTA), SPSS (.DAT), and SAS
-  Transport (.XPORT).
+  Transport (.XPORT). Note that when using a CSV file, Amelia assumes that
+  your file has a header (that is, a row at the top of the data indicating
+  the variable names). 
 \item \textbf{Input Data File} - Enter the location of your dataset.
   If your file is located in a high level directory, it might be
   you are trying to access for more information.

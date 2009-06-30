@@ -95,10 +95,12 @@
     Amelia. Including this object will use the arguments from that run.}
 
   \item{empri}{number indicating level of the empirical (or ridge) prior.
-    This prior shinks the covariances of the data, but keeps the means
+    This prior shrinks the covariances of the data, but keeps the means
     and variances the same for problems of high missingness, small N's or
-    large correlations among the variables.  Should be kept small; a 
-    reasonable upper bound is around 10\% of the rows of the data.}
+    large correlations among the variables.  Should be kept small,
+    perhaps 0.5 to 1 percent of the rows of the data; a
+    reasonable upper bound is around 10 percent of the rows of the
+    data.}
 
   \item{priors}{a four or five column matrix containing the priors for
     either individual missing observations or variable-wide missing
