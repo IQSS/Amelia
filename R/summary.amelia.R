@@ -13,11 +13,11 @@ summary.amelia <- function(object, ...) {
   cat("Rows after Imputation: ", rows.imputed,"\n")
   cat("Patterns of missingness in the data: ", n.patterns, "\n\n")
 
-  cat("Percent Missing for individual variables: \n")
+  cat("Fraction Missing for individual variables: \n")
   cat("-----------------------------------------\n\n")
   tb <- data.frame(cbind(percent.missing))
   rownames(tb) <- colnames(object$imputations[[1]])
-  colnames(tb) <- "Percent Missing"
+  colnames(tb) <- "Fraction Missing"
   print(tb)
   cat("\n")
 }

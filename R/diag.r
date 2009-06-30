@@ -82,7 +82,7 @@ compare.density <- function(output,var,col=c("red","black"),scaled=FALSE,lwd=1,m
       main <- paste("Observed and Imputed values of",vname)
     }
     if (missing(xlab)) {
-      xlab <- paste(vname,"  --  Percent Missing:",round(mean(is.na(vars)),digits=3))
+      xlab <- paste(vname,"  --  Fraction Missing:",round(mean(is.na(vars)),digits=3))
 
     }
     if (missing(ylab)) {
