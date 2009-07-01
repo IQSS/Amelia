@@ -41,7 +41,7 @@
 \usepackage{url}
 \setcounter{tocdepth}{4}
 
-%% \VingetteIndexEntry{A Guide to Amelia}
+% \VignetteIndexEntry{A Guide to Amelia}
 \usepackage{color}
 \usepackage[pdftex, bookmarksopen=true, bookmarksnumbered=true,
 pdfstartview=FitH, breaklinks=true, urlbordercolor={0 1 0},
