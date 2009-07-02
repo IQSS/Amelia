@@ -41,8 +41,12 @@
 \usepackage{url}
 \setcounter{tocdepth}{4}
 
-%\VignetteIndexEntry{A Guide to Amelia}
+
+%\VignetteIndexEntry{Amelia II: A Package for Missing Data}
 %\VignetteDepends{Zelig}
+%\VignetteKeyWords{}
+%\VignettePackage{Amelia}
+
 \usepackage{color}
 \usepackage[pdftex, bookmarksopen=true, bookmarksnumbered=true,
 pdfstartview=FitH, breaklinks=true, urlbordercolor={0 1 0},
