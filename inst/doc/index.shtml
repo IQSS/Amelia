@@ -6,15 +6,17 @@
 <BODY><script language="Javascript">displayHeader()</script>
 
 <h1>Amelia II: A Program for Missing Data</h1>
-
+<div>
 <a
 href="http://www.polisci.ucla.edu/menu/people/faculty/james_honaker.htm">James
 Honaker</a>, <a href="/">Gary King</a>, <a href="http://www.gov.harvard.edu/people/matthew-blackwell">Matthew
 Blackwell</a>
-
-<br /><br />
+</div>
+<div>
+<br />
 <!-- rbuild: replace 'Version:' '</b>' version -->
-<b>Version:1.1-15</b>
+<b>Version:1.2-10</b>
+</div>
 
 <p style="float:left; width: 300; margin: 1.5em;"> <img
 src="/amelia/gallery19.jpg" width="300" /> <br /><small>
