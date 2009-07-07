@@ -557,7 +557,7 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   
   if (is.null(c(noms,ords,idvars,cs)))
     fact<-c(1:AMp)
-  else
+  else 
     fact<--c(noms,ords,idvars,cs)
 
   if (is.null(c(cs,idvars,noms)))
@@ -569,44 +569,46 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   #factors out of the noms,ids,ords,cs
 
   if (is.data.frame(x)) {
-    if (sum(sapply(x[,fact],is.factor))) {
-      bad.var <- colnames(x[,fact])[sapply(x[,fact],is.factor)]
-      if (is.null(bad.var))
-        bad.var <- setdiff(which(sapply(x,is.factor)), -fact)
-      bad.var <- paste(bad.var, collapse = ", ")
-      error.code<-37
-      error.mess<-paste("The variable(s) ",bad.var," are \"factors\".  You may \n",
-                        "have wanted to set this as a ID variable to remove it \n",
-                        "from the imputation model or as an ordinal or nominal \n", 
-                        "variable to be imputed.  Please set it as either and \n",
-                        "try again.") 
-    return(list(code=error.code,mess=error.mess))
-    }
-    if (sum(sapply(x[,fact],is.ordered))) {
-      bad.var <- colnames(x[,fact])[sapply(x[,fact],is.ordered)]
-      if (is.null(bad.var))
-        bad.var <- setdiff(which(sapply(x,is.ordered)), -fact)
-      bad.var <- paste(bad.var, collapse = ", ")
-      error.code<-37
-      error.mess<-paste("The variable(s) ",bad.var," are \"factors\".  You may \n",
-                        "have wanted to set this as a ID variable to remove it \n",
-                        "from the imputation model or as an ordinal or nominal \n", 
-                        "variable to be imputed.  Please set it as either and \n",
-                        "try again.") 
-      return(list(code=error.code,mess=error.mess))
-    }
-
-    if (sum(sapply(x[,fact],is.character))) {
-      bad.var <- colnames(x[,fact])[sapply(x[,fact],is.character)]
-      if (is.null(bad.var))
-        bad.var <- setdiff(which(sapply(x,is.character)), -fact)
-      bad.var <- paste(bad.var, collapse = ", ")
-      error.code<-38
-      error.mess<-paste("The variable(s)",bad.var,"are \"characters\".  You may",
-                        "have wanted to set this as a ID variable, nominal",
-                        "or the cross sectional variable.  Please either remove it from",
-                        "the data or set it as an ID variable.") 
-      return(list(code=error.code,mess=error.mess))
+    if (length(x[,fact])) {
+      if (sum(sapply(x[,fact],is.factor))) {
+        bad.var <- colnames(x[,fact])[sapply(x[,fact],is.factor)]
+        if (is.null(bad.var))
+          bad.var <- setdiff(which(sapply(x,is.factor)), -fact)
+        bad.var <- paste(bad.var, collapse = ", ")
+        error.code<-37
+        error.mess<-paste("The variable(s) ",bad.var," are \"factors\".  You may \n",
+                          "have wanted to set this as a ID variable to remove it \n",
+                          "from the imputation model or as an ordinal or nominal \n", 
+                          "variable to be imputed.  Please set it as either and \n",
+                          "try again.") 
+        return(list(code=error.code,mess=error.mess))
+      }
+      if (sum(sapply(x[,fact],is.ordered))) {
+        bad.var <- colnames(x[,fact])[sapply(x[,fact],is.ordered)]
+        if (is.null(bad.var))
+          bad.var <- setdiff(which(sapply(x,is.ordered)), -fact)
+        bad.var <- paste(bad.var, collapse = ", ")
+        error.code<-37
+        error.mess<-paste("The variable(s) ",bad.var," are \"factors\".  You may \n",
+                          "have wanted to set this as a ID variable to remove it \n",
+                          "from the imputation model or as an ordinal or nominal \n", 
+                          "variable to be imputed.  Please set it as either and \n",
+                          "try again.") 
+        return(list(code=error.code,mess=error.mess))
+      }
+      
+      if (sum(sapply(x[,fact],is.character))) {
+        bad.var <- colnames(x[,fact])[sapply(x[,fact],is.character)]
+        if (is.null(bad.var))
+          bad.var <- setdiff(which(sapply(x,is.character)), -fact)
+        bad.var <- paste(bad.var, collapse = ", ")
+        error.code<-38
+        error.mess<-paste("The variable(s)",bad.var,"are \"characters\".  You may",
+                          "have wanted to set this as a ID variable, nominal",
+                          "or the cross sectional variable.  Please either remove it from",
+                          "the data or set it as an ID variable.") 
+        return(list(code=error.code,mess=error.mess))
+      }
     }
   } else {
     if (!is.numeric(x)) {
