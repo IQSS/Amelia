@@ -15,8 +15,12 @@ Blackwell</a>
 <div>
 <br />
 <!-- rbuild: replace 'Version:' '</b>' version -->
+<<<<<<< index.shtml
+<b>Version:1.1-15</b> 
+=======
 <b>Version:1.2-10</b>
 </div>
+>>>>>>> 1.19
 
 <p style="float:left; width: 300; margin: 1.5em;"> <img
 src="/amelia/gallery19.jpg" width="300" /> <br /><small>
@@ -73,8 +77,8 @@ purpose as the first version of Amelia (still available <a
 href="/amelia/amelia1/index.shtml">here</a>) by James Honaker, Anne
 Joseph, Gary King, Kenneth Scheve, and Naunihal Singh.
   <ul>
-    <li>Documentation:
-    <a href="/amelia/docs/amelia.pdf">PDF</a> </li>
+    <li><a href="/amelia/docs/amelia.pdf">Documentation</a>, 
+        <a href="/amelia/amelia-changes/">What's New?</a> </li>
 	
     <li><strong>All</strong> <span class="orange">questions, bugs, and
     requests</span>:
