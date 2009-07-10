@@ -1,0 +1,81 @@
+2009-07-10  Matthew Blackwell  <blackwel@fas.harvard.edu>
+
+	* R/ameliagui.r (AmeliaView): Removed tests of 1.3 that were left in.
+
+	* R/emb.r (emfred): Removed leftover test code/browser.
+
+2009-07-07  Matthew Blackwell  <blackwel@fas.harvard.edu>
+
+	* R/amcheck.r (amcheck): Added a conditional statement to only
+	  check for leftover factors if are actually leftover variables.	
+	
+2009-07-01  Matthew Blackwell  <blackwel@fas.harvard.edu>
+
+	* isnt/doc/amelia.tex: Removed, replaced with vignette/Sweave.
+	* inst/doc/amelia.Rnw: Added, updated content and made it Sweave
+	  compatible, used to be amelia-vign.Rnw.
+
+
+2009-06-30  Matthew Blackwell  <blackwel@fas.harvard.edu>
+
+	* inst/docs/amelia-vign.Rnw: change discussion of empri to match
+	  between Rd file and manual.
+	* man/amelia.Rd: same.
+
+	* R/diag.r (overimpute): changed "percent" to "fraction".
+	* R/summary.amelia.R (summary.amelia): same.
+
+2009-06-29  Matthew Blackwell  <blackwel@fas.harvard.edu>
+	
+	* R/emb.r (impfill): Changed class== calls to is.class calls.
+	* R/amcheck.r (amcheck): Changed class== calls to is.class
+	  calls. Added a check for ordered factors. Broke up the checks to
+	  be more specific (fact, char, ord, etc).
+	  
+	* R/emb.r (startvals): Lowered the tolerance for non-positiv definite
+	  matrices to switch to identity starting valuees.
+	
+	* R/emb.r (emfred, amelia.impute): solveLambda should include all
+	  the missing values for that row, not just the ones with
+	  priors. fixed this oversight.	 
+
+	* R/emb.r (amelia.default): Error codes return invisibly now. 
+
+	* R/emb.r (amelia.default): Added variable names to output mu and
+	  covMatrices.
+	  
+	* R/amcheck.r (amcheck): Errors indicate problematic
+	  variable. Changed identical(*, NULL) to is.null(*). Added a check
+	  for zero length variables in the data frame (rare).
+
+	* man/missmap.Rd: Updated docs on the missmap changes from
+	  (2009-05-19).
+	
+2009-05-19  Matthew Blackwell  <blackwel@fas.harvard.edu>
+
+	* R/missmap.R (missmap): Can now accept generic
+	  matrices/dataframes and accepts time/cross-section arguments.
+
+2009-05-14  Matthew Blackwell  <blackwel@fas.harvard.edu>
+	
+	* inst/doc/copyRd: Added to copy Rd files into Sweave manual
+	  (amelia-vign.Rnw).
+	* inst/doc/makeDocs: Added to properly compile amelia-vign.Rnw.
+	* inst/doc/Makefile: Updated to include refs to makeDocs.
+
+
+2009-04-29  Matthew Blackwell  <blackwel@fas.harvard.edu>
+
+	* R/emb.r (amsweep): Calculates Moore-Penrose inverse of g11 if not
+	  positive definite.
+
+	* R/diag.r (compare.density): Fixed a typo: leg.text -> leg.tex.
+
+	* R/missmap.R (missmap): Switched default color scheme. 
+
+	* data/freetrade.RData: Added Milner/Kubota free trade data.
+	* man/freetrade.Rd: Created man page for freetrade data.
+	* man/africa.Rd: same.
+
+	* R/write.amelia.R (write.amelia): Set Call$format to NULL to
+	  avoid problems passing call to write.*().
