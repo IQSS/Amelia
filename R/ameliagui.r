@@ -422,11 +422,11 @@ set.out<-function(...) {
 #Preamble
 require(tcltk) || stop("The package 'tcltk' is required")
 require(foreign)
-#libdir<-file.path(.find.package(package = "Amelia")[1], "tklibs")
-#addTclPath(libdir)
-#tclRequire("combobox")
-#.Tcl("catch {namespace import ::combobox::*}")
-#tclRequire("BWidget")
+libdir<-file.path(.find.package(package = "Amelia")[1], "tklibs")
+addTclPath(libdir)
+tclRequire("combobox")
+.Tcl("catch {namespace import ::combobox::*}")
+tclRequire("BWidget")
 
 putAmelia("outname",    tclVar("outdata"))
 putAmelia("outnum",     tclVar("5"))
@@ -491,7 +491,7 @@ file.types<-c("CSV","Tab Delimited","Stata","SPSS","SAS Transport") #,"RData")
 tcl("set", "filetypes",file.types)
 input.drop.label<-tklabel(gui.input,text="Input Data Format:")
 
-input.drop.box<-ttkcombobox(gui.input, borderwidth=1,
+input.drop.box<-tkwidge(gui.input, "combobox", borderwidth=1,
     editable="FALSE",listvar= "filetypes",width=15)
 tkselect(input.drop.box,getAmelia("drop.select"))
 tkconfigure(input.drop.box,command=function(...)file.type())
@@ -1704,7 +1704,7 @@ gui.diag.setup <- function() {
 }
 #tkwm.iconbitmap(gui,"~/amelia/setup/files/amelia.ico")
 tkwm.deiconify(gui)
-#tkwait.window(gui)
+tkwait.window(gui)
 
 }
 

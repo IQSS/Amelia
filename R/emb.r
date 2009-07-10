@@ -663,9 +663,7 @@ if (identical(priors,NULL)){                     # No Observation Level Priors i
 
       npr <- nrow(priorsForThisRow)
 
-      try.out <- try(chol(theta[c(FALSE,m[ss,]),
-                                     c(FALSE,m[ss,])]))
-      if (inherits(try.out,"try-error")) browser()
+
                                         # Calculate sd2
       solve.Sigma  <- am.inv(theta[c(FALSE,m[ss,]),
                                      c(FALSE,m[ss,]),drop=FALSE])
