@@ -4,57 +4,61 @@
 //
 //
 
+== 1.2-12 (11 Jul 2009)  == 
+
+   *  Fixed a bug in AmeliaView that caused it to crash.
+
 == 1.2-11 (10 Jul 2009)  == 
 
-        * Minor bugfixes in removing test code from AmeliaView() and
-        handling of the priors.
+   * Minor bugfixes in removing test code from AmeliaView() and
+     handling of the priors.
 
 
 == 1.2-10 (07 Jul 2009)  == 
 
-        * Fixed a bug in the error checking routine that occurred when
-        users put all of their variables into one of (idvars, noms,
-        ords, ts, cs).
+   * Fixed a bug in the error checking routine that occurred when
+     users put all of their variables into one of (idvars, noms,
+     ords, ts, cs).
 
 
 == 1.2-9 (02 Jul 2009) ==
 
-        * Fixed typos in the manual with regard to ridge priors and 
-        clarified the advice about them.
+   * Fixed typos in the manual with regard to ridge priors and
+     clarified the advice about them.
 
 
 
 === 1.2-8 (01 Jul 2009) ==
 
-        * Major update to the Amelia manual (now compiled as a vignette 
-        using Sweave).
-
-        * Changed a typo that stated values were the "percent missing" 
-        when they should have been "fraction missing." This is fixed. 
+    * Major update to the Amelia manual (now compiled as a vignette 
+      using Sweave).
+    
+    * Changed a typo that stated values were the "percent missing" 
+      when they should have been "fraction missing." This is fixed. 
 
 
 
 === 1.2-7 (29 Jul 2009) ==
 
-        * In the amelia output, mu and covMatrices now have relevant
-        dimension names to be able to tell which column which.
+    * In the amelia output, mu and covMatrices now have relevant
+      dimension names to be able to tell which column which.
 
-        * Fixed a bug in the handling of priors that may have affected
-        answers, but not significantly.
+    * Fixed a bug in the handling of priors that may have affected
+      answers, but not significantly.
 
-        * The missmap() function can now accept any matrix or data.frame,
-        not just Amelia output. This allows for drawing a missingness
-        map before running amelia().
+    * The missmap() function can now accept any matrix or data.frame,
+      not just Amelia output. This allows for drawing a missingness
+      map before running amelia().
 
 
 == 1.2-0 (09 Apr 2009) == 
 
-        * Amelia output is now an instance of the S3 class 'amelia'. 
+    * Amelia output is now an instance of the S3 class 'amelia'. 
 
-        * Imputations are now stored in a list of length 'm' (the number
-        of imputations) in output$imputations, which is of the class
-        'mi', making it simple to pass to Zelig. 
+    * Imputations are now stored in a list of length 'm' (the number
+      of imputations) in output$imputations, which is of the class
+      'mi', making it simple to pass to Zelig. 
 
-        * Amelia output contains a matrix of means (one column for each
-        imputation) and an array of covariance matrices. These are the
-        posterior modes found by the EM algorithm in each imputation. 
+    * Amelia output contains a matrix of means (one column for each
+      imputation) and an array of covariance matrices. These are the
+      posterior modes found by the EM algorithm in each imputation. 

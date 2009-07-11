@@ -1,3 +1,8 @@
+2009-07-11  Matthew Blackwell  <blackwel@fas.harvard.edu>
+
+	* R/ameliagui.r (AmeliaView): Typo when calling combobox: "widge"
+	-> "widget"
+
 2009-07-10  Matthew Blackwell  <blackwel@fas.harvard.edu>
 
 	* R/ameliagui.r (AmeliaView): Removed tests of 1.3 that were left in.

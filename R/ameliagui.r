@@ -491,7 +491,7 @@ file.types<-c("CSV","Tab Delimited","Stata","SPSS","SAS Transport") #,"RData")
 tcl("set", "filetypes",file.types)
 input.drop.label<-tklabel(gui.input,text="Input Data Format:")
 
-input.drop.box<-tkwidge(gui.input, "combobox", borderwidth=1,
+input.drop.box<-tkwidget(gui.input, "combobox", borderwidth=1,
     editable="FALSE",listvar= "filetypes",width=15)
 tkselect(input.drop.box,getAmelia("drop.select"))
 tkconfigure(input.drop.box,command=function(...)file.type())
