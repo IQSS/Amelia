@@ -535,16 +535,16 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     for (i in noms) {
       #Error code: 36
       #too many levels on noms
-      if (length(unique(x[,i])) > (1/3)*(AMn)) {
-        bad.var <- colnames(x)[noms[i]]
-        if (is.null(bad.var)) bad.var <- noms[i]
+      if (length(unique(na.omit(x[,i]))) > (1/3)*(AMn)) {
+        bad.var <- colnames(x)[i]
+        if (is.null(bad.var)) bad.var <- i
         error.code<-36
         error.mess<-paste("The number of categories in the nominal variable \'",bad.var,"\' is greater than one-third of the observations.", sep = "")
         return(list(code=error.code,mess=error.mess))
       }
       
-      if (length(unique(x[,i])) > 10)
-        warning("\n\nThe number of catagories in one of the variables marked nominal has greater than 10 categories. Check nominal specification.\n\n")
+      if (length(unique(na.omit(x[,i]))) > 10)
+        warning("\n\nThe number of categories in one of the variables marked nominal has greater than 10 categories. Check nominal specification.\n\n")
       
 
 
