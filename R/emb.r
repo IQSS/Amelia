@@ -115,7 +115,7 @@ impfill<-function(x.orig,x.imp,noms,ords) {
         else if (orig.char[i])
           x.orig[,i]<-unique(na.omit(x.orig[,i]))[x.imp[,i]]
         else
-          x.orig[,i]<-x.imp[,i]    
+          x.orig[is.na(x.orig[,i]),i] <- x.imp[is.na(x.orig[,i]),i]    
       }                   
     } else {
        x.orig[AMr1.orig]<-x.imp[AMr1.orig]

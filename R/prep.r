@@ -439,6 +439,7 @@ unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,intercs,noms,index,
 
     ## replace the imputations with the ordinal values
     for(jj in 1:length(ords)){
+      x.imp[,impords[jj]] <- round(x.imp[,impords[jj]])
       x.imp[AMr1.orig[-blanks,ords[jj]]==1, impords[jj]]<-newimp[AMr1.orig[-blanks,ords[jj]]==1,jj]
     }                                        # MAYBE CAN REMOVE LOOP
 
