@@ -314,15 +314,34 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
       timevars<-cbind(timevars,polynomials)
       timevars<-timevars[,-c(1,2)]  # first column is a holding variable, second is to have fixed effects identified
     }
-    x<-cbind(x,timevars)  
-    for (i in 1:ncol(as.matrix(timevars))) {
-      index<-c(index,0)               #0 - timevars
-      theta.names <- c(theta.names, paste("time",i,sep="."))
+    x<-cbind(x,timevars)
+    if (ncol(timevars)) {
+      for (i in 1:ncol(as.matrix(timevars))) {
+        index<-c(index,0)               #0 - timevars
+        theta.names <- c(theta.names, paste("time",i,sep="."))
+      }
+    }
+  } else {
+    if (intercs) {
+      cstypes <- unique(x[,cs])
+      timevars <- matrix(0, nrow(x), 1)
+      for (i in cstypes) {
+        dummy <- as.numeric(x[,cs] == i)
+        timevars <- cbind(timevars, dummy)
+      }
+      timevars <- timevars[,-c(1,2)]
+      x<-cbind(x,timevars)
+      if (ncol(timevars)) {
+        for (i in 1:ncol(as.matrix(timevars))) {
+          index<-c(index,0)               #0 - timevars
+          theta.names <- c(theta.names, paste("time",i,sep="."))
+        }
+      }
     }
   }
 
   if (!identical(idvars,NULL))
-    x<-x[,-idvars]   
+    x<-x[,-idvars, drop = FALSE]   
 
   if (p2s == 2) {
     cat("Variables used: ", theta.names,"\n")

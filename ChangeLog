@@ -1,3 +1,18 @@
+2010-02-20  Matthew Blackwell  <blackwel@fas.harvard.edu>
+	* R/prep.r (amsubset): intercs=TRUE with polytime=NULL creates
+	fixed effects. 
+	* R/prep.r (amsubset): fixed problem with 1 column of non-idvar
+	variables. 
+	* R/amcheck.r (amcheck): enforces one-variable only error when cs
+	is set but not used in imputation.
+	* R/amcheck.r (amcheck): fixed non.vary issue with only one
+	non-idvar/cs variable. 
+
+2009-11-17  Matthew Blackwell  <blackwel@fas.harvard.edu>
+
+	* R/prep.r (amsubset): theta.names now does not add false names
+	with 0 polynomials and intercs=FALSE.
+
 2009-11-16  Matthew Blackwell  <blackwel@fas.harvard.edu>
 
 	* R/emb.r (impfill): Ordinal variables only fill in on the missing

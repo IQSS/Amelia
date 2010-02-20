@@ -560,10 +560,10 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   else 
     fact<--c(noms,ords,idvars,cs)
 
-  if (is.null(c(cs,idvars,noms)))
+  if (is.null(c(cs,idvars)))
     idcheck<-c(1:AMp)
   else
-    idcheck<--c(cs,idvars,noms)
+    idcheck<--c(cs,idvars)
   
   #Error code: 37
   #factors out of the noms,ids,ords,cs
@@ -619,7 +619,7 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   }
   #Error code: 39
   #No missing observation
-  if (!any(is.na(x))) {
+  if (!any(is.na(x[,idcheck,drop=FALSE]))) {
     error.code<-39
     error.mess<-paste("Your data has no missing values.  Make sure the code for \n",
                       "missing data is set to the code for R, which is NA.")
@@ -653,7 +653,15 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     error.code<-42
     error.mess<-paste("There is only 1 column of data. Cannot impute.")
     return(list(code=error.code,mess=error.mess))
-  }  
+  }
+
+  ## catch problems when the only other variable is an unused
+  ## cross-section.
+  if (!isTRUE(intercs) & ncol(x[,idcheck, drop = FALSE]) == 1) {
+    error.code<-42
+    error.mess<-paste("There is only 1 column of data. Cannot impute.")
+    return(list(code=error.code,mess=error.mess))
+  }
   
 
   #Error code: 43
@@ -665,9 +673,9 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   ## dataset. Our starting value function should be robust to this.
   
   if (is.data.frame(x)) {
-    non.vary <- sapply(x[,idcheck], var, na.rm = TRUE)
+    non.vary <- sapply(x[,idcheck, drop = FALSE], var, na.rm = TRUE)
   } else {
-    non.vary <- apply(x[,idcheck], 2, var, na.rm = TRUE)
+    non.vary <- apply(x[,idcheck, drop = FALSE], 2, var, na.rm = TRUE)
   }
   
   if (sum(non.vary == 0)) {

@@ -4,6 +4,12 @@
 //
 //
 
+== 1.2-15 (20 Feb 2010)  ==
+   * Fixed a bug when only 1 variable is not an ID variable or a
+   nominal/ordinal variable. 
+   * Fixed a bug with the naming of columns in the imputation
+   process. 
+
 == 1.2-14 (16 Nov 2009)  == 
 
    *  Fixed a bug that "ords" variables would return multiple copies
