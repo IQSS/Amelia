@@ -80,12 +80,12 @@ citebordercolor={0 0 1}]{hyperref}
 
 \section{Introduction}
 \label{sec:intro}
-Missing data is a perennial problem in social science data.
+Missing data is a ubiquitous problem in social science data.
 Respondents do not answer every question, countries do not collect
-statistics in every year and, most unfortunately, researchers do not
-always have the resources to collect every piece of available data.
-Most statistical analysis methods, however, assume the absence of
-missing data. \AmeliaII\ allows users to impute (``fill in'' or
+statistics every year, archives are incomplete, subjects drop out of
+panels. Most statistical analysis methods, however, assume the absence of
+missing data, and are only able to include observations for which 
+every variable is measured. \AmeliaII\ allows users to impute (``fill in'' or
 rectangularize) incomplete data sets so that analyses which require
 complete observations can appropriately use all the information
 present in a dataset with missingness, and avoid the biases,
@@ -98,9 +98,9 @@ shown to reduce bias and increase efficiency compared to listwise
 deletion. Furthermore, ad-hoc methods of imputation, such as mean
 imputation, can lead to serious biases in variances and covariances.
 Unfortunately, creating multiple imputations can be a burdensome
-process due to technical nature of algorithms involved. \Amelia
-provides users with a simple way to create an imputation model,
-implement it, and check its fit using diagnostics.
+process due to the technical nature of algorithms involved. \Amelia 
+provides users with a simple way to create and implement an imputation model,
+generate imputed datasets, and check its fit using diagnostics.
 
 The \AmeliaII\ program goes several significant steps beyond the
 capabilities of the first version of \Amelia\ \citep*{HonJosKin98}.
@@ -116,18 +116,18 @@ time-series-cross-section data, and allows the incorporation of
 observation and data-matrix-cell level prior information. In addition
 to all of this, \AmeliaII\ provides many diagnostic functions that
 help users check the validity of their imputation model.  This
-software implements the ideas developed in \citet*{HonKin09}.
+software implements the ideas developed in \citet*{HonKin10}.
 
 \section{What \Amelia\ Does}
 \label{sec:what}
 
 Multiple imputation involves imputing $m$ values for each missing cell
-in your data matrix and creating $m$ ``completed'' data sets.  (Across
+in your data matrix and creating $m$ ``completed'' data sets.  Across
 these completed data sets, the observed values are the same, but the
-missing values are filled in with different imputations that reflect
-the uncertainty about the missing data.)  After imputation with
+missing values are filled in with a distribution of imputations that reflect
+the uncertainty about the missing data.  After imputation with
 \AmeliaII's EMB algorithm, you can apply whatever statistical method
-you would have used if there had been no missing values in each of the
+you would have used if there had been no missing values to each of the
 $m$ data sets, and use a simple procedure, described below, to combine
 the results\footnote{(You can combine the results automatically by
   doing your data analyses within Zelig for R, or within Clarify for
@@ -157,12 +157,12 @@ vector $\mu$ and covariance matrix $\Sigma$. The multivariate normal
 distribution is often a crude approximation to the true distribution of
 the data, yet there is evidence that this model works as well as other,
 more complicated models even in the face of categorical or mixed data
-\citep[see][]{Schafer97, SchOls98}. Furthermore, transformations of the data
+\citep[see][]{Schafer97, SchOls98}. Furthermore, transformations of many types of variables 
 can often make this normality assumption more plausible (see
 \ref{sec:trans} for more information on how to implement this in \Amelia).
 
 The essential problem of imputation is that we only observe
-$D^{\obs}$, not all of $D$. In order to gain traction, we need to make
+$D^{\obs}$, not the entirety of $D$. In order to gain traction, we need to make
 the usual assumption in multiple imputation that the data are
 \emph{missing at random} (MAR). This assumption means that the pattern
 of missingness only depends on the observed data $D^{\obs}$, not the
@@ -182,8 +182,8 @@ on the data at all, we say that the data are \emph{missing completely
   at random} (MCAR).  \Amelia\ requires both the multivariate
 normality and the MAR assumption (or the simpler special case of
 MCAR).  Note that the MAR assumption can be made more plausible by
-including more information into the imputation model.
-
+including additional variables in the dataset $D$ in the imputation 
+dataset than just those eventually envisioned to be used in the analysis model.
 
 \subsection{Algorithm}
 
@@ -232,7 +232,7 @@ directly from $\theta$.
 \subsection{Analysis}
 
 In order to combine the results across $m$ data sets, first decide on
-the quantity of interest to compute, such as univariate mean,
+the quantity of interest to compute, such as a univariate mean,
 regression coefficient, predicted probability, or first difference.
 Then, the easiest way is to draw $1/m$ simulations of $q$ from each of
 the $m$ data sets, combine them into one set of $m$ simulations, and
@@ -263,12 +263,12 @@ SE(q)^2=\frac{1}{m}\sum^{m}_{j=1}SE(q_j)^2+S^2_q(1+1/m).
 
 \label{sec:versions}
 Two versions of \AmeliaII\ are available, each with its own advantages
-and drawbacks, but both of which use the same underyling code.  First,
+and drawbacks, but both of which use the same underlying code and algorithms.  First,
 \AmeliaII\ exists as a package for the \R\ statistical software
 package.  Users can utilize their knowledge of the \R\ language to run
 \AmeliaII\ at the command line or to create scripts that will run
 \AmeliaII\ and preserve the commands for future use.  Alternatively,
-you may prefer \AmeliaView, where a interactive Graphical User
+you may prefer \AmeliaView, where an interactive Graphical User
 Interface (GUI) allows you to set options and run \Amelia\ without any
 knowledge of the \R\ programming language.
 
@@ -277,13 +277,12 @@ and Linux platforms and \AmeliaII\ for \R\ runs in any environment that \R\
 can.  All versions of \Amelia\ require the \R\ software, which
 is freely available at \url{http://www.r-project.org/}.
 
-
-\section{Installation and Updates}
-\label{sec:install}
-
 Before installing \AmeliaII, you must have installed \R\ version 2.1.0
 or higher, which is freely available at
 \url{http://www.r-project.org/}.
+
+\subsection{Installation and Updates from R}
+\label{sec:install}
 
 To install the \Amelia\ package on any platform, simply type the following at
 the \R\ command prompt,
@@ -304,7 +303,7 @@ use the command
 \end{verbatim}
 
 
-\subsection{Windows --- \AmeliaView}
+\subsection{Installation in Windows of \AmeliaView as a Standalone Program}
 \label{sec:win-install}
 To install a standalone version of \AmeliaView\ in the Windows environment,
 simply download the installer \texttt{setup.exe} from
