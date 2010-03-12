@@ -40,7 +40,7 @@
 % === additional packages ===
 \usepackage{url}
 \setcounter{tocdepth}{4}
-
+\usepackage{tikz}
 
 %\VignetteIndexEntry{Amelia II: A Package for Missing Data}
 %\VignetteDepends{Zelig}
@@ -98,7 +98,7 @@ shown to reduce bias and increase efficiency compared to listwise
 deletion. Furthermore, ad-hoc methods of imputation, such as mean
 imputation, can lead to serious biases in variances and covariances.
 Unfortunately, creating multiple imputations can be a burdensome
-process due to the technical nature of algorithms involved. \Amelia 
+process due to the technical nature of algorithms involved. \Amelia\ 
 provides users with a simple way to create and implement an imputation model,
 generate imputed datasets, and check its fit using diagnostics.
 
@@ -129,7 +129,7 @@ the uncertainty about the missing data.  After imputation with
 \AmeliaII's EMB algorithm, you can apply whatever statistical method
 you would have used if there had been no missing values to each of the
 $m$ data sets, and use a simple procedure, described below, to combine
-the results\footnote{(You can combine the results automatically by
+the results\footnote{You can combine the results automatically by
   doing your data analyses within Zelig for R, or within Clarify for
   Stata; see \url{http://gking.harvard.edu/stats.shtml}.}.  Under
 normal circumstances, you only need to impute once and can then
@@ -220,7 +220,7 @@ algorithm with a bootstrap approach to take draws from this posterior.
 For each draw, we bootstrap the data to simulate estimation
 uncertainty and then run the EM algorithm to find the mode of the
 posterior for the bootstrapped data, which gives us fundamental
-uncertainty too (see \citet{HonKin09} for details of the EMB
+uncertainty too (see \citet{HonKin10} for details of the EMB
 algorithm).
 
 Once we have draws of the posterior of the complete-data parameters,
@@ -258,6 +258,99 @@ multiple imputation point estimate is the square root of
 \begin{equation}
 SE(q)^2=\frac{1}{m}\sum^{m}_{j=1}SE(q_j)^2+S^2_q(1+1/m).
 \end{equation}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+[inner sep = 2.5mm,
+missdata/.style={rectangle, draw=red!50, fill=red!20, thick},
+ impdata/.style={rectangle, draw=blue!50, fill=blue!20, thick},
+results/.style= {circle, draw=blue!50, fill=blue!20, thick}]
+
+\node  (odata) at (3,3) [missdata] {};
+\node [red!80,right] at (5.25,3) {incomplete data}; 
+
+
+\node (boot1) at (1,1) [missdata] {}
+  edge [<-, bend left=40] (odata);
+\node (boot2) at (2,1) [missdata] {}
+  edge [<-, bend left=20] (odata);
+\node (boot3) at (3,1) [missdata] {}
+  edge [<-] (odata);
+\node (boot4) at (4,1) [missdata] {}
+  edge [<-, bend right=20] (odata);
+\node (boot5) at (5,1) [missdata] {}
+  edge [<-, bend right=40] (odata);
+
+  
+
+%% add "random question marks"
+\node[red!50!black] at (2.95,3.1) {\tiny ?};
+\node[red!50!black] at (2.85,2.9) {\tiny ?};
+\node[red!50!black] at (3.15,2.95) {\tiny ?};
+
+\node[red!50!black] at (2.85,1.1) {\tiny ?};
+\node[red!50!black] at (2.95,0.9) {\tiny ?};
+\node[red!50!black] at (3.15,1.1) {\tiny ?};
+
+\node[red!50!black] at (0.85,0.9) {\tiny ?};
+\node[red!50!black] at (1.15,0.95) {\tiny ?};
+
+
+\node[red!50!black] at (1.85,1.1) {\tiny ?};
+\node[red!50!black] at (1.95,0.9) {\tiny ?};
+
+
+\node[red!50!black] at (3.85,1.1) {\tiny ?};
+
+\node[red!50!black] at (4.95,0.9) {\tiny ?};
+\node[red!50!black] at (5.15,1.1) {\tiny ?};
+
+  
+\node [black!80,right] at (5.25,2) {bootstrap};
+\node [red!80, right] at (5.25, 1) {bootstrapped data};
+
+\node (imp1) at (1,0) [impdata] {}
+  edge [<-] (boot1);
+\node (imp2) at (2,0) [impdata] {}
+  edge [<-] (boot2);
+\node (imp3) at (3,0) [impdata] {}
+  edge [<-] (boot3);
+\node (imp4) at (4,0) [impdata] {}
+  edge [<-] (boot4);
+\node (imp5) at (5,0) [impdata] {}
+  edge [<-] (boot5);
+
+\node [blue!80,right] at (5.25,0) {imputed datasets};
+\node [black!80, right] at (5.25, 0.5) {EM};
+
+\node (res1) at (1,-1) [results] {}
+  edge [<-] (imp1);
+\node (res2) at (2,-1) [results] {}
+  edge [<-] (imp2);
+\node (res3) at (3,-1) [results] {}
+  edge [<-] (imp3);
+\node (res4) at (4,-1) [results] {}
+  edge [<-] (imp4);
+\node (res5) at (5,-1) [results] {}
+  edge [<-] (imp5);
+
+\node [black!80, right] at (5.25, -0.5) {analysis};
+\node [blue!80, right] at (5.25, -1) {separate results};
+
+\node[circle, draw=green!50!black!50, fill=green!20, thick] at (3,-3) {}
+  edge [<-, bend right=40] (res5)
+  edge [<-, bend left=40] (res1)
+  edge [<-, bend right=20] (res4)
+  edge [<-, bend left=20] (res2)
+  edge [<-] (res3);
+
+\node [black!80, right] at (5.25, -2) {combination};
+\node [green!80!black!80, right] at (5.25, -3) { final results};
+\end{tikzpicture}  
+\caption{A schematic of our approach to multiple imputation with the EMB
+algorithm. }
+\end{figure}
 
 \section{Versions of \Amelia\ }
 
@@ -303,7 +396,7 @@ use the command
 \end{verbatim}
 
 
-\subsection{Installation in Windows of \AmeliaView as a Standalone Program}
+\subsection{Installation in Windows of \AmeliaView\ as a Standalone Program}
 \label{sec:win-install}
 To install a standalone version of \AmeliaView\ in the Windows environment,
 simply download the installer \texttt{setup.exe} from
@@ -379,7 +472,7 @@ average tariff rates (\code{tariff}), Polity IV score\footnote{The Polity score
   fully autocratic country would be a -10 while a fully democratic country
   would be 1 10.} (\code{polity}), total population (\code{pop}), gross
 domestic product per capita (\code{gdp.pc}), gross international reserves
-(\code{intresmi}), a dummy variable for if the country had signed an IMF
+(\code{intresmi}), a dummy variable signifying whether the country had signed an IMF
 agreement in that year (\code{signed}), a measure of financial openness
 (\code{fivop}), and a measure of US hegemony\footnote{This measure of US
   hegemony is the US imports and exports as a percent of the world total
@@ -417,23 +510,31 @@ summary(lm(tariff ~ polity + pop + gdp.pc + year + country,
 @ 
 
 Note that 60 of the 171 original observations are deleted due to
-missingness. Most of these observations, however, have information in them
-and multiple imputation will help us retrieve that information and make
-better inferences.
+missingness. These observations, however, are partially observed, and 
+contain valuable information about the relationships between those 
+variables which are present in the partially completed observations.
+Multiple imputation will help us retrieve that information and make
+better, more efficient, inferences.
 
 \subsection{Multiple Imputation}
 
 
 When performing multiple imputation, the first step is to identify the
-variables to include in the model.  It is crucial to include at least
-as much information as in the analysis model. That is, any variable
+variables to include in the imputation model.  It is crucial to include at least
+as much information as will be used in the analysis model. That is, any variable
 that will be in the analysis model should also be in the imputation
-model. In fact, it is often useful to add more information. Since
+model. This includes any transformations or interactions of variables that will
+appear in the analysis model.  
+
+In fact, it is often useful to add more information to the imputation model than
+will be present when the analysis is run. Since
 imputation is predictive, any variables that would increase predictive
 power should be included in the model, even if including them in the
-analysis model would produce bias (such as for post-treatment
-variables). In our case, we include all the variables in
-\code{freetrade} in the imputation model, even though we our analysis
+analysis model would produce bias in estimating a causal effect (such as for post-treatment
+variables) or collinearity would preclude determining which variable had a relationship
+with the dependent variable (such as including multiple alternate measures of GDP). 
+In our case, we include all the variables in
+\code{freetrade} in the imputation model, even though our analysis
 model focuses on \code{polity}, \code{pop} and
 \code{gdp.pc}\footnote{Note that this specification does not utilize
   time or spatial data yet. The \texttt{ts} and \texttt{cs} arguments
@@ -445,6 +546,14 @@ To create multiple imputations in \Amelia, we can simply run
 a.out <- amelia(freetrade, m = 5, ts = "year", cs = "country")
 a.out
 @ 
+
+Note that our example dataset is deliberately small both in variables and in 
+cross-sectional elements.  Typical datasets may often have hundreds or possibly a 
+couple thousand steps to the EM algorithm.  Long chains should remind the analyst 
+to consider whether transformations of the variables would more closely fit the 
+multivariate normal assumptions of the model (correct but omitted transformations 
+will shorten the number of steps and improve the fit of the imputations), but do not 
+necessarily denote problems with the imputation model.
 
 The output gives some information about how the algorithm ran. Each of the
 imputed datasets is now in the list \code{a.out\$imputations}.  Thus, we
@@ -467,19 +576,22 @@ options(SweaveHooks = list(fig = function() par(mfrow=c(1,1))))
 <<hist1plot>>
 @
   
-\caption{Histogram of the \texttt{tariff} variable from the 3rd imputated dataset.}
+\caption{Histogram of the \texttt{tariff} variable from the 3rd imputed dataset.}
 \label{fig:hist1}
 \end{center}
 \end{figure}
 
 \subsubsection{Saving imputed datasets}
 \label{sec:saving}
-If you need to save your imputed datasets, you can either save the output
+If you need to save your imputed datasets, one direct method is to save the output list
 from \code{amelia},
 
 \begin{verbatim}
 > save(a.out, file = "imputations.RData")
 \end{verbatim}
+
+As in the previous example, the \emph{i}th imputed datasets can be retrieved from this list
+as \code{a.out\$imputations[[i]]}.
 
 In addition, you can save each of the imputed datasets to its own file
 using the \code{write.amelia} command,
@@ -511,8 +623,9 @@ imputations on different machines and then combine them after the
 imputation for use in analysis model. This allows for a huge increase in
 the speed of the algorithm. 
 
-For instance, suppose that we wanted to add another ten imputated datasets
-to my first call to \texttt{amelia}. First, run the function to get
+Output lists from different \Amelia\ runs can be combined together into a 
+new list.  For instance, suppose that we wanted to add another ten imputed datasets
+to our earlier call to \code{amelia}. First, run the function to get
 these additional imputations,
 <<>>=
 a.out.more <- amelia(freetrade, m = 10, ts = "year", cs = "country", p2s=0)
@@ -530,12 +643,23 @@ diagnostics. Note that \code{a.out.more} now has a total of 15
 imputations. 
 
 A simple way to execute a parallel processing scheme with \Amelia\ would
-be to run \code{amelia} with \code{m} set to 1 on $m$ different machines,
-save each output using the \code{save} function, load them all on the same
+be to run \code{amelia} with \code{m} set to 1 on $m$ different machines
+or processors, save each output using the \code{save} function, load them all on the same
 \R\ session using \code{load} command and then combine them using
 \code{ameliabind}. In order to do this, however, make sure to name each of
 the outputs a different name so that they do not overwrite each other when
-loading into the same \R\ session. 
+loading into the same \R\ session.  Also, some parallel environments will
+dump all generated files into a common directory, where they may overwrite
+each other.  If it is convenient in a parallel environment to run a large number
+of \code{amelia} calls from a single piece of code, one useful way to avoid
+overwriting is to create the \code{file.stem} with a random suffix.  For example:
+
+\begin{verbatim}
+> b<-round(runif(1,min=1111,max=9999))
+> random.name<-paste("am",b,sep="")
+> amelia <- write.amelia(obj=a.out, file.stem = random.name)
+\end{verbatim}
+
 
 \subsubsection{Screen Output}
 Screen output can be adjusted with the ``print to screen'' argument,
@@ -579,7 +703,7 @@ used in \Amelia\ usually works well for the imputation
 stage even when discrete or non-normal variables are included and when
 the analysis stage involves these limited dependent variable models.
 Nevertheless, \Amelia\ includes some limited capacity to
-deal directly with ordinal and nominal variables and to variables that
+deal directly with ordinal and nominal variables and to modify variables that
 require other transformations.  In general nominal and log transform
 variables should be declared to \Amelia, whereas ordinal (including
 dichotomous) variables often need not be, as described below.  (For
@@ -631,7 +755,7 @@ rather straightforward even if they are not strictly in the coding of the
 original Polity data. 
 
 Often, however, analysis models require some variables to be strictly
-ordinal, as for example the dependent variable must be in a logistical or
+ordinal, as for example, when the dependent variable will be modeled in a logistical or
 Poisson regression.  Imputations for variables set as ordinal are created
 by taking the continuously valued imputation and using an appropriately
 scaled version of this as the probability of success in a binomial
@@ -655,7 +779,7 @@ Nominal variables\footnote{Dichotomous (two category) variables are a
 quite differently than ordinal variables. Any multinomial variables in the
 data set (such as religion coded 1 for Catholic, 2 for Jewish, and 3 for
 Protestant) must be specified to \Amelia. In our
-\texttt{freetrade} dataset, we have \texttt{signed} which is 1 if a country
+\code{freetrade} dataset, we have \code{signed} which is 1 if a country
 signed an IMF agreement in that year and 0 if it did not. Of course, our
 first imputation did not limit the imputations to these two categories
 
@@ -828,12 +952,8 @@ the observed data, and only uses this functional form, or one you choose,
 with all the other variables in the analysis and the uncertainty of the
 prediction, to impute the missing values.
 
-The above code would predict the same trend in a variable for each
-country. It is clear, however, that each country will have a different
-time series for tariff rates, for instance. Some countries may start
-higher than other or possibly some countries dropped dramatically while
-other remained fairly constant over time. In order to capture this in the
-style above, we can set \code{intercs} to \code{TRUE}:
+In order to impute with trends specific to each cross-sectional unit,
+we can set \code{intercs} to \code{TRUE}:
 
 <<echo=TRUE, results = hide>>=
 a.out.time <- amelia(freetrade, ts = "year", cs = "country", polytime = 2,
@@ -912,11 +1032,13 @@ $p(p+3)/2$ (where $p$ is the number of variables), results from your
 analysis model will be more dependent on the choice of imputation
 model.  This suggests more testing in these cases of alternative
 specifications under \Amelia. This can happen when using the
-polynomials of time interacted with the cross section are included in the
-imputation model. In our running example, we used a polynomial of degree
-2 and there are 9 countries. This adds $3 \times 9 = 18$ more variables to
-the imputation model. When these are added, the EM algorithm can become
-unstable, as indicated by the differing chain lengths for each imputation:
+polynomials of time interacted with the cross section are included in
+the imputation model. In our running example, we used a polynomial of
+degree 2 and there are 9 countries. This adds $3 \times 9 - 1= 17$
+more variables to the imputation model (One of the constant ``fixed
+effects'' will be dropped so the model will be identified). When these
+are added, the EM algorithm can become unstable, as indicated by the
+vastly differing chain lengths for each imputation:
 <<>>=
 a.out.time
 @ 
@@ -989,7 +1111,7 @@ imputation turns out to be a weighted average of the model-based
 imputation and the prior mean, where the weights are functions of the
 relative strength of the data and prior: when the model predicts very
 well, the imputation will down-weight the prior, and vice versa
-\citep{HonKin09}.
+\citep{HonKin10}.
 
 The priors about individual observations should describe the analyst's
 belief about the distribution of the missing data cell.  This can either
@@ -1023,7 +1145,7 @@ freetrade[freetrade$country == "Thailand", c("year","country","tariff")]
 
 Suppose that we had expert information that tariff rates were roughly 40\%
 in Thailand between 1986 and 1988 with about a 6\% margin of error.  This
-corresponds to a standard deviation of aobut 3. In order to include this
+corresponds to a standard deviation of about 3. In order to include this
 information, we must form the priors matrix:
 
 <<>>=
@@ -1053,7 +1175,7 @@ These priors indicate that we are 95\% confident that these missing values
 are in the range 34 to 46. 
 
 If a prior has the value 0 in the first column, this prior will be applied
-to all missing values in this variable, except for explitictly set priors.
+to all missing values in this variable, except for explicitly set priors.
 Thus, we could set a prior for the entire \code{tariff} variable of 20,
 but still keep the above specific priors with the following code:
 
@@ -1070,15 +1192,21 @@ pr.3
 In some cases, variables in the social sciences have known logical
 bounds. Proportions must be between 0 and 1 and duration data
 must be greater than 0, for instance. Many of these logical bounds can be
-handled by the proper transformation (see \ref{sec:trans} for more details
-on the transformations handled by \Amelia). In the rare case that
+handled by using the correct transformation for that type of variable (see \ref{sec:trans} for more details
+on the transformations handled by \Amelia). In the occasional case that
 imputations must satisfy certain logical bounds not handled by these
 transformations, \Amelia\ can take draws from a truncated normal
 distribution in order to achieve imputations that satisfy the
-bounds. Note, however, that this procedure imposes extrememly strong
+bounds. Note, however, that this procedure imposes extremely strong
 restrictions on the imputations and can lead to lower variances than the
-imputation model implies. In general, building a more predictive
-imputation model will lead to better imputations than imposing these bounds.
+imputation model implies. The mean value across all the imputed values of 
+a missing cell is the best guess from the imputation model of that missing value.
+The variance of the distribution across imputed datasets correctly reflects the
+uncertainty in that imputation.  It is often the mean imputed value that should conform
+to the any known bounds, even if individual imputations are drawn beyond
+those bounds.  The mean imputed value can be checked with the diagnostics
+presented in the next section.  In general, building a more predictive
+imputation model will lead to better imputations than imposing bounds.
 
 \Amelia\ implements these bounds by rejection sampling. When drawing the
 imputations from their posterior, we repeatedly resample until we have a
@@ -1154,11 +1282,11 @@ imputations that are created.
 
 \subsubsection{Comparing Densities}
 
-One check on the plausibility of the imputaiton model is check the
+One check on the plausibility of the imputation model is check the
 distribution of imputed values to the distribution of observed values.
 Obviously we cannot expect, \emph{a priori}, that these distribution will
 be identical as the missing values may differ systematically from the
-observed value--this is whole reason to impute to begin with! Imputations
+observed value--this is fundamental reason to impute to begin with! Imputations
 with strange distributions or those that are far from the observed data
 may indicate that imputation model needs at least some investigation and
 possibly some improvement. 
@@ -1183,7 +1311,7 @@ plot (in this case, we are taking the 3rd through the 6th variables).
   (in red) is overlayed on the distribution of observed values (in black)
   for each variable. In the lower panels, there are no missing values and
   the distribution of observed values is simply plotted (in blue). Note
-  that how imputed tariff rates are very similar to observed tariff rates,
+  that now imputed tariff rates are very similar to observed tariff rates,
   but the imputation of the Polity score are quite different. This is
   plausible if different types of regimes tend to be missing at different
   rates.}
@@ -1198,7 +1326,7 @@ distributions are the those of the observed data.  When variables are
 completely observed, their densities are plotted in blue. These graphs
 will allow you to inspect how the density of imputations compares to the
 density of observed data. Some discussion of these graphs can be found in
-\citet*{AbaGelLev05}.  Minimally, these graphs can be used to check that
+\citet*{AbaGelLev08}.  Minimally, these graphs can be used to check that
 the mean imputation falls within known bounds, when such bounds exist in
 certain variables or settings.
 
@@ -1280,7 +1408,7 @@ observation.
   \centering \includegraphics[scale=.8]{overimp}
   \caption{Another example of the overimpute diagnostic graph. Note that
     the red lines are those observations that have fewer covariates
-    observed and have a higher variance in the imputation. }
+    observed and have a higher variance across the imputed values. }
   \label{f:oi}
 \end{figure}
 Occasionally, the overimputation can display unintuitive results.  For
@@ -1449,11 +1577,15 @@ variable (with the \code{var} argument) and the cross-section (with the
 \code{cs} argument) to plot the observed time-series along with
 distributions of the imputed values for each missing time period. For
 instance, we can run
-
 <<tsplot1, include=FALSE>>=
 tscsPlot(a.out.time, cs = "Malaysia", main = "Malaysia (with time settings)", 
          var = "tariff", ylim = c(-10, 60))
 @
+to get the plot in figure \ref{fig:tsplot1}. Here, the black point are
+observed tariff rates for Malaysia from 1980 to 2000. The red points are
+the mean imputation for each of the missing values, along with their 95\%
+confidence bands. We draw these bands by imputing each of missing values
+100 times to get the imputation distribution for that observation. 
 
 \begin{figure}
   \begin{center} 
@@ -1484,7 +1616,7 @@ series. This is intuitive because these points have fewer neighbors from
 which to draw predictive power. 
 
 A word of caution is in order. As with comparing the histograms of imputed
-and obseved values, there could be reasons that the missing values are
+and observed values, there could be reasons that the missing values are
 systematically different than the observed time series. For instance, if
 there had been a major financial crisis in Malaysia in 1990 which caused
 the government to close off trade, then we would expect that the missing
@@ -1552,7 +1684,7 @@ the imputation model or data collection process.
 \label{sec:analysis}
 
 Imputation is most often a data processing step as opposed to a final
-model in of itself. To this end, it is easy to to pass output from
+model in of itself. To this end, it is easy to pass output from
 \code{amelia} to other functions. The easiest and most integrated way to
 run an analysis model is to pass the output to the \code{zelig} function
 from the \code{Zelig} package. For example, in \citet{MilKub05}, the
@@ -1627,8 +1759,7 @@ users's guide. The same principles from the user's guide apply to
 \AmeliaView. The only difference is how you interact with the program.
 Whether you use the GUI or the command line versions, the same
 underlying code is being called, and so you can read the command
-line-oriented versions of this manual even if you intend to use the
-GUI.
+line-oriented discussion above even if you intend to use the GUI.
 
 \subsection{Loading \AmeliaView}
 
@@ -1659,7 +1790,7 @@ not work, simply open an \R\ session and use the approach above.
   The format you pick will be the default format that is shown when
   you open the ``Browse'' dialog.  Currently,\Amelia\ 
   supports five different file formats: Comma-Separated Values (.CSV),
-  Tab-Delimited Text (.TXT), Stata v.5-8 (.DTA), SPSS (.DAT), and SAS
+  Tab-Delimited Text (.TXT), Stata v.5-10 (.DTA), SPSS (.DAT), and SAS
   Transport (.XPORT). Note that when using a CSV file, Amelia assumes that
   your file has a header (that is, a row at the top of the data indicating
   the variable names). 
