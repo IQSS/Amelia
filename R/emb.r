@@ -131,10 +131,13 @@ impfill<-function(x.orig,x.imp,noms,ords) {
 }
 
 ## Create Starting Values for EM Chain
-startval<-function(x,startvals=0){
+startval<-function(x,startvals=0,priors=NULL){
   
   AMp<-ncol(x)
-  
+  if (!is.null(priors)) {
+    ## fill in prior means
+    x[(priors[,2]-1)*nrow(x)+priors[,1]] <- priors[,3]
+  }
   if (ncol(as.matrix(startvals)) == AMp+1 && nrow(as.matrix(startvals)) == AMp+1)       #checks for correct size of start value matrix
     if (startvals[1,1]==-1)                                       #checks for the -1 necessary for sweep
       return(startvals)
@@ -244,7 +247,7 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
   iter.hist<-matrix(0,nrow=1,ncol=3)
   if (nrow(packr(x))<nrow(x)){          # Check for fully observed data
 
-    if (identical(thetaold,NULL)) thetaold<-startval(x,startvals=startvals)    
+    if (identical(thetaold,NULL)) thetaold<-startval(x,startvals=startvals,priors=priors)    
     indx<-indxs(x)                      # This needs x.NA
     if (!identical(priors,NULL)){
       priors[,4]<-1/priors[,4]          # change sd to 1/sd

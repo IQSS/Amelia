@@ -694,7 +694,7 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   }
   
   
-  priors <- generatepriors(AMr1 = is.na(data),empri = empri, priors = priors)
+  priors <- generatepriors(AMr1 = is.na(x),empri = empri, priors = priors)
   
   archv <- list(idvars=numopts$idvars, logs=numopts$logs, ts=numopts$ts, cs=numopts$cs,
                 empri=empri, tolerance=tolerance,
