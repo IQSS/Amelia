@@ -1,3 +1,9 @@
+2010-03-20  Matthew Blackwell <blackwel@fas.harvard.edu>
+	* R/emb.r (startval): use starting values of data with prior means
+	in place of missing values. 
+	* R/prep.r (amelia.prep): is.na(data) was an old
+	reference. changed to is.na(x). 
+
 2010-02-20  Matthew Blackwell  <blackwel@fas.harvard.edu>
 	* R/prep.r (amsubset): intercs=TRUE with polytime=NULL creates
 	fixed effects. 
