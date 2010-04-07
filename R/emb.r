@@ -42,6 +42,7 @@
 ## 04/06/08 mb - changed the writing to GUI ('if (frontend)' calls) to remove globals
 ## 17/07/08 mb - fixed frontend error bug (dumping output to screen
 ## 22/07/08 mb - good coding update: T->TRUE/F->FALSE
+## 27/03/10 jh - small changes to arguments of functions to deal with "splinetime" option in same fashion as "polytime"
 
 
 ## Draw from a multivariate normal distribution 
@@ -842,7 +843,7 @@ amelia.amelia <- function(x, m = 5, p2s = 1, frontend = FALSE, ...) {
   
 
 amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
-                 ts=NULL,cs=NULL,polytime=NULL,intercs=FALSE,
+                 ts=NULL,cs=NULL,polytime=NULL,splinetime=NULL,intercs=FALSE,
                  lags=NULL,leads=NULL,startvals=0,tolerance=0.0001,
                  logs=NULL,sqrts=NULL,lgstc=NULL,noms=NULL,ords=NULL,
                  incheck=TRUE,collect=FALSE,arglist=NULL, 
@@ -870,7 +871,7 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
   code<-1   
   
   prepped<-amelia.prep(x=x,m=m,idvars=idvars,empri=empri,ts=ts,cs=cs,
-                       tolerance=tolerance,polytime=polytime,
+                       tolerance=tolerance,polytime=polytime,splinetime=splinetime,
                        lags=lags,leads=leads,logs=logs,sqrts=sqrts,lgstc=lgstc,
                        p2s=p2s,frontend=frontend,intercs=intercs,
                        noms=noms,startvals=startvals,ords=ords,incheck=incheck,
@@ -940,7 +941,7 @@ your data for highly collinear variables.\n\n")
     ximp<-amelia.impute(prepped$x, thetanew$thetanew,priors=prepped$priors,bounds=prepped$bounds,max.resample)
     ximp<-amunstack(ximp,n.order=prepped$n.order,p.order=prepped$p.order)     
     ximp<-unscale(ximp,mu=prepped$scaled.mu,sd=prepped$scaled.sd)    
-    ximp<-unsubset(x.orig=prepped$trans.x,x.imp=ximp,blanks=prepped$blanks,idvars=prepped$idvars,ts=prepped$ts,cs=prepped$cs,polytime=polytime,intercs=intercs,noms=prepped$noms,index=prepped$index,ords=prepped$ords)
+    ximp<-unsubset(x.orig=prepped$trans.x,x.imp=ximp,blanks=prepped$blanks,idvars=prepped$idvars,ts=prepped$ts,cs=prepped$cs,polytime=polytime,splinetime=splinetime,intercs=intercs,noms=prepped$noms,index=prepped$index,ords=prepped$ords)
     ximp<-untransform(ximp,logs=prepped$logs,xmin=prepped$xmin,sqrts=prepped$sqrts,lgstc=prepped$lgstc)
 
     if (p2s==2) {

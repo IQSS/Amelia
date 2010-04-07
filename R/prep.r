@@ -26,6 +26,7 @@
 ## 15/08/07 jh modified construction of timevars
 ## 14/09/07 mb added 'bounds' support
 ## 22/07/08 mb - good coding update: T->TRUE/F->FALSE
+## 27/03/10 jh added spline basis functions, changed "polynomials" matrix to instance of "timebasis"
 
 nametonumber<-function(x,ts,cs,idvars,noms,ords,logs,sqrts,lgstc,lags,leads)
 {
@@ -202,8 +203,8 @@ frame.to.matrix<-function(x,idvars) {
 
 ## Remove rows and columns from dataset that do not belong
 amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
-                  polytime=NULL,intercs=FALSE,lags=NULL,
-                   leads=NULL,noms=NULL, bounds=NULL) {
+                   polytime=NULL,splinetime=NULL,intercs=FALSE,lags=NULL,
+                   leads=NULL,noms=NULL,bounds=NULL) {
 
   lags   <- unique(lags)
   leads  <- unique(leads)
@@ -292,28 +293,45 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
       }
       x<-cbind(x,newx)
       idvars<-c(idvars,i)
+
       
     }
   }
 
+## REVISION TODAY BEGINS HERE
 
+  #basis functions for time    
+  if (!identical(polytime,NULL) | !identical(splinetime,NULL) ){
 
-  if (!identical(polytime,NULL)){
-    time<-x[,ts]
-    polynomials<-cbind(1,time,time^2,time^3)
-    polynomials<-polynomials[,1:(polytime+1) ,drop=FALSE]
+    if (!identical(splinetime,NULL)){
+      time<-x[,ts]
+      knot<-rep(0,5)
+      if(splinetime>3){
+        knot[1:(splinetime-1)]<-seq(from=min(time),to=max(time),length=(splinetime-1))   # The end points of this sequence are not being used
+      }
+      timebasis<-cbind(1,time,time^2,time^3,pmax(time-knot[2],0)^3,pmax(time-knot[3],0)^3,pmax(time-knot[4],0)^3)
+      timebasis<-timebasis[,1:(splinetime+1),drop=FALSE]
+    }
+    if (!identical(polytime,NULL)){
+      time<-x[,ts]
+      timebasis<-cbind(1,time,time^2,time^3)
+      timebasis<-timebasis[,1:(polytime+1) ,drop=FALSE]
+    }
     cstypes<-unique(x[,cs])
     timevars<-matrix(0,nrow(x),1)
     if (intercs){
       for (i in cstypes){
         dummy<-as.numeric(x[,cs]==i)
-        timevars<-cbind(timevars,dummy*polynomials)
+        timevars<-cbind(timevars,dummy*timebasis)
       }
       timevars<-timevars[,c(-1,-2)]
     } else {
-      timevars<-cbind(timevars,polynomials)
+      timevars<-cbind(timevars,timebasis)
       timevars<-timevars[,-c(1,2)]  # first column is a holding variable, second is to have fixed effects identified
     }
+
+## ENDS TODAY
+
     x<-cbind(x,timevars)
     if (ncol(timevars)) {
       for (i in 1:ncol(as.matrix(timevars))) {
@@ -382,13 +400,13 @@ return(list(x=x,index=index,idvars=idvars,blanks=blanks,priors=priors,bounds=bou
 ##           values.
 ##   index:  denotes what each column of x.imp is.
 ##            a positive integer (i): ith column of x.orig.
-##            0: polynomial of time
+##            0: basis function (polynomial/spline) of time
 ##            .5: leads
 ##            -.5: lags
 ##            a negative integer (-i): a dummy used for the nominal var in
 ##                                     the ith column of x.orig
 
-unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,intercs,noms,index,ords){
+unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,splinetime,intercs,noms,index,ords){
 
   ## create 
   if (is.data.frame(x.orig)) {
@@ -622,7 +640,7 @@ combine.output <- function(...) {
 
 amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                         ts=NULL,cs=NULL,empri=NULL,
-                        tolerance=0.0001,polytime=NULL,startvals=0,lags=NULL,
+                        tolerance=0.0001,polytime=NULL,splinetime=NULL,startvals=0,lags=NULL,
                         leads=NULL,intercs=FALSE,sqrts=NULL,
                         lgstc=NULL,noms=NULL,incheck=TRUE,ords=NULL,collect=FALSE,
                         arglist=NULL, priors=NULL,var=NULL,autopri=0.05,bounds=NULL,
@@ -648,6 +666,7 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     tolerance <- arglist$tolerance
 #    casepri   <- arglist$amelia.args$casepri
     polytime  <- arglist$polytime
+    splinetime<- arglist$splinetime
     lags      <- arglist$lags
     leads     <- arglist$leads
     logs      <- arglist$logs
@@ -676,7 +695,7 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     checklist<-amcheck(x = x, m = m, idvars = numopts$idvars, priors =
                        priors, empri = empri, ts = numopts$ts, cs = numopts$cs,
                        tolerance = tolerance, polytime =
-                       polytime, lags = numopts$lags,leads = numopts$leads, logs
+                       polytime, splinetime = splinetime, lags = numopts$lags, leads = numopts$leads, logs
                        = numopts$logs, sqrts = numopts$sqrts, lgstc
                        =numopts$lgstc, p2s = p2s, frontend = frontend,
                        intercs = intercs, noms = numopts$noms,
@@ -698,7 +717,7 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   
   archv <- list(idvars=numopts$idvars, logs=numopts$logs, ts=numopts$ts, cs=numopts$cs,
                 empri=empri, tolerance=tolerance,
-                polytime=polytime, lags=numopts$lags, leads=numopts$leads,
+                polytime=polytime, splinetime=splinetime, lags=numopts$lags, leads=numopts$leads,
                 intercs=intercs, sqrts=numopts$sqrts, lgstc=numopts$lgstc,
                 noms=numopts$noms, ords=numopts$ords,
                 priors=priors, autopri=autopri, bounds=bounds,
@@ -711,7 +730,7 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   }
   
   d.trans<-amtransform(x,logs=numopts$logs,sqrts=numopts$sqrts,lgstc=numopts$lgstc)  
-  d.subset<-amsubset(d.trans$x,idvars=numopts$idvars,p2s=p2s,ts=numopts$ts,cs=numopts$cs,polytime=polytime,intercs=intercs,noms=numopts$noms,priors=priors,bounds=bounds, lags=numopts$lags, leads=numopts$leads)
+  d.subset<-amsubset(d.trans$x,idvars=numopts$idvars,p2s=p2s,ts=numopts$ts,cs=numopts$cs,polytime=polytime,splinetime=splinetime,intercs=intercs,noms=numopts$noms,priors=priors,bounds=bounds, lags=numopts$lags, leads=numopts$leads)
   d.scaled<-scalecenter(d.subset$x,priors=d.subset$priors,bounds=d.subset$bounds)
   d.stacked<-amstack(d.scaled$x,colorder=TRUE,priors=d.scaled$priors,bounds=d.scaled$bounds)
 

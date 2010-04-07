@@ -11,13 +11,14 @@
 ## 13/12/06 mb - removed dropping of extra priors, added new priors
 ## 15/12/06 mb - fixed problem of nrow(priors)==5
 ## 22/07/08 mb - good coding update: T->TRUE/F->FALSE
+## 27/03/10 jh - added checks for splinetime
 
 
 
 amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                         ts=NULL,cs=NULL,means=NULL,sds=NULL,
                         mins=NULL,maxs=NULL,conf=NULL,empri=NULL,
-                        tolerance=0.0001,polytime=NULL,startvals=0,lags=NULL,
+                        tolerance=0.0001,polytime=NULL,splinetime=NULL,startvals=0,lags=NULL,
                         leads=NULL,intercs=FALSE,archive=TRUE,sqrts=NULL,
                         lgstc=NULL,noms=NULL,incheck=TRUE,ords=NULL,collect=FALSE,
                         arglist=NULL, priors=NULL,bounds=NULL, max.resample=1000) {
@@ -126,6 +127,9 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
 
   if (inherits(try(get("polytime"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'polytime' argument doesn't exist.")))
+
+  if (inherits(try(get("splinetime"),silent=TRUE),"try-error"))
+    return(list(code=3,mess=paste("The setting for the 'splinetime' argument doesn't exist.")))
 
   if (inherits(try(get("lags"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'lags' argument doesn't exist.")))
@@ -462,6 +466,44 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                     "the cross-sectional variable.  This has no effect on the imputation."))
     }
   }
+
+
+
+  if (!identical(splinetime,NULL)) {
+    #Error code: 54
+    #Spline of time are longer than one integer
+    if (length(polytime) > 1) {
+      error.code<-54
+      error.mess<-paste("The spline of time setting is greater than one integer.")
+      return(list(code=error.code,mess=error.mess))
+    }
+    if (!is.numeric(splinetime)) {
+      error.code<-55
+      error.mess<-paste("The setting for splinetime is not a number.")
+      return(list(code=error.code,mess=error.mess))
+    }
+    if ((splinetime %% 1) != 0) {
+      error.code<-56
+      error.mess<-paste("The number of spline degrees of freedom to include for time (splinetime) must be an integer.")
+      return(list(code=error.code,mess=error.mess))
+    }
+    if (any(splinetime > 6,splinetime < 0)) {
+      error.code<-57
+      error.mess<-paste("The number of spline degrees of freedom to include must be between 0 and 6.")
+      return(list(code=error.code,mess=error.mess))
+    }
+    if (identical(ts,NULL)) {
+      error.code<-58
+      error.mess<-paste("You have set splines of time without setting the time series variable.")
+      return(list(code=error.code,mess=error.mess))
+    }
+    if (all(!intercs,identical(polytime,0))) {
+      warning(paste("You've set the spline of time to zero with no interaction with \n",
+                    "the cross-sectional variable.  This has no effect on the imputation."))
+    }
+  }
+
+
   
   #checks for intercs
 
