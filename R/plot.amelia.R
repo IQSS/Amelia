@@ -1,7 +1,7 @@
 
 
 plot.amelia <- function(x, which.vars, compare = TRUE, overimpute =
-                        FALSE, ask = par("ask"), ...) {
+                        FALSE, ask = TRUE, ...) {
 
   imputedVars <- colSums(x$missMatrix) > 0 
   numericVars <- sapply(x$imputations[[1]],"is.numeric")
@@ -19,13 +19,14 @@ plot.amelia <- function(x, which.vars, compare = TRUE, overimpute =
 
   on.exit(par(NULL))
   layout <- par(mfrow = mfrow)
+
   for (i in seq(along=which.vars)) {
     if (compare)
       compare.density(output=x, var=which.vars[i], legend=FALSE,...)
     if (overimpute)
       overimpute(output=x, var=which.vars[i])
     if (i==1)
-      devAskNewPage(ask=TRUE)
+      devAskNewPage(ask)
   }
   devAskNewPage(ask=FALSE)
   invisible()
