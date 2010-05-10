@@ -9,7 +9,7 @@
 \usage{
 
 \method{plot}{amelia}(x, which.vars, compare = TRUE, overimpute =
-                      FALSE, ask = par("ask"), ...)
+                      FALSE, ask = TRUE, ...)
 
 }
 \arguments{

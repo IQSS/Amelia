@@ -11,7 +11,7 @@
 \usage{
 
 \method{amelia}{default}(x, m = 5, p2s = 1,frontend = FALSE, idvars = NULL,
-       ts = NULL, cs = NULL, polytime = NULL, intercs = FALSE,
+       ts = NULL, cs = NULL, polytime = NULL, splinetime = NULL, intercs = FALSE,
        lags = NULL, leads = NULL, startvals = 0, tolerance = 0.0001,
        logs = NULL, sqrts = NULL, lgstc = NULL, noms = NULL, ords = NULL,
        incheck = TRUE, collect = FALSE, arglist = NULL, empri = NULL,
@@ -46,6 +46,12 @@
         indicate constant levels, 1 would indicate linear time
         effects, 2 would indicate squared effects, and 3 would
         indicate cubic time effects.}
+
+  \item{splinetime}{interger value of 0 or greater to control cubic
+  smoothing splines of time. Values between 0 and 3 create a simple
+  polynomial of time (identical to the polytime argument). Values \code{k} greater
+  than 3 create a spline with an additional \code{k-3}
+  knotpoints.}
 
   \item{intercs}{a logical variable indicating if the
         time effects of \code{polytime} should vary across the
