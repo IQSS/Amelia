@@ -1,3 +1,7 @@
+2010-05-07  Matthew Blackwell <blackwel@fas.harvard.edu>
+	* R/plot.amelia (plot.amelia): 'ask' argument was unused in the
+	function, should now not ask if ask=FALSE. 
+
 2010-03-20  Matthew Blackwell <blackwel@fas.harvard.edu>
 	* R/emb.r (startval): use starting values of data with prior means
 	in place of missing values. 

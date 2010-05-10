@@ -4,6 +4,10 @@
 //
 //
 
+== 1.2-17 (10 May 2010) ==
+   * Fixed a bug with the 'ask' argument when using "plot" on an
+   'amelia' object. 
+
 == 1.2-16 (20 Mar 2010)  ==
    * Fixed a bug when priors specified. 
    * When priors are used, Amelia now tries to use starting values 
