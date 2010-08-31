@@ -3,13 +3,12 @@
 <title>Amelia Software Website</title>
 <script language='Javascript' src='/gking.js'></script></HEAD>
 
-<BODY><script language="Javascript">displayHeader()</script>
+<BODY><script language="Javascript">displayHeader("Amelia II: A Program for Missing Data")</script>
 
-<h1>Amelia II: A Program for Missing Data</h1>
 <div>
 <a
 href="http://www.polisci.ucla.edu/menu/people/faculty/james_honaker.htm">James
-Honaker</a>, <a href="/">Gary King</a>, <a href="http://people.fas.harvard.edu/~blackwel/">Matthew
+Honaker</a>, <a href="http://gking.harvard.edu/">Gary King</a>, <a href="http://people.fas.harvard.edu/~blackwel/">Matthew
 Blackwell</a>
 </div>
 <div>
@@ -18,8 +17,8 @@ Blackwell</a>
 <b>Version:1.2-10</b>
 </div>
 
-<p style="float:left; width: 300; margin: 1.5em;"> <img
-src="/amelia/gallery19.jpg" width="300" /> <br /><small>
+<p style="float:left; width: 180; margin: 1.5em;"> <img
+src="gallery19.jpg" width="180" /> <br /><small>
 Amelia is named after this famous missing person.</small></p>
 
 
@@ -70,11 +69,11 @@ Amelia is named after this famous missing person.</small></p>
 
 <p>Amelia II is a new program, and follows in the spirit with the same
 purpose as the first version of Amelia (still available <a
-href="/amelia/amelia1/index.shtml">here</a>) by James Honaker, Anne
+href="http://gking.harvard.edu/amelia/amelia1/index.shtml">here</a>) by James Honaker, Anne
 Joseph, Gary King, Kenneth Scheve, and Naunihal Singh.
   <ul>
-    <li><a href="/amelia/docs/amelia.pdf">Documentation</a>, 
-        <a href="/amelia/amelia-changes">What's New?</a> </li>
+    <li><a href="http://gking.harvard.edu/amelia/docs/">Documentation</a>, 
+        <a href="http://gking.harvard.edu/amelia/amelia-changes">What's New?</a> </li>
 	
     <li><strong>All</strong> <span class="orange">questions, bugs, and
     requests</span>:
@@ -87,35 +86,35 @@ Joseph, Gary King, Kenneth Scheve, and Naunihal Singh.
     <li>Installation of AmeliaView for Windows (for those who don't
 	know R): (1) <a href="http://www.r-project.org/">install the
 	current version of R</a> if you haven't already, (2)
-	download and run <a href="/amelia/amelia-setup.exe">this
+	download and run <a href="http://gking.harvard.edu/amelia/amelia-setup.exe">this
 	file</a>, and (3) use windows explorer to navigate to
 	c:/program files/AmeliaView and click on amelia.bat</li>
 	
     <li>Installation of Amelia for R on any system: at the R command
 	line, type
-	install.packages("Amelia",repos="http://gking.harvard.edu")</li>
+	install.packages("Amelia",repos="http://r.iq.harvard.edu")</li>
 	
     <li>To automatically combine multiply imputed data sets: in R see <a
-	href="/zelig">Zelig</a>; In Stata see <a
-	href="/stats.shtml#clarify">Clarify</a> or Ken
-	Scheve's <a href="/amelia/amelia1/docs/mi.zip">MI program</a>.</li>
+	href="http://gking.harvard.edu/zelig">Zelig</a>; In Stata see <a
+	href="http://gking.harvard.edu/stats.shtml#clarify">Clarify</a> or Ken
+	Scheve's <a href="http://gking.harvard.edu/amelia/amelia1/docs/mi.zip">MI program</a>.</li>
 
     <li>James Honaker and Gary King, <span class="bg">What to do About
     Missing Values in Time Series Cross-Section Data</span>
     <em>AJPS</em> 54, 2 (April, 2010): 561-581.  (<span
-    class="bg">Paper:</span> <a href="/files/pr.pdf">PDF</a> | <span
+    class="bg">Paper:</span> <a href="http://gking.harvard.edu/files/pr.pdf">PDF</a> | <span
     class="bg">Abstract:</span> <a
-    href="/files/abs/pr-abs.shtml">HTML</a>)</li>
+    href="http://gking.harvard.edu/files/abs/pr-abs.shtml">HTML</a>)</li>
 
     <li>Gary King, James Honaker, Anne Joseph, and Kenneth
 	Scheve. <span class="bg">Analyzing Incomplete Political Science
 	Data: An Alternative Algorithm for Multiple Imputation</span>,
 	<i>American Political Science Review</i>, Vol. 95, No. 1 (March,
 	2001): Pp. 49-69. (<span class="bg">Article:</span> <a
-	href="/files/evil.pdf">PDF</a> | <span class="bg">Abstract:</span>
-	<a href="/files/abs/evil-abs.shtml">HTML</a>)</li>
+	href="http://gking.harvard.edu/files/evil.pdf">PDF</a> | <span class="bg">Abstract:</span>
+	<a href="http://gking.harvard.edu/files/abs/evil-abs.shtml">HTML</a>)</li>
 
-    <li>A <a href="/amelia/movies/mip.avi">short course video</a>
+    <li>A <a href="http://gking.harvard.edu/amelia/movies/mip.avi">short course video</a>
 	circa 1999 which James, Ann, and Ken gave some years ago that
 	explains mulitiple imputation in
 	general, and the innovation in Amelia I in particular.
@@ -124,7 +123,7 @@ Joseph, Gary King, Kenneth Scheve, and Naunihal Singh.
 	have been when we reported the location of Ms. Earhart's
 	plane.</li>
 	 
-    <li><a href="/amelia/" target="ChangeDetectionWiz"
+    <li><a href="http://gking.harvard.edu/amelia/" target="ChangeDetectionWiz"
 	onClick="doChangeDetectionPopup()"> Track Amelia changes</a></li>
 
     <li>A <a
