@@ -75,7 +75,7 @@ moPrep.default <- function(x, formula, subset, error.proportion, gold.standard=!
     if (is.logical(subset)) {
       m$subset <- as.name(paste("!",m$subset,sep=""))
     } else if (is.character(subset)) {
-      m$subset <- as.name("setdiff(rownames(",x,"),",m$subset,")",sep="")
+      m$subset <- as.name(paste("setdiff(rownames(",x,"),",m$subset,")",sep=""))
     } else {
       m$subset <- as.name(paste("-",m$subset,sep=""))
     }
