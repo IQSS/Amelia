@@ -79,44 +79,59 @@ mpinv <- function(X, tol = sqrt(.Machine$double.eps)) {
 ##   x:          data (matrix)
 ##   priors:     matrix of priors about means for observations
 bootx<-function(x,priors=NULL){
-  flag=TRUE
-  AMn=nrow(x)
+  flag <- TRUE
+  AMn <- nrow(x)
   while (flag){
     order<-trunc(runif(nrow(x), min=1, max=nrow(x)+1))
     xboot<-x[order,]
     if (!identical(priors,NULL)){
-      priors[,1]<-match(priors[,1],order)
-      priors <- priors[!is.na(priors[,1]),,drop=FALSE]
+      sigPriors <- matrix(NA,nrow(x),ncol(x))
+      muPriors <- matrix(NA,nrow(x),ncol(x))
+      muPriors[priors[,1:2]] <- priors[,3]
+      sigPriors[priors[,1:2]] <- priors[,4]
+      muPriors <- muPriors[order,]
+      sigPriors <- sigPriors[order,]
+      prior.ind <- which(!is.na(muPriors), arr.ind = TRUE)
+      priors <- cbind(prior.ind, muPriors[prior.ind], sigPriors[prior.ind])
+     # priors[,1]<-match(priors[,1],order)
+      #priors <- priors[!is.na(priors[,1]),,drop=FALSE]
     }
     
-    flag<-any(colSums(is.na(xboot))==AMn)
+    flag<-any(colSums(is.na(xboot))==AMn & !((1:ncol(xboot)) %in% priors[,2]))
   }
   return(list(x=xboot,priors=priors))
 }
 
 ## Put imputations into the original data format
 ## Converts integer values back to factors or characters
-impfill<-function(x.orig,x.imp,noms,ords) {
+impfill<-function(x.orig,x.imp,noms,ords,priors) {
+    if (!is.null(priors)) {
+      is.na(x.orig)[priors[,c(1,2)]] <- TRUE
+    }
     AMr1.orig <- is.na(x.orig)
     orig.fact <- sapply(x.orig, is.factor)
     orig.char <- sapply(x.orig, is.character)
     x.imp<-as.data.frame(x.imp[,1:ncol(x.orig)])
-    for (i in 1:ncol(x.orig))
-      if (is.logical(x.orig[,i])) 
-        x.imp[,i]<-as.logical(x.imp[,i]>0.5) 
+    for (i in 1:ncol(x.orig)) {
+      if (is.logical(x.orig[,i]) & sum(!is.na(x.orig[,i])) > 0) { 
+        x.imp[,i]<-as.logical(x.imp[,i]>0.5)
+      }
+    }
 
     possibleFactors <- unique(c(noms,ords))
     
     if (!is.null(possibleFactors)) {
-      AMr1.orig <-is.na(x.orig[,-possibleFactors])
-      x.orig[,-possibleFactors][AMr1.orig]<-x.imp[,-possibleFactors][AMr1.orig]
+      if (ncol(x.orig) > length(possibleFactors)) {
+        AMr1.orig <-is.na(x.orig[,-possibleFactors])
+        x.orig[,-possibleFactors][AMr1.orig]<-x.imp[,-possibleFactors][AMr1.orig]
+      }
       for (i in possibleFactors) {
         if (orig.fact[i])
           x.orig[is.na(x.orig[,i]),i]<- levels(x.orig[,i])[x.imp[is.na(x.orig[,i]),i]]
         else if (orig.char[i])
           x.orig[,i]<-unique(na.omit(x.orig[,i]))[x.imp[,i]]
         else
-          x.orig[is.na(x.orig[,i]),i] <- x.imp[is.na(x.orig[,i]),i]    
+          x.orig[,i]<-x.imp[,i]    
       }                   
     } else {
        x.orig[AMr1.orig]<-x.imp[AMr1.orig]
@@ -251,12 +266,12 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
     if (identical(thetaold,NULL)) thetaold<-startval(x,startvals=startvals,priors=priors)    
     indx<-indxs(x)                      # This needs x.NA
     if (!identical(priors,NULL)){
-      priors[,4]<-1/priors[,4]          # change sd to 1/sd
+      priors[,4]<-1/priors[,4]          # change sd to 1/var
       priors[,3]<-priors[,3]*priors[,4] # get the precision-weighted mus
     }    
 
     x[is.na(x)]<-0                      # Change x.NA to x.0s       
-    AM1stln<-sum(indx$m[1])==0
+    AM1stln<-sum(indx$m[1,])==0 & nrow(indx$m) > 1
     count<-0
     diff<- 1+tolerance
     thetahold<-c()
@@ -292,11 +307,11 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
       diff<-(abs(thetanew-thetaold)>tolerance)
       diff<-sum(diff*upper.tri(diff,diag=TRUE))
 
-      if (diff > iter.hist[count,1] && count > 2) {                                #checks to see if step length has increased
+      if (diff > iter.hist[count,1] && count > 20) {                                #checks to see if step length has increased
         mono.flag<-1
 
         if (autopri > 0) {
-          if (sum(iter.hist[count,3],iter.hist[(count-1),3],1) == 3) {
+          if (sum(iter.hist[count:(count-20),3]) >= 3) {
                                                                                     #if step length has increased for more 3 steps
             if (is.null(empri)) {                                                      #the ridge prior is increased by 1%  of 
               empri<-trunc(.01*nrow(x))                                                #the rows of data, up to "autopri"% of the rows.
@@ -360,7 +375,7 @@ amelia.impute<-function(x,thetareal,priors=NULL,bounds=NULL,max.resample=NULL){
   
   x[is.na(x)]<-0                      # Change x.NA to x.0s       
 
-  AM1stln<-sum(indx$m[1])==0          # Create sundry simple indicators
+  AM1stln<-sum(indx$m[1,])==0 & nrow(indx$m) > 1  # Create sundry simple indicators
   o<-indx$o
   m<-indx$m
   i<-indx$ivector
@@ -423,7 +438,39 @@ amelia.impute<-function(x,thetareal,priors=NULL,bounds=NULL,max.resample=NULL){
 
       ## get the prior rows and non-prior rows
       priorsinpatt <- which(is:isp %in% priors[,1])
-      nopri <- !(is:isp %in% priors[,1])
+      
+      nopri <- !(is:isp %in% priors[,1])      
+
+      hasPrior <- priors[,1] %in% is:isp
+      priorsForPatt <- priors[hasPrior, , drop = FALSE]
+      priorsForPatt <- priorsForPatt[order(priorsForPatt[,1],priorsForPatt[,2]), , drop = FALSE]
+
+      numRowsWithPrior <- length(unique(priorsForPatt[,1]))
+      mu.prior <- matrix(0, nrow = sum(m[ss,]), ncol = numRowsWithPrior)
+    
+      ## create one large matrix to house all the lambdas
+
+      solve.Lambda <- array(0, c(sum(m[ss,]), sum(m[ss,]), numRowsWithPrior)) 
+    
+      
+      colsWithPriors <- tapply(priorsForPatt[,2], priorsForPatt[,1],
+                                      function(x) (1:AMp %in% x)[m[ss,]])
+      
+#      colsWithPriors <- colsWithPriors[rep(m[ss,], times = length(priorsinpatt))]
+
+      inds <- cbind(rep(1:sum(m[ss,]),numRowsWithPrior),
+                    rep(1:sum(m[ss,]),numRowsWithPrior),
+                    sort(rep(1:numRowsWithPrior,sum(m[ss,]))))
+    
+    
+      diag.Lambda <- rep(0, sum(m[ss,])*numRowsWithPrior)
+      diag.Lambda[unlist(colsWithPriors)] <- priorsForPatt[,4]
+      mu.prior[unlist(colsWithPriors)] <- priorsForPatt[,3]
+      solve.Lambda[inds] <- diag.Lambda
+                    
+    
+      solve.Sigma  <- am.inv(theta[c(FALSE,m[ss,]),
+                                 c(FALSE,m[ss,]),drop=FALSE])
 
       ## fill in xplay for non-prior rows
       Ci<-matrix(0,AMp,AMp)
@@ -442,34 +489,39 @@ amelia.impute<-function(x,thetareal,priors=NULL,bounds=NULL,max.resample=NULL){
         xplay[(is:isp)[nopri],]<-x[(is:isp)[nopri],,drop=FALSE] +
                       imputations[nopri,,drop=FALSE] + junk[nopri,,drop=FALSE]
       }
-      
-      for (jj in priorsinpatt){
-        or <- (is:isp)[jj]  ## original rows
-          
-        priorsForThisRow <- priors[priors[,1] == or, , drop = FALSE] 
-        priorsForThisRow <- priorsForThisRow[order(priorsForThisRow[,2]),,drop=FALSE]
-        columnsWithPriors <- c(1:AMp) %in% priorsForThisRow[, 2]
 
-        npr <- nrow(priorsForThisRow)
+      
+      if (length(priorsinpatt) == 0) next()
+
+      
+      for (jj in 1:length(priorsinpatt)){
+        or <- (is:isp)[priorsinpatt[jj]]  ## original rows
+        rowInPatt <- priorsinpatt[jj]
+          
+        ##priorsForThisRow <- priors[priors[,1] == or, , drop = FALSE] 
+        ##priorsForThisRow <- priorsForThisRow[order(priorsForThisRow[,2]),,drop=FALSE]
+        ##columnsWithPriors <- c(1:AMp) %in% priorsForThisRow[, 2]
+
+        ##npr <- nrow(priorsForThisRow)
           
         # Calculate sd2
-        solve.Sigma  <- am.inv(theta[c(FALSE,m[ss,]),
-                                     c(FALSE,m[ss,]),drop=FALSE])
+        ##solve.Sigma  <- am.inv(theta[c(FALSE,m[ss,]),
+        ##                             c(FALSE,m[ss,]),drop=FALSE])
        
-        solve.Lambda <- matrix(0,sum(m[ss,]),sum(m[ss,]))
-        diag.Lambda <- rep(0, sum(m[ss,]))
-        diag.Lambda[columnsWithPriors[m[ss,]]] <- priorsForThisRow[,4]
-        diag(solve.Lambda) <- diag.Lambda
+        ##solve.Lambda <- matrix(0,sum(m[ss,]),sum(m[ss,]))
+        ##diag.Lambda <- rep(0, sum(m[ss,]))
+        ##diag.Lambda[columnsWithPriors[m[ss,]]] <- priorsForThisRow[,4]
+        ##diag(solve.Lambda) <- diag.Lambda
         
-        wvar <- am.inv(solve.Lambda + solve.Sigma)
+        wvar <- am.inv(solve.Lambda[,,jj] + solve.Sigma)
           
         # Weight these together
-        mu.prior <- rep(0, sum(m[ss,]))
-        mu.prior[columnsWithPriors[m[ss,]]] <- priorsForThisRow[,3]
-        mu.miss <- (wvar) %*% (mu.prior +
-                   solve.Sigma  %*% imputations[jj,m[ss,]])
+        ##mu.prior <- rep(0, sum(m[ss,]))
+        ##mu.prior[columnsWithPriors[m[ss,]]] <- priorsForThisRow[,3]
+        mu.miss <- (wvar) %*% (mu.prior[,jj] +
+                   solve.Sigma  %*% imputations[rowInPatt,m[ss,]])
         
-        imputations[jj,m[ss,]] <- mu.miss    
+        imputations[rowInPatt,m[ss,]] <- mu.miss    
                                                     
         # update **theta**
         copy.theta <- theta
@@ -482,15 +534,15 @@ amelia.impute<-function(x,thetareal,priors=NULL,bounds=NULL,max.resample=NULL){
 
         # fork for the bounds resampler
         if (!identical(bounds,NULL)) {
-          xplay[or,] <- am.resample(x.ss=x[or,,drop=FALSE], ci=Ci, imps=imputations[jj,],
+          xplay[or,] <- am.resample(x.ss=x[or,,drop=FALSE], ci=Ci, imps=imputations[rowInPatt,],
                                       m.ss=m[ss,], bounds=bounds,
                                       max.resample=max.resample)            
                                       
         } else {
-          junk[jj,]<-matrix(rnorm(AMp), 1, AMp) %*% Ci
+          junk[rowInPatt,]<-matrix(rnorm(AMp), 1, AMp) %*% Ci
  
           # Piece together this observation
-          xplay[or,]<-x[or,] + (AMr1[or, , drop=FALSE] * (imputations[jj,] + junk[jj,]))
+          xplay[or,]<-x[or,] + (AMr1[or, , drop=FALSE] * (imputations[rowInPatt,] + junk[rowInPatt,]))
         }
       }
     }
@@ -652,48 +704,104 @@ if (identical(priors,NULL)){                     # No Observation Level Priors i
     hmcv[m[ss,],m[ss,]] <- hmcv[m[ss,],m[ss,]] +
                           (1+isp-is-length(priorsinpatt))*theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])]
 
+    if (length(priorsinpatt) == 0) next()
+
+
+      hasPrior <- priors[,1] %in% is:isp
+      priorsForPatt <- priors[hasPrior, , drop = FALSE]
+      priorsForPatt <- priorsForPatt[order(priorsForPatt[,1],priorsForPatt[,2]), , drop = FALSE]
+
+      numRowsWithPrior <- length(unique(priorsForPatt[,1]))
+      mu.prior <- matrix(0, nrow = sum(m[ss,]), ncol = numRowsWithPrior)
     
+      ## create one large matrix to house all the lambdas
+
+      solve.Lambda <- array(0, c(sum(m[ss,]), sum(m[ss,]), numRowsWithPrior)) 
+    
+      
+      colsWithPriors <- tapply(priorsForPatt[,2], priorsForPatt[,1],
+                                      function(x) (1:AMp %in% x)[m[ss,]])
+      
+#      colsWithPriors <- colsWithPriors[rep(m[ss,], times = length(priorsinpatt))]
+
+    inds <- cbind(rep(1:sum(m[ss,]),numRowsWithPrior),
+                  rep(1:sum(m[ss,]),numRowsWithPrior),
+                  sort(rep(1:numRowsWithPrior,sum(m[ss,]))))
+    
+    
+    diag.Lambda <- rep(0, sum(m[ss,])*numRowsWithPrior)
+    diag.Lambda[unlist(colsWithPriors)] <- priorsForPatt[,4]
+    mu.prior[unlist(colsWithPriors)] <- priorsForPatt[,3]
+    solve.Lambda[inds] <- diag.Lambda
+                    
+    ##browser()
+
+    solve.Sigma  <- try(am.inv(theta[c(FALSE,m[ss,]),
+                                     c(FALSE,m[ss,]),drop=FALSE]), silent=TRUE)
+
+    if (inherits(solve.Sigma,"try-error")) {
+      solve.Sigma<-solve(theta[c(FALSE,m[ss,]),
+                               c(FALSE,m[ss,]),drop=FALSE])   
+    }
+    
+    
+    if (sum(m[ss,]) == 1) {
+
+      wvar <- 1/(diag.Lambda+solve.Sigma)
+      mu.miss <- wvar*(mu.prior + solve.Sigma*imputations[priorsinpatt,m[ss,]])
+      imputations[priorsinpatt,m[ss,]] <- mu.miss
+                                        # Overwrite prior locations
+
+
+      hmcv[m[ss,],m[ss,]] <- hmcv[m[ss,],m[ss,]] + sum(wvar)
+      xplay[is:isp,]<-x[is:isp,] + imputations 
+      next()
+    }
     # for rows with priors: change the relevant imputation cells
     # and update the hmcv properly
-    for (jj in priorsinpatt) {
+    for (jj in 1:length(priorsinpatt)) {
       # Prior specified for this observation
 
-      or <- (is:isp)[jj]  ## original row 
+##      or <- (is:isp)[priorsinpatt[jj]]  ## original row 
         
       ## maybe we should sort priors earlier? do we need to?
-      priorsForThisRow <- priors[priors[,1] == or, , drop = FALSE] 
-      priorsForThisRow <- priorsForThisRow[order(priorsForThisRow[,2]),,drop=FALSE]
-      columnsWithPriors <- c(1:AMp) %in% priorsForThisRow[, 2]
+##      priorsForThisRow <- priors[priors[,1] == or, , drop = FALSE] 
+##      priorsForThisRow <- priorsForThisRow[order(priorsForThisRow[,2]),,drop=FALSE]
+##      columnsWithPriors <- c(1:AMp) %in% priorsForThisRow[, 2]
 
-      npr <- nrow(priorsForThisRow)
-
-
+      
+##      npr <- nrow(priorsForThisRow)
                                         # Calculate sd2
-      solve.Sigma  <- am.inv(theta[c(FALSE,m[ss,]),
-                                     c(FALSE,m[ss,]),drop=FALSE])
-       
-      solve.Lambda <- matrix(0,sum(m[ss,]),sum(m[ss,]))
-      diag.Lambda <- rep(0, sum(m[ss,]))
-      diag.Lambda[columnsWithPriors[m[ss,]]] <- priorsForThisRow[,4]
-      diag(solve.Lambda) <- diag.Lambda
+##      solve.Lambda <- matrix(0,sum(m[ss,]),sum(m[ss,]))
+##      diag.Lambda <- rep(0, sum(m[ss,]))
+
+
+      ## we only update the the obs with priors. the ones without should
+      ## keep their imputations. priorCols is which of the missing
+      ## variables has a prior. priorColsOrig is which of the overall
+      ## vars has a prior (we need this to subset the imputations).
+      priorCols <- colsWithPriors[[jj]]
+      priorColOrig <- m[ss,]
+      priorColOrig[m[ss,]] <- priorCols
+      sS <- solve.Sigma[priorCols, priorCols,drop=FALSE]
+      sL <- solve.Lambda[priorCols,priorCols,jj]
+
+      wvar <- try(am.inv(sL + sS), silent=TRUE)
+      if (inherits(wvar, "try-error")) {
+        wvar <- solve(sL+sS)
+      }
+      mu.miss <- (wvar) %*% (mu.prior[priorCols,jj] +
+                             sS  %*% imputations[priorsinpatt[jj],priorColOrig])
         
-      wvar <- am.inv(solve.Lambda + solve.Sigma)
-          
-        # Weight these together
-      mu.prior <- rep(0, sum(m[ss,]))
-      mu.prior[columnsWithPriors[m[ss,]]] <- priorsForThisRow[,3]
-      mu.miss <- (wvar) %*% (mu.prior +
-                             solve.Sigma  %*% imputations[jj,m[ss,]])
-        
-      imputations[jj,m[ss,]] <- mu.miss    
+      imputations[priorsinpatt[jj],priorColOrig] <- mu.miss
                                                     
-      # update **theta**
+      ## update **theta**, but only the parts for variables that
+      ## had priors. the non-prior columns are fine from above. 
       copy.theta <- theta
-      copy.theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])] <- wvar
+      copy.theta[c(FALSE,priorColOrig),c(FALSE,priorColOrig)] <- wvar
 
       # Overwrite prior locations
       hmcv[m[ss,],m[ss,]] <- hmcv[m[ss,],m[ss,]] + copy.theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])]
-
 
       
     }
@@ -711,7 +819,7 @@ if (returntype=="theta"){
   music<-  as.matrix(colSums(xplay))
 
   if (!identical(empri,NULL)){  
-    if (empri>0){  
+    if (empri>0){
       hold<-matrix(0,AMp,AMp)
       hold[row(hold)==col(hold)]<- empri
       simple<-((1/AMn) * (music %*% t(music)))
@@ -840,7 +948,16 @@ amelia.amelia <- function(x, m = 5, p2s = 1, frontend = FALSE, ...) {
   ret <- ameliabind(x, out)
   return(ret)
 }
-  
+
+
+amelia.molist <- function(x, ...) {
+  m <- match.call(expand.dots=TRUE)
+  m$x <- x$data
+  m$priors <- x$priors
+  m[[1]] <- as.name("amelia.default")
+  ret <- eval(m, sys.frame(sys.parent()))
+  return(ret)
+}
 
 amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
                  ts=NULL,cs=NULL,polytime=NULL,splinetime=NULL,intercs=FALSE,
@@ -952,7 +1069,7 @@ your data for highly collinear variables.\n\n")
     ## here we deal with the imputed matrix.
 
     # first, we put the data into the output list and name it
-    impdata$imputations[[i]]<-impfill(x.orig=x,x.imp=ximp,noms=prepped$noms,ords=prepped$ords)
+    impdata$imputations[[i]]<-impfill(x.orig=x,x.imp=ximp,noms=prepped$noms,ords=prepped$ords,priors=priors)
 
     # if the user wants to save it, do that
 #    if (write.out) {
