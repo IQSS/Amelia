@@ -500,12 +500,17 @@ scalecenter<-function(x,priors=NULL,bounds=NULL){
   ones<-matrix(1,AMn,1)
   meanx<-colMeans(x,na.rm=TRUE)
   stdvx<-apply(x,2,sd,na.rm=TRUE)
-  x.ztrans<-(x-(ones %*% meanx))/(ones %*% stdvx)
-  if (!identical(priors,NULL)){
-    priors[,3]<-(priors[,3]-meanx[priors[,2]])/stdvx[priors[,2]]
-    priors[,4]<- (priors[,4]/stdvx[priors[,2]])^2
+  no.obs <- colSums(!is.na(x)) == 0
+  if (!is.null(priors)) {
+    meanx[no.obs] <- unlist(tapply(priors[,3],priors[,2],mean))[order(unique(priors[,2]))]
+    stdvx[no.obs] <-  unlist(tapply(priors[,3],priors[,2],sd))[order(unique(priors[,2]))]
   }
-  if (!identical(bounds,NULL)) {
+  x.ztrans<-(x-(ones %*% meanx))/(ones %*% stdvx)
+  if (!is.null(priors)){
+    priors[,3]<-(priors[,3]-meanx[priors[,2]])/stdvx[priors[,2]]
+    priors[,4]<- (priors[,4]/stdvx[priors[,2]])^2 #change to variances.
+  }
+  if (!is.null(bounds)) {
     bounds[,2] <- (bounds[,2]-meanx[bounds[,1]])/stdvx[bounds[,1]]
     bounds[,3] <- (bounds[,3]-meanx[bounds[,1]])/stdvx[bounds[,1]]
   }
@@ -727,6 +732,11 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   if (p2s==2) {
     cat("beginning prep functions\n")
     flush.console()
+  }
+  
+  ## Set any cells with priors to missing. 
+  if (!is.null(priors)) {
+    is.na(x)[priors[,c(1,2),drop=FALSE]] <- TRUE
   }
   
   d.trans<-amtransform(x,logs=numopts$logs,sqrts=numopts$sqrts,lgstc=numopts$lgstc)  
