@@ -92,6 +92,7 @@ moPrep.default <- function(x, formula, subset, error.proportion, gold.standard=!
     out$priors <- out$priors[out$priors[,4] > 0,]
     warning("Some observations estimated with negative measurement error variance. Set to gold standard.")
   }
+  out$priors[,4] <- sqrt(out$priors[,4])
   out$data <- substitute(x)
   class(out) <- c("molist","list")
   return(out)
