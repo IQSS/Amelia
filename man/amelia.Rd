@@ -3,7 +3,7 @@
 \alias{amelia.amelia}
 \alias{amelia.default}
 
-\title{AMELIA: Mutliple Imputation of Incomplete Multivariate Data}
+\title{AMELIA: Multiple Imputation of Incomplete Multivariate Data}
 \description{
   Runs the bootstrap EM algorithm on incomplete data and creates
   imputed datasets.  

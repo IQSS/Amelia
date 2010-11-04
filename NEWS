@@ -4,6 +4,9 @@
 //
 //
 
+== 1.2-18 (4 Nov 2010) ==
+   * Fixed a bug when all variables are set to nominal or ordinal.
+
 == 1.2-17 (10 May 2010) ==
    * Fixed a bug with the 'ask' argument when using "plot" on an
    'amelia' object. 
@@ -12,7 +15,6 @@
    * Fixed a bug when priors specified. 
    * When priors are used, Amelia now tries to use starting values 
    with the prior-filled data. 
-
 
 == 1.2-15 (20 Feb 2010)  ==
    * Fixed a bug when only 1 variable is not an ID variable or a
