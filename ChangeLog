@@ -1,3 +1,25 @@
+2010-11-03  Matthew Blackwell  <blackwel@fas.harvard.edu>
+
+	* R/ameliagui.r (*): Major overhaul to main window. Most actions
+	moved to application menus or context menus. 
+
+2009-09-22  Matthew Blackwell <blackwel@fas.harvard.edu>
+	* R/ameliagui.r (load.sessions, save.sessions): Sessions now
+	properly handle the entry boxes on loading session. Sessions
+	actually save bound matrix now.
+	* R/diag.r (tscsPlot): Fixed a problem with rounding in the ceiling()
+	function that caused the function to access the m+1st theta matrix,
+	which obviously doesn't exist.
+	* R/emb.r (amelia.impute): Fixed a problem when both bounds and
+	priors were being used. 
+	* R/missmap.R (missmap): Fixed a problem with the color inverting
+	on a fully observed dataset. 
+
+2009-09-10  Matthew Blackwell <blackwel@fas.harvard.edu>
+	* R/ameliagui.r: Sessions work properly and save Amelia
+	runs. structure of the GUI file is sensible now, with separate
+	functions so that things don't depend on scoping. 
+
 2010-05-07  Matthew Blackwell <blackwel@fas.harvard.edu>
 	* R/plot.amelia (plot.amelia): 'ask' argument was unused in the
 	function, should now not ask if ask=FALSE. 

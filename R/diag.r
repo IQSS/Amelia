@@ -273,8 +273,14 @@ overimpute <- function(output,var,legend=TRUE,xlab,ylab,main,frontend=FALSE,...)
     main <- paste("Observed versus Imputed Values of",colnames(data)[var])
   }
 
-  if (frontend)
-    x11()
+  if (frontend) {
+    if (.Platform$OS.type == "windows") {
+      windows()
+    } else {
+      x11()      
+    }
+  }
+
   ci.order<-order(uppers-lowers,decreasing=TRUE)     # Allows smallest CI's to be printed last, and thus not buried in the plot.
   overplot<-plot(xplot[ci.order],means[ci.order],xlab=xlab,ylab=ylab,ylim=range(c(lowers-addedroom,uppers)),type='p',main=main,...)
   segments(xplot[ci.order],lowers[ci.order],xplot[ci.order],uppers[ci.order],col=color[ci.order])
@@ -312,22 +318,16 @@ disperse <- function(output, m = 5, dims = 1, p2s = 0, frontend=FALSE,...) {
 
   if (frontend) {
     require(tcltk)
-    putAmelia("tcl.window",tktoplevel())
-    scr <- tkscrollbar(getAmelia("tcl.window"), repeatinterval=5,
-          command=function(...)tkyview(getAmelia("run.text"),...))
-    putAmelia("run.text",tktext(getAmelia("tcl.window"),font=c("Courier",10),
-          yscrollcommand=function(...)tkset(scr,...)))
-    tkgrid(getAmelia("run.text"),scr)
-    tkgrid.configure(scr,sticky="ns")
-    tkwm.title(getAmelia("tcl.window"),"Overdisperse Output")
-    tcl("update")
+    putAmelia("output.log", c(getAmelia("output.log"), "==== Overdispersion Output ====\n"))
   }
 
   # prep the data and arguments
   prepped<-amelia.prep(x=data, arglist=output$arguments)
 
   if (p2s) cat("-- Imputation", "1", "--")
-  if (frontend) tkinsert(getAmelia("run.text"),"end",paste("-- Imputation","1","--\n"))
+  if (frontend) {
+    putAmelia("output.log", c(getAmelia("output.log"), paste("-- Imputation","1","--\n")))
+  }
   flush.console()
 
   # run EM, but return it with the theta at each iteration
@@ -347,7 +347,9 @@ disperse <- function(output, m = 5, dims = 1, p2s = 0, frontend=FALSE,...) {
   for (i in 2:m){
 
     if (p2s) cat("-- Imputation", i, "--\n")
-    if (frontend) tkinsert(getAmelia("run.text"),"end",paste("-- Imputation",i,"--\n"))    
+    if (frontend) {
+      putAmelia("output.log", c(getAmelia("output.log"), paste("-- Imputation",i,"--\n")))
+    }    
 
     # get a noisy sample of data from the that starting value (which is the
     # Amelia answer) and use that to estimate a new starting theta (mus/vcov)
@@ -432,8 +434,8 @@ disperse <- function(output, m = 5, dims = 1, p2s = 0, frontend=FALSE,...) {
     abline(h=0,lty=2)
     abline(v=0,lty=2)  
   }
-  if (frontend)
-    tkdestroy(getAmelia("tcl.window"))
+  #if (frontend)
+  #  tkdestroy(getAmelia("tcl.window"))
   
   invisible(list(impdata=impdata,p.order=prepped$p.order,index=prepped$index,iters=iters,rotations=rotations,dims=dims))
 
@@ -549,8 +551,11 @@ sigalert<-function(data,disperse.list,output,notorious=5){
 
 tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
                       misscol = "red", obscol = "black", xlab, ylab, main,
-                      pch, ylim, xlim, ...) {
-
+                      pch, ylim, xlim, frontend = FALSE, ...) {
+  if (missing(var))
+    stop("I don't know which variable (var) to plot")
+  if (missing(cs))
+    stop("case name (cs) is not specified")
   if (is.null(output$arguments$ts) || is.null(output$arguments$cs))
     stop("both 'ts' and 'cs' need to be set in the amelia output")
   if (!("amelia" %in% class(output)))
@@ -592,40 +597,53 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
   imps <- array(NA, dim=c(nrow(cross.sec), draws))
 
   drawsperimp <- (1/output$m)*draws
+  if (sum(miss) > 0) { 
+    for (i in 1:draws) {
+      currtheta <- output$theta[,,ceiling(i/drawsperimp)]
+      imps[,i] <- amelia.impute(x = cross.sec, thetareal = currtheta,
+                                bounds = prepped$bounds,
+                                max.resample = output$arguments$max.resample)[,stacked.var]
+    }
+    
+    imps <- imps*prepped$scaled.sd[subset.var] + prepped$scaled.mu[subset.var]
+    if (var %in% output$arguments$logs) {
+      imps <- exp(imps)+prepped$xmin[which(var==output$arguments$logs)]
+    }
+    if (var %in% output$arguments$sqrt) {
+      imps <- imps^2
+    }
+    if (var %in% output$arguments$lgstc) {
+      imps <- exp(imps)/(1+exp(imps))
+    }
   
-  for (i in 1:draws) {
-    currtheta <- output$theta[,,ceiling(i/drawsperimp)]
-    imps[,i] <- amelia.impute(x = cross.sec, thetareal = currtheta,
-                              bounds = prepped$bounds,
-                              max.resample = output$arguments$max.resample)[,stacked.var]
-  }
-  
-  imps <- imps*prepped$scaled.sd[subset.var] + prepped$scaled.mu[subset.var]
-  if (var %in% output$arguments$logs) {
-    imps <- exp(imps)+prepped$xmin[which(var==output$arguments$logs)]
-  }
-  if (var %in% output$arguments$sqrt) {
-    imps <- imps^2
-  }
-  if (var %in% output$arguments$lgstc) {
-    imps <- exp(imps)/(1+exp(imps))
-  }
-  
-  outoforder <- match(prepped$n.order, unit.rows)[!is.na(match(prepped$n.order, unit.rows))]
-  imps <- imps[order(outoforder),]
-  means <- rowMeans(imps)
+    outoforder <- match(prepped$n.order, unit.rows)[!is.na(match(prepped$n.order, unit.rows))]
+    imps <- imps[order(outoforder),]
+    
+    means <- rowMeans(imps)
 
-  uppers <- apply(imps, 1, quantile, probs=(conf + (1 - conf)/2))
-  lowers <- apply(imps, 1, quantile, probs=(1-conf)/2)
+    uppers <- apply(imps, 1, quantile, probs=(conf + (1 - conf)/2))
+    lowers <- apply(imps, 1, quantile, probs=(1-conf)/2)
+  } else {
+    means <- data[unit.rows, var]
+    uppers <- lowers <- means
+  }
+  
 
   if (missing(pch)) pch <- 19
-  if (missing(xlab)) xlab <- "Time"
+  if (missing(xlab)) xlab <- "time"
   if (missing(ylab)) ylab <- names(data)[var]
   if (missing(main)) main <- cs
   if (missing(xlim)) xlim <- range(time)
   if (missing(ylim)) ylim <- range(c(uppers,lowers,means))
   
   cols <- ifelse(miss, misscol, obscol)
+  if (frontend) {
+    if (.Platform$OS.type == "windows") {
+      windows()
+    } else {
+      x11()      
+    }
+  }
   plot(x = time, y = means, col = cols, pch = pch,ylim = ylim, xlim = xlim,
        ylab = ylab, xlab = xlab, main = main, ...)
   segments(x0 = time, x1 = time, y0 = lowers, y1 = uppers, col = cols, ...)

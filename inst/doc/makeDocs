@@ -42,6 +42,9 @@ for rd in ${Rdfiles}
 
 done
 
+# we can use this code to quick-update the popups
+#perl -i -pe 's/test1/this is some text/ig' ../../R/ameliagui.R
+
 ## Sweave should have already been run by R CMD build
 #echo "Sweave(\"cem.Rnw\")" | ${R_CMD} --slave
 #echo "library(\"utils\"); options(\"width\"=80); Sweave(\"amelia-vign.Rnw\")"  | ${R_CMD} --no-save --no-restore 

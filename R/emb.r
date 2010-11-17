@@ -131,7 +131,7 @@ impfill<-function(x.orig,x.imp,noms,ords,priors) {
         else if (orig.char[i])
           x.orig[,i]<-unique(na.omit(x.orig[,i]))[x.imp[,i]]
         else
-          x.orig[,i]<-x.imp[,i]    
+          x.orig[is.na(x.orig[,i]),i] <- x.imp[is.na(x.orig[,i]),i]    
       }                   
     } else {
        x.orig[AMr1.orig]<-x.imp[AMr1.orig]
@@ -293,11 +293,12 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
       }
       if (frontend) {
         if (identical((count %% 20),1)) {
-          tkinsert(getAmelia("run.text"),"end",paste("\n"))
-          tksee(getAmelia("run.text"),"end")  #Makes the window scroll down as new lines appear.
+          putAmelia("output.log", c(getAmelia("output.log"),paste("\n")))
         }
-        if (count<10) tkinsert(getAmelia("run.text"),"end"," ")
-        tkinsert(getAmelia("run.text"),"end",paste(count," ",sep=""))
+        if (count<10) {
+          putAmelia("output.log", c(getAmelia("output.log")," "))
+        }
+        putAmelia("output.log", c(getAmelia("output.log"),paste(count," ",sep="")))
         tcl("update")   #Forces tcltk to update the text widget that holds the amelia output
       }
 
@@ -356,7 +357,9 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
   }
   
   if (p2s) cat("\n")
-  if (frontend) tkinsert(getAmelia("run.text"),"end",paste("\n"))
+  if (frontend) {
+    putAmelia("output.log", c(getAmelia("output.log"),paste("\n")))
+  }
   if (allthetas)
     return(list(thetanew=cbind(thetahold,(thetanew[upper.tri(thetanew,diag=TRUE)])[-1]),iter.hist=iter.hist))
   return(list(thetanew=thetanew,iter.hist=iter.hist))
@@ -600,7 +603,7 @@ am.resample <- function(x.ss, ci, imps, m.ss, bounds, max.resample) {
 
       # this matrix combines the two
       btest <- utest & ltest
-
+      
       # get the failing/passing cells
       fail.cells <- which(!btest, arr.ind=TRUE)
       fail.rows  <- rowSums(!btest, na.rm=TRUE) > 0
@@ -970,14 +973,6 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
   #Generates the Amelia Output window for the frontend
   if (frontend) {
     require(tcltk)
-    putAmelia("gui.container",tktoplevel())
-    scr <- tkscrollbar(getAmelia("gui.container"), repeatinterval=5,
-          command=function(...)tkyview(getAmelia("run.text"),...))
-    putAmelia("run.text", tktext(getAmelia("gui.container"),font=c("Courier",10),
-          yscrollcommand=function(...)tkset(scr,...)))
-    tkgrid(getAmelia("run.text"),scr)
-    tkgrid.configure(scr,sticky="ns")
-    tkwm.title(getAmelia("gui.container"),"Amelia Output")
     tcl("update")
   }
   if (p2s==2) {
@@ -1028,7 +1023,9 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
     x.stacked<-amstack(x.boot$x,colorder=FALSE,x.boot$priors)   # Don't reorder columns thetanew will not align with d.stacked$x
 
     if (p2s) cat("-- Imputation", i, "--\n")
-    if (frontend) tkinsert(getAmelia("run.text"),"end",paste("-- Imputation",i,"--\n"))
+    if (frontend) {
+      putAmelia("output.log", c(getAmelia("output.log"),paste("-- Imputation",i,"--\n")))
+    }
     flush.console()
 
     thetanew<-emarch(x.stacked$x,p2s=p2s,thetaold=NULL,tolerance=tolerance,startvals=startvals,x.stacked$priors,empri=empri,frontend=frontend,collect=collect,autopri=prepped$autopri,emburn=emburn)
@@ -1049,7 +1046,7 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
       cat("\n\nThe resulting variance matrix was not invertible.  Please check
 your data for highly collinear variables.\n\n")
       if (frontend) {
-        tkinsert(getAmelia("run.text"),"end","\n\nThe resulting variance matrix was not invertible.  Please check your data for highly collinear variables.\n\n")
+        putAmelia("output.log", c(getAmelia("output.log"),"\n\nThe resulting variance matrix was not invertible.  Please check your data for highly collinear variables.\n\n"))
       }
       next()
         
@@ -1083,8 +1080,10 @@ your data for highly collinear variables.\n\n")
 
     
     if (p2s) cat("\n")
-    if (frontend) tkinsert(getAmelia("run.text"),"end","\n")
-
+    if (frontend) {
+      tcl(getAmelia("runAmeliaProgress"), "step",(100/m -1))
+      putAmelia("output.log", c(getAmelia("output.log"),"\n"))
+    }                
 
 
   }
@@ -1096,7 +1095,9 @@ your data for highly collinear variables.\n\n")
   } else {
     impdata$message <- paste("Normal EM convergence.")
   }
-  if (frontend) tkinsert(getAmelia("run.text"),"end",paste(impdata$message,"\n"))
+  if (frontend) {
+    putAmelia("output.log", c(getAmelia("output.log"),paste(impdata$message,"\n")))
+  }
 #  if (archive)
   
   impdata$arguments <- prepped$archv

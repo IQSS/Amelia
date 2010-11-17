@@ -324,10 +324,11 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
         dummy<-as.numeric(x[,cs]==i)
         timevars<-cbind(timevars,dummy*timebasis)
       }
-      timevars<-timevars[,c(-1,-2)]
+      timevars<-timevars[,c(-1,-2), drop = FALSE]
     } else {
+
       timevars<-cbind(timevars,timebasis)
-      timevars<-timevars[,-c(1,2)]  # first column is a holding variable, second is to have fixed effects identified
+      timevars<-timevars[,-c(1,2), drop = FALSE]  # first column is a holding variable, second is to have fixed effects identified
     }
 
 ## ENDS TODAY
