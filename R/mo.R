@@ -33,9 +33,9 @@ moPrep.default <- function(x, formula, subset, error.proportion, gold.standard=!
   proxysplit <- strsplit(deparse(formula),"\\|")[[1]]
   if (length(proxysplit) > 1) {
     proxyname <- proxysplit[[2]]
-    meanpos <- length(all.vars(formula))-1
+    meanpos <- length(all.vars(formula, unique = FALSE))-1
   } else {
-    meanpos <- length(all.vars(formula))
+    meanpos <- length(all.vars(formula, unique = FALSE))
   }
   if (!exists("proxyname") && missing(error.proportion) && !gold.standard) {
     stop("Need to specify a proxy, an error proportion, or gold-standard data.")
@@ -60,6 +60,8 @@ moPrep.default <- function(x, formula, subset, error.proportion, gold.standard=!
   } else {
     gs <- mf[0,]
   }
+  if (ncol(mf) < meanpos)
+    meanpos <- ncol(mf)
   prior.mean <- mf[,meanpos]
   var.mm <- var(mf[,1], na.rm=TRUE)
 

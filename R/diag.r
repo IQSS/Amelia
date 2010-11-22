@@ -28,10 +28,7 @@ compare.density <- function(output,var,col=c("red","black"),scaled=FALSE,lwd=1,m
   if (!("amelia" %in% class(output)))
     stop("The 'output' is not Amelia output.")
 
-  ## The original data is the imputed data with the
-  ## imputations marked to NA. These two lines do that
-  data <- output$imputations[[1]]
-  is.na(data) <- output$missMatrix
+  data <- getOriginalData(output)
 
   ## Checks on if the variable makes sense to plot.
   if (class(var)=="character")
@@ -76,10 +73,14 @@ compare.density <- function(output,var,col=c("red","black"),scaled=FALSE,lwd=1,m
   vname<-varnames[var]                     # This will work for both data.frames AND matricies.
 
   
-  if (sum(is.na(vars)) > 0 & sum(!is.na(vars)) > 0) {
-    
+  if (sum(is.na(vars)) > 0) {
+    oiDetect <- (sum(output$missMatrix[,var]) + sum(!is.na(vars))) > length(vars)
     if (missing(main)) {
-      main <- paste("Observed and Imputed values of",vname)
+      if (oiDetect) {
+        main <-  paste("Observed and Overimputed values of",vname)
+      } else { 
+        main <- paste("Observed and Imputed values of",vname)
+      }
     }
     if (missing(xlab)) {
       xlab <- paste(vname,"  --  Fraction Missing:",round(mean(is.na(vars)),digits=3))
@@ -89,14 +90,14 @@ compare.density <- function(output,var,col=c("red","black"),scaled=FALSE,lwd=1,m
       ylab <- "Relative Density"
     }
     
-    xmiss <- density(varimp[is.na(vars)],na.rm=TRUE)
-    xobs  <- density(varimp[!is.na(vars)],na.rm=TRUE)
+    xmiss <- density(varimp[output$missMatrix[,var]],na.rm=TRUE)
+    xobs  <- density(vars[!is.na(vars)],na.rm=TRUE)
     compplot <- matplot(x=cbind(xmiss$x,xobs$x),y=cbind(ratio*xmiss$y,xobs$y), xlab=xlab, ylab=ylab,type="l",lwd=lwd, lty=1,main=main,col=col,...)
     if (legend) {
       legend("topright",legend=c(leg.text,"Observed Values"),
              col=col,lty=c(1,1),bg='gray90',lwd=lwd)
     }
-  } else if (sum(!is.na(vars) > 0)) {
+  } else {
     if (missing(main)) {
       main <- paste("Observed values of",vname)
     }
@@ -113,25 +114,6 @@ compare.density <- function(output,var,col=c("red","black"),scaled=FALSE,lwd=1,m
 
     if (legend) {
       legend("topright",legend=c("Mean Imputations (None)","Observed Values"),
-             col=col.none,lty=c(1,1),bg='gray90')
-    }
-  } else {
-    if (missing(main)) {
-      main <- paste("Overimputed values of",vname)
-    }
-    if (missing(xlab)) {
-      xlab <- vname
-    }
-    if (missing(ylab)) {
-      ylab <- "Relative Density"
-    }
-    
-    compplot <- plot(density(varimp,na.rm=TRUE), col = "red",
-      main = main,...)
-    col.none=c("red","gray")
-
-    if (legend) {
-      legend("topright",legend=c("Mean Overimputations","Observed Values (None)"),
              col=col.none,lty=c(1,1),bg='gray90')
     }
   }
