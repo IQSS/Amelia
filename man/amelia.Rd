@@ -16,15 +16,17 @@
        logs = NULL, sqrts = NULL, lgstc = NULL, noms = NULL, ords = NULL,
        incheck = TRUE, collect = FALSE, arglist = NULL, empri = NULL,
        priors = NULL, autopri = 0.05, emburn = c(0,0), bounds = NULL,
-       max.resample = 100, ...)
+       max.resample = 100, overimp = NULL, ...)
 
 \method{amelia}{amelia}(x, m = 5, p2s = 1, frontend = FALSE, ...)
+\method{amelia}{molist}(x, ...)
 } 
 \arguments{
-  \item{x}{either a matrix, data.frame or a object of class
-    "amelia". The first two will call the default S3 method. The third
+  \item{x}{either a matrix, data.frame, a object of class
+    "amelia", or an object of class "molist". The first two will call the default S3 method. The third
     a convenient way to perform more imputations with the same
-    parameters.}
+    parameters. The fourth will impute based on the settings from
+    \code{moPrep} and any additional arguments.}
   
   \item{m}{the number of imputed datasets to create.}
   
@@ -131,6 +133,11 @@
     constraints of \code{bounds}. After this value, imputed values are
     set to the bounds.}
 
+  \item{overimp}{a two-column matrix describing which cells are to be
+    overimputed. Each row of the matrix should be a \code{c(row,
+    column)} pair. Each of these cells will be treated as missing and
+  replaced with draws from the imputation model.}
+
   \item{...}{further arguments to be passed.}
 
 }
@@ -226,6 +233,8 @@ or,
   documentation for details.}
 \item{arguments}{a instance of the class "ameliaArgs" which holds the
   arguments used in the Amelia run.}
+\item{overvalues}{a vector of values removed for overimputation. Used to
+  reformulate the original data from the imputations. }
 
 Note that the \code{theta}, \code{mu} and \code{covMatrcies} objects
 refers to the data as seen by the EM algorithm and is thusly centered,
