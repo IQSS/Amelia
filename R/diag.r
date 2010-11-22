@@ -141,10 +141,10 @@ overimpute <- function(output,var,legend=TRUE,xlab,ylab,main,frontend=FALSE,...)
   if (!("amelia" %in% class(output)))
     stop("The 'output' is not Amelia output.")
 
-  ## The original data is the imputed data with the
-  ## imputations marked to NA. These two lines do that
-  data <- getOriginalData(output)
   
+  data <- getOriginalData(output)
+  origAMr1 <- is.na(data)
+
   # Allow character names as arguments for "var" with data.frames
 
   if(is.character(var)){
@@ -167,6 +167,11 @@ overimpute <- function(output,var,legend=TRUE,xlab,ylab,main,frontend=FALSE,...)
 
   stacked.var<-match(var,prepped$subset.index[prepped$p.order])
   subset.var<-match(var,prepped$subset.index)
+  if (!is.null(prepped$blanks)) 
+    fully.missing <- origAMr1[-prepped$blanks, var][prepped$n.order]
+  else
+    fully.missing <- origAMr1[, var][prepped$n.order]
+  
   if (is.na(stacked.var)) {
     if (frontend)
       tkmessageBox(message="The variable you selected doesn't exist in the Amelia output becuase it wasn't imputed.",icon="error",type="ok")
@@ -178,18 +183,19 @@ overimpute <- function(output,var,legend=TRUE,xlab,ylab,main,frontend=FALSE,...)
   uppers<-c()
   color<-c()
   AMr1<-is.na(prepped$x)
-  if (sum(!AMr1[,stacked.var]) == 0){
-    if (frontend) {
-      tkmessageBox(parent = getAmelia("gui"),
-                   message="The variable needs to have at least one fully observed cell.",icon="error",type="ok")
-    }
-    stop("function needs at least one fully observed cell in 'var'.")
-  }
+  ## if (sum(!AMr1[,stacked.var]) == 0){
+  ##   if (frontend) {
+  ##     tkmessageBox(parent = getAmelia("gui"),
+  ##                  message="The variable needs to have at least one fully observed cell.",icon="error",type="ok")
+  ##   }
+  ##   stop("function needs at least one fully observed cell in 'var'.")
+  ## }
   AMr1[,stacked.var]<-TRUE
   AMp<-ncol(prepped$x)
   for (i in 1:nrow(prepped$x)) {
-    if (is.na(prepped$x[i,stacked.var]))
-      next()
+    if (fully.missing[i]) {
+        next()
+    }
 
     x<-prepped$x[i,,drop=FALSE]
     x[1,stacked.var]<-NA
@@ -212,10 +218,6 @@ overimpute <- function(output,var,legend=TRUE,xlab,ylab,main,frontend=FALSE,...)
       
       thetareal<-output$theta[,,k]
       theta <- amsweep(thetareal, c(FALSE,o))
-#      test <-.C("sweepRows", g = as.double(thetareal), p =
-#         as.integer(nrow(thetareal)), m = as.integer(c(FALSE,o)), reverse
-#         = as.integer(FALSE))$g
-#      browser()
       Ci<-matrix(0,AMp,AMp)
       hold<-chol(theta[c(FALSE,miss),c(FALSE,miss)])
       Ci[miss,miss]<-hold      
@@ -244,8 +246,14 @@ overimpute <- function(output,var,legend=TRUE,xlab,ylab,main,frontend=FALSE,...)
     if (!is.na(match(var,prepped$lgstc)))
       scaled.conf <- untransform(as.matrix(scaled.conf),logs=NULL,xmin=NULL,sqrts=NULL,lgstc=1)
     
-    #colors are based on rainbow roygbiv l->r is higher missingness  
-    spectrum<-c("blue","green","orange","tomato","red")
+    #colors are based on rainbow roygbiv l->r is higher missingness  \
+    blue <- rgb(0,0,0.9, alpha = 0.75)
+    green <- rgb(0,0.9,0, alpha = 0.75)
+    orange <- rgb(1, 0.65,0, alpha = 0.75)
+    tomato <- rgb(1, 0.39, 0.28, alpha = 0.75)
+    red <- rgb(1, 0, 0, alpha = 0.75)
+    spectrum<-c(blue, green, orange, tomato, red)
+
     if (pcntmiss < .20)
       color<-c(color,spectrum[1])
     else if (pcntmiss >= .20 && pcntmiss <.40)
@@ -262,10 +270,15 @@ overimpute <- function(output,var,legend=TRUE,xlab,ylab,main,frontend=FALSE,...)
 
   }
 
-  AMr1<-is.na(prepped$x[,stacked.var])
-  partial.n.order<-prepped$n.order[!AMr1]
- 
-  xplot<-data[partial.n.order,var] 
+  #AMr1<-is.na(prepped$x[,stacked.var])
+  #partial.n.order<-prepped$n.order[!origAMr1]
+
+  if (is.null(prepped$blanks)) {
+    xplot<-data[prepped$n.order,var][!fully.missing]   
+  } else {
+    xplot<-data[-prepped$blanks,][prepped$n.order,var][!fully.missing]   
+  }
+  
 
   addedroom<-(max(uppers)-min(lowers))*0.1
 
@@ -286,9 +299,9 @@ overimpute <- function(output,var,legend=TRUE,xlab,ylab,main,frontend=FALSE,...)
       x11()      
     }
   }
-
   ci.order<-order(uppers-lowers,decreasing=TRUE)     # Allows smallest CI's to be printed last, and thus not buried in the plot.
-  overplot<-plot(xplot[ci.order],means[ci.order],xlab=xlab,ylab=ylab,ylim=range(c(lowers-addedroom,uppers)),type='p',main=main,...)
+  overplot<-plot(xplot[ci.order],means[ci.order],xlab=xlab,ylab=ylab,ylim=range(c(lowers-addedroom,uppers)),type='p',main=main,
+                 col=color[ci.order], pch = 19,...)
   segments(xplot[ci.order],lowers[ci.order],xplot[ci.order],uppers[ci.order],col=color[ci.order])
   if (legend) {
     legend("bottomright",legend=c(" 0-.2",".2-.4",".4-.6",".6-.8",".8-1"),
