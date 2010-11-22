@@ -15,11 +15,10 @@ moPrep.molist <- function(x, formula, subset, error.proportion, gold.standard=FA
   res <- eval(m, sys.frame(sys.parent()))
 
   x$priors <- rbind(x$priors, res$priors)
+  x$overimp <- rbind(x$overimp, res$overimp)
   return(x)
 }
 
-
-## w1 ~ w1 | w2
 moPrep.default <- function(x, formula, subset, error.proportion, gold.standard=!missing(subset)) {
 
   if (!missing(error.proportion) &&
@@ -88,6 +87,7 @@ moPrep.default <- function(x, formula, subset, error.proportion, gold.standard=!
   rows <- as.integer(rownames(mf))
   out <- list()
   out$priors <- cbind(rows,col,prior.mean, prior.var)
+  out$overimp <- cbind(rows, col)
   if (sum(out$priors[,4] <= 0) > 0) {
     out$priors <- out$priors[out$priors[,4] > 0,]
     warning("Some observations estimated with negative measurement error variance. Set to gold standard.")

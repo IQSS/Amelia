@@ -76,7 +76,7 @@ compare.density <- function(output,var,col=c("red","black"),scaled=FALSE,lwd=1,m
   vname<-varnames[var]                     # This will work for both data.frames AND matricies.
 
   
-  if (sum(is.na(vars)) > 0) {
+  if (sum(is.na(vars)) > 0 & sum(!is.na(vars)) > 0) {
     
     if (missing(main)) {
       main <- paste("Observed and Imputed values of",vname)
@@ -96,7 +96,7 @@ compare.density <- function(output,var,col=c("red","black"),scaled=FALSE,lwd=1,m
       legend("topright",legend=c(leg.text,"Observed Values"),
              col=col,lty=c(1,1),bg='gray90',lwd=lwd)
     }
-  } else {
+  } else if (sum(!is.na(vars) > 0)) {
     if (missing(main)) {
       main <- paste("Observed values of",vname)
     }
@@ -107,13 +107,31 @@ compare.density <- function(output,var,col=c("red","black"),scaled=FALSE,lwd=1,m
       ylab <- "Relative Density"
     }
     
-    compplot <- plot(density(varimp,na.rm=TRUE),
-      xlim=c(min(varimp,na.rm=TRUE),max(varimp,na.rm=TRUE)), col = "blue",
+    compplot <- plot(density(varimp,na.rm=TRUE), col = "blue",
       main = main,...)
     col.none=c("gray","blue")
 
     if (legend) {
       legend("topright",legend=c("Mean Imputations (None)","Observed Values"),
+             col=col.none,lty=c(1,1),bg='gray90')
+    }
+  } else {
+    if (missing(main)) {
+      main <- paste("Overimputed values of",vname)
+    }
+    if (missing(xlab)) {
+      xlab <- vname
+    }
+    if (missing(ylab)) {
+      ylab <- "Relative Density"
+    }
+    
+    compplot <- plot(density(varimp,na.rm=TRUE), col = "red",
+      main = main,...)
+    col.none=c("red","gray")
+
+    if (legend) {
+      legend("topright",legend=c("Mean Overimputations","Observed Values (None)"),
              col=col.none,lty=c(1,1),bg='gray90')
     }
   }
@@ -143,8 +161,7 @@ overimpute <- function(output,var,legend=TRUE,xlab,ylab,main,frontend=FALSE,...)
 
   ## The original data is the imputed data with the
   ## imputations marked to NA. These two lines do that
-  data <- output$imputations[[1]]
-  is.na(data) <- output$missMatrix
+  data <- getOriginalData(output)
   
   # Allow character names as arguments for "var" with data.frames
 
@@ -179,6 +196,13 @@ overimpute <- function(output,var,legend=TRUE,xlab,ylab,main,frontend=FALSE,...)
   uppers<-c()
   color<-c()
   AMr1<-is.na(prepped$x)
+  if (sum(!AMr1[,stacked.var]) == 0){
+    if (frontend) {
+      tkmessageBox(parent = getAmelia("gui"),
+                   message="The variable needs to have at least one fully observed cell.",icon="error",type="ok")
+    }
+    stop("function needs at least one fully observed cell in 'var'.")
+  }
   AMr1[,stacked.var]<-TRUE
   AMp<-ncol(prepped$x)
   for (i in 1:nrow(prepped$x)) {
@@ -313,9 +337,8 @@ disperse <- function(output, m = 5, dims = 1, p2s = 0, frontend=FALSE,...) {
 
   ## The original data is the imputed data with the
   ## imputations marked to NA. These two lines do that
-  data <- output$imputations[[1]]
-  is.na(data) <- output$missMatrix
-
+  data <- getOriginalData(output)
+  
   if (frontend) {
     require(tcltk)
     putAmelia("output.log", c(getAmelia("output.log"), "==== Overdispersion Output ====\n"))
@@ -563,8 +586,7 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
 
   ## The original data is the imputed data with the
   ## imputations marked to NA. These two lines do that
-  data <- output$imputations[[1]]
-  is.na(data) <- output$missMatrix
+  data <- getOriginalData(output)
   
   # Allow character names as arguments for "var" with data.frames
 
@@ -587,9 +609,9 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
 
   unit.rows <- which(data[,output$arguments$cs]==cs)
   time <- data[unit.rows, output$arguments$ts]
-  miss <- is.na(data[unit.rows, var])
+  miss <- output$missMatrix[unit.rows, var] == 1
   
-  
+
   prepped <- amelia.prep(x = data, arglist=output$arguments)
   cross.sec <- prepped$x[!is.na(match(prepped$n.order, unit.rows)),]
   stacked.var<-match(var,prepped$subset.index[prepped$p.order])
@@ -602,6 +624,7 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
       currtheta <- output$theta[,,ceiling(i/drawsperimp)]
       imps[,i] <- amelia.impute(x = cross.sec, thetareal = currtheta,
                                 bounds = prepped$bounds,
+                                priors = prepped$priors,
                                 max.resample = output$arguments$max.resample)[,stacked.var]
     }
     

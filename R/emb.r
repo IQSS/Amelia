@@ -931,6 +931,15 @@ ameliabind <- function(...) {
   return(out)
 }
 
+getOriginalData <- function(obj) {
+  data <- obj$imputations[[1]]
+  is.na(data) <- obj$missMatrix
+  oi <- obj$arguments$overimp
+  for (i in 1:nrow(oi)) {
+    data[oi[i,1], oi[i,2]] <- obj$overvalues[i]
+  }
+  return(data)
+}
 
 ## amelia - multiple imputation. core function
 ##
@@ -957,8 +966,10 @@ amelia.molist <- function(x, ...) {
   m <- match.call(expand.dots=TRUE)
   m$x <- x$data
   m$priors <- x$priors
+  m$overimp <- x$overimp
   m[[1]] <- as.name("amelia.default")
-  ret <- eval(m, sys.frame(sys.parent()))
+  ret <- eval(m)
+#  ret <- eval(m, sys.frame(sys.parent()))
   return(ret)
 }
 
@@ -968,8 +979,10 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
                  logs=NULL,sqrts=NULL,lgstc=NULL,noms=NULL,ords=NULL,
                  incheck=TRUE,collect=FALSE,arglist=NULL, 
                  empri=NULL,priors=NULL,autopri=0.05,
-                 emburn=c(0,0),bounds=NULL,max.resample=100, ...) {
+                 emburn=c(0,0),bounds=NULL,max.resample=100,
+                 overimp = NULL, ...) {
 
+  
   #Generates the Amelia Output window for the frontend
   if (frontend) {
     require(tcltk)
@@ -980,16 +993,20 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
     flush.console()
   }
              
-  code<-1   
-  
-  prepped<-amelia.prep(x=x,m=m,idvars=idvars,empri=empri,ts=ts,cs=cs,
-                       tolerance=tolerance,polytime=polytime,splinetime=splinetime,
-                       lags=lags,leads=leads,logs=logs,sqrts=sqrts,lgstc=lgstc,
-                       p2s=p2s,frontend=frontend,intercs=intercs,
-                       noms=noms,startvals=startvals,ords=ords,incheck=incheck,
-                       collect=collect,
-                       arglist=arglist,priors=priors,autopri=autopri,bounds=bounds,
-                       max.resample=max.resample)
+  code <- 1   
+  am.call <- match.call(expand.dots = TRUE)
+  archv <- am.call
+  am.call[[1]] <- as.name("amelia.prep")
+  prepped <- eval(am.call)
+
+  ## prepped<-amelia.prep(x=x,m=m,idvars=idvars,empri=empri,ts=ts,cs=cs,
+  ##                      tolerance=tolerance,polytime=polytime,splinetime=splinetime,
+  ##                      lags=lags,leads=leads,logs=logs,sqrts=sqrts,lgstc=lgstc,
+  ##                      p2s=p2s,frontend=frontend,intercs=intercs,
+  ##                      noms=noms,startvals=startvals,ords=ords,incheck=incheck,
+  ##                      collect=collect,
+  ##                      arglist=arglist,priors=priors,autopri=autopri,bounds=bounds,
+  ##                      max.resample=max.resample)
   
   if (prepped$code!=1) {
     cat("Amelia Error Code: ",prepped$code,"\n",prepped$message,"\n")
@@ -999,7 +1016,8 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
   k <- ncol(prepped$x) 
   impdata <- list(imputations = list(),
                   m           = integer(0),
-                  missMatrix  = is.na(x),
+                  missMatrix  = prepped$missMatrix,
+                  overvalues  = prepped$overvalues,
                   theta       = array(NA, dim = c(k+1,k+1,m) ),
                   mu          = matrix(NA, nrow = k, ncol = m),
                   covMatrices = array(NA, dim = c(k,k,m)),

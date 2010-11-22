@@ -204,7 +204,7 @@ frame.to.matrix<-function(x,idvars) {
 ## Remove rows and columns from dataset that do not belong
 amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
                    polytime=NULL,splinetime=NULL,intercs=FALSE,lags=NULL,
-                   leads=NULL,noms=NULL,bounds=NULL) {
+                   leads=NULL,noms=NULL,bounds=NULL, overimp = NULL) {
 
   lags   <- unique(lags)
   leads  <- unique(leads)
@@ -219,8 +219,21 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
   }
 
   if (is.data.frame(x))
-    x<-frame.to.matrix(x,idvars)
+    x <- frame.to.matrix(x,idvars)
 
+  
+  ## Set overimp cells to missing
+  if (!is.null(overimp)) {
+    whole.vars <- overimp[overimp[,1] == 0, 2]
+    whole.vars <- as.matrix(expand.grid(1:nrow(x), whole.vars))
+    overimp <- overimp[overimp[,1] != 0,]
+    overimp <- rbind(overimp, whole.vars)
+    if (!is.matrix(overimp))
+      overimp <- t(as.matrix(overimp))
+    overvalues <- x[overimp]
+    is.na(x) <- overimp
+  }
+  AMmiss <- is.na(x)
 
   if (!is.null(lags)) {
     if (!identical(cs,NULL)) {
@@ -386,7 +399,7 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
   priors[,2] <- match(priors[,2], index)
   bounds[,1] <- match(bounds[,1], index)
 
-return(list(x=x,index=index,idvars=idvars,blanks=blanks,priors=priors,bounds=bounds,theta.names=theta.names))
+return(list(x=x,index=index,idvars=idvars,blanks=blanks,priors=priors,bounds=bounds,theta.names=theta.names,missMatrix=AMmiss,overvalues=overvalues))
 }
 
 ## Replace rows and columns removed in "amsubset"
@@ -650,7 +663,7 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                         leads=NULL,intercs=FALSE,sqrts=NULL,
                         lgstc=NULL,noms=NULL,incheck=TRUE,ords=NULL,collect=FALSE,
                         arglist=NULL, priors=NULL,var=NULL,autopri=0.05,bounds=NULL,
-                        max.resample=NULL) {
+                        max.resample=NULL, overimp = NULL) {
 
 
   code <- 1
@@ -664,13 +677,11 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       error.mess <- paste("The argument list you provided is invalid.")
       return(list(code=error.code, message=error.mess))
     }
-    #m         <- arglist$m
     idvars    <- arglist$idvars
     empri     <- arglist$empri
     ts        <- arglist$ts
     cs        <- arglist$cs
     tolerance <- arglist$tolerance
-#    casepri   <- arglist$amelia.args$casepri
     polytime  <- arglist$polytime
     splinetime<- arglist$splinetime
     lags      <- arglist$lags
@@ -686,6 +697,7 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     autopri   <- arglist$autopri
     empri     <- arglist$empri       #change 1
     bounds    <- arglist$bounds
+    overimp   <- arglist$overimp
     max.resample <- arglist$max.resample
   }
   
@@ -720,6 +732,8 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   
   
   priors <- generatepriors(AMr1 = is.na(x),empri = empri, priors = priors)
+  archv <- match.call(expand.dots=TRUE)
+  archv[[1]] <- NULL
   
   archv <- list(idvars=numopts$idvars, logs=numopts$logs, ts=numopts$ts, cs=numopts$cs,
                 empri=empri, tolerance=tolerance,
@@ -727,7 +741,9 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                 intercs=intercs, sqrts=numopts$sqrts, lgstc=numopts$lgstc,
                 noms=numopts$noms, ords=numopts$ords,
                 priors=priors, autopri=autopri, bounds=bounds,
-                max.resample=max.resample, startvals=startvals)        #change 2
+                max.resample=max.resample, startvals=startvals,
+                overimp = overimp)        
+                                                                                #change 2
   
   
   if (p2s==2) {
@@ -735,13 +751,9 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     flush.console()
   }
   
-  ## Set any cells with priors to missing. 
-  if (!is.null(priors)) {
-    is.na(x)[priors[,c(1,2),drop=FALSE]] <- TRUE
-  }
-  
   d.trans<-amtransform(x,logs=numopts$logs,sqrts=numopts$sqrts,lgstc=numopts$lgstc)  
-  d.subset<-amsubset(d.trans$x,idvars=numopts$idvars,p2s=p2s,ts=numopts$ts,cs=numopts$cs,polytime=polytime,splinetime=splinetime,intercs=intercs,noms=numopts$noms,priors=priors,bounds=bounds, lags=numopts$lags, leads=numopts$leads)
+  d.subset<-amsubset(d.trans$x,idvars=numopts$idvars,p2s=p2s,ts=numopts$ts,cs=numopts$cs,polytime=polytime,splinetime=splinetime,intercs=intercs,noms=numopts$noms,priors=priors,bounds=bounds,
+  lags=numopts$lags, leads=numopts$leads, overimp=overimp)
   d.scaled<-scalecenter(d.subset$x,priors=d.subset$priors,bounds=d.subset$bounds)
   d.stacked<-amstack(d.scaled$x,colorder=TRUE,priors=d.scaled$priors,bounds=d.scaled$bounds)
 
@@ -806,6 +818,9 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     autopri      = autopri,
     bounds       = d.stacked$bounds,
     theta.names  = d.subset$theta.names,
+    missMatrix = d.subset$missMatrix,
+    overvalues = d.subset$overvalues,
     empri        = empri,    #change 3a 
     tolerance    = tolerance))  #change 3b
+    
 }
