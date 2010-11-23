@@ -21,7 +21,8 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                         tolerance=0.0001,polytime=NULL,splinetime=NULL,startvals=0,lags=NULL,
                         leads=NULL,intercs=FALSE,archive=TRUE,sqrts=NULL,
                         lgstc=NULL,noms=NULL,incheck=TRUE,ords=NULL,collect=FALSE,
-                        arglist=NULL, priors=NULL,bounds=NULL, max.resample=1000) {
+                        arglist=NULL, priors=NULL,bounds=NULL,
+                        max.resample=1000, overimp = NULL) {
 
   #Checks for errors in list variables
   listcheck<-function(vars,optname) {
@@ -858,6 +859,28 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       error.mess<-paste("The max.resample argument needs to be a positive integer.")
       return(list(code=error.code,mess=error.mess))
     }      
+  }
+
+  if (!is.null(overimp)) {
+    o.num  <- is.numeric(overimp)
+    o.size <- (is.matrix(overimp) & ncol(overimp) == 2) | length(overimp) == 2
+    o.cols <- all(unique(overimp[,2]) %in% 1:ncol(x))
+    o.rows <- all(unique(overimp[,1]) %in% 1:nrow(x))
+
+    ## Error 53:
+    ## overimp not numeric
+    if (!o.num | !o.size) {
+      error.code <- 53
+      error.mess <- "The overimp matrix needs to be a two-column numeric matrix."
+    }
+
+    ## Error 54:
+    ## overimp out of range
+    if (!o.rows | ! o.cols) {
+      error.code <- 54
+      error.code <- "A row/column pair in overimp is outside the range of the data."
+    }
+    
   }
 
   if (is.data.frame(x)) {

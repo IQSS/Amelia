@@ -718,7 +718,8 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                        =numopts$lgstc, p2s = p2s, frontend = frontend,
                        intercs = intercs, noms = numopts$noms,
                        startvals = startvals, ords = numopts$ords, collect =
-                       collect,  bounds=bounds, max.resample=max.resample)
+                       collect,  bounds=bounds,
+                       max.resample=max.resample, overimp = overimp)
     #check.call <- match.call()
     #check.call[[1]] <- as.name("amcheck")
     #checklist <- eval(check.call, parent.frame())
