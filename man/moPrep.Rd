@@ -11,7 +11,7 @@
 }
 \usage{
 moPrep(x, formula, subset, error.proportion,
-gold.standard=!missing(subset))
+       gold.standard = !missing(subset))
 
 
 }
