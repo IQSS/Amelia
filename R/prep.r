@@ -221,7 +221,7 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
   if (is.data.frame(x))
     x <- frame.to.matrix(x,idvars)
 
-  
+  overvalues <- NULL
   ## Set overimp cells to missing
   if (!is.null(overimp)) {
     whole.vars <- overimp[overimp[,1] == 0, 2]
