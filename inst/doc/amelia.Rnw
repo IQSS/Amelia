@@ -1,7 +1,7 @@
 \documentclass[12pt,letterpaper]{article}
-%\usepackage{/usr/lib64/R/share/texmf/Rd}
-%\usepackage{/usr/lib64/R/share/texmf/Sweave}
-%\usepackage{/usr/lib64/R/share/texmf/upquote}
+\usepackage{Rd}
+\usepackage{Sweave}
+\usepackage{upquote}
 
 
 % === for bad lm output === 
@@ -9,9 +9,9 @@
 %% so i took out the signficance stars
 %\usepackage[utf8]{inputenc}
 
-\usepackage{Rd/Rd}
-\usepackage{Rd/Sweave}
-\usepackage{Rd/upquote}
+%\usepackage{Rd/Rd}
+%\usepackage{Rd/Sweave}
+%\usepackage{Rd/upquote}
 
 \SweaveOpts{width=70}
 
@@ -1778,153 +1778,213 @@ Desktop icon for \AmeliaView. Simply double-click this icon and the
 \AmeliaView\ window should appear. If, for some reason, this approach does
 not work, simply open an \R\ session and use the approach above.
 
-\subsection{Step 1 - Input}
+\subsection{Loading a data set into \AmeliaView }
 \label{sec:step1}
 \begin{figure}[ht]
   \centering 
-    \includegraphics[scale=1]{step1.pdf}
-  \caption{Detail for step 1 on the front page of \AmeliaView.}
+    \includegraphics[scale=1]{splash.png}
+  \caption{\AmeliaView welcome screen.}
+  \label{f:splash}
 \end{figure}
-\begin{enumerate}
-\item \textbf{Input Data Format} - Choose the format for your dataset.
-  The format you pick will be the default format that is shown when
-  you open the ``Browse'' dialog.  Currently,\Amelia\ 
-  supports five different file formats: Comma-Separated Values (.CSV),
-  Tab-Delimited Text (.TXT), Stata v.5-10 (.DTA), SPSS (.DAT), and SAS
-  Transport (.XPORT). Note that when using a CSV file, Amelia assumes that
-  your file has a header (that is, a row at the top of the data indicating
-  the variable names). 
-\item \textbf{Input Data File} - Enter the location of your dataset.
-  If your file is located in a high level directory, it might be
-  you are trying to access for more information.
-\item \textbf{Browse} - Find files on the system. 
-\item \textbf{Load Data} - Loads the data in the ``Input Data File''
-  line. Once the file is loaded, you can reload a different file, but you
-  will lose any work on currently loaded file.
-\item \textbf{Summarize Data} - View plots and summary statistics for
-  the individual variables.  This button will bring up a dialog box
-  with a list of variables.  Clicking on each variable will display
-  the summary statistics on the right.  Below these statistics, there
-  is a ``Plot Variable'' button, which will show a histogram of the
-  variable.  For data that are string or character based, \AmeliaView\
-  will not show summary statistics or plot histograms.
-\end{enumerate}
+
+\AmeliaView\ load with a welcome screen (Figure \ref{f:splash}) that
+has buttons which can load a data in many of the common formats. Each
+of these will bring up a window for choosing your dataset. Note that
+these buttons are only a subset of the possible ways to load data in
+\AmeliaView. Under the \underline{F}ile menu (shown in Figure
+\ref{f:file}), you will find more options, including the datasets
+included in the package (\code{africa} and \code{freetrade}). You will
+also find import commands for Comma-Separated Values (.CSV),
+Tab-Delimited Text (.TXT), Stata v.5-10 (.DTA), SPSS (.DAT), and SAS
+Transport (.XPORT). Note that when using a CSV file, Amelia assumes
+that your file has a header (that is, a row at the top of the data
+indicating the variable names).
+
+\begin{figure}[ht]
+  \centering 
+    \includegraphics[scale=1]{import.png}
+  \caption{\AmeliaView File and import menu.}
+  \label{f:file}
+\end{figure}
 
 
-\subsection{Step 2 - Options}
+You can also load data from an RData file. If the RData file contains
+more than one \code{data.frame}, a pop-up window will ask to you find
+the dataset you would like to load. In the file menu, you can also
+change the underlying working directory. This is where \AmeliaView\
+will look for data by default and where it will save imputed
+datasets. 
+
+\subsection{Variable dashboard}
 
 \label{sec:step2}
 \begin{figure}[ht]
   \centering
-    \includegraphics[scale=1]{step2.pdf}
-  \caption{Detail for step 2 on the front page of \AmeliaView.}
+    \includegraphics[scale=1]{main.png}
+  \caption{Main variable dashboard in \AmeliaView.}
+  \label{f:main}
 \end{figure}
-\begin{enumerate}
-\item \textbf{Time Series Variable} - Choose the variable that indexes
-  time in the dataset.  If there is no time series component in your
-  data, set it to ``(none).''  You must set this option in order to
-  access the Time Series Cross Sectional options dialog.
-\item \textbf{Cross Sectional Variable} - Choose the variable that
-  indexes the cross-section.  You must set this in order to access the
-  ``Set Case Priors'' in the ``Priors'' dialog.
-\item \textbf{Variables} - Becomes available after you load the data.
-  See \ref{sec:vardiag} for more information.
-\item \textbf{TSCS} - Becomes available after you set the Time Series
-  variable.  See \ref{sec:tscsdiag} for more information.
-\item \textbf{Priors} - Becomes available after you load the data.
-  See \ref{sec:pridiag} for more information.
-\end{enumerate}
 
-\subsubsection{Variables Dialog}
-\label{sec:vardiag}
-\begin{figure}[ht]
-  \centering 
-    \includegraphics[scale=1]{varopts.pdf}
-  \caption{Detail for Variable Options dialog.}
-\end{figure}
-\begin{enumerate}
-\item \textbf{Variable Transformations} - Choose the transformation
-  that best tailors the variable to the multivariate normal, if appropriate.  See \ref{sec:trans} on Transformations to see how each transformation is
-  useful.  You can also choose whether or not the variable is an identification (ID) variable.  If so, it will be left out of the imputation model, but
-  will remain in the imputed datasets.  This is useful for variables that have
-  no explanatory power like extra case identifiers.
-\item \textbf{Tolerance} - Adjust the level of tolerance that \Amelia\ 
-  uses to check convergence of the EM algorithm.  In very large datasets, if your imputation chains run a long time without converging, increasing the tolerance will allow a lower threshold to judge convergence and end chains after fewer iterations. 
-\end{enumerate}
+Once a dataset is loaded, \AmeliaView\ will show the variable
+dashboard (Figure \ref{f:main}). In this mode, you will see a table of
+variables, with the current options for each of them shown, along with
+a few summary statistics. You can reorder this table by any of these
+columns by clicking on the column headings. This might be helpful to,
+say, order the variables by mean or amount of missingness.
 
-
-\subsubsection{Time Series Cross Sectional Dialog}
-\label{sec:tscsdiag}
-\begin{figure}[ht]
-  \centering 
-    \includegraphics[scale=1]{tscs.pdf}
-  \caption{Detail for Time-Series-Cross-Section Options dialog.}
-\end{figure}
-\begin{enumerate}
-\item \textbf{Polynomials of Time} - This option, if activated, will
-  have \Amelia\ use trends of time as a additional
-  condition for fitting the missing data.  The higher the level of
-  polynomial will allow more variation in the trend structure, yet it
-  will take more degrees of freedom to estimate.
-\item \textbf{Interact with Cross-Section} - Interacting this with the
-  cross section is way of allowing the trend of time to vary across
-  cases as well.  Using a 0 level polynomial and interacting with the
-  cross section is the equivalent of using a fixed effects.  For more
-  information see \ref{sec:tscs} above.
-\item \textbf{Variable Listbox} - Choose the variables whose lag or lead you
-  would like to include in the imputation model. 
-\item \textbf{Lag Settings} - Choose to include lags and leads in the
-  data set to handle the effects of time.  See \ref{sec:lags} above.
-\end{enumerate}
-
-\subsubsection{Priors Dialog}
-\label{sec:pridiag}
+\label{sec:step2}
 \begin{figure}[ht]
   \centering
-   \includegraphics[scale=1]{priors.pdf}
-  \caption{Detail for Priors Options dialog.}
+    \includegraphics[scale=1]{context-menu.png}
+  \caption{Variable options via right-click menu on the variable dashboard.}
+  \label{f:context}
+\end{figure}
+
+You can set options for individual variables by the right-click
+context menu (Figure \ref{f:context}) or through the
+\underline{V}ariables menu. For instance, clicking ``Set as
+Time-Series Variable'' will set the currently selected variable in the
+dashboard as the time-series variable. Certain options are disabled
+until other options are enabled. For instance, you cannot add a lagged
+variable to the imputation until you have set the time-series
+variable. Note that any \code{factor} in the data is marked as a ID
+variable by default. 
+
+\begin{enumerate}
+\item \textbf{Set as Time-Series Variable} - Sets the currently
+  selected variable to the time-series variable. Disabled when more
+  than one variable is selected. Once this is set, you can add lags
+  and leads and add splines of time.
+\item \textbf{Set as Cross-Section Variable} - Sets the currently
+  selected variable to the cross-section variable. Disabled when more
+  than one variable is selected. Once this is set, you can interact
+  the splines of time with the cross-section. 
+\item \textbf{Unset as Time-Series Variable} - Removes the time-series
+  status of the variable. This will remove any lags, leads, or splines
+  of time. 
+\item \textbf{Unset as Cross-Section Variable} - Removes the cross-section
+  status of the variable. This will remove any intersection of the
+  splines of time and the cross-section. 
+\item \textbf{Add Lag/Lead} - Adds versions of the
+  selected variables either lagged back (``lag'') or
+  forward(``lead''). See \ref{sec:lags} above.
+\item \textbf{Remove Lag/Lead} - Removes any lags or leads on
+  the selected variables. 
+\item \textbf{Plot Histogram of Selected} - Plots a histogram of the
+  selected variables. This command will attempt to put all of the
+  histograms on one page, but if more than nine histograms are
+  requested, they will appear on multiple pages. 
+\item \textbf{Add Transformation...} - Adds a transformation setting
+  for the selected variables. Note that each variable can only have
+  one transformation and the time-series and cross-section variables
+  cannot be transformed. 
+\item \textbf{Remove Transformation} - Removes any transformation for
+  the selected variables. 
+\item \textbf{Add or Edit Bounds} - Opens a dialog box to set logical
+  bounds for the selected variable. 
+\end{enumerate}
+
+
+\subsection{\Amelia\ Options}
+\label{sec:optsmenu}
+\begin{figure}[ht]
+  \centering 
+    \includegraphics[scale=1]{options.png}
+  \caption{Options menu.}
+  \label{f:opts}
+\end{figure}
+The Variable menu and the variable dashboard are the place to set
+variable-level options, but global options are set in the
+\underline{O}ptions menu. 
+\begin{enumerate}
+  
+\item \textbf{Splines of Time with...} - This option, if activated, will have
+  \Amelia\ use flexible trends of time with the specified number of
+  knots in the imputation. The higher the number of knots the greater
+  the variation in the trend structure, yet it will take more degrees
+  of freedom to estimate. For more information see \ref{sec:tscs}
+  above.
+\item \textbf{Interact with Cross-Section?} - Include and interaction
+  of the cross-section with the time trends. This interaction is way
+  of allowing the trend of time to vary across cases as well.  Using a
+  0-level spline of time and interacting with the cross section is the
+  equivalent of using a fixed effects.  For more information see
+  \ref{sec:tscs} above.
+\item \textbf{Add Observational Priors...} - Brings a dialog window to
+  set prior beliefs about ranges for individual missing observations.
+  For more information about observational priors, see
+  \ref{sec:obspri}.
+\item \textbf{Numerical Options} - Brings a dialog window to set the
+  tolerance of the EM algorithm, the seed of the random number
+  generator, the ridge prior for numerical stability, and the maximum
+  number of redraws for the logical bounds. 
+\item \textbf{Draw Missingness Map} - Draws a missingness map. See
+  \ref{sec:missmaps} for more details on missingness maps. 
+\item \textbf{Output File Options} - Bring a dialog to set the stub of
+  the prefix of the imputed data files and the number of
+  imputations. If you set the prefix to ``mydata'', your output files
+  will be \texttt{mydata1.csv, mydata2.csv...} etc.
+\item \textbf{Output File Type} - Sets the format of imputed data.
+  If you would like to not save any output data sets (if you wanted,
+  for instance, to simply look at diagnostics), set this option to
+  ``(no save).''  Currently, you can save the output data as: Comma
+  Separated Values (.CSV), Tab Delimited Text (.TXT), Stata (.DTA), R save
+  object (.RData), or to hold it in \R\ memory. This last option will only
+  work if you have called \AmeliaView\ from an \R\ session and want to
+  return to the \R\ command line to work with the output. Its name in
+  R workspace will be the file prefix. 
+
+\end{enumerate}
+
+
+\subsubsection{Numerical Options}
+\label{sec:numopts}
+\begin{figure}[h]
+  \centering 
+    \includegraphics[scale=1]{numopts.png}
+  \caption{Options menu.}
+  \label{f:numopts}
 \end{figure}
 \begin{enumerate}
+  
+\item \textbf{Seed} - Sets the seed for the random number generator
+  used by \Amelia. Useful if you need to have the same output twice.
+  
+\item \textbf{Tolerance} - Adjust the level of tolerance that \Amelia\
+  uses to check convergence of the EM algorithm.  In very large
+  datasets, if your imputation chains run a long time without
+  converging, increasing the tolerance will allow a lower threshold to
+  judge convergence and end chains after fewer iterations.
+  
 \item \textbf{Empirical Prior} - A prior that adds observations to
   your data in order to shrink the covariances.  A useful place to
   start is around 0.5\% of the total number of observations in the
   dataset (see \ref{sec:prior}).
-\item \textbf{Set Observational Priors} - Set prior beliefs about 
- ranges for individual missing observations.  For more information 
- about observational priors, see \ref{sec:obspri}.
+  
+\item \textbf{Maximum Resample for Bounds} - Amelia fits logical bounds by
+  rejecting any draws that do not fall within the bounds. This value
+  sets the number of times Amelia should attempt to resample to fit
+  the bounds before setting the imputation to the bound.
 \end{enumerate}
 
-
-\subsubsection{Observational Priors}\label{sec:refobspri}
-\begin{figure}[h]
-  \centering
-    \includegraphics[scale=1]{obsprior.pdf}
-  \caption{Detail for Observational Priors dialog}
-\end{figure}
-\begin{enumerate}
-\item \textbf{Current Priors} - A list of current priors in distributional
-  form, with the variable and case name.  
-\item \textbf{Add Distributional Prior} - Add a prior belief about an
-  observation or an entire variable with a mean and standard deviation about the
-  missing values.  
-\item \textbf{Add Range Prior} - Add a prior belief about an observation or an
-  entire variable with a range and a confidence level.  
-\item \textbf{Remove Selected Priors} - This will remove any of the current
-  priors selected with the check box.  
-\end{enumerate}
 
 \subsubsection{Add Distribution Prior}\label{sec:refdistpri}
 \begin{figure}[h]
   \centering
-    \includegraphics[width=3.39in, height=2.31in]{distpri.pdf}
+    \includegraphics{distpri.png}
   \caption{Detail for Add Distributional Prior dialog}
 \end{figure}
 \begin{enumerate}
-\item \textbf{Case} - Select the case name or number you wish to set the prior
-  about.  You can also choose to make the prior for the entire variable.  The
-  case names are generated from the row name of the observation, the value of the
-  cross-section variable of the observation and the value of the time series
-  variable of the observation.  
+\item \textbf{Current Priors} - A table of current priors in distributional
+  form, with the variable and case name. You can remove priors by
+  selecting them and using the right-click context menu.
+\item \textbf{Case} - Select the case name or number you wish to set
+  the prior about.  You can also choose to make the prior for the
+  entire variable, which will set the prior for any missing cell in
+  that variable.  The case names are generated from the row name of
+  the observation, the value of the cross-section variable of the
+  observation and the value of the time series variable of the
+  observation.
 \item \textbf{Variable} - The variable associated with the prior you would like
   specify.  The list provided only shows the missing variables for the currently
   selected observation.  
@@ -1938,15 +1998,17 @@ not work, simply open an \R\ session and use the approach above.
 \subsubsection{Add Range Prior}\label{sec:refrangepri}
 \begin{figure}[h]
   \centering 
-    \includegraphics[height = 2.69in,width=2.86in]{rangepri.pdf}
-  \caption{Detail for Add Range Prior dialog}
+    \includegraphics{rangepri.png}
+  \caption{Detail for Add Range Prior dialog.}
 \end{figure}
 \begin{enumerate}
-\item \textbf{Case} - Select the case name or number you wish to set the prior
-  about.  You can also choose to make the prior for the entire variable.  The
-  case names are generated from the row name of the observation, the value of the
-  cross-section variable of the observation and the value of the time series
-  variable of the observation.  
+\item \textbf{Case} - Select the case name or number you wish to set
+  the prior about. You can also choose to make the prior for the
+  entire variable, which will set the prior for any missing cell in
+  that variable.  The case names are generated from the row name of
+  the observation, the value of the cross-section variable of the
+  observation and the value of the time series variable of the
+  observation.
 \item \textbf{Variable} - The variable associated with the prior you would like
   specify.  The list provided only shows the missing variables for the currently
   selected observation.  
@@ -1962,54 +2024,46 @@ not work, simply open an \R\ session and use the approach above.
 \end{enumerate}
 
 
-\subsection{Step 3 - Output}
+\subsection{Imputing and checking diagnostics}
 \label{sec:step3}
 
 
 \begin{figure}[ht]
   \centering 
-    \includegraphics[scale=1]{step3.pdf}
-  \caption{Detail for step 3 on the front page of AmeliaView.}
+    \includegraphics[scale=1]{output-log.png}
+  \caption{Output log showing \Amelia\ output for a successful imputation.}
 \end{figure}
-\begin{enumerate}
-\item \textbf{Output Data Format} - Choose the format of output data.
-  If you would like to not save any output data sets (if you wanted,
-  for instance, to simply look at diagnostics), set this option to
-  ``(no save).''  Currently, you can save the output data as: Comma
-  Separated Values (.CSV), Tab Delimited Text (.TXT), Stata (.DTA), R save
-  object (.RData), or to hold it in \R\ memory. This last option will only
-  work if you have called \AmeliaView\ from an \R\ session and want to
-  return to the \R\ command line to work with the output. It will have the
-  name in memory from ``Name of Imputed Datasets''.
-\item \textbf{Name of Imputed Datasets} - Enter the prefix for the
-  output data files.  If you set this to ``mydata'', your output files
-  will be \texttt{mydata1.csv, mydata2.csv...} etc.  Try to keep this
-  name short as some operating systems have a difficult time reading
-  long filenames.
-\item \textbf{Number of Imputed Datasets} - Set the number of
-  imputations you would like.  In most cases, 5 will be enough to make
-  accurate predictions about the means and variances.  
-\item \textbf{Seed} - Sets the seed for the random number generator used
-  by \Amelia. Useful if you need to have the same output twice. 
-\item \textbf{Run Amelia} - Runs the \Amelia\ procedure on
-  the input data.  A dialog will open marking the progress of
-  \Amelia.  Once it is finished, it will tell you that
-  you can close the dialog.  If an error message appears, follow its
-  instructions; this usually involves closing the dialog, resetting
-  the options, and running the procedure again.
-\item \textbf{Diagnostics} - Post-imputation diagnostics.  The only
-  currently available graph compares the densities of the observed
-  data to the mean imputation across the $m$ imputed datasets.
-\end{enumerate}
+Once you have set all the relevant options, you can impute your data
+by clicking the ``Impute!'' button in the toolbar. In the bottom right
+corner of the window, you will see a progress bar that indicates the
+progress of the imputations. For large datasets this could take some
+time. Once the imputations are complete, you should see a ``Successful
+Imputation!'' message appear where the progress bar was. You can click
+on this message to open the folder containing the imputed datasets. 
+
+If there was an error during the imputation, the output log will
+pop-up and give you the error message along with some information
+about how to fix the problem. Once you have fixed the problem, simply
+click ``Impute!'' again. Even if there was no error, you may want to
+view the output log to see how \Amelia\ ran. To do so, simply click
+the ``Show Output Log'' button. The log also shows the call to the
+\code{amelia} function in \R. You can use this code snippet to run the
+same imputation from the \R\ command line.\footnote{You will have to
+  replace the \code{x} argument in the \code{amelia} call to the name
+  of you dataset in the \R\ session. }
 
 
 \subsubsection{Diagnostics Dialog}
 \label{sec:diagdiag}
 \begin{figure}[ht]
   \centering
-    \includegraphics[scale=1]{diag.pdf}
+    \includegraphics[scale=1]{diag.png}
   \caption{Detail for Diagnostics dialog.}
 \end{figure}
+
+Upon the successful completion of an imputation, the diagnostics menu
+will become available. Here you can use all of the diagnostics
+available at the command-line. 
 \begin{enumerate}
 \item \textbf{Compare Plots} - This will display the relative
   densities of the observed (red) and imputed (black) data.  The
@@ -2034,6 +2088,20 @@ not work, simply open an \R\ session and use the approach above.
   visually inspect the convergence of the \Amelia\ algorithm from
   multiple start values that are drawn randomly.
 \end{enumerate}
+
+\subsection{Sessions}
+\label{sec:sessions}
+
+It is often useful to save a session of \AmeliaView\ to save time if
+you have impute the same data again. Using the \textbf{Save Session}
+button will do just that, saving all of the current settings
+(including the original and any imputed data) to an RData file. You
+can then reload your session, on the same computer or any other,
+simply by clicking the \textbf{Load Session} button and finding the
+relevant RData file. All of the settings will be restored, including
+any completed imputations. Thus, if you save the session after
+imputing, you can always load up those imputations and view their
+diagnostics using the sessions feature of \AmeliaView. 
 
 \clearpage
 
