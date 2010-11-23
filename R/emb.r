@@ -969,7 +969,6 @@ amelia.molist <- function(x, ...) {
   m$x <- x$data
   m$priors <- x$priors
   m$overimp <- x$overimp
-  ret <- amelia.default(x = x$data, priors = x$priors, overimp = x$overimp)
   m[[1]] <- as.name("amelia.default")
   ret <- eval(m)
 #  ret <- eval(m, sys.frame(sys.parent()))
