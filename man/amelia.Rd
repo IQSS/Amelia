@@ -2,6 +2,7 @@
 \alias{amelia}
 \alias{amelia.amelia}
 \alias{amelia.default}
+\alias{amelia.molist}
 
 \title{AMELIA: Multiple Imputation of Incomplete Multivariate Data}
 \description{

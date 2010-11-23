@@ -9,7 +9,7 @@
 \usage{
 tscsPlot(output, var, cs, draws = 100, conf = .90,
          misscol = "red", obscol = "black", xlab, ylab, main,
-         pch, ylim, xlim, ...)}
+         pch, ylim, xlim, frontend = FALSE, ...)}
 
 
 \arguments{
@@ -24,6 +24,7 @@ tscsPlot(output, var, cs, draws = 100, conf = .90,
     intervals.}
   \item{obscol}{the color of the points for observed units.}
   \item{xlab,ylab,main,pch,ylim,xlim}{various graphical parameters.}
+  \item{frontend}{a logical value for use with the \code{AmeliaView} GUI.}
   \item{\dots}{further graphical parameters for the plot.}
     
 }

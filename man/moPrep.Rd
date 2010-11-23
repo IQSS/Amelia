@@ -27,8 +27,9 @@ moPrep(x, formula, subset, error.proportion,
     which possess measurement error.}
   \item{error.proportion}{an optional vector specifying the fraction of
     the observed variance that is due to measurement error.}
-  \item{gold.standard}{an optional vector specifying a subset of
-    observations which possess no measurement error.}
+  \item{gold.standard}{a logical value indicating if values with no
+    measurement error should be used to estimate the measurement error
+    variance.}
 }
 \value{
   An instance of the S3 class "molist" with the following objects:
@@ -45,6 +46,23 @@ moPrep(x, formula, subset, error.proportion,
   multiple calls to \code{moPrep}, not just the most recent. 
 }
 \details{
+  This function generates priors for multiple overimputation of data
+  measured with error. With the \code{formula} arugment, you can specify
+  which variable has the error, what the mean of the latent data is, and
+  if there are any other proxy measures of the mismeasured variable. The
+  general syntax for the formula is: \code{errvar ~ mean | proxy},
+  where \code{errvar} is the mismeasured variable, \code{mean} is a
+  formula for the mean of the latent variable (usually just
+  \code{errvar} itself), and \code{proxy} is a another mismeasurement of
+  the same latent variable. The proxies are used to estimate the
+  variance of the measurement error. 
+
+  \code{subset} and \code{gold.standard} refer to the the rows of the
+  data which are and are not measured with error. Gold-standard rows are
+  used to estimate the variance of the
+  measurement. error. \code{error.proportion} is used to estimate the
+  variance of the measurement error by estimating the variance of the
+  mismeasurement and taking the proportion assumed to be due to error. 
 }
 \references{
 Matthew Blackwell, James Honaker, and Gary King, "Multiple
