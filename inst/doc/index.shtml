@@ -95,7 +95,8 @@ Joseph, Gary King, Kenneth Scheve, and Naunihal Singh.
 
     <li>To use a development version of Amelia, enter the follow
       command at the R prompt:
-      install.packages("Amelia", repos="http://r.iq.harvard.edu")</li>
+      install.packages("Amelia", repos="http://r.iq.harvard.edu", type
+      = "source")</li>
 	
     <li>To automatically combine multiply imputed data sets: in R see <a
 	href="http://gking.harvard.edu/zelig">Zelig</a>; In Stata see <a
