@@ -7,7 +7,8 @@ export(amelia,
        overimpute,
        disperse,
        tscsPlot,
-       missmap)
+       missmap,
+       moPrep)
 
 
 S3method(print, amelia)
@@ -15,3 +16,6 @@ S3method(plot, amelia)
 S3method(summary, amelia)
 S3method(amelia, amelia)
 S3method(amelia, default)
+S3method(amelia, molist)
+S3method(moPrep, molist)
+S3method(moPrep, default)
