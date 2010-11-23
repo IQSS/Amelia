@@ -4,7 +4,7 @@
 
 
 
-moPrep <- function(x,...) {
+moPrep <- function(x, formula, subset, error.proportion, gold.standard=!missing(subset)) {
   UseMethod("moPrep",x)
 }
 
