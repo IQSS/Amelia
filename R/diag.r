@@ -579,10 +579,8 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
   if (!("amelia" %in% class(output)))
     stop("the 'output' is not Amelia output")
 
-  ## The original data is the imputed data with the
-  ## imputations marked to NA. These two lines do that
   data <- getOriginalData(output)
-  
+
   # Allow character names as arguments for "var" with data.frames
 
   if(is.character(var)){
@@ -665,7 +663,13 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
   plot(x = time, y = means, col = cols, pch = pch,ylim = ylim, xlim = xlim,
        ylab = ylab, xlab = xlab, main = main, ...)
   segments(x0 = time, x1 = time, y0 = lowers, y1 = uppers, col = cols, ...)
-  
+
+  oiDetect <- (sum(output$missMatrix[unit.rows,var]) +
+               sum(!is.na(data[unit.rows, var]))) > length(unit.rows)
+  if (oiDetect) {
+    points(x = time, y = data[unit.rows, var], pch = pch, col = obscol)
+  }
+    
   invisible(imps)
   
 }
