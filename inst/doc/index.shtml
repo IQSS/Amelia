@@ -72,7 +72,7 @@ purpose as the first version of Amelia (still available <a
 href="http://gking.harvard.edu/amelia/amelia1/index.shtml">here</a>) by James Honaker, Anne
 Joseph, Gary King, Kenneth Scheve, and Naunihal Singh.
   <ul>
-    <li><a href="http://gking.harvard.edu/amelia/docs/">Documentation</a>, 
+    <li><a href="http://gking.harvard.edu/amelia/docs/amelia.pdf">Documentation</a>, 
         <a href="http://gking.harvard.edu/amelia/amelia-changes">What's New?</a> </li>
 	
     <li><strong>All</strong> <span class="orange">questions, bugs, and
@@ -87,12 +87,15 @@ Joseph, Gary King, Kenneth Scheve, and Naunihal Singh.
 	know R): (1) <a href="http://www.r-project.org/">install the
 	current version of R</a> if you haven't already, (2)
 	download and run <a href="http://gking.harvard.edu/amelia/amelia-setup.exe">this
-	file</a>, and (3) use windows explorer to navigate to
-	c:/program files/AmeliaView and click on amelia.bat</li>
+	file</a>, and (3) click on the shortcut from the Desktop or
+	the Start Menu.</li>
 	
     <li>Installation of Amelia for R on any system: at the R command
-	line, type
-	install.packages("Amelia",repos="http://r.iq.harvard.edu")</li>
+	line, type install.packages("Amelia")  </li>
+
+    <li>To use a development version of Amelia, enter the follow
+      command at the R prompt:
+      install.packages("Amelia", repos="http://r.iq.harvard.edu")</li>
 	
     <li>To automatically combine multiply imputed data sets: in R see <a
 	href="http://gking.harvard.edu/zelig">Zelig</a>; In Stata see <a
