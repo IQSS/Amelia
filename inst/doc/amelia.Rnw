@@ -1782,8 +1782,8 @@ not work, simply open an \R\ session and use the approach above.
 \label{sec:step1}
 \begin{figure}[ht]
   \centering 
-    \includegraphics[scale=1]{splash.png}
-  \caption{\AmeliaView welcome screen.}
+    \includegraphics[width = 6in]{splash.png}
+  \caption{\AmeliaView\ welcome screen.}
   \label{f:splash}
 \end{figure}
 
@@ -1802,7 +1802,7 @@ indicating the variable names).
 
 \begin{figure}[ht]
   \centering 
-    \includegraphics[scale=1]{import.png}
+    \includegraphics[width = 3in]{import.png}
   \caption{\AmeliaView File and import menu.}
   \label{f:file}
 \end{figure}
@@ -1820,7 +1820,7 @@ datasets.
 \label{sec:step2}
 \begin{figure}[ht]
   \centering
-    \includegraphics[scale=1]{main.png}
+    \includegraphics[width=6in]{main.png}
   \caption{Main variable dashboard in \AmeliaView.}
   \label{f:main}
 \end{figure}
@@ -1835,7 +1835,7 @@ say, order the variables by mean or amount of missingness.
 \label{sec:step2}
 \begin{figure}[ht]
   \centering
-    \includegraphics[scale=1]{context-menu.png}
+    \includegraphics[width = 3in]{context-menu.png}
   \caption{Variable options via right-click menu on the variable dashboard.}
   \label{f:context}
 \end{figure}
@@ -1895,7 +1895,7 @@ variable name.
 \label{sec:optsmenu}
 \begin{figure}[ht]
   \centering 
-    \includegraphics[scale=1]{options.png}
+    \includegraphics[width = 3in]{options.png}
   \caption{Options menu.}
   \label{f:opts}
 \end{figure}
@@ -1947,7 +1947,7 @@ variable-level options, but global options are set in the
 \label{sec:numopts}
 \begin{figure}[h]
   \centering 
-    \includegraphics[scale=1]{numopts.png}
+    \includegraphics[width=2in]{numopts.png}
   \caption{Options menu.}
   \label{f:numopts}
 \end{figure}
@@ -1977,7 +1977,7 @@ variable-level options, but global options are set in the
 \subsubsection{Add Distribution Prior}\label{sec:refdistpri}
 \begin{figure}[h]
   \centering
-    \includegraphics{distpri.png}
+    \includegraphics[width = 5in]{distpri.png}
   \caption{Detail for Add Distributional Prior dialog}
 \end{figure}
 \begin{enumerate}
@@ -2004,7 +2004,7 @@ variable-level options, but global options are set in the
 \subsubsection{Add Range Prior}\label{sec:refrangepri}
 \begin{figure}[h]
   \centering 
-    \includegraphics{rangepri.png}
+    \includegraphics[width = 5in]{rangepri.png}
   \caption{Detail for Add Range Prior dialog.}
 \end{figure}
 \begin{enumerate}
@@ -2036,7 +2036,7 @@ variable-level options, but global options are set in the
 
 \begin{figure}[ht]
   \centering 
-    \includegraphics[scale=1]{output-log.png}
+    \includegraphics[width = 5in]{output-log.png}
   \caption{Output log showing \Amelia\ output for a successful imputation.}
 \end{figure}
 Once you have set all the relevant options, you can impute your data
@@ -2063,7 +2063,7 @@ same imputation from the \R\ command line.\footnote{You will have to
 \label{sec:diagdiag}
 \begin{figure}[ht]
   \centering
-    \includegraphics[scale=1]{diag.png}
+    \includegraphics[width = 3.5in]{diag.png}
   \caption{Detail for Diagnostics dialog.}
 \end{figure}
 
