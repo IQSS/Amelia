@@ -1848,17 +1848,23 @@ dashboard as the time-series variable. Certain options are disabled
 until other options are enabled. For instance, you cannot add a lagged
 variable to the imputation until you have set the time-series
 variable. Note that any \code{factor} in the data is marked as a ID
-variable by default. 
+variable by default, since a \code{factor} cannot be included in the
+imputation without being set as an ID variable, a nominal variable, or
+the cross-section variable. If there is a \code{factor} that fails to
+meet one of these conditions, a red flag will appear next to the
+variable name. 
 
 \begin{enumerate}
 \item \textbf{Set as Time-Series Variable} - Sets the currently
   selected variable to the time-series variable. Disabled when more
   than one variable is selected. Once this is set, you can add lags
-  and leads and add splines of time.
+  and leads and add splines of time. The time-series variable will
+  have a clock icon next to it. 
 \item \textbf{Set as Cross-Section Variable} - Sets the currently
   selected variable to the cross-section variable. Disabled when more
   than one variable is selected. Once this is set, you can interact
-  the splines of time with the cross-section. 
+  the splines of time with the cross-section. The cross-section
+  variable will have a person icon next to it. 
 \item \textbf{Unset as Time-Series Variable} - Removes the time-series
   status of the variable. This will remove any lags, leads, or splines
   of time. 
