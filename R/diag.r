@@ -223,13 +223,13 @@ overimpute <- function(output,var,legend=TRUE,xlab,ylab,main,frontend=FALSE,...)
       Ci[miss,miss]<-hold      
       imputations<-AMr1[i, , drop=FALSE] * ((x %*% theta[2:(AMp+1),2:(AMp+1) , drop=FALSE])
           + (matrix(1,1,1) %*% theta[1,2:(AMp+1) , drop=FALSE]) )
-#      for (j in 1:20) {             ## COULD REMOVE THIS LOOP 
-                                     ## (mb: I removed it for speed)
-#        junk<-matrix(rnorm(AMp), 1, AMp) %*% Ci
-#        xc<-x + imputations + junk
-#        conf<-c(conf,xc[,stacked.var])      
-#      }
-      junk <- matrix(rnorm(20*AMp), 20, AMp)
+     ## for (j in 1:20) {             ## COULD REMOVE THIS LOOP 
+     ##                                 ##(mb: I removed it for speed)
+     ##   junk<-matrix(rnorm(AMp), 1, AMp) %*% Ci
+     ##   xc<-x + imputations + junk
+     ##   conf<-c(conf,xc[,stacked.var])      
+     ## }
+      junk <- matrix(rnorm(20*AMp), 20, AMp) %*% Ci
       xc <- matrix(x,20,AMp,byrow=TRUE) +
             matrix(imputations, 20, AMp, byrow=TRUE) +
             junk
@@ -247,11 +247,11 @@ overimpute <- function(output,var,legend=TRUE,xlab,ylab,main,frontend=FALSE,...)
       scaled.conf <- untransform(as.matrix(scaled.conf),logs=NULL,xmin=NULL,sqrts=NULL,lgstc=1)
     
     #colors are based on rainbow roygbiv l->r is higher missingness  \
-    blue <- rgb(0,0,0.9, alpha = 0.75)
-    green <- rgb(0,0.9,0, alpha = 0.75)
+    blue <- rgb(0,0,1, alpha = 0.75)
+    green <- rgb(0,.75,0, alpha = 0.75)
     orange <- rgb(1, 0.65,0, alpha = 0.75)
     tomato <- rgb(1, 0.39, 0.28, alpha = 0.75)
-    red <- rgb(1, 0, 0, alpha = 0.75)
+    red <- rgb(0.75, 0, 0, alpha = 0.75)
     spectrum<-c(blue, green, orange, tomato, red)
 
     if (pcntmiss < .20)
@@ -393,6 +393,7 @@ disperse <- function(output, m = 5, dims = 1, p2s = 0, frontend=FALSE,...) {
   rotations<-prcomp(t(impdata))$rotation[,comps]
   reduced.imps<-t(rotations)%*%impdata
 
+  cols <- rainbow(m)
   # plot the imputations
   if (frontend)
     x11()
@@ -402,12 +403,12 @@ disperse <- function(output, m = 5, dims = 1, p2s = 0, frontend=FALSE,...) {
     y<-reduced.imps[1,1:iters[1]]
     patt<-seq(1,length(x)-1)
     plot(x,y,col=1,main="Overdispersed Start Values",xlab="Number of Iterations",ylab="Largest Principle Component",xlim=c(0,max(iters)),ylim=range(c(reduced.imps-addedroom,reduced.imps)),type="n")
-    segments(x[patt],y[patt],x[patt+1],y[patt+1],col=1)
+    segments(x[patt],y[patt],x[patt+1],y[patt+1],col=cols[1])
     for (i in 2:length(iters)) {      
       x<-seq(iters[i])
       y<-reduced.imps[1,(sum(iters[1:(i-1)])+1):(sum(iters[1:i]))]
       patt<-seq(1,length(x)-1)                          
-      segments(x[patt],y[patt],x[patt+1],y[patt+1],col=i)
+      segments(x[patt],y[patt],x[patt+1],y[patt+1],col=cols[i])
       #points(x,y,col=i)    
     }
     abline(h=reduced.imps[iters[1]],lwd=2)
@@ -415,7 +416,7 @@ disperse <- function(output, m = 5, dims = 1, p2s = 0, frontend=FALSE,...) {
    } else {
     xrange<-c((min(reduced.imps[1,])),(max(reduced.imps[1,])))
     yrange<-c((min(reduced.imps[2,])),(max(reduced.imps[2,])))
-    plot(reduced.imps[1,1:iters[1]],reduced.imps[2,1:iters[1]],type="n",main="Overdispersed Starting Values",xlab="First Principle Component",ylab="Second Principle Component",col=1,xlim=xrange,ylim=yrange)
+    plot(reduced.imps[1,1:iters[1]],reduced.imps[2,1:iters[1]],type="n",main="Overdispersed Starting Values",xlab="First Principle Component",ylab="Second Principle Component",col=cols[1],xlim=xrange,ylim=yrange)
     for (i in 2:length(iters)) {
       x<-reduced.imps[1,(sum(iters[1:(i-1)])+1):(sum(iters[1:i]))]
       y<-reduced.imps[2,(sum(iters[1:(i-1)])+1):(sum(iters[1:i]))]
@@ -427,9 +428,9 @@ disperse <- function(output, m = 5, dims = 1, p2s = 0, frontend=FALSE,...) {
         if (veclength[j] > xinch(1/500))
           patt<-c(patt,j)
       if (!is.null(patt))
-        arrows(x[patt],y[patt],x[patt+1],y[patt+1],length=.1,col=i)
+        arrows(x[patt],y[patt],x[patt+1],y[patt+1],length=.1,col=cols[i])
       patt<-seq(1,length(x)-1)
-      segments(x[patt],y[patt],x[patt+1],y[patt+1],col=i)    
+      segments(x[patt],y[patt],x[patt+1],y[patt+1],col=cols[i])    
     }
     x<-reduced.imps[1,1:iters[1]]
     y<-reduced.imps[2,1:iters[1]]
@@ -444,7 +445,7 @@ disperse <- function(output, m = 5, dims = 1, p2s = 0, frontend=FALSE,...) {
     #if (!is.null(patt))
     #  arrows(x[patt],y[patt],x[patt+1],y[patt+1],length=.15,col=1,lwd=5)
     patt<-seq(1,length(x)-1)                                   
-    segments(x[patt],y[patt],x[patt+1],y[patt+1],col=1,lwd=1)
+    segments(x[patt],y[patt],x[patt+1],y[patt+1],col=cols[1],lwd=1)
     dists<-gethull(st=impdata[,iters[1]],tol=prepped$tolerance,rots=rotations)
     convexhull<-chull(t(dists))
     convexhull<-c(convexhull,convexhull[1])
