@@ -1366,6 +1366,7 @@ it been missing.
 
 For example, we can run the overimputation diagnostic on our data by
 running
+
 <<overimp, include=FALSE>>=
 overimpute(a.out, var = "tariff")
 @ 
@@ -1403,14 +1404,27 @@ user to visually inspect the behavior of the imputation model. By checking
 how many of the confidence intervals cover the $y=x$ line, we can tell how
 often the imputation model can confidently predict the true value of the
 observation.
+<<overimp-bad, echo=FALSE, results = hide>>=
+dd <- Amelia:::rmvnorm(50, mu = c(0.5,0.5), vcv =
+                       matrix(c(0.25^2,.06, .06,0.25^2),2,2))
+ddmiss <- sample(1:50, replace = FALSE, size = 10)
+is.na(dd) <- ddmiss
+aa.out <- amelia(dd, m= 5)
+overimpute(aa.out, var = 2, main = "Observed versus Imputed Values")
+@ 
 
 \begin{figure}[htp!]
-  \centering \includegraphics[scale=.8]{overimp}
+  \begin{center}
+<<oi, echo=FALSE, results=hide, fig=TRUE, eps=FALSE, width = 7, height = 7>>=
+<<overimp-bad>>
+@
   \caption{Another example of the overimpute diagnostic graph. Note that
     the red lines are those observations that have fewer covariates
     observed and have a higher variance across the imputed values. }
   \label{f:oi}
+\end{center}
 \end{figure}
+
 Occasionally, the overimputation can display unintuitive results.  For
 example, different observations may have different numbers of observed
 covariates.  If covariates that are useful to the prediction are
@@ -1518,11 +1532,18 @@ will ever finish at another mode.
 A few of the iterations of this diagnostic can ending up in vastly
 different locations of the parameter space.  This can happen for a variety
 of reasons.  For instance, suppose that we created another dataset and
-accidently included a linear function of another variable in this dataset:
-
+accidentally included a linear function of another variable in this dataset:
+<<echo=FALSE, results=hide>>=
+set.seed(02138)
+@ 
 <<>>=
 freetrade2 <- freetrade
 freetrade2$tariff2 <- freetrade2$tariff*2+3
+@ 
+<<echo=FALSE, results=hide>>=
+## We add a little bit of noise here to avoid numeric problems
+freetrade2$tariff2 <- freetrade2$tariff*2+3 +
+  rnorm(nrow(freetrade), 0, 0.000001)
 @ 
 
 If we tried to impute this dataset, \Amelia\ could draw imputations without
@@ -1537,7 +1558,7 @@ But if we were to run \code{disperse}, we would end up with the
 problematic figure \ref{f:overbad}:
 
 <<dispbad, include=FALSE>>=
-disperse(a.out.bad, dims = 1, m = 5)
+disperse(a.out.bad, dims = 1, m = 10)
 @ 
 
 While this is a special case of a problematic likelihood, situations very
