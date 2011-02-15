@@ -17,8 +17,8 @@ Blackwell</a>
 <b>Version: 1.2-10</b>
 </div>
 
-<p style="float:left; width: 180; margin: 1.5em;"> <img
-src="gallery19.jpg" width="180" /> <br /><small>
+<p style="float:right; width: 300; margin: 1.5em;"> <img
+src="gallery19.jpg" width="300" /> <br /><small>
 Amelia is named after this famous missing person.</small></p>
 
 
@@ -86,11 +86,11 @@ Joseph, Gary King, Kenneth Scheve, and Naunihal Singh.
 	know R): <ol> <li><a href="http://www.r-project.org/">install the
 	current version of R</a> if you haven't already</li> <li>
 	download and run <a href="http://r.iq.harvard.edu/docs/amelia/amelia-setup.exe">this
-	file</a></li> <li>click on the shortcut from the Desktop or
+	file</a></li> <li>click on the "AmeliaView" shortcut from the Desktop or
 	the Start Menu.</li> </ol></li>
 	
     <li>Installation of Amelia for R on any system: at the R command
-	line, type: <ul><li><pre>install.packages("Amelia")</pre></li></ul>  </li>
+	line, type <ul><li><pre>install.packages("Amelia")</pre></li></ul>  </li>
 
     <li>To use a development version of Amelia, enter the follow
       command at the R prompt:
