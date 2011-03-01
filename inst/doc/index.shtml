@@ -11,10 +11,6 @@ Honaker</a>, <a href="http://gking.harvard.edu/">Gary King</a>, <a href="http://
 Blackwell</a>
 </h3>
 
-<p style="float:right; width: 300; margin: 1.5em;"> <img
-src="gallery19.jpg" width="300" /> <br /><small>
-Amelia is named after this famous missing person.</small></p>
-
 
 <p>Amelia II "multiply imputes" missing data in a single cross-section
   (such as a survey), from a time series (like variables collected for
@@ -33,7 +29,11 @@ Amelia is named after this famous missing person.</small></p>
   of missing cells in their data.  Amelia II also includes useful
   diagnostics of the fit of multiple imputation models.  The program
   works from the R command line or via a graphical user interface that
-  does not require users to know R.
+  does not require users to know R.</p>
+
+<p style="float:right; width: 300; margin: 1.5em;"> <img
+src="gallery19.jpg" width="300" /> <br /><small>
+Amelia is named after this famous missing person.</small></p>
 
  <p> Multiple imputation involves imputing <em>m</em> values for each
  missing cell in your data matrix and creating <em>m</em> "completed"
