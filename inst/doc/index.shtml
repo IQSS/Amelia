@@ -5,17 +5,12 @@
 
 <BODY><script language="Javascript">displayHeader("Amelia II: A Program for Missing Data")</script>
 
-<div>
+<h3>
 <a
 href="http://www.polisci.ucla.edu/menu/people/faculty/james_honaker.htm">James
 Honaker</a>, <a href="http://gking.harvard.edu/">Gary King</a>, <a href="http://people.fas.harvard.edu/~blackwel/">Matthew
 Blackwell</a>
-</div>
-<div>
-<br />
-<!-- rbuild: replace 'Version: ' '</b>' version -->
-<b>Version: 1.2-10</b>
-</div>
+</h3>
 
 <p style="float:right; width: 300; margin: 1.5em;"> <img
 src="gallery19.jpg" width="300" /> <br /><small>
@@ -26,6 +21,7 @@ Amelia is named after this famous missing person.</small></p>
   (such as a survey), from a time series (like variables collected for
   each year in a country), or from a time-series-cross-sectional data
   set (such as collected by years for each of several countries).
+  <!--break--> <!-- do not remove -->
   Amelia II implements our bootstrapping-based algorithm that gives
   essentially the same answers as the standard IP or EMis approaches,
   is usually considerably faster than existing approaches and can
