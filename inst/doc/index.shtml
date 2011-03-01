@@ -6,8 +6,7 @@
 <BODY><script language="Javascript">displayHeader("Amelia II: A Program for Missing Data")</script>
 
 <h3>
-<a
-href="http://www.polisci.ucla.edu/menu/people/faculty/james_honaker.htm">James
+<a href="http://tercer.bol.ucla.edu/">James
 Honaker</a>, <a href="http://gking.harvard.edu/">Gary King</a>, <a href="http://people.fas.harvard.edu/~blackwel/">Matthew
 Blackwell</a>
 </h3>
@@ -94,7 +93,7 @@ Joseph, Gary King, Kenneth Scheve, and Naunihal Singh.
 	
     <li>To automatically combine multiply imputed data sets: in R see <a
 	href="http://gking.harvard.edu/zelig">Zelig</a>; In Stata see <a
-	href="http://gking.harvard.edu/stats.shtml#clarify">Clarify</a> or Ken
+	href="http://gking.harvard.edu/clarify">Clarify</a> or Ken
 	Scheve's <a href="http://gking.harvard.edu/amelia/amelia1/docs/mi.zip">MI program</a>.</li>
 
     <li> Papers related to Amelia:
