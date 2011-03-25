@@ -1,3 +1,6 @@
+2011-03-25  Matthew Blackwell  <blackwel@fas.harvard.edu>
+	* R/ameliagui.r (*): fixed intercs not being set (bug #4).
+	
 2010-11-03  Matthew Blackwell  <blackwel@fas.harvard.edu>
 
 	* R/ameliagui.r (*): Major overhaul to main window. Most actions

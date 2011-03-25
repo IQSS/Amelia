@@ -413,6 +413,7 @@ load.session <- function() {
   if (!is.null(getAmelia("csvar"))) {
     tcl(getAmelia("main.tree"), "item", getAmelia("csvar"), image = userIcon)
     tkentryconfigure(getAmelia("main.menu.options"), 1, state="normal") 
+    tkentryconfigure(getAmelia("main.menu.options"), 1, variable = getAmelia("intercs"))
   }
 
   for (i in 1:nn) {
@@ -516,14 +517,14 @@ run.amelia <- function() {
   am.intercs  <- as.logical(as.numeric(tclvalue(getAmelia("intercs"))))
   sptime <- as.numeric(tclvalue(getAmelia("splinestime")))
   
- if (sptime == 0)
+  if (sptime == 0)
     if (am.intercs == FALSE)
-      sptime  <- NULL
- if (is.null(tsvar))
+      sptime <- NULL
+  if (is.null(ts))
     sptime <- NULL
-  if (is.null(csvar))
+  if (is.null(cs))
     am.intercs <- FALSE
-
+  
   id    <- getAmelia("varnames")[getAmelia("idvar")==1]
   ord   <- getAmelia("varnames")[getAmelia("ords")==1]
   nom   <- getAmelia("varnames")[getAmelia("noms")==1]
@@ -761,7 +762,8 @@ setCS <- function() {
   dropTrans()
   tcl(getAmelia("main.tree"), "item", csvartemp, image = getAmelia("userIcon"))
   putAmelia("csvar", csvartemp)
-  tkentryconfigure(getAmelia("main.menu.options"),1, state="normal")
+  tkentryconfigure(getAmelia("main.menu.options"),1,state="normal")
+  tkentryconfigure(getAmelia("main.menu.options"), 1, variable = getAmelia("intercs"))
 
 }
 
@@ -988,7 +990,9 @@ AmeliaView<-function() {
         state="disabled", underline = 0)
   tkadd(main.menu.options, "checkbutton", label =
         "Interact Spline With Cross-Section?", variable =
-        getAmelia("intercs"), state="disabled", underline = 0)
+        getAmelia("intercs"), onvalue=1,offvalue=0, state="disabled",
+        underline = 0)
+
   tkadd(main.menu.options,"separator")
   tkadd(main.menu.options,"command", label =
         "Add Observations Priors...", command = gui.pri.setup,

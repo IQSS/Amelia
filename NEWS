@@ -5,6 +5,10 @@
 //
 
 == 1.5-0 (23 Nov 2010) ==
+   * Fixed a bug in the new GUI where it didn't respect the "intercs" option.
+
+
+== 1.5-0 (23 Nov 2010) ==
    * Major changes to the AmeliaView GUI. 
 
 == 1.2-18 (4 Nov 2010) ==
