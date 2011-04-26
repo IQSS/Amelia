@@ -4,7 +4,10 @@
 //
 //
 
-== 1.5-0 (23 Nov 2010) ==
+== 1.5-2 (26 Apr 2011) ==
+   * Fixed a bug in the handling of priors.
+
+== 1.5-1 (23 Nov 2010) ==
    * Fixed a bug in the new GUI where it didn't respect the "intercs" option.
 
 
