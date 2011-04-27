@@ -1,6 +1,7 @@
 2011-04-26  Matthew Blackwell  <blackwel@fas.harvard.edu>
 	* R/embr.r (*): fixed problem with not updating imputations on observations without priors.
-
+	* R/embr.r (*): fixed problem with bounds and priors.
+	
 2011-03-25  Matthew Blackwell  <blackwel@fas.harvard.edu>
 	* R/ameliagui.r (*): fixed intercs not being set (bug #4).
 	

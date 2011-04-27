@@ -475,24 +475,26 @@ amelia.impute<-function(x,thetareal,priors=NULL,bounds=NULL,max.resample=NULL){
       solve.Sigma  <- am.inv(theta[c(FALSE,m[ss,]),
                                    c(FALSE,m[ss,]),drop=FALSE])
 
-      ## fill in xplay for non-prior rows
-      Ci<-matrix(0,AMp,AMp)
-      hold<-chol(theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])])
-      Ci[m[ss,],m[ss,]]<-hold
 
-      junk <- matrix(0,nrow(imputations),AMp)
+      ## we should only try to fill non-prior cases when they actually
+      ## exist in the patter of missingness
+      if (sum(nopri) > 0) {
+        Ci<-matrix(0,AMp,AMp)
+        hold<-chol(theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])])
+        Ci[m[ss,],m[ss,]]<-hold
 
-      if (!identical(bounds,NULL)) {
-        xplay[nopri,] <- am.resample(x.ss=x[nopri,,drop=FALSE], ci=Ci,
-                                     imps=imputations[nopri,],
-                                     m.ss=m[ss,], bounds=bounds,
-                                     max.resample=max.resample)
-      } else {
-        junk[nopri,] <- matrix(rnorm(sum(nopri)*AMp), sum(nopri), AMp) %*% Ci
-        xplay[(is:isp)[nopri],]<-x[(is:isp)[nopri],,drop=FALSE] +
-          imputations[nopri,,drop=FALSE] + junk[nopri,,drop=FALSE]
+        junk <- matrix(0,nrow(imputations),AMp)
+        if (!identical(bounds,NULL)) {
+          xplay[(is:isp)[nopri],] <- am.resample(x.ss=x[(is:isp)[nopri],,drop=FALSE], ci=Ci,
+                                                 imps=imputations[nopri,,drop=FALSE],
+                                                 m.ss=m[ss,], bounds=bounds,
+                                                 max.resample=max.resample)
+        } else {
+          junk[nopri,] <- matrix(rnorm(sum(nopri)*AMp), sum(nopri), AMp) %*% Ci
+          xplay[(is:isp)[nopri],]<-x[(is:isp)[nopri],,drop=FALSE] +
+            imputations[nopri,,drop=FALSE] + junk[nopri,,drop=FALSE]
+        }
       }
-
 
       if (length(priorsinpatt) == 0) next()
 
@@ -537,7 +539,7 @@ amelia.impute<-function(x,thetareal,priors=NULL,bounds=NULL,max.resample=NULL){
 
                                         # fork for the bounds resampler
         if (!identical(bounds,NULL)) {
-          xplay[or,] <- am.resample(x.ss=x[or,,drop=FALSE], ci=Ci, imps=imputations[rowInPatt,],
+          xplay[or,] <- am.resample(x.ss=x[or,,drop=FALSE], ci=Ci, imps=imputations[rowInPatt,,drop=FALSE],
                                     m.ss=m[ss,], bounds=bounds,
                                     max.resample=max.resample)
 
