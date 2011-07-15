@@ -475,7 +475,7 @@ amelia.impute<-function(x,thetareal,priors=NULL,bounds=NULL,max.resample=NULL){
       solve.Sigma  <- am.inv(theta[c(FALSE,m[ss,]),
                                    c(FALSE,m[ss,]),drop=FALSE])
 
-
+      junk <- matrix(0,nrow(imputations),AMp)
       ## we should only try to fill non-prior cases when they actually
       ## exist in the patter of missingness
       if (sum(nopri) > 0) {
@@ -483,7 +483,7 @@ amelia.impute<-function(x,thetareal,priors=NULL,bounds=NULL,max.resample=NULL){
         hold<-chol(theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])])
         Ci[m[ss,],m[ss,]]<-hold
 
-        junk <- matrix(0,nrow(imputations),AMp)
+        
         if (!identical(bounds,NULL)) {
           xplay[(is:isp)[nopri],] <- am.resample(x.ss=x[(is:isp)[nopri],,drop=FALSE], ci=Ci,
                                                  imps=imputations[nopri,,drop=FALSE],
@@ -497,7 +497,6 @@ amelia.impute<-function(x,thetareal,priors=NULL,bounds=NULL,max.resample=NULL){
       }
 
       if (length(priorsinpatt) == 0) next()
-
 
       for (jj in 1:length(priorsinpatt)){
         or <- (is:isp)[priorsinpatt[jj]]  ## original rows
@@ -1101,7 +1100,6 @@ your data for highly collinear variables.\n\n")
                                         #      impdata[[i]]<-NA
                                         #    }
 
-
     if (p2s) cat("\n")
     if (frontend) {
       tcl(getAmelia("runAmeliaProgress"), "step",(100/m -1))
@@ -1122,7 +1120,8 @@ your data for highly collinear variables.\n\n")
     putAmelia("output.log", c(getAmelia("output.log"),paste(impdata$message,"\n")))
   }
                                         #  if (archive)
-
+  
+  names(impdata$imputations) <- paste("imp", 1:m, sep = "")
   impdata$arguments <- prepped$archv
   class(impdata$arguments) <- c("ameliaArgs", "list")
 

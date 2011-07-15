@@ -381,14 +381,16 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
 
   AMr1<-is.na(x)
   flag<-rowSums(AMr1)==ncol(x)
+  
   if (max(flag)==1){
     blanks<-1:nrow(x)
     blanks<-blanks[flag]
     x<-x[!flag,]
-    if (!is.null(priors)) 
+    if (!is.null(priors)) {
+      priors <- priors[!(priors[,1] %in% blanks),]
       priors[,1] <- priors[,1,drop=FALSE] - colSums(sapply(priors[,1,drop=FALSE],">",blanks))
     
-    
+    }
   
 
     if (p2s) cat("Warning: There are observations in the data that are completely missing.","\n",
