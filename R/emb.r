@@ -96,7 +96,7 @@ bootx<-function(x,priors=NULL){
                                         # priors[,1]<-match(priors[,1],order)
                                         #priors <- priors[!is.na(priors[,1]),,drop=FALSE]
     }
-
+    
     flag<-any(colSums(is.na(xboot))==AMn & !((1:ncol(xboot)) %in% priors[,2]))
   }
   return(list(x=xboot,priors=priors))
@@ -377,7 +377,6 @@ amelia.impute<-function(x,thetareal,priors=NULL,bounds=NULL,max.resample=NULL){
 
 
   x[is.na(x)]<-0                      # Change x.NA to x.0s
-
   AM1stln<-sum(indx$m[1,])==0 & nrow(indx$m) > 1  # Create sundry simple indicators
   o<-indx$o
   m<-indx$m
@@ -443,6 +442,7 @@ amelia.impute<-function(x,thetareal,priors=NULL,bounds=NULL,max.resample=NULL){
       priorsinpatt <- which(is:isp %in% priors[,1])
 
       nopri <- !(is:isp %in% priors[,1])
+
 
       hasPrior <- priors[,1] %in% is:isp
       priorsForPatt <- priors[hasPrior, , drop = FALSE]
@@ -760,6 +760,7 @@ emfred<-function(x,thetareal,o,m,i,iii,AMr1,AMr2,AM1stln,returntype="theta",prio
                                         # Overwrite prior locations
 
 
+
         hmcv[m[ss,],m[ss,]] <- hmcv[m[ss,],m[ss,]] + sum(wvar)
         xplay[is:isp,]<-x[is:isp,] + imputations
         next()
@@ -778,7 +779,9 @@ emfred<-function(x,thetareal,o,m,i,iii,AMr1,AMr2,AM1stln,returntype="theta",prio
 
 
         ##      npr <- nrow(priorsForThisRow)
+
                                         # Calculate sd2
+
         ##      solve.Lambda <- matrix(0,sum(m[ss,]),sum(m[ss,]))
         ##      diag.Lambda <- rep(0, sum(m[ss,]))
 
