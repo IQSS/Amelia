@@ -397,7 +397,7 @@ amelia.impute<-function(x,thetareal,priors=NULL,bounds=NULL,max.resample=NULL){
     st<-2
   }
 
-  if (identical(priors,NULL)){                     # No Observation Level Priors in Dataset
+  if (identical(priors,NULL) | !identical(priors,NULL)){                     # No Observation Level Priors in Dataset
 
     for (ss in st:(length(i)-1)){
 
