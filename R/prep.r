@@ -400,7 +400,10 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
   }
   priors[,2] <- match(priors[,2], index)
   bounds[,1] <- match(bounds[,1], index)
-
+  
+  if (is.null(dim(x))) {
+    x <- matrix(x, ncol = 1)
+  }
 return(list(x=x,index=index,idvars=idvars,blanks=blanks,priors=priors,bounds=bounds,theta.names=theta.names,missMatrix=AMmiss,overvalues=overvalues))
 }
 
@@ -551,15 +554,15 @@ amstack<-function(x,colorder=TRUE,priors=NULL,bounds=NULL){
 
   if (colorder){                                             #Rearrange Columns
     p.order <- order(colSums(AMr1))
-    AMr1<-AMr1[,p.order]
+    AMr1<-AMr1[,p.order, drop = FALSE]
   } else {
     p.order<-1:ncol(x)
   }
 
   n.order <- do.call("order", as.data.frame(AMr1[,AMp:1]))   #Rearrange Rows
 
-  AMr1<- AMr1[n.order,]     # p.order has already been rearranged
-  x<- x[n.order,p.order]    # rearrange rows and columns of dataset
+  AMr1<- AMr1[n.order,, drop = FALSE]     # p.order has already been rearranged
+  x<- x[n.order,p.order, drop = FALSE]    # rearrange rows and columns of dataset
   if (!identical(priors,NULL)){
     priors[,1]<-match(priors[,1],n.order)
     priors[,2]<-match(priors[,2],p.order)
