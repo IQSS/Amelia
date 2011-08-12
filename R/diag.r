@@ -603,11 +603,17 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
 
   
   prepped <- amelia.prep(x = data, arglist=output$arguments)
-  data <- data[-prepped$blanks,]
-  
-  unit.rows <- which(data[,output$arguments$cs]==cs)
+  if (!is.null(prepped$blanks)) {
+    data <- data[-prepped$blanks,]
+    unit.rows <- which(data[,output$arguments$cs]==cs)
+    miss <- output$missMatrix[-prepped$blanks,][unit.rows, var] == 1
+  } else {
+    unit.rows <- which(data[,output$arguments$cs]==cs)
+    miss <- output$missMatrix[unit.rows, var] == 1
+  }
+ 
   time <- data[unit.rows, output$arguments$ts]
-  miss <- output$missMatrix[-prepped$blanks,][unit.rows, var] == 1
+
   cross.sec <- prepped$x[!is.na(match(prepped$n.order, unit.rows)),]
   
   stacked.var<-match(var,prepped$subset.index[prepped$p.order])
