@@ -601,13 +601,15 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
   if (!(cs %in% units))
     stop("the cross-section unit is not in the data")
 
+  
+  prepped <- amelia.prep(x = data, arglist=output$arguments)
+  data <- data[-prepped$blanks,]
+  
   unit.rows <- which(data[,output$arguments$cs]==cs)
   time <- data[unit.rows, output$arguments$ts]
-  miss <- output$missMatrix[unit.rows, var] == 1
-  
-
-  prepped <- amelia.prep(x = data, arglist=output$arguments)
+  miss <- output$missMatrix[-prepped$blanks,][unit.rows, var] == 1
   cross.sec <- prepped$x[!is.na(match(prepped$n.order, unit.rows)),]
+  
   stacked.var<-match(var,prepped$subset.index[prepped$p.order])
   subset.var<-match(var,prepped$subset.index)
   imps <- array(NA, dim=c(nrow(cross.sec), draws))
