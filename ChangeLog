@@ -1,3 +1,6 @@
+2011-08-12  Matthew Blackwell <blackwel@fas.harvard.edu>
+	* R/diag.r (tscsPlot): fixed the ignoring of blanks.
+	
 2011-04-26  Matthew Blackwell  <blackwel@fas.harvard.edu>
 	* R/embr.r (*): fixed problem with not updating imputations on observations without priors.
 	* R/embr.r (*): fixed problem with bounds and priors.
