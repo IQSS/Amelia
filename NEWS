@@ -4,6 +4,9 @@
 //
 //
 
+== 1.5-4 ==
+   * Fixed a bug with error messages.
+
 == 1.5-3 ==
    * Fixed a bug with completely missing rows in the tscsPlot().
 

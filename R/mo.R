@@ -53,9 +53,11 @@ moPrep.default <- function(x, formula, subset, error.proportion, gold.standard=!
   mf <- eval(m, sys.frame(sys.parent()))
   if (!missing(error.proportion)) {
     if (length(error.proportion) == nrow(x)) {
-      error.proportion[eval(substitute(subset,x))]
+      if (!missing(subset)) {
+        error.proportion <- error.proportion[eval(substitute(subset,x))]
+      }
       gs <- mf[error.proportion == 0,]
-      mf <- mf[error.proportion != 0,]
+      mf <- mf[error.proportion != 0,,drop=FALSE]
     }
   } else {
     gs <- mf[0,]
