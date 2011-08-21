@@ -16,36 +16,36 @@
 
 
 amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
-                        ts=NULL,cs=NULL,means=NULL,sds=NULL,
-                        mins=NULL,maxs=NULL,conf=NULL,empri=NULL,
-                        tolerance=0.0001,polytime=NULL,splinetime=NULL,startvals=0,lags=NULL,
-                        leads=NULL,intercs=FALSE,archive=TRUE,sqrts=NULL,
-                        lgstc=NULL,noms=NULL,incheck=TRUE,ords=NULL,collect=FALSE,
-                        arglist=NULL, priors=NULL,bounds=NULL,
-                        max.resample=1000, overimp = NULL) {
+                    ts=NULL,cs=NULL,means=NULL,sds=NULL,
+                    mins=NULL,maxs=NULL,conf=NULL,empri=NULL,
+                    tolerance=0.0001,polytime=NULL,splinetime=NULL,startvals=0,lags=NULL,
+                    leads=NULL,intercs=FALSE,archive=TRUE,sqrts=NULL,
+                    lgstc=NULL,noms=NULL,incheck=TRUE,ords=NULL,collect=FALSE,
+                    arglist=NULL, priors=NULL,bounds=NULL,
+                    max.resample=1000, overimp = NULL) {
 
-  #Checks for errors in list variables
+                                        #Checks for errors in list variables
   listcheck<-function(vars,optname) {
     if (identical(vars,NULL))
       return(0)
-    if (mode(vars) == "character") { 
+    if (mode(vars) == "character") {
       if (any(is.na(match(vars,colnames(x))))) {
         mess<-paste("The following variables are refered to in the",
                     optname,"argument, but don't are not columns in the data:",
                     vars[is.na(match(vars,colnames(x)))])
-          return(list(1,mess))
-        }
-       return(0)
+        return(list(1,mess))
+      }
+      return(0)
     }
     if (any(vars>AMp,vars<0,vars%%1!=0)) {
       mess<-paste(optname," is out of the range of \n",
                   "possible column numbers or is not an integer.")
       return(list(2,mess))
     }
-    return(0) 
+    return(0)
   }
-  
-  #Checks for errors in logical variables
+
+                                        #Checks for errors in logical variables
   logiccheck<-function(opt,optname) {
     if (!identical(opt,NULL)) {
       if (length(opt) > 1) {
@@ -62,8 +62,8 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     }
     return(0)
   }
-  
-  #Checks for errors in priors variables
+
+                                        #Checks for errors in priors variables
   priorcheck<-function(opt,optname) {
     if (!identical(opt,NULL)) {
       if (!is.matrix(opt)) {
@@ -71,13 +71,13 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
         return(list(1,mess))
       }
       if (is.character(opt)) {
-        mess<-paste("The", optname,"matrix is a character matrix.\n",  
-                          "Please change it to a numeric matrix.")
+        mess<-paste("The", optname,"matrix is a character matrix.\n",
+                    "Please change it to a numeric matrix.")
         return(list(2,mess))
       }
       if (any(dim(opt)!=dim(x))) {
         mess<-paste("The", optname,"matrices must have the same dimensions\n",
-                        "as the data.")
+                    "as the data.")
         return(list(3,mess))
       }
     }
@@ -89,16 +89,16 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
 
 
 
-  #Error Code: 3
-  #Arguments point to variables that do not exist.
+                                        #Error Code: 3
+                                        #Arguments point to variables that do not exist.
   if (inherits(try(get("x"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the data argument doesn't exist.")))
   if (inherits(try(get("m"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'm' argument doesn't exist.")))
- 
+
   if (inherits(try(get("idvars"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'idvars' argument doesn't exist.")))
- 
+
   if (inherits(try(get("means"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'means' argument doesn't exist.")))
 
@@ -110,7 +110,7 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
 
   if (inherits(try(get("maxs"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'maxs' argument doesn't exist.")))
- 
+
   if (inherits(try(get("conf"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'conf' argument doesn't exist.")))
 
@@ -146,7 +146,7 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
 
   if (inherits(try(get("lgstc"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'lgstc' argument doesn't exist.")))
-  
+
   if (inherits(try(get("p2s"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'p2s' argument doesn't exist.")))
 
@@ -164,18 +164,18 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
 
   if (inherits(try(get("ords"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'ords' argument doesn't exist.")))
-  
+
   if (inherits(try(get("collect"),silent=TRUE),"try-error"))
     return(list(code=3,mess=paste("The setting for the 'collect' argument doesn't exist.")))
-    
-    
+
+
   AMn<-nrow(x)
   AMp<-ncol(x)
   subbedout<-c(idvars,cs,ts)
 
 
-  #Error Code: 4
-  #Completely missing columns
+                                        #Error Code: 4
+                                        #Completely missing columns
   if (any(colSums(!is.na(x)) <= 1)) {
     all.miss <- colnames(x)[colSums(!is.na(x)) <= 1]
     if (is.null(all.miss)) {
@@ -186,15 +186,15 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     error.mess<-paste("The data has a column that is completely missing or only has one,observation.  Remove these columns:", all.miss)
     return(list(code=error.code,mess=error.mess))
   }
-  
-  #Error codes: 5-6
-  #Errors in one of the list variables
+
+                                        #Error codes: 5-6
+                                        #Errors in one of the list variables
   idout<-listcheck(idvars,"One of the 'idvars'")
   if (!identical(idout,0))
     return(list(code=(idout[[1]]+4),mess=idout[[2]]))
-    
+
   lagout<-listcheck(lags,"One of the 'lags'")
-  if (!identical(lagout,0)) 
+  if (!identical(lagout,0))
     return(list(code=(lagout[[1]]+4),mess=lagout[[2]]))
 
   leadout<-listcheck(leads,"One of the 'leads'")
@@ -216,32 +216,32 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   tsout<-listcheck(ts,"The 'ts' variable")
   if (!identical(tsout,0))
     return(list(code=(tsout[[1]]+4),mess=tsout[[2]]))
-    
+
   csout<-listcheck(cs,"The 'cs' variable")
   if (!identical(csout,0))
     return(list(code=(csout[[1]]+4),mess=csout[[2]]))
-  
+
   nomout<-listcheck(noms,"One of the 'noms'")
   if (!identical(nomout,0))
     return(list(code=(nomout[[1]]+4),mess=nomout[[2]]))
-  
+
   ordout<-listcheck(ords,"One of the 'ords'")
   if (!identical(ordout,0))                                  # THIS FORMERLY READ "NOMOUT"
     return(list(code=(ordout[[1]]+4),mess=ordout[[2]]))
-  
-  # priors errors
+
+                                        # priors errors
   if (!identical(priors,NULL)) {
 
-    # Error code: 7
-    # priors isn't a matrix
+                                        # Error code: 7
+                                        # priors isn't a matrix
     if (!is.matrix(priors)) {
       error.code <- 7
       error.mess <- "The priors argument is not a matrix."
       return(list(code=error.code, mess=error.mess))
     }
 
-    # Error code: 8
-    # priors is not numeric
+                                        # Error code: 8
+                                        # priors is not numeric
     if (!is.numeric(priors)) {
       error.code <- 7
       error.mess <- paste("The priors matrix is non-numeric.  It should\n",
@@ -250,8 +250,8 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
 
     }
 
-    # Error code: 47
-    # priors matrix has the wrong dimensions
+                                        # Error code: 47
+                                        # priors matrix has the wrong dimensions
     if (ncol(priors) != 4 & ncol(priors) != 5) {
       error.code <- 47
       error.mess <- paste("The priors matrix has the wrong numberof columns.\n",
@@ -265,36 +265,36 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       return(list(code=error.code, mess=error.mess))
     }
 
-    
-    # Error code: 48
-    # NAs in priors matrix
+
+                                        # Error code: 48
+                                        # NAs in priors matrix
     if (any(is.na(priors))) {
       error.code <- 48
       error.mess <- "There are missing values in the priors matrix."
       return(list(code=error.code, mess=error.mess))
-    }  
+    }
 
-    # Error code: 49
-    # multiple priors set
+                                        # Error code: 49
+                                        # multiple priors set
     if (any(duplicated(priors[,1:2]))) {
       error.code <- 49
       error.mess <- "Multiple priors set on one observation or variable."
       return(list(code=error.code,mess=error.mess))
     }
-    
+
     prior.cols <- priors[,2] %in% c(1:ncol(x))
     prior.rows <- priors[,1] %in% c(0:nrow(x))
 
-    # Error code: 9
-    # priors set for cells that aren't in the data
-    if (sum(c(!prior.cols,!prior.rows)) != 0) { 
+                                        # Error code: 9
+                                        # priors set for cells that aren't in the data
+    if (sum(c(!prior.cols,!prior.rows)) != 0) {
       error.code <- 9
       error.mess <- "There are priors set on cells that don't exist."
       return(list(code=error.code,mess=error.mess))
     }
 
-    # Error code: 12
-    # confidences have to be in 0-1
+                                        # Error code: 12
+                                        # confidences have to be in 0-1
     if (ncol(priors) == 5) {
       if (any(priors[,5] <= 0) || any(priors[,5] >= 1)) {
         error.code<-12
@@ -303,12 +303,12 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
         return(list(code=error.code,mess=error.mess))
       }
     }
-        
+
   }
-  #Error code: 10
-  #Square roots with negative values
+                                        #Error code: 10
+                                        #Square roots with negative values
   if (!is.null(sqrts)) {
-    if (sum(colSums(x[,sqrts, drop = FALSE] < 0, na.rm = T))) { 
+    if (sum(colSums(x[,sqrts, drop = FALSE] < 0, na.rm = T))) {
       neg.vals <- colnames(x[,sqrts, drop = FALSE])[colSums(x[,sqrts, drop
                                        = FALSE] < 0, na.rm = T) > 1]
       if (is.null(neg.vals))
@@ -321,20 +321,20 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     }
   }
 
-  
-  #warning message
-  #logs with negative values
+
+                                        #warning message
+                                        #logs with negative values
   if (!is.null(logs)) {
-    if (any(na.omit(x[,logs]) < 0)) { 
+    if (any(na.omit(x[,logs]) < 0)) {
       warning(paste("The log transformation is being used on \n",
                     "variables with negative values. The values \n",
                     "will be shifted up by 1 plus the minimum value \n",
                     "of that variable."))
     }
   }
-  
-  #Error code: 11
-  #0-1 Bounds on logistic transformations
+
+                                        #Error code: 11
+                                        #0-1 Bounds on logistic transformations
   if (!identical(lgstc,NULL)) {
     lgstc.check <- colSums(x[,lgstc,drop=FALSE] <= 0 |
                            x[,lgstc,drop=FALSE] >= 1, na.rm = TRUE)
@@ -347,23 +347,23 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       error.mess<-paste("The logistic transformation can only be used on values between 0 and 1. See column(s):", neg.vals)
       return(list(code=error.code,mess=error.mess))
     }
-    
-  }
-  
-  #Error code: 12
-  #Confidence Intervals for priors bounded to 0-1
-  
-#  if (!identical(conf,NULL)) {
-#    if (any(conf <= 0,conf>=1,na.rm=T)) {
-#      error.code<-12
-#      error.mess<-paste("The priors confidences matrix has values that are less \n",
-#                        "than or equal to 0 or greater than or equal to 1.")
-#      return(list(code=error.code,mess=error.mess))
-#    }
-#  }
 
-  #Error code: 13
-  #Can't set all variables to 'idvar'
+  }
+
+                                        #Error code: 12
+                                        #Confidence Intervals for priors bounded to 0-1
+
+                                        #  if (!identical(conf,NULL)) {
+                                        #    if (any(conf <= 0,conf>=1,na.rm=T)) {
+                                        #      error.code<-12
+                                        #      error.mess<-paste("The priors confidences matrix has values that are less \n",
+                                        #                        "than or equal to 0 or greater than or equal to 1.")
+                                        #      return(list(code=error.code,mess=error.mess))
+                                        #    }
+                                        #  }
+
+                                        #Error code: 13
+                                        #Can't set all variables to 'idvar'
   if (!identical(idvars,NULL)) {
     if ((AMp-1) <= length(idvars)) {
       error.code<-13
@@ -373,8 +373,8 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   }
 
 
-  #Error code: 14
-  #ts canonot equal cs
+                                        #Error code: 14
+                                        #ts canonot equal cs
   if (!identical(ts,NULL) && !identical(cs,NULL)) {
     if (ts==cs) {
       error.code<-14
@@ -382,8 +382,8 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       return(list(code=error.code,mess=error.mess))
     }
   }
-  #Error code: 15
-  #TS is more than one integer
+                                        #Error code: 15
+                                        #TS is more than one integer
   if (!identical(ts,NULL)) {
     if (length(ts) > 1) {
       error.code<-15
@@ -391,8 +391,8 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       return(list(code=error.code,mess=error.mess))
     }
   }
-  #Error code: 16
-  #CS is more than one integer  
+                                        #Error code: 16
+                                        #CS is more than one integer
   if (!identical(cs,NULL)) {
     if (length(cs) > 1) {
       error.code<-16
@@ -401,42 +401,42 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     }
   }
 
-##   if (!identical(casepri,NULL)) {
-##     #Error code: 17
-##     #Case prior must be in a matrix
-##     if (!is.matrix(casepri)) {
-##       error.code<-17
-##       error.mess<-paste("The case priors should be in a martix form.")
-##       return(list(code=error.code,mess=error.mess))
-##     }
-##     #Error code: 18
-##     #CS must be specified with case priors
-##     if (identical(cs,NULL)) {
-##       error.code<-18
-##       error.mess<-paste("The cross-sectional variable must be set in order to use case priors.")
-##       return(list(code=error.code,mess=error.mess))
-##     }
-##     #Error code: 19
-##     #Case priors have the wrong dimensions
-##     if (sum(dim(casepri) == c(length(unique(data[,cs])),length(unique(data[,cs])))) != 2) {
-##       error.code<-19
-##       error.mess<-paste("The case priors have the wrong dimensions.  It should \n", 
-##                            "have rows and columns equal to the number of cases.")
-##       return(list(code=error.code,mess=error.mess))
-##     }
-##     #Error code: 20
-##     #Case prior values are out of bounds
-##     if (all(casepri != 0,casepri!=1,casepri!=2,casepri!=3)) {
-##       error.code<-20
-##       error.mess<-paste("The case priors can only have values 0, 1, 2, or 3.")
-##       return(list(code=error.code,mess=error.mess))
-##     } 
-##   }
+  ##   if (!identical(casepri,NULL)) {
+  ##     #Error code: 17
+  ##     #Case prior must be in a matrix
+  ##     if (!is.matrix(casepri)) {
+  ##       error.code<-17
+  ##       error.mess<-paste("The case priors should be in a martix form.")
+  ##       return(list(code=error.code,mess=error.mess))
+  ##     }
+  ##     #Error code: 18
+  ##     #CS must be specified with case priors
+  ##     if (identical(cs,NULL)) {
+  ##       error.code<-18
+  ##       error.mess<-paste("The cross-sectional variable must be set in order to use case priors.")
+  ##       return(list(code=error.code,mess=error.mess))
+  ##     }
+  ##     #Error code: 19
+  ##     #Case priors have the wrong dimensions
+  ##     if (sum(dim(casepri) == c(length(unique(data[,cs])),length(unique(data[,cs])))) != 2) {
+  ##       error.code<-19
+  ##       error.mess<-paste("The case priors have the wrong dimensions.  It should \n",
+  ##                            "have rows and columns equal to the number of cases.")
+  ##       return(list(code=error.code,mess=error.mess))
+  ##     }
+  ##     #Error code: 20
+  ##     #Case prior values are out of bounds
+  ##     if (all(casepri != 0,casepri!=1,casepri!=2,casepri!=3)) {
+  ##       error.code<-20
+  ##       error.mess<-paste("The case priors can only have values 0, 1, 2, or 3.")
+  ##       return(list(code=error.code,mess=error.mess))
+  ##     }
+  ##   }
 
-  #check polynomials
+                                        #check polynomials
   if (!identical(polytime,NULL)) {
-    #Error code: 21
-    #Polynomials of time are longer than one integer
+                                        #Error code: 21
+                                        #Polynomials of time are longer than one integer
     if (length(polytime) > 1) {
       error.code<-21
       error.mess<-paste("The polynomials of time setting is greater than one integer.")
@@ -471,8 +471,8 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
 
 
   if (!identical(splinetime,NULL)) {
-    #Error code: 54
-    #Spline of time are longer than one integer
+                                        #Error code: 54
+                                        #Spline of time are longer than one integer
     if (length(polytime) > 1) {
       error.code<-54
       error.mess<-paste("The spline of time setting is greater than one integer.")
@@ -505,10 +505,10 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   }
 
 
-  
-  #checks for intercs
 
-  
+                                        #checks for intercs
+
+
   if (identical(intercs,TRUE)) {
     if (identical(cs,NULL)) {
       error.code<-27
@@ -524,60 +524,60 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     }
 
   }
-  
-  #Error codes: 29-31
-  #logical variable errors
+
+                                        #Error codes: 29-31
+                                        #logical variable errors
   interout<-logiccheck(intercs,"cross section interaction")
   if (!identical(interout,0))
     return(list(code=(28+interout[[1]]),mess=interout[[2]]))
 
-  #p2sout<-logiccheck(p2s,"print to screen")
-  #if (!identical(p2sout,0))
-  #  return(list(code=(p2sout[[1]]+28),mess=p2sout[[2]]))
-  
+                                        #p2sout<-logiccheck(p2s,"print to screen")
+                                        #if (!identical(p2sout,0))
+                                        #  return(list(code=(p2sout[[1]]+28),mess=p2sout[[2]]))
+
   frout<-logiccheck(frontend,"frontend")
   if (!identical(frout,0))
     return(list(code=(frout[[1]]+28),mess=frout[[2]]))
-  
+
   collout<-logiccheck(collect,"archive")
   if (!identical(collout,0))
     return(list(code=(collout[[1]]+28),mess=collout[[2]]))
-  
-  #Error code: 32
-  #Transformations must be mutually exclusive 
+
+                                        #Error code: 32
+                                        #Transformations must be mutually exclusive
   if (length(unique(c(logs,sqrts,lgstc,noms,ords,idvars))) != length(c(logs,sqrts,lgstc,noms,ords,idvars))) {
     error.code<-32
     error.mess<-paste("The options for transfomations are not mutually exclusive.  One \n",
-                "variable can only be assigned one transformation.  You have the \n",
-                "same variable designated for two transformations.")
+                      "variable can only be assigned one transformation.  You have the \n",
+                      "same variable designated for two transformations.")
     return(list(code=error.code,mess=error.mess))
   }
-  
-  #Error code: 33
-  #ts/cs variables can't be transformed
+
+                                        #Error code: 33
+                                        #ts/cs variables can't be transformed
   if (any(unique(c(logs,sqrts,lgstc,noms,ords,idvars)) == ts,unique(c(logs,sqrts,lgstc,noms,ords,idvars)) == cs)) {
     error.code<-33
     error.mess<-paste("The time series and cross sectional variables cannot be transformed.")
     return(list(code=error.code,mess=error.mess))
   }
-  
-  
 
- 
-  #Error code: 35
-  #tolerance must be greater than zero
+
+
+
+                                        #Error code: 35
+                                        #tolerance must be greater than zero
   if (tolerance <= 0) {
     error.code<-35
     error.mess<-paste("The tolerance option must be greater than zero.")
     return(list(code=error.code,mess=error.mess))
   }
 
-  #check nominals
+                                        #check nominals
   if (!identical(noms,NULL)) {
-    
+
     for (i in noms) {
-      #Error code: 36
-      #too many levels on noms
+                                        #Error code: 36
+                                        #too many levels on noms
       if (length(unique(na.omit(x[,i]))) > (1/3)*(AMn)) {
         bad.var <- colnames(x)[i]
         if (is.null(bad.var)) bad.var <- i
@@ -585,31 +585,31 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
         error.mess<-paste("The number of categories in the nominal variable \'",bad.var,"\' is greater than one-third of the observations.", sep = "")
         return(list(code=error.code,mess=error.mess))
       }
-      
+
       if (length(unique(na.omit(x[,i]))) > 10)
         warning("\n\nThe number of categories in one of the variables marked nominal has greater than 10 categories. Check nominal specification.\n\n")
-      
+
 
 
       if (all(i==cs,intercs==TRUE)) {
         noms<-noms[noms!=i]
         warning("The cross sectional variable was set as a nominal variable.  Its nominal status has been dropped.")
-      }  
+      }
     }
   }
-  
+
   if (is.null(c(noms,ords,idvars,cs)))
     fact<-c(1:AMp)
-  else 
+  else
     fact<--c(noms,ords,idvars,cs)
 
   if (is.null(c(cs,idvars)))
     idcheck<-c(1:AMp)
   else
     idcheck<--c(cs,idvars)
-  
-  #Error code: 37
-  #factors out of the noms,ids,ords,cs
+
+  ##Error code: 37
+  ##factors out of the noms,ids,ords,cs
 
   if (is.data.frame(x)) {
     if (length(x[,fact])) {
@@ -619,12 +619,14 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
           bad.var <- setdiff(which(sapply(x,is.factor)), -fact)
         bad.var <- paste(bad.var, collapse = ", ")
         error.code<-37
-        error.mess<-paste("The variable(s) ",bad.var," are \"factors\".  You may \n",
-                          "have wanted to set this as a ID variable to remove it \n",
-                          "from the imputation model or as an ordinal or nominal \n", 
-                          "variable to be imputed.  Please set it as either and \n",
-                          "try again.") 
+        error.mess<-paste("The following variable(s) are 'factors': ",
+                          bad.var,
+                          "You may have wanted to set this as a ID variable to remove it",
+                          "from the imputation model or as an ordinal or nominal",
+                          "variable to be imputed.  Please set it as either and",
+                          "try again.", sep = "\n")
         return(list(code=error.code,mess=error.mess))
+
       }
       if (sum(sapply(x[,fact],is.ordered))) {
         bad.var <- colnames(x[,fact])[sapply(x[,fact],is.ordered)]
@@ -632,24 +634,28 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
           bad.var <- setdiff(which(sapply(x,is.ordered)), -fact)
         bad.var <- paste(bad.var, collapse = ", ")
         error.code<-37
-        error.mess<-paste("The variable(s) ",bad.var," are \"factors\".  You may \n",
-                          "have wanted to set this as a ID variable to remove it \n",
-                          "from the imputation model or as an ordinal or nominal \n", 
-                          "variable to be imputed.  Please set it as either and \n",
-                          "try again.") 
+        error.mess<-paste("The following variable(s) are 'factors': ",
+                          bad.var,
+                          "You may have wanted to set this as a ID variable to remove it",
+                          "from the imputation model or as an ordinal or nominal",
+                          "variable to be imputed.  Please set it as either and",
+                          "try again.", sep = "\n")
         return(list(code=error.code,mess=error.mess))
       }
-      
+
       if (sum(sapply(x[,fact],is.character))) {
         bad.var <- colnames(x[,fact])[sapply(x[,fact],is.character)]
         if (is.null(bad.var))
           bad.var <- setdiff(which(sapply(x,is.character)), -fact)
         bad.var <- paste(bad.var, collapse = ", ")
         error.code<-38
-        error.mess<-paste("The variable(s)",bad.var,"are \"characters\".  You may",
-                          "have wanted to set this as a ID variable, nominal",
-                          "or the cross sectional variable.  Please either remove it from",
-                          "the data or set it as an ID variable.") 
+        error.mess<-paste("The following variable(s) are characters: ",
+                          paste("\t",bad.var),
+                          "You may have wanted to set this as a ID variable to remove it",
+                          "from the imputation model or as an ordinal or nominal",
+                          "variable to be imputed.  Please set it as either and",
+                          "try again.", sep = "\n")
+
         return(list(code=error.code,mess=error.mess))
       }
     }
@@ -660,17 +666,17 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       return(list(code=error.code,mess=error.mess))
     }
   }
-  #Error code: 39
-  #No missing observation
+                                        #Error code: 39
+                                        #No missing observation
   if (!any(is.na(x[,idcheck,drop=FALSE]))) {
     error.code<-39
     error.mess<-paste("Your data has no missing values.  Make sure the code for \n",
                       "missing data is set to the code for R, which is NA.")
     return(list(code=error.code,mess=error.mess))
   }
-  
-  #Error code: 40
-  #lags require ts
+
+                                        #Error code: 40
+                                        #lags require ts
   if (!is.null(lags)) {
     if (is.null(ts)) {
       error.code<-40
@@ -678,9 +684,9 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       return(list(code=error.code,mess=error.mess))
     }
   }
-  
-  #Error code: 41
-  #leads require ts
+
+                                        #Error code: 41
+                                        #leads require ts
   if (!is.null(leads)) {
     if (is.null(ts)) {
       error.code<-41
@@ -688,10 +694,10 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       return(list(code=error.code,mess=error.mess))
     }
   }
-  
-  
-  #Error code: 42
-  #Only 1 column of data
+
+
+                                        #Error code: 42
+                                        #Only 1 column of data
   if (AMp==1) {
     error.code<-42
     error.mess<-paste("There is only 1 column of data. Cannot impute.")
@@ -705,22 +711,22 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     error.mess<-paste("There is only 1 column of data. Cannot impute.")
     return(list(code=error.code,mess=error.mess))
   }
-  
 
-  #Error code: 43
-  #Variable that doesn't vary
+
+                                        #Error code: 43
+                                        #Variable that doesn't vary
 
   ## note that this will allow the rare case that a user only has
   ## variation in a variable when all of the other variables are missing
   ## in addition to having no variation in the listwise deleted
   ## dataset. Our starting value function should be robust to this.
-  
+
   if (is.data.frame(x)) {
     non.vary <- sapply(x[,idcheck, drop = FALSE], var, na.rm = TRUE)
   } else {
     non.vary <- apply(x[,idcheck, drop = FALSE], 2, var, na.rm = TRUE)
   }
-  
+
   if (sum(non.vary == 0)) {
     non.names <- colnames(x[,idcheck])[non.vary == 0]
     if (is.null(non.names)) {
@@ -733,88 +739,88 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable. Variables that do not vary: ", non.names)
     return(list(code=error.code,mess=error.mess))
   }
-  
-##   } else {
 
-    
-##     if (nrow(na.omit(x)) > 1) {
-##       if (any(diag(var(x[,idcheck],na.rm=TRUE))==0)) {
-##         error.code<-43
-##         error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
-##         return(list(code=error.code,mess=error.mess))
-##       }
-##     } else {
-##       for (i in 1:ncol(x[,idcheck])) {
-##         if (var(x[,i],na.rm=TRUE) == 0) {
-##           error.code<-43
-##           error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
-##           return(list(code=error.code,mess=error.mess))
-##         }
-##       }
-##     }
-##   }
-    
-  #checks for ordinals
+  ##   } else {
+
+
+  ##     if (nrow(na.omit(x)) > 1) {
+  ##       if (any(diag(var(x[,idcheck],na.rm=TRUE))==0)) {
+  ##         error.code<-43
+  ##         error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
+  ##         return(list(code=error.code,mess=error.mess))
+  ##       }
+  ##     } else {
+  ##       for (i in 1:ncol(x[,idcheck])) {
+  ##         if (var(x[,i],na.rm=TRUE) == 0) {
+  ##           error.code<-43
+  ##           error.mess<-paste("You have a variable in your dataset that does not vary.  Please remove this variable.")
+  ##           return(list(code=error.code,mess=error.mess))
+  ##         }
+  ##       }
+  ##     }
+  ##   }
+
+                                        #checks for ordinals
   if (!is.null(ords)) {
     for (i in ords) {
-      #Error code: 44
-      # Ordinal variable with non-integers (factors work by design, and they're
-      # harder to check
+                                        #Error code: 44
+                                        # Ordinal variable with non-integers (factors work by design, and they're
+                                        # harder to check
       if (!is.factor(x[,i])) {
         if (any(unique(na.omit(x[,i])) %% 1 != 0 )) {
           non.ints <- colnames(x)[i]
           if (is.null(non.ints)) non.ints <- i
-          error.code<-44          
+          error.code<-44
           error.mess<-paste("You have designated the variable \'",non.ints,
                             "\' as ordinal when it has non-integer values.",
                             sep = "")
           return(list(code=error.code,mess=error.mess))
         }
       }
-    }    
+    }
   }
 
- 
-  
-##   #checks for outname
-##   if (write.out==TRUE) {
-##     if (!is.character(outname)) {
-##       outname<-"outdata"
-##       warning("The output filename (outname) was not a character.  It has been set it 
-## its default 'outdata' in the working directory.")
-##     }
-##     #Error code: 45
-##     #output file errors
-##     outtest<-try(write.csv("test",file=paste(outname,"1.csv",sep="")),silent=TRUE)
-##     if (inherits(outtest,"try-error")) {
-##       error.code<-45
-##       error.mess<-paste("R cannot write to the outname you have specified.  Please 
-## check","that the directory exists and that you have permission to write.",sep="\n")
-##       return(list(code=error.code,mess=error.mess))
-##     }
-##     tmpdir<- strsplit(paste(outname,"1.csv",sep=""),.Platform$file.sep)
-##     am.dir <- tmpdir[[1]][1]
-##     if (length(tmpdir[[1]]) > 1)
-##       for (i in 2:(length(tmpdir[[1]])))
-##         am.dir <- file.path(am.dir, tmpdir[[1]][i])
-##     file.remove(am.dir)
-##   }
-      
 
-#  if (xor(!identical(means,NULL),!identical(sds,NULL))) {
-#    means<-NULL
-#    sds<-NULL
-#    warning("Both the means and the SDs have to be set in order to use observational priors.  The priors have been removed from the analysis.")
-#  }
-#  if (sum(!identical(mins,NULL),!identical(maxs,NULL),!identical(conf,NULL)) != 3 &&
-#        sum(!identical(mins,NULL),!identical(maxs,NULL),!identical(conf,NULL)) != 0) {
-#    mins<-NULL
-#    maxs<-NULL
-#    conf<-NULL
-#    warning("Not all of the range parameters were set for the observational priors.  They have been removed.")
-#  }
-  
-    #checks of m
+
+  ##   #checks for outname
+  ##   if (write.out==TRUE) {
+  ##     if (!is.character(outname)) {
+  ##       outname<-"outdata"
+  ##       warning("The output filename (outname) was not a character.  It has been set it
+  ## its default 'outdata' in the working directory.")
+  ##     }
+  ##     #Error code: 45
+  ##     #output file errors
+  ##     outtest<-try(write.csv("test",file=paste(outname,"1.csv",sep="")),silent=TRUE)
+  ##     if (inherits(outtest,"try-error")) {
+  ##       error.code<-45
+  ##       error.mess<-paste("R cannot write to the outname you have specified.  Please
+  ## check","that the directory exists and that you have permission to write.",sep="\n")
+  ##       return(list(code=error.code,mess=error.mess))
+  ##     }
+  ##     tmpdir<- strsplit(paste(outname,"1.csv",sep=""),.Platform$file.sep)
+  ##     am.dir <- tmpdir[[1]][1]
+  ##     if (length(tmpdir[[1]]) > 1)
+  ##       for (i in 2:(length(tmpdir[[1]])))
+  ##         am.dir <- file.path(am.dir, tmpdir[[1]][i])
+  ##     file.remove(am.dir)
+  ##   }
+
+
+                                        #  if (xor(!identical(means,NULL),!identical(sds,NULL))) {
+                                        #    means<-NULL
+                                        #    sds<-NULL
+                                        #    warning("Both the means and the SDs have to be set in order to use observational priors.  The priors have been removed from the analysis.")
+                                        #  }
+                                        #  if (sum(!identical(mins,NULL),!identical(maxs,NULL),!identical(conf,NULL)) != 3 &&
+                                        #        sum(!identical(mins,NULL),!identical(maxs,NULL),!identical(conf,NULL)) != 0) {
+                                        #    mins<-NULL
+                                        #    maxs<-NULL
+                                        #    conf<-NULL
+                                        #    warning("Not all of the range parameters were set for the observational priors.  They have been removed.")
+                                        #  }
+
+                                        #checks of m
   if (!is.numeric(m)) {
     m<-5
     warning("The number of imputations ('m') was a non-numeric.  The value was changed to the default.")
@@ -829,36 +835,36 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   }
 
 
-  # checks for bounds
+                                        # checks for bounds
   if (!is.null(bounds)) {
     b.size <- is.matrix(bounds) && ncol(bounds)==3 && nrow(bounds) > 0
     b.cols <- sum(bounds[,1] %in% c(1:AMp)) == nrow(bounds)
     maxint <- max.resample > 0 && (max.resample %% 1)==0
-    
 
-    # Error 50:
-    # wrong sized bounds matrix
+
+                                        # Error 50:
+                                        # wrong sized bounds matrix
     if (!b.size) {
       error.code<-50
       error.mess<-paste("The bounds argument is a three-column matrix.")
       return(list(code=error.code,mess=error.mess))
     }
 
-    # Error 51:
-    # nonexistant columns in bounds.
+                                        # Error 51:
+                                        # nonexistant columns in bounds.
     if (!b.cols) {
       error.code<-51
       error.mess<-paste("One of the bounds is on a non-existant column.")
       return(list(code=error.code,mess=error.mess))
     }
 
-    # Error 52:
-    # max.resample needs to be positive integer.
+                                        # Error 52:
+                                        # max.resample needs to be positive integer.
     if (!maxint) {
       error.code<-52
       error.mess<-paste("The max.resample argument needs to be a positive integer.")
       return(list(code=error.code,mess=error.mess))
-    }      
+    }
   }
 
   if (!is.null(overimp)) {
@@ -880,7 +886,7 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       error.code <- 54
       error.code <- "A row/column pair in overimp is outside the range of the data."
     }
-    
+
   }
 
   if (is.data.frame(x)) {
@@ -894,6 +900,6 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       return(list(code=error.code,mess=error.mess))
     }
   }
-  
+
   return(list(m=m,priors=priors))
 }
