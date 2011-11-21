@@ -24,7 +24,11 @@ you don't.
 \author{
 James Honaker, Matthew Blackwell, Gary King
 }
-\references{
+\references{James Honaker, Gary King, Matthew Blackwell (2011).
+        Amelia II: A Program for Missing Data.
+        \emph{Journal of Statistical Software}, \bold{45(7)}, 1--47.
+        URL http://www.jstatsoft.org/v45/i07/.
+        
 King, Gary; James Honaker, Anne Joseph, and Kenneth Scheve. \"Analyzing 
 Incomplete Political Science Data: An Alternative Algorithm for Multiple 
 Imputation\", \emph{American Political Science Review}, Vol. 95, No. 1 

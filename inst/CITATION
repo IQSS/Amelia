@@ -1,0 +1,21 @@
+citHeader("To cite Amelia in publications use:")
+
+citEntry(entry = "Article",
+  title        = "{Amelia II}: A Program for Missing Data",
+  author       = personList(as.person("James Honaker"),
+                   as.person("Gary King"),
+                   as.person("Matthew Blackwell")),
+  journal      = "Journal of Statistical Software",
+  year         = "2011",
+  volume       = "45",
+  number       = "7",
+  pages        = "1--47",
+  url          = "http://www.jstatsoft.org/v45/i07/",
+
+  textVersion  =
+  paste("James Honaker, Gary King, Matthew Blackwell (2011).",
+        "Amelia II: A Program for Missing Data.",
+        "Journal of Statistical Software, 45(7), 1-47.",
+        "URL http://www.jstatsoft.org/v45/i07/.")
+)
+

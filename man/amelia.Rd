@@ -210,7 +210,7 @@ or,
   or the options.
 }
 
-\author{James Honaker, Gary King, Matt Blackwell}
+
  
 \value{An instance of S3 class "amelia" with the following objects:
 \item{imputations}{a list of length \code{m} with an imputed dataset in
@@ -244,6 +244,13 @@ and how to access this information.
 
 }
 
+\author{James Honaker, Gary King, Matt Blackwell}
+
+\references{Honaker, J., King, G., Blackwell, M. (2011).
+        Amelia II: A Program for Missing Data.
+        \emph{Journal of Statistical Software}, \bold{45(7)}, 1--47.
+        URL http://www.jstatsoft.org/v45/i07/.
+}
 \seealso{
   For imputation diagnostics, \code{\link{missmap}}, \code{\link{compare.density}},
   \code{\link{overimpute}} and \code{\link{disperse}}. For time series
