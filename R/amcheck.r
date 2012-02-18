@@ -285,16 +285,24 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     prior.cols <- priors[,2] %in% c(1:ncol(x))
     prior.rows <- priors[,1] %in% c(0:nrow(x))
 
-                                        # Error code: 9
-                                        # priors set for cells that aren't in the data
+    ## Error code: 9
+    ## priors set for cells that aren't in the data
     if (sum(c(!prior.cols,!prior.rows)) != 0) {
       error.code <- 9
       error.mess <- "There are priors set on cells that don't exist."
       return(list(code=error.code,mess=error.mess))
     }
 
-                                        # Error code: 12
-                                        # confidences have to be in 0-1
+    ## Error code: 59
+    ## no priors on nominal variables
+    if (any(priors[,2] %in% noms)) {
+      error.code <- 59
+      error.mess <- "Cannot set priors on nominal variables. "
+      return(list(code = error.code, mess = error.mess))
+    }
+
+    ## Error code: 12
+    ## confidences have to be in 0-1
     if (ncol(priors) == 5) {
       if (any(priors[,5] <= 0) || any(priors[,5] >= 1)) {
         error.code<-12
