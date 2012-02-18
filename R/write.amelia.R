@@ -1,15 +1,23 @@
 ##
-## write.amelia - function for writing imputed datasets to file 
+## write.amelia - function for writing imputed datasets to file
 ##
 ## INPUTS: obj - output of class "amelia"
 ##         file.stem - the the stem of the filename to use (imp number added)
 ##         extension - extension to add after the imputation number
 ##         format - csv, dta or table for their respective writing fns
+##         separate - TRUE: write to separate files, FALSE: write to
+##                    long file
+##         impvar - if separate is FALSE, the name of the imp number
+##                   var
+##         orig.data - if separate if FALSE, include original data?
+##
 ##
 ## OUTPUTS: none (writes to file)
 ##
 
-write.amelia <- function(obj, file.stem, extension=NULL, format="csv", ...) {
+write.amelia <- function(obj, separate = TRUE, file.stem,
+                         extension = NULL, format = "csv",
+                         impvar = "imp", orig.data = TRUE, ...) {
 
   if(!(format %in% c("csv","table","dta"))) {
     stop("The writing format is not supported")
@@ -20,7 +28,7 @@ write.amelia <- function(obj, file.stem, extension=NULL, format="csv", ...) {
     if (format == "dta") extension <- ".dta"
     if (format == "csv") extension <- ".csv"
   }
-  
+
   m <- length(obj$imputations)
   Call <- match.call(expand.dots = TRUE)
   Call[[1]] <- as.name(paste("write",format, sep="."))
@@ -30,14 +38,45 @@ write.amelia <- function(obj, file.stem, extension=NULL, format="csv", ...) {
   Call$file.stem <- NULL
   Call$extension <- NULL
   Call$format <- NULL
-  
-  for (i in 1:m) {
-    if (format == "dta")
-      Call$dataframe <- obj$imputation[[i]]
-    else
-      Call$x <- obj$imputation[[i]]
-    
-    Call$file <- paste(file.stem, i, extension,sep="")
+  Call$separate <- NULL
+  Call$orig.data <- NULL
+  Call$impvar <- NULL
+
+  if (separate) {
+    for (i in 1:m) {
+      if (format == "dta")
+        Call$dataframe <- obj$imputation[[i]]
+      else
+        Call$x <- obj$imputation[[i]]
+
+      Call$file <- paste(file.stem, i, extension,sep="")
+      eval.parent(Call)
+    }
+  } else {
+    if (orig.data) {
+      odata <- obj$imputations[[1]]
+      is.na(odata) <- obj$missMatrix
+      odata[, impvar] <- 0
+    }
+    obj$imputation[[1]][, impvar] <- 1
+
+    if (orig.data) {
+      obj$imputation[[1]] <- rbind(odata, obj$imputation[[1]])
+    }
+    if (format == "dta") {
+      Call$dataframe <- obj$imputation[[1]]
+    } else {
+      Call$x <- obj$imputation[[1]]
+    }
+    for (i in 2:m) {
+      obj$imputation[[i]][, impvar] <- i
+      if (format == "dta") {
+        Call$dataframe <- rbind(Call$dataframe, obj$imputation[[i]])
+      } else {
+        Call$x <- rbind(Call$x, obj$imputation[[i]])
+      }
+    }
+    Call$file <- paste(file.stem, extension, sep = "")
     eval.parent(Call)
   }
   invisible()
