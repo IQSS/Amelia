@@ -45,9 +45,9 @@ write.amelia <- function(obj, separate = TRUE, file.stem,
   if (separate) {
     for (i in 1:m) {
       if (format == "dta")
-        Call$dataframe <- obj$imputation[[i]]
+        Call$dataframe <- obj$imputations[[i]]
       else
-        Call$x <- obj$imputation[[i]]
+        Call$x <- obj$imputations[[i]]
 
       Call$file <- paste(file.stem, i, extension,sep="")
       eval.parent(Call)
@@ -58,22 +58,22 @@ write.amelia <- function(obj, separate = TRUE, file.stem,
       is.na(odata) <- obj$missMatrix
       odata[, impvar] <- 0
     }
-    obj$imputation[[1]][, impvar] <- 1
+    obj$imputations[[1]][, impvar] <- 1
 
     if (orig.data) {
-      obj$imputation[[1]] <- rbind(odata, obj$imputation[[1]])
+      obj$imputations[[1]] <- rbind(odata, obj$imputations[[1]])
     }
     if (format == "dta") {
-      Call$dataframe <- obj$imputation[[1]]
+      Call$dataframe <- obj$imputations[[1]]
     } else {
-      Call$x <- obj$imputation[[1]]
+      Call$x <- obj$imputations[[1]]
     }
     for (i in 2:m) {
-      obj$imputation[[i]][, impvar] <- i
+      obj$imputations[[i]][, impvar] <- i
       if (format == "dta") {
-        Call$dataframe <- rbind(Call$dataframe, obj$imputation[[i]])
+        Call$dataframe <- rbind(Call$dataframe, obj$imputations[[i]])
       } else {
-        Call$x <- rbind(Call$x, obj$imputation[[i]])
+        Call$x <- rbind(Call$x, obj$imputations[[i]])
       }
     }
     Call$file <- paste(file.stem, extension, sep = "")
