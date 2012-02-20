@@ -1,14 +1,15 @@
 export(amelia,
        write.amelia,
        AmeliaView,
-##       amelia.prep,
+       ##       amelia.prep,
        ameliabind,
        compare.density,
        overimpute,
        disperse,
        tscsPlot,
        missmap,
-       moPrep)
+       moPrep,
+       transform.amelia)
 
 
 S3method(print, amelia)
@@ -19,3 +20,4 @@ S3method(amelia, default)
 S3method(amelia, molist)
 S3method(moPrep, molist)
 S3method(moPrep, default)
+S3method(transform, amelia)
