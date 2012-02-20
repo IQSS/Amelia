@@ -128,6 +128,7 @@ compare.density <- function(output,var,col=c("red","black"),scaled=FALSE,lwd=1,m
 ##
 ##  INPUTS:output         - output from amelia run (class "amelia")
 ##         var            - column number or variable name to overimpute
+##         subset         - subset to overimpute and plot
 ##         legend         - should we add a lengend to the plot? (TRUE/FALSE)
 ##         xlab,ylab,main - graphical parameters
 ##         frontend       - logical for printing to tcl/tk window
@@ -137,16 +138,35 @@ compare.density <- function(output,var,col=c("red","black"),scaled=FALSE,lwd=1,m
 ##
 
 
-overimpute <- function(output,var,legend=TRUE,xlab,ylab,main,frontend=FALSE,...) {
+overimpute <- function(output, var, subset, legend = TRUE, xlab, ylab,
+                       main, frontend = FALSE,...) {
 
   if (!("amelia" %in% class(output)))
     stop("The 'output' is not Amelia output.")
 
 
   data <- getOriginalData(output)
+
+  ## via the subset.data.frame function
+  if (missing(subset)) {
+    r <- TRUE
+  } else {
+    e <- substitute(subset)
+    r <- eval(e, data, parent.frame())
+    if (!is.logical(r)) {
+      stop("'subset' must evaluate to logical")
+    }
+    r <- r & !is.na(r)
+    if (sum(r) == 0) {
+      stop("no observations in the subset")
+    }
+  }
+  data <- data[r,]
+
   origAMr1 <- is.na(data)
 
-                                        # Allow character names as arguments for "var" with data.frames
+
+  ## Allow character names as arguments for "var" with data.frames
 
   if(is.character(var)){
     if(!is.data.frame(data)){
@@ -247,7 +267,7 @@ overimpute <- function(output,var,legend=TRUE,xlab,ylab,main,frontend=FALSE,...)
     if (!is.na(match(var,prepped$lgstc)))
       scaled.conf <- untransform(as.matrix(scaled.conf),logs=NULL,xmin=NULL,sqrts=NULL,lgstc=1)
 
-                                        #colors are based on rainbow roygbiv l->r is higher missingness  \
+    ##colors are based on rainbow roygbiv l->r is higher missingness  \
     blue <- rgb(0,0,1, alpha = 0.75)
     green <- rgb(0,.75,0, alpha = 0.75)
     orange <- rgb(1, 0.65,0, alpha = 0.75)
