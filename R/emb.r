@@ -949,6 +949,19 @@ ameliabind <- function(...) {
 getOriginalData <- function(obj) {
   data <- obj$imputations[[1]]
   is.na(data) <- obj$missMatrix
+  data <- data[, obj$orig.vars]
+  oi <- obj$arguments$overimp
+  if (!is.null(oi)) {
+    for (i in 1:nrow(oi)) {
+      data[oi[i,1], oi[i,2]] <- obj$overvalues[i]
+    }
+  }
+  return(data)
+}
+
+remove.imputations <- function(obj) {
+  data <- obj$imputations[[1]]
+  is.na(data) <- obj$missMatrix
   oi <- obj$arguments$overimp
   if (!is.null(oi)) {
     for (i in 1:nrow(oi)) {
@@ -973,8 +986,7 @@ amelia.amelia <- function(x, m = 5, p2s = 1, frontend = FALSE, ...) {
 
   ## Only the variables in the missMatrix should be passed. This is
   ## because the others are
-  data <- data[, colnames(x$missMatrix)]
-  is.na(data) <- x$missMatrix
+  data <- getOriginalData(x)
 
   out <- amelia.default(x = data, m = m, arglist=x$arguments, p2s=p2s,
                         frontend = frontend, incheck=FALSE)
@@ -1052,7 +1064,8 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
                   code        = integer(0),
                   message     = character(0),
                   iterHist    = list(),
-                  arguments   = list())
+                  arguments   = list(),
+                  orig.vars   = colnames(x))
 
   impdata$m <- m
   class(impdata) <- "amelia"
