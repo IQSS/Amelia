@@ -971,9 +971,9 @@ amelia.amelia <- function(x, m = 5, p2s = 1, frontend = FALSE, ...) {
   ## imputations marked to NA. These two lines do that
   data <- x$imputations[[1]]
 
-  ## We need to deal with transformed vars
-  tvars <- x$transform.vars
-  data <- data[, !(names(data) %in% tvars)]
+  ## Only the variables in the missMatrix should be passed. This is
+  ## because the others are
+  data <- data[, colnames(x$missMatrix)]
   is.na(data) <- x$missMatrix
 
   out <- amelia.default(x = data, m = m, arglist=x$arguments, p2s=p2s,

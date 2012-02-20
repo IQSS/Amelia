@@ -10,12 +10,7 @@ transform.amelia <- function(obj, ...) {
   names(tcall)[2] <- ""
   m <- length(obj$imputation)
 
-  if (is.null(obj$transform.vars)) {
-    obj$transform.vars <- names(tcall)[-c(1,2)]
-  } else {
-    obj$transform.vars <- unique(c(obj$transform.vars,
-                                   names(tcall)[-c(1,2)]))
-  }
+
   for (i in 1:m) {
     tcall[[2]] <- obj$imputations[[i]]
     obj$imputations[[i]] <- eval.parent(tcall)
