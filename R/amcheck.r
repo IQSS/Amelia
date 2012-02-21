@@ -736,11 +736,7 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       }
     }
   }
-  if (!isTRUE(intercs) & ncol(x[,c(-ts,idcheck), drop = FALSE]) == 1) {
-    error.code<-42
-    error.mess<-paste("There is only 1 column of data. Cannot impute.")
-    return(list(code=error.code,mess=error.mess))
-  }
+
 
                                         #Error code: 43
                                         #Variable that doesn't vary
