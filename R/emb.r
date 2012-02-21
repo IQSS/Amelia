@@ -912,7 +912,8 @@ ameliabind <- function(...) {
                  code        = integer(0),
                  message     = character(0),
                  iterHist    = list(),
-                 arguments   = list())
+                 arguments   = list(),
+                 orig.vars   = args[[1]]$orig.vars)
 
     out$m <- newm
     out$missMatrix <- args[[1]]$missMatrix
@@ -1056,6 +1057,11 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
   }
 
   k <- ncol(prepped$x)
+  if (!is.null(colnames(x))) {
+    ovars <- colnames(x)
+  } else {
+    ovars <- 1:k
+  }
   impdata <- list(imputations = list(),
                   m           = integer(0),
                   missMatrix  = prepped$missMatrix,
@@ -1067,7 +1073,7 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
                   message     = character(0),
                   iterHist    = list(),
                   arguments   = list(),
-                  orig.vars   = colnames(x))
+                  orig.vars   = ovars)
 
   impdata$m <- m
   class(impdata) <- "amelia"
