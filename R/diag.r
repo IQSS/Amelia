@@ -199,11 +199,12 @@ overimpute <- function(output, var, subset, legend = TRUE, xlab, ylab,
     stop("var doesn't exist in the amelia output.  It either didn't get imputed or is out of the range of columns.")
   }
 
-  means<-c()
-  lowers<-c()
-  uppers<-c()
-  color<-c()
-  AMr1<-is.na(prepped$x)
+  means <- c()
+  lowers <- c()
+  uppers <- c()
+  pcnts <- c()
+  color <- c()
+  AMr1 <- is.na(prepped$x)
   ## if (sum(!AMr1[,stacked.var]) == 0){
   ##   if (frontend) {
   ##     tkmessageBox(parent = getAmelia("gui"),
@@ -228,8 +229,11 @@ overimpute <- function(output, var, subset, legend = TRUE, xlab, ylab,
                                         #o[stacked.var]<-FALSE
 
     pcntmiss<-(sum(miss))/(length(miss)-sum(prepped$index==0))   # Does not include time polynomials (index==0) in the denominator
-                                        # These are always fully observed by construction, but auxiliary.
-                                        # Leaves constructed lags and leads, and nominal variables in count, however.
+    ## These are always fully observed by construction, but auxiliary.
+    ## Leaves constructed lags and
+    ## leads, and nominal variables
+    ## in count, however.
+
     conf<-c()
     for (k in 1:output$m) {
 
@@ -288,6 +292,7 @@ overimpute <- function(output, var, subset, legend = TRUE, xlab, ylab,
     means<-c(means,mean(scaled.conf))
     lowers<-c(lowers,sort(scaled.conf)[round(output$m*20*0.05)])
     uppers<-c(uppers,sort(scaled.conf)[round(output$m*20*0.95)])
+    pcnts <- c(pcnts, pcntmiss)
 
   }
 
@@ -330,7 +335,14 @@ overimpute <- function(output, var, subset, legend = TRUE, xlab, ylab,
   }
 
   abline(0,1)
-  invisible(overplot)
+
+  out <- cbind(row = prepped$n.order[!fully.missing],
+               orig = xplot,
+               mean.overimputed = means,
+               lower.overimputed = lowers,
+               upper.overimputed = uppers,
+               prcntmiss = pcnts)
+  invisible(out)
 }
 
 gethull <- function(st,tol,rots) {
