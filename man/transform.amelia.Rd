@@ -8,11 +8,11 @@
 
 \usage{
 
-\method{tranform}{amelia}(obj, ...)
+\method{transform}{amelia}(`_data`, ...)
 
 }
 \arguments{
-  \item{obj}{an object of class "amelia"; typically output from the
+  \item{_data}{an object of class "amelia"; typically output from the
     function \code{amelia}.}
   \item{\dots}{further arguments of the form \code{tag = value}.}
 }

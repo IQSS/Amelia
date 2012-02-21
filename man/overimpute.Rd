@@ -9,7 +9,7 @@ model from \code{amelia} output.
 \usage{
 
 
-overimpute(output, var, legend = TRUE, xlab, ylab, main,
+overimpute(output, var, subset, legend = TRUE, xlab, ylab, main,
            frontend = FALSE, \dots)
 
 }
