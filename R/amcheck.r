@@ -381,8 +381,8 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   }
 
 
-                                        #Error code: 14
-                                        #ts canonot equal cs
+  ## Error code: 14
+  ## ts canonot equal cs
   if (!identical(ts,NULL) && !identical(cs,NULL)) {
     if (ts==cs) {
       error.code<-14
@@ -528,6 +528,12 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       error.code<-28
       error.mess<-paste("There are too many cross-sections in the data to use an \n",
                         "interaction between polynomial of time and the cross-section.")
+      return(list(code=error.code,mess=error.mess))
+    }
+    if (sum(is.na(x[,cs])) > 0) {
+      error.code <- 60
+      error.mess <-
+        paste("There are missing values in the 'cs' variable.")
       return(list(code=error.code,mess=error.mess))
     }
 
