@@ -9,7 +9,8 @@ the dataset passed to \code{amelia}.}
 \usage{
 
 missmap(obj, legend = TRUE, col = c("wheat","darkred"), main,
-        y.cex = 0.8, x.cex = 0.8, y.labels, y.at, csvar = NULL, tsvar = NULL, ...)
+        y.cex = 0.8, x.cex = 0.8, y.labels, y.at, csvar = NULL, tsvar =
+        NULL, rank.order = TRUE, ...)
 
 }
 \arguments{
@@ -29,7 +30,12 @@ missmap(obj, legend = TRUE, col = c("wheat","darkred"), main,
     the unit indicator. Only used when the \code{obj} is not of class
     \code{amelia}.}
   \item{tsvar}{column number or name of the variable corresponding to
-    the time indicator. Only used when the \code{obj} is not of class \code{amelia}.}
+    the time indicator. Only used when the \code{obj} is not of class
+    \code{amelia}.}
+  \item{rank.order}{a logical value. If \code{TRUE}, the default, then
+    the order of the variables along the the x-axis is sorted by the
+    percent missing (from highest to lowest). If \code{FALSE}, it is
+    simply the order of the variables in the data.}
   \item{\dots}{further graphical arguments.}
 }
 

@@ -13,18 +13,18 @@
 
 missmap <- function(obj, legend = TRUE, col = c("wheat","darkred"), main,
                     y.cex = 0.8, x.cex = 0.8, y.labels, y.at, csvar = NULL,
-                    tsvar = NULL, ...) {
+                    tsvar = NULL, rank.order = TRUE, ...) {
 
   if (class(obj) == "amelia") {
     vnames <- colnames(obj$imputations[[1]])
     n <- nrow(obj$missMatrix)
-    p <- ncol(obj$missMatrix)  
+    p <- ncol(obj$missMatrix)
     percent.missing <- colMeans(obj$missMatrix)
     r1 <- obj$missMatrix
   } else {
     vnames <- colnames(obj)
     n <- nrow(obj)
-    p <- ncol(obj)  
+    p <- ncol(obj)
     percent.missing <- colMeans(is.na(obj))
     r1 <- 1*is.na(obj)
   }
@@ -37,7 +37,7 @@ missmap <- function(obj, legend = TRUE, col = c("wheat","darkred"), main,
 
   if (is.null(csvar)) csvar <- obj$arguments$cs
   if (is.null(tsvar)) tsvar <- obj$arguments$ts
-  
+
   if (missing(y.labels)) {
     if (!is.null(csvar)) {
       if (class(obj) == "amelia") {
@@ -50,7 +50,7 @@ missmap <- function(obj, legend = TRUE, col = c("wheat","darkred"), main,
 
       cs.names <- y.labels
 
-      
+
       if (!is.numeric(cs)) cs <- as.numeric(as.factor(cs))
       if (!is.null(tsvar)) {
         if (class(obj) == "amelia") {
@@ -65,13 +65,13 @@ missmap <- function(obj, legend = TRUE, col = c("wheat","darkred"), main,
 
       y.labels <- y.labels[unit.period]
       r1 <- r1[unit.period,]
-            
+
       brks <- c(TRUE,rep(FALSE, times = (n-1)))
       for (i in 2:n) {
         brks[i] <- (cs[unit.period][i]!=cs[unit.period][i-1])
       }
       y.at <- which(brks)
-      
+
       y.labels <- y.labels[brks]
     } else {
       y.labels <- row.names(obj$imputations[[1]])
@@ -83,19 +83,24 @@ missmap <- function(obj, legend = TRUE, col = c("wheat","darkred"), main,
       y.at <- n:1
   }
   missrank <- rev(order(percent.missing))
-  
+  if (rank.order) {
+    chess <- t(!r1[n:1, missrank])
+    vnames <- vnames[missrank]
+  } else {
+    chess <- t(!r1[n:1,])
+  }
   y.at <- (n:1)[y.at]
 
   if (missing(main))
     main <- "Missingness Map"
 
-  ## here we fork for data/tscs type plots. users cant set this yet. 
+  ## here we fork for data/tscs type plots. users cant set this yet.
   type <- "data"
-  if (type == "data") { 
-    image(x = 1:(p), y = 1:n, z = t(!r1[n:1,missrank]), axes = FALSE,
-        col = col, xlab="", ylab="", main = main)
+  if (type == "data") {
+    image(x = 1:(p), y = 1:n, z = chess, axes = FALSE,
+          col = col, xlab="", ylab="", main = main)
 
-    axis(1, lwd = 0, labels = vnames[missrank], las = 2, at = 1:p, padj = .5,
+    axis(1, lwd = 0, labels = vnames, las = 2, at = 1:p, padj = .5,
          pos = 4, cex.axis = x.cex)
     axis(2, lwd = 0, labels = y.labels, las =2, at = y.at, pos =
          .7, hadj = 1, cex.axis = y.cex)
@@ -113,7 +118,7 @@ missmap <- function(obj, legend = TRUE, col = c("wheat","darkred"), main,
     tscsdata <- as.matrix(tscsdata[,-1])
 
     cols <- rev(heat.colors(5))
-    
+
     image( z=t(tscsdata), axes
           = FALSE, col = cols, main = main, ylab="", xlab="")
     axis(1, labels = unique(ts), at = seq(from = 0, to = 1, length =
@@ -122,7 +127,7 @@ missmap <- function(obj, legend = TRUE, col = c("wheat","darkred"), main,
     axis(2, labels = rownames(tscsdata), at = seq(from = 0, to = 1, length =
                                            nrow(tscsdata)), tck = 0, lwd =
          0, las = 1, cex.axis = .8)
-    
+
     if (legend) {
       par(xpd = TRUE)
       legend(x = 0.95, y = 1.01, col = cols, bty = "n",
@@ -130,7 +135,7 @@ missmap <- function(obj, legend = TRUE, col = c("wheat","darkred"), main,
                           "0.2-0.4","0.4-0.6","0.6-0.8","0.8-1"), fill =cols, horiz = TRUE)
     }
   }
-  
+
   invisible(NULL)
 
 }
