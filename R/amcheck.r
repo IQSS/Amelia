@@ -725,7 +725,22 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     error.mess<-paste("There is only 1 column of data. Cannot impute.")
     return(list(code=error.code,mess=error.mess))
   }
-
+  ts.nulls <- is.null(polytime) & is.null(splinetime)
+  ts.zeros <- (polytime == 0) & (splinetime == 0)
+  if (!isTRUE(polytime > 0) & !isTRUE(splinetime > 0)) {
+    if (!isTRUE(intercs) & !is.null(ts)) {
+      if (ncol(x[,-c(ts,cs,idvars), drop = FALSE]) == 1) {
+        error.code<-61
+        error.mess<-paste("There is only 1 column of data after removing the ts, cs and idvars. Cannot impute without adding polytime.")
+        return(list(code=error.code,mess=error.mess))
+      }
+    }
+  }
+  if (!isTRUE(intercs) & ncol(x[,c(-ts,idcheck), drop = FALSE]) == 1) {
+    error.code<-42
+    error.mess<-paste("There is only 1 column of data. Cannot impute.")
+    return(list(code=error.code,mess=error.mess))
+  }
 
                                         #Error code: 43
                                         #Variable that doesn't vary
