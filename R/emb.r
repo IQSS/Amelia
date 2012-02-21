@@ -873,76 +873,78 @@ am.inv <- function(a,tol=.Machine$double.eps) {
 ameliabind <- function(...) {
   args <- list(...)
 
-  if (length(args) < 2)
-    stop("We need at least two amelia outputs to bind")
-
-  if (any(lapply(args, class)!="amelia"))
+  if (any(!sapply(args, is, "amelia")))
     stop("All arguments must be amelia output.")
 
-  ## test that data is the same. we'll just compare the missMatrices.
-  ## this will allow datasets with the same size and missingness
-  ## matrix to be combined unintentionally, but this seems unlikely.
-  datacheck <- lapply(args,
-                      function(x) isTRUE(identical(x$missMatrix,args[[1]]$missMatrix)))
-  if (any(!unlist(datacheck)))
-    stop("Non-compatible datasets.")
+  if (length(args) > 1) {
+    ## test that data is the same. we'll just compare the missMatrices.
+    ## this will allow datasets with the same size and missingness
+    ## matrix to be combined unintentionally, but this seems unlikely.
+    datacheck <- lapply(args,
+                        function(x) isTRUE(identical(x$missMatrix,args[[1]]$missMatrix)))
+    if (any(!unlist(datacheck)))
+      stop("Non-compatible datasets.")
 
-  ## test that all the arguments are the same
-  check <- lapply(args,
-                  function(x) isTRUE(identical(x$arguments, args[[1]]$arguments)))
-  if (any(!unlist(check)))
-    stop("Non-compatible amelia arguments")
+    ## test that all the arguments are the same
+    check <- lapply(args,
+                    function(x) isTRUE(identical(x$arguments, args[[1]]$arguments)))
+    if (any(!unlist(check)))
+      stop("Non-compatible amelia arguments")
 
-  check <- lapply(args,
-                  function(x) isTRUE(identical(x$transform.calls,
-                                               args[[1]]$transform.calls)))
-  if (any(!unlist(check)))
-    stop("Non-compatible transformations on imputed datasets")
+    check <- lapply(args,
+                    function(x) isTRUE(identical(x$transform.calls,
+                                                 args[[1]]$transform.calls)))
+    if (any(!unlist(check)))
+      stop("Non-compatible transformations on imputed datasets")
 
-  imps <- unlist(lapply(args, function(x) return(x$m)))
-  newm <- sum(imps)
-  impindex <- c(0,cumsum(imps))
+    imps <- unlist(lapply(args, function(x) return(x$m)))
+    newm <- sum(imps)
+    impindex <- c(0,cumsum(imps))
 
-  k <- nrow(args[[1]]$mu)
-  out  <- list(imputations = list(),
-               m           = integer(0),
-               missMatrix  = matrix(NA,0,0),
-               theta       = array(NA, dim = c(k+1,k+1,newm) ),
-               mu          = matrix(NA, nrow = k, ncol = newm),
-               covMatrices = array(NA, dim = c(k,k,newm)),
-               code        = integer(0),
-               message     = character(0),
-               iterHist    = list(),
-               arguments   = list())
+    k <- nrow(args[[1]]$mu)
+    out  <- list(imputations = list(),
+                 m           = integer(0),
+                 missMatrix  = matrix(NA,0,0),
+                 overvalues  = args[[1]]$overvalues,
+                 theta       = array(NA, dim = c(k+1,k+1,newm) ),
+                 mu          = matrix(NA, nrow = k, ncol = newm),
+                 covMatrices = array(NA, dim = c(k,k,newm)),
+                 code        = integer(0),
+                 message     = character(0),
+                 iterHist    = list(),
+                 arguments   = list())
 
-  out$m <- newm
-  out$missMatrix <- args[[1]]$missMatrix
-  out$arguments <- args[[1]]$arguments
-  out$transform.calls <- args[[1]]$transform.calls
-  out$transform.vars <- args[[1]]$trasnform.vars
+    out$m <- newm
+    out$missMatrix <- args[[1]]$missMatrix
+    out$arguments <- args[[1]]$arguments
+    out$transform.calls <- args[[1]]$transform.calls
+    out$transform.vars <- args[[1]]$trasnform.vars
 
-  ## since code==1 is good and code==2 means we have an NA,
-  ## then our new output should inherit a 2 if there are any
-  out$code <- max(unlist(lapply(args,function(x) return(x$code))))
+    ## since code==1 is good and code==2 means we have an NA,
+    ## then our new output should inherit a 2 if there are any
+    out$code <- max(unlist(lapply(args,function(x) return(x$code))))
 
-  if (out$code > 2)
-    stop("Amelia output contains error.")
-  if (out$code==2)
-    out$message <- "One or more of the imputations resulted in a covariance matrix that was not invertible."
-  else
-    out$message <- "Normal EM convergence"
+    if (out$code > 2)
+      stop("Amelia output contains error.")
+    if (out$code==2)
+      out$message <- "One or more of the imputations resulted in a covariance matrix that was not invertible."
+    else
+      out$message <- "Normal EM convergence"
 
-  for (i in 1:length(args)) {
-    currimps <- (impindex[i]+1):impindex[i+1]
-    out$mu[,currimps] <- args[[i]]$mu
-    out$theta[,,currimps] <- args[[i]]$theta
-    out$covMatrices[,,currimps] <- args[[i]]$covMatrices
-    out$imputations <- c(out$imputations, args[[i]]$imputations)
-    out$iterHist    <- c(out$iterHist, args[[i]]$iterHist)
+    for (i in 1:length(args)) {
+      currimps <- (impindex[i]+1):impindex[i+1]
+      out$mu[,currimps] <- args[[i]]$mu
+      out$theta[,,currimps] <- args[[i]]$theta
+      out$covMatrices[,,currimps] <- args[[i]]$covMatrices
+      out$imputations <- c(out$imputations, args[[i]]$imputations)
+      out$iterHist    <- c(out$iterHist, args[[i]]$iterHist)
 
+    }
+    class(out) <- "amelia"
+    class(out$imputations) <- c("mi","list")
+  } else {
+    out <- args
   }
-  class(out) <- "amelia"
-  class(out$imputations) <- c("mi","list")
   return(out)
 }
 

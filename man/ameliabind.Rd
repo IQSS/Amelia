@@ -10,7 +10,7 @@
 ameliabind(...)
 }
 \arguments{
-  \item{...}{two or more objects of class \code{amelia} with the same
+  \item{...}{one or more objects of class \code{amelia} with the same
   arguments and created from the same data.}
 }
 \details{
