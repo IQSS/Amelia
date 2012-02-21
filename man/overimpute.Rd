@@ -17,7 +17,10 @@ overimpute(output, var, legend = TRUE, xlab, ylab, main,
 
 \arguments{
   \item{output}{output from the function \code{amelia}.}
-  \item{var}{column number or variable name of the variable to overimpute.}
+  \item{var}{column number or variable name of the variable to
+    overimpute.}
+  \item{subset}{an optional vector specifying a subset of observations
+    to be used in the overimputation.}
  \item{legend}{a logical value indicating if a legend should be
     plotted.}
   \item{xlab}{the label for the x-axis. The default is "Observed Values."}
@@ -44,7 +47,18 @@ overimpute(output, var, legend = TRUE, xlab, ylab, main,
   observation. The legend codes this information. Obviously, the
   imputations will be much tighter if there are more observed covariates
   to use to impute that observation.
+
+  The \code{subset} argument evaluates in the environment of the
+  data. That is, it can but is not required to refer to variables in the
+  data frame as if it were attached.
 }
+
+\value{A 5-column matrix that contains (1) the row in the original data,
+(2) the observed value of that observation, (2) the mean of the
+overimputations, (3) the lower bound of the 95\% confidence interval of
+the overimputations, (4) the upper bound of the 95\% confidence interval
+of the overimputations, and (5) the fraction of the variables that were
+missing for that observation in the original data.}
 
 \seealso{Other imputation diagnostics are
   \code{\link{compare.density}}, \code{\link{disperse}}, and
