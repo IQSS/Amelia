@@ -9,7 +9,8 @@ export(amelia,
        tscsPlot,
        missmap,
        moPrep,
-       transform.amelia)
+       transform.amelia,
+       mi.meld)
 
 
 S3method(print, amelia)

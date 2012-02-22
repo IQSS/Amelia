@@ -21,6 +21,7 @@
 ##                uses amelia class
 ##                overimpute: uses amelia class, added lwd, col, main, lab, etc for user
 ##                disperse: now uses amelia class
+##  02/21/12 jh - added mi.meld to combine multiply imputed quantities of interest and se's.
 
 
 compare.density <- function(output,var,col=c("red","black"),scaled=FALSE,lwd=1,main,xlab,ylab,legend=TRUE,frontend=FALSE,...) {
@@ -713,5 +714,49 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
   }
 
   invisible(imps)
+
+}
+
+##
+## mi.meld
+##
+## combines estimated quantities of interest and their standard errors
+##   from multiply imputed datasets
+## Default expects the q's (and their se's) to have all parameters be columns
+##   in a matrix, and the results from each imputed dataset to be a new
+##   row.
+##
+##  INPUTS: q  - matrix of quantities of interest (default m by k, thus each row 
+##          represents k parameters from one of m different datasets)
+##          se - matrix of standard errors (default m by k)
+##          byrow - logical.  TRUE: matrix is m-by-k.  FALSE: matrix is k-by-m. 
+##  2/21/12 jH
+##
+
+
+mi.meld<-function(q,se,byrow=TRUE){
+
+  if(!byrow){
+    q<-t(q)
+    se<-t(se)
+  }
+
+  if(is.data.frame(q)){
+    q<-as.matrix(q)
+  }
+  if(is.data.frame(se)){
+    se<-as.matrix(se)
+  }
+
+  am.m<-nrow(q)
+
+  ones<-matrix(1,nrow=1,ncol=am.m)   
+  imp.q<- (ones%*%q)/am.m            # Slightly faster than "apply(b,2,mean)"
+  ave.se2<- (ones%*% (se^2))/am.m   # Similarly, faster than "apply(se^2,2,mean)"
+  diff<- q - matrix(1,nrow=am.m,ncol=1) %*% imp.q
+  sq2<- (ones%*% (diff^2))/(am.m - 1 )   
+  imp.se<- sqrt(ave.se2 + sq2*(1 + 1/am.m) )
+ 
+  return(list(q.mi=imp.q,se.mi=imp.se))
 
 }
