@@ -4,6 +4,18 @@
 //
 //
 
+== 1.6 (22 Feb 2012) ==
+   * Added a transform function to create transformed variables 
+   in the imputed datasets.
+   * Added a mi.meld() function that can combine quantities of 
+   interest using the Rubin rules.
+   * Added a subset arugment to overimpute. 
+   * write.amelia() can now create a stacked/long imputed 
+   datatset (also updated to AmeliaView)
+   * Fixed a bug in moPrep (Thanks to Jeff Arnold for the patch)
+   * missmap() has an arugment to not re-order the variables.
+   
+
 == 1.5-4 ==
    * Fixed a bug with error messages.
 
