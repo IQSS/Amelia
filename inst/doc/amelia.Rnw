@@ -1712,7 +1712,32 @@ The missingness map is an important tool for understanding the patterns of
 missingness in the data and can often indicate potential ways to improve
 the imputation model or data collection process. 
 
-
+\subsection{Post-imputation Transformations}
+\label{sec:postimptrans}
+In many cases, it is useful to create transformations of the imputed
+varibles for use in further analysis. For instance, one may want to
+create an interaction between two variables or perform a
+log-transformation on the imputed data. To do this, \Amelia\ includes
+a \code{transform} function for \code{amelia} output that adds or
+overwrites variables in each of the imputed datasets. For instance, if we wanted to create a log-transformation of the \code{gdp.pc}
+variable, we could use the following command:
+<<>>=
+a.out <- transform(a.out, lgdp = log(gdp.pc))
+head(a.out$imputations[[1]][,c("country", "year","gdp.pc", "lgdp")])
+@ 
+To create an interaction between two variables, we could simply use:
+<<>>=
+a.out <- transform(a.out, pol_gdp = polity * gdp.pc)
+@ 
+Each transformation is recorded and the \code{summary} command prints
+out each transformation that has been performed:
+<<>>=
+summary(a.out)
+@ 
+Note the updated output is almost exactly the same as the fresh
+\code{amelia} output. You can pass the transformed output back to
+\code{amelia} and it will add imputations and update these imputations
+with the transformations you have performed. 
 \subsection{Analysis Models}
 \label{sec:analysis}
 
