@@ -7,10 +7,11 @@
   provides confidence intervals for the imputed values.
 }
 \usage{
-mi.meld(b, se, by.row=TRUE)}
+mi.meld(q, se, byrow = TRUE)
+}
 
 \arguments{
-  \item{b}{A matrix or data frame of (k) quantities of interest (eg. coefficients, parameters, means) from (m) multiply imputed datasets.  Default is to assume the matrix is m-by-k (see \code{byrow}), thus each row represents a set of results from one dataset, and each column represents the different values of a particular quantity of interest across the imputed datasets.}
+  \item{q}{A matrix or data frame of (k) quantities of interest (eg. coefficients, parameters, means) from (m) multiply imputed datasets.  Default is to assume the matrix is m-by-k (see \code{byrow}), thus each row represents a set of results from one dataset, and each column represents the different values of a particular quantity of interest across the imputed datasets.}
   \item{se}{A matrix or data frame of standard errors that corresponde to each of the elements of the quantities of interest in b.  Should be the same dimensions as \code{b}.}
   \item{byrow}{logical.  If \code{TRUE}, b and se are treated as though each row represents the set of results from one dataset 
 (thus m-by-k).  If \code{FALSE}, each column represents results from one dataset (thus k-by-m).}
@@ -28,7 +29,7 @@ mi.meld(b, se, by.row=TRUE)}
 \references{
 Rubin, D. (1987). \emph{Multiple Imputation for Nonresponse in Surveys}.  New York: Wiley.
 
-Honaker, J., King, G., Honaker, J. Joseph, A. Scheve K. (2001). Analyzing Incomplete Political Science Data: An Alternative Algorithm for Multiple Imputation \emph{American Political Science Review}, \bold{95(1)}, 49--69. (p53)}
+Honaker, J., King, G., Honaker, J. Joseph, A. Scheve K. (2001). Analyzing Incomplete Political Science Data: An Alternative Algorithm for Multiple Imputation \emph{American Political Science Review}, \bold{95(1)}, 49--69. (p53)
 }
 
 \examples{
@@ -38,11 +39,11 @@ a.out <- amelia(x = africa, m=m, cs = "country", ts = "year", logs = "gdp_pc")
 
 b.out<-NULL
 se.out<-NULL
-for(i in 1:m){
-  ols.out<-lm(civlib~trade ,data=a.out$imputations[[i]])
-  b.out<-rbind(b.out,ols.out$coef)
-  se.out<-rbind(se.out, coef(summary(ols.out))[,2])
+for(i in 1:m) {
+  ols.out <- lm(civlib ~ trade ,data = a.out$imputations[[i]])
+  b.out <- rbind(b.out, ols.out$coef)
+  se.out <- rbind(se.out, coef(summary(ols.out))[,2])
 }
 
-combined.results<-mi.meld(q=b.out,se=se.out)
+combined.results <- mi.meld(q = b.out, se = se.out)
 }
