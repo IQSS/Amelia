@@ -34,7 +34,7 @@ Honaker, J., King, G., Honaker, J. Joseph, A. Scheve K. (2001). Analyzing Incomp
 
 \examples{
 data(africa)
-m=5
+m <- 5
 a.out <- amelia(x = africa, m=m, cs = "country", ts = "year", logs = "gdp_pc")
 
 b.out<-NULL
