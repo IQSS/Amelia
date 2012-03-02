@@ -3,8 +3,7 @@
 
 \title{Combine Multiple Results From Multiply Imputed Datasets}
 \description{
-  Plots a time series for a given variable in a given cross-section and
-  provides confidence intervals for the imputed values.
+  Combine sets of estimates (and their standard errors) generated from different multiply imputed datasets into one set of results.
 }
 \usage{
 mi.meld(q, se, byrow = TRUE)
@@ -12,7 +11,7 @@ mi.meld(q, se, byrow = TRUE)
 
 \arguments{
   \item{q}{A matrix or data frame of (k) quantities of interest (eg. coefficients, parameters, means) from (m) multiply imputed datasets.  Default is to assume the matrix is m-by-k (see \code{byrow}), thus each row represents a set of results from one dataset, and each column represents the different values of a particular quantity of interest across the imputed datasets.}
-  \item{se}{A matrix or data frame of standard errors that corresponde to each of the elements of the quantities of interest in b.  Should be the same dimensions as \code{b}.}
+  \item{se}{A matrix or data frame of standard errors that correspond to each of the elements of the quantities of interest in b.  Should be the same dimensions as \code{b}.}
   \item{byrow}{logical.  If \code{TRUE}, b and se are treated as though each row represents the set of results from one dataset 
 (thus m-by-k).  If \code{FALSE}, each column represents results from one dataset (thus k-by-m).}
 }
