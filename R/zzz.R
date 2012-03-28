@@ -1,12 +1,15 @@
 .onAttach <- function(...) {
   mylib     <- dirname(system.file(package = "Amelia"))
-  ver       <- packageDescription("Amelia", lib = mylib)$Version
-  builddate <- packageDescription("Amelia", lib = mylib)$Date
+  ver       <- packageVersion("Amelia")
+  builddate <- packageDescription("Amelia", lib.loc = mylib)$Date
   curryear  <- format(Sys.time(), "%Y")
-  cat("## \n## Amelia II: Multiple Imputation\n")
-  cat(paste("## (Version ",ver,", built: ", builddate,")\n", sep=""))
-  cat(paste("## Copyright (C) 2005-",curryear,
-            " James Honaker, Gary King and Matthew Blackwell\n",sep=""))
-  cat(paste("## Refer to http://gking.harvard.edu/amelia/",
-            "for more information\n##\n"))
+  mess <- c("## ", "## Amelia II: Multiple Imputation",
+            paste("## (Version ",ver,", built: ", builddate,")", sep=""),
+            paste("## Copyright (C) 2005-",curryear,
+            " James Honaker, Gary King and Matthew Blackwell",sep=""),
+            paste("## Refer to http://gking.harvard.edu/amelia/",
+            "for more information"), "## ")
+  mess <- paste(mess, collapse = "\n")
+  packageStartupMessage(mess)
+
 }

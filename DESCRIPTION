@@ -9,7 +9,7 @@ Depends: R (>= 2.2.0), foreign, utils
 Suggests: tcltk, Zelig
 Description: Amelia multiply imputes data from a single cross-section,
 	     or from time-series-cross-sectional data.
-License: GPL version 2 or newer
+License: GPL (>= 2)
 Packaged: Fri May  5 16:55:03 2006
 URL: http://gking.harvard.edu/amelia
 
