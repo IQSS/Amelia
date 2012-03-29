@@ -112,7 +112,8 @@ missmap <- function(obj, legend = TRUE, col = c("wheat","darkred"), main,
     }
   } else {
     tscsdata <- data.frame(cs.names, ts, rowMeans(r1))
-    tscsdata <- reshape(tscsdata, idvar = "cs.names", timevar = "ts", dir = "wide")
+    tscsdata <- reshape(tscsdata, idvar = "cs.names", timevar = "ts",
+                        direction = "wide")
     rownames(tscsdata) <- tscsdata[,1]
     colnames(tscsdata) <- unique(ts)
     tscsdata <- as.matrix(tscsdata[,-1])
