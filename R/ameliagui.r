@@ -575,7 +575,7 @@ run.amelia <- function() {
                               max.resample = max.re, tolerance= tol))
 
   putAmelia("output.log", c(getAmelia("output.log"),
-                            sub("    ","\n       ",deparse(amcall, control=NULL, width=60)),"\n\n"))
+                            sub("    ","\n       ",deparse(amcall, control=NULL, width.cutoff=60)),"\n\n"))
   putAmelia("wdForLastImputation", getwd())
   ## run amelia! or at least try, and put the output in a list
   ## the name of the list will be the output name set by user
