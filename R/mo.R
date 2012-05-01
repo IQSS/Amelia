@@ -29,23 +29,25 @@ moPrep.default <- function(x, formula, subset, error.proportion, gold.standard=!
   ## parse the formula
   target.name <- formula[[2]]
   pars <- formula[[3]]
+  vnames <- all.vars(formula, unique = FALSE)
 
-  proxysplit <- strsplit(deparse(formula),"\\|")[[1]]
-  if (length(proxysplit) > 1) {
-    proxyname <- proxysplit[[2]]
-    meanpos <- length(all.vars(formula, unique = FALSE))-1
+  if ("|" %in% all.names(formula)) {
+    proxyname <- vnames[length(vnames)]
+    meanpos <- length(vnames)-1
   } else {
-    meanpos <- length(all.vars(formula, unique = FALSE))
+    meanpos <- length(vnames)
   }
   if (!exists("proxyname") && missing(error.proportion) && !gold.standard) {
     stop("Need to specify a proxy, an error proportion, or gold-standard data.")
   }
 
+  proxysplit <- strsplit(deparse(formula), "\\|")[[1]]
   form <- formula(paste(proxysplit, collapse = "+"))
 
 
   m <- match.call()
   m[[1]] <- as.name("model.frame")
+  m$formula <- form
   m$error.proportion <- NULL
   m$gold.standard <- NULL
   m$data <- m$x
@@ -71,7 +73,7 @@ moPrep.default <- function(x, formula, subset, error.proportion, gold.standard=!
   if (exists("proxyname")) {
     prior.var <- var.mm - cov(mf[,1],mf[,proxyname], use="complete.obs")
   }
-  
+
   if (gold.standard && !is.null(m$subset)) {
     if (is.logical(subset)) {
       m$subset <- as.name(paste("!",m$subset,sep=""))
