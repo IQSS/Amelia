@@ -746,14 +746,15 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   ## in addition to having no variation in the listwise deleted
   ## dataset. Our starting value function should be robust to this.
 
+  num.nonmissing <- function(obj) length(unique(na.omit(obj)))
   if (is.data.frame(x)) {
-    non.vary <- sapply(x[,idcheck, drop = FALSE], var, na.rm = TRUE)
+    non.vary <- sapply(x[,idcheck, drop = FALSE], num.nonmissing)
   } else {
-    non.vary <- apply(x[,idcheck, drop = FALSE], 2, var, na.rm = TRUE)
+    non.vary <- apply(x[,idcheck, drop = FALSE], 2, num.nonmissing)
   }
 
-  if (sum(non.vary == 0)) {
-    non.names <- colnames(x[,idcheck])[non.vary == 0]
+  if (sum(non.vary == 1)) {
+    non.names <- colnames(x[,idcheck])[non.vary == 1]
     if (is.null(non.names)) {
       hold <- rep(-1, ncol(x))
       hold[-idcheck] <- non.vary
