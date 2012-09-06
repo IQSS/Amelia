@@ -562,7 +562,7 @@ imputation,
 
 <<label=hist1plot, include=FALSE>>=
 hist(a.out$imputations[[3]]$tariff, col="grey", border="white")
-@
+@ %$
 
 
 
@@ -575,7 +575,7 @@ options(SweaveHooks = list(fig = function() par(mfrow=c(1,1))))
 <<label=hist1, fig=TRUE, echo=FALSE, width=7, height=7>>=
 <<hist1plot>>
 @
-  
+   
 \caption{Histogram of the \texttt{tariff} variable from the 3rd imputed dataset.}
 \label{fig:hist1}
 \end{center}
@@ -760,7 +760,7 @@ tabulate this variable from one of the imputed datasets,
 
 <<echo=TRUE, print=TRUE>>=
 table(a.out$imputations[[3]]$polity)
-@ 
+@ %$
 we can see that there is one imputation between -4 and -3 and one
 imputation between 6 and 7. Again, the interpretation of these values is
 rather straightforward even if they are not strictly in the coding of the
@@ -848,7 +848,7 @@ has a roughly normal distribution.
 <<label=logshist, include=FALSE, echo=FALSE>>=
 hist(freetrade$tariff, col="grey", border="white")
 hist(log(freetrade$tariff), col="grey", border="white")
-@
+@ %$
 
 <<echo=FALSE, results = hide>>=
 options(SweaveHooks = list(fig = function() par(mfrow=c(1,2))))
@@ -1148,12 +1148,8 @@ tariff rates in many years,
 
 <<>>=
 freetrade[freetrade$country == "Thailand", c("year","country","tariff")]
-@  
+@  %$
 
-%% this is here to fix mb's syntax highlighting
-<<eval=FALSE>>=
-#$
-@ 
 
 Suppose that we had expert information that tariff rates were roughly 40\%
 in Thailand between 1986 and 1988 with about a 6\% margin of error.  This
@@ -1724,7 +1720,7 @@ variable, we could use the following command:
 <<>>=
 a.out <- transform(a.out, lgdp = log(gdp.pc))
 head(a.out$imputations[[1]][,c("country", "year","gdp.pc", "lgdp")])
-@ 
+@ %$
 To create an interaction between two variables, we could simply use:
 <<>>=
 a.out <- transform(a.out, pol_gdp = polity * gdp.pc)
@@ -1766,7 +1762,7 @@ output:
 <<>>=
 z.out.imp <- zelig(tariff ~ polity + pop + gdp.pc + year +country, data =
                    a.out$imputations, model = "ls")
-@ 
+@ %$
 
 <<>>= 
 summary(z.out.imp)
@@ -1800,7 +1796,7 @@ for(i in 1:a.out$m) {
 
 combined.results <- mi.meld(q = b.out, se = se.out)
 combined.results
-@ 
+@ %$
 
 In addition to the resources available in {\sf R}, users can draw on
 Stata to implement their analysis models. As of version 11,
@@ -2231,21 +2227,21 @@ any completed imputations. Thus, if you save the session after
 imputing, you can always load up those imputations and view their
 diagnostics using the sessions feature of \AmeliaView. 
 
-\clearpage
+%\clearpage
 
-\section{Reference to Amelia's Functions}
+% \section{Reference to Amelia's Functions}
 
-\include{Rd/africa}
-\include{Rd/amelia}
-\include{Rd/compare.density}
-\include{Rd/disperse}
-\include{Rd/freetrade}
-\include{Rd/missmap}
-\include{Rd/overimpute}
-\include{Rd/plot.amelia}
-\include{Rd/summary.amelia}
-\include{Rd/tscsPlot}
-\include{Rd/write.amelia}
+% \include{Rd/africa}
+% \include{Rd/amelia}
+% \include{Rd/compare.density}
+% \include{Rd/disperse}
+% \include{Rd/freetrade}
+% \include{Rd/missmap}
+% \include{Rd/overimpute}
+% \include{Rd/plot.amelia}
+% \include{Rd/summary.amelia}
+% \include{Rd/tscsPlot}
+% \include{Rd/write.amelia}
 
 \bibliographystyle{apsr}
 \bibsep=0in

@@ -1,9 +1,0 @@
-getwd() -> wd
-dir.create(file.path(wd,"Rd"))
-setwd(file.path(R.home(),"share/texmf"))
-#setwd(file.path("/usr/share/R/texmf"))
-file.copy(dir(), file.path(wd,"Rd"),TRUE)
-setwd(file.path(wd,"../../man"))
-file.copy(dir(patt=".Rd"), file.path(wd,"Rd"), TRUE)
-q("no")
-
