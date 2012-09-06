@@ -855,11 +855,7 @@ am.inv <- function(a,tol=.Machine$double.eps) {
     return(1/a)
   storage.mode(a) <- "double"
   size <- ncol(a)
-  .Call("La_chol2inv",.Call("La_chol",a,PACKAGE="base"),size,PACKAGE="base")
-
-                                        #storage.mode(a) <- "double"
-                                        #storage.mode(b) <- "double"
-                                        #.Call("La_dgesv",a,b,tol)
+  chol2inv(chol.default(a), ncol(a))
 }
 
 ##
