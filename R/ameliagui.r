@@ -2755,3 +2755,31 @@ showImputedFiles <- function() {
     system(paste("xdg-open", shQuote(getAmelia("wdForLastImputation"))))
   return(NULL)
 }
+
+if (getRversion() >= "2.15.1") {
+  globalVariables(c('gui', 'main.menu', 'main.menu.file',
+                    'main.menu.import', 'main.menu.demo',
+                    'main.menu.variables','main.menu.trans',
+                    'main.menu.splines', 'main.menu.options',
+                    'main.menu.outfile', 'main.menu.output',
+                    'main.menu.help', 'gui.welcome', 'rPic',
+                    'tablePic', 'dtaPic', 'spssPic', 'gui.skel',
+                    'pageUpIcon', 'saveIcon', 'histIcon',
+                    'pageEditIcon', 'worldIcon', 'action.go.icon',
+                    'pageTextIcon', 'loadSessionButton',
+                    'saveSessionButton', 'plotHistButton',
+                    'editDataButton', 'missmapButton', 'output.run',
+                    'showLogButton', 'legendFrame', 'clockIcon',
+                    'userIcon', 'redFlagIcon', 'main.tree',
+                    'statusbar', 'redStopIcon', 'greenCheckIcon',
+                    'noimps.label', 'addBoundsWindow', 'minBox',
+                    'maxBox', 'bd.ok', 'bd.can', 'aboutWindow',
+                    'temp.seed', 'temp.tol', 'numericalWindow',
+                    'temp.name', 'temp.num', 'outputWindow',
+                    'upArrowIcon', 'downArrowIcon', 'diagWindow',
+                    'disp.imps', 'onedim', 'twodims', 'disp.but',
+                    'priorsWindow', 'meanBox', 'sdBox', 'confBox',
+                    'prior.add.but', 'pri.ok', 'pri.can', 'clockIcon',
+                    'varnames', 'userIcon', 'amelia.data',
+                    'main.tree', 'log.top', 'sum.plot'))
+}
