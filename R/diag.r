@@ -22,7 +22,7 @@
 ##                overimpute: uses amelia class, added lwd, col, main, lab, etc for user
 ##                disperse: now uses amelia class
 ##  02/21/12 jh - added mi.meld to combine multiply imputed quantities of interest and se's.
-
+##  10/30/12 jh - tscsPlot: expanded to allow to cycle through sets of cross sectional units efficiently.
 
 compare.density <- function(output,var,col=c("red","black"),scaled=FALSE,lwd=1,main,xlab,ylab,legend=TRUE,frontend=FALSE,...) {
 
@@ -238,7 +238,7 @@ overimpute <- function(output, var, subset, legend = TRUE, xlab, ylab,
     conf<-c()
     for (k in 1:output$m) {
 
-      ## The theta matrix is now stored in a array with
+      ## The theta matrix is now stored in an array with
       ## dimensions c(vars+1,vars+1,m), so this grabs
       ## the kth theta matrix.
 
@@ -249,12 +249,7 @@ overimpute <- function(output, var, subset, legend = TRUE, xlab, ylab,
       Ci[miss,miss]<-hold
       imputations<-AMr1[i, , drop=FALSE] * ((x %*% theta[2:(AMp+1),2:(AMp+1) , drop=FALSE])
                                + (matrix(1,1,1) %*% theta[1,2:(AMp+1) , drop=FALSE]) )
-      ## for (j in 1:20) {             ## COULD REMOVE THIS LOOP
-      ##                                 ##(mb: I removed it for speed)
-      ##   junk<-matrix(rnorm(AMp), 1, AMp) %*% Ci
-      ##   xc<-x + imputations + junk
-      ##   conf<-c(conf,xc[,stacked.var])
-      ## }
+
       junk <- matrix(rnorm(20*AMp), 20, AMp) %*% Ci
       xc <- matrix(x,20,AMp,byrow=TRUE) +
         matrix(imputations, 20, AMp, byrow=TRUE) +
@@ -604,7 +599,7 @@ sigalert<-function(data,disperse.list,output,notorious=5){
 
 tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
                      misscol = "red", obscol = "black", xlab, ylab, main,
-                     pch, ylim, xlim, frontend = FALSE, ...) {
+                     pch, ylim, xlim, frontend = FALSE, plotall=FALSE, nr, nc, pdfstub, ...) {
   if (missing(var))
     stop("I don't know which variable (var) to plot")
   if (missing(cs))
@@ -631,28 +626,44 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
     }
   }
 
-  units <- unique(data[,output$arguments$cs])
-  if (!(cs %in% units))
-    stop("the cross-section unit is not in the data")
+  units <- sort(unique(data[,output$arguments$cs]))
+  if(plotall){
+  	cs<-units
+  }else{
+    if (!(all(cs %in% units)))
+      stop("some cross-section unit requested for the plot is not in the data")
+  }
 
+# Picks a number of rows and columns if not user defined.  Maxs out at 4-by-4, unless user defined
+  	if(missing(nr)){
+  	  nr<-min(4,ceiling(sqrt(length(cs))))		
+  	}
+  	if(missing(nc)){
+  	  nc<-min(4,ceiling(length(cs)/nr))		
+	}
+
+  if(length(cs)>1){    	
+  	oldmfcol<-par()$mfcol
+    par(mfcol=c(nr,nc))
+  }
 
   prepped <- amelia.prep(x = data, arglist=output$arguments)
   if (!is.null(prepped$blanks)) {
     data <- data[-prepped$blanks,]
-    unit.rows <- which(data[,output$arguments$cs]==cs)
+    unit.rows <- which(data[,output$arguments$cs] %in% cs)
     miss <- output$missMatrix[-prepped$blanks,][unit.rows, var] == 1
   } else {
-    unit.rows <- which(data[,output$arguments$cs]==cs)
+    unit.rows <- which(data[,output$arguments$cs] %in% cs)
     miss <- output$missMatrix[unit.rows, var] == 1
   }
 
-  time <- data[unit.rows, output$arguments$ts]
-
-  cross.sec <- prepped$x[!is.na(match(prepped$n.order, unit.rows)),]
-
+  time <- data[unit.rows, output$arguments$ts]   # These are the time values for rows appearing in some future plot
+  imps.cs<-data[unit.rows,output$arguments$cs]   # These are the cs units for rows appearing in some future plot
+  cross.sec <- prepped$x[!is.na(match(prepped$n.order, unit.rows)),]  
   stacked.var<-match(var,prepped$subset.index[prepped$p.order])
   subset.var<-match(var,prepped$subset.index)
   imps <- array(NA, dim=c(nrow(cross.sec), draws))
+
 
   drawsperimp <- (1/output$m)*draws
   if (sum(miss) > 0) {
@@ -677,25 +688,12 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
 
     outoforder <- match(prepped$n.order, unit.rows)[!is.na(match(prepped$n.order, unit.rows))]
     imps <- imps[order(outoforder),]
-
-    means <- rowMeans(imps)
-
-    uppers <- apply(imps, 1, quantile, probs=(conf + (1 - conf)/2))
-    lowers <- apply(imps, 1, quantile, probs=(1-conf)/2)
-  } else {
-    means <- data[unit.rows, var]
-    uppers <- lowers <- means
   }
-
 
   if (missing(pch)) pch <- 19
   if (missing(xlab)) xlab <- "time"
   if (missing(ylab)) ylab <- names(data)[var]
-  if (missing(main)) main <- cs
-  if (missing(xlim)) xlim <- range(time)
-  if (missing(ylim)) ylim <- range(c(uppers,lowers,means))
 
-  cols <- ifelse(miss, misscol, obscol)
   if (frontend) {
     if (.Platform$OS.type == "windows") {
       windows()
@@ -703,16 +701,64 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
       x11()
     }
   }
-  plot(x = time, y = means, col = cols, pch = pch,ylim = ylim, xlim = xlim,
-       ylab = ylab, xlab = xlab, main = main, ...)
-  segments(x0 = time, x1 = time, y0 = lowers, y1 = uppers, col = cols, ...)
 
-  oiDetect <- (sum(output$missMatrix[unit.rows,var]) +
-               sum(!is.na(data[unit.rows, var]))) > length(unit.rows)
-  if (oiDetect) {
-    points(x = time, y = data[unit.rows, var], pch = pch, col = obscol)
+  count<-0
+  for(i in 1:length(cs)){
+
+      current.rows<- which(data[,output$arguments$cs]==cs[i])
+      current.time<- data[current.rows, output$arguments$ts]
+
+      flag<-imps.cs==cs[i]
+      current.miss<- miss[flag]
+
+      if(sum(current.miss)>0){                  
+      	  current.imps<-imps[flag,]
+      	  current.means <- rowMeans(current.imps)          
+      	  current.uppers <- apply(current.imps, 1, quantile, probs=(conf + (1 - conf)/2))   # THIS IS LIKELY SLOW
+      	  current.lowers <- apply(current.imps, 1, quantile, probs=(1-conf)/2)              # THIS IS LIKELY SLOW
+  	  } else {
+      	  current.means <- data[current.rows, var]
+    	  current.uppers <- current.lowers <- current.means
+  	  }
+
+      cols <- ifelse(current.miss, misscol, obscol)
+      current.main<-ifelse(missing(main), cs[i], main)  # Allow title to be rolling if not defined
+      if(missing(xlim)){                                # Allow axes to vary by unit, if not defined
+      	current.xlim<-range(current.time)
+      }else{
+      	current.xlim<-xlim
+      }
+      if(missing(ylim)){
+      	current.ylim<-range(current.uppers,current.lowers,current.means)
+      }else{
+      	current.ylim<-ylim
+      }
+      
+      plot(x = current.time, y = current.means, col = cols, pch = pch, ylim = current.ylim, xlim = current.xlim,
+         ylab = ylab, xlab = xlab, main = current.main, ...)
+      segments(x0 = current.time, x1 = current.time, y0 = current.lowers, y1 = current.uppers, col = cols, ...)
+
+      oiDetect <- (sum(output$missMatrix[current.rows,var]) +
+               sum(!is.na(data[current.rows, var]))) > length(current.rows)
+      if (oiDetect) {
+        points(x = current.time, y = data[current.rows, var], pch = pch, col = obscol)
+      }
+
+      # print page if window full
+	  if((!missing(pdfstub)) & (i %% (nr*nc) ==0)){
+	  	count<-count+1
+	  	dev.copy2pdf(file=paste(pdfstub,count,".pdf",sep=""))
+	  }
   }
 
+  if(!missing(pdfstub)){ 
+    if(i %% (nr*nc) !=0){           # print last page if not complete
+	    count<-count+1
+	    dev.copy2pdf(file=paste(pdfstub,count,".pdf",sep=""))
+    }
+    par(mfcol=oldmfcol)             # return to previous windowing 
+  }                                 # although always now fills by col even if previously by row
+ 
   invisible(imps)
 
 }
