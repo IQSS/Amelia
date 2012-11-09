@@ -561,7 +561,7 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                                         #Transformations must be mutually exclusive
   if (length(unique(c(logs,sqrts,lgstc,noms,ords,idvars))) != length(c(logs,sqrts,lgstc,noms,ords,idvars))) {
     error.code<-32
-    error.mess<-paste("The options for transfomations are not mutually exclusive.  One \n",
+    error.mess<-paste("Transfomations must be mutually exclusive, so one \n",
                       "variable can only be assigned one transformation.  You have the \n",
                       "same variable designated for two transformations.")
     return(list(code=error.code,mess=error.mess))
