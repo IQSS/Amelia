@@ -30,12 +30,13 @@ main.close<-function() {
                        default="cancel")
   if (tclvalue(qvalue)=="ok") {
     tkdestroy(getAmelia("gui"))
-    detach("ameliaEnv")
   }
 }
 
+
+
 setWorkingDir <- function() {
-  newwd <- tkchooseDirectory(parent=getAmelia("gui"),
+  newwd <- tkchooseDirectory(parent = getAmelia("gui"),
                              initialdir = getwd(),
                              title = "Set output directory...",
                              mustexist = TRUE)
@@ -176,7 +177,9 @@ loadRData <- function() {
   if (getAmelia("am.filename") == "")
     return(NULL)
   if (!is.null(getAmelia("amelia.data"))) {
-    sure<-tkmessageBox(parent=getAmelia("gui"), message="If you load another dataset, your current settings will be erased.  Are you sure you want to load the new data?",icon="question",type="yesno")
+    sure <- tkmessageBox(parent = getAmelia("gui"),
+                         message = "If you load another dataset, your current settings will be erased.  Are you sure you want to load the new data?",
+                         icon = "question", type = "yesno")
     if (tclvalue(sure) == "no")
       return(NULL)
   }
@@ -187,7 +190,7 @@ loadRData <- function() {
     putAmelia("amelia.data",NULL)
     return(NULL)
   }
-  if (length(amelia.data) == 1) {
+  if (length(getAmelia("amelia.data")) == 1) {
     putAmelia("amelia.data", eval(as.name(getAmelia("amelia.data"))))
   } else {
     datasets <- sapply(getAmelia("amelia.data"), function(x) is.data.frame(eval(as.name(x))))
@@ -257,13 +260,13 @@ activateGUI <- function(session = FALSE) {
 
   tkgrid.remove(getAmelia("error.label"))
   tkgrid.remove(getAmelia("allgood.label"))
-  tkgrid(noimps.label, row = 2, column = 7,
+  tkgrid(getAmelia("noimps.label"), row = 2, column = 7,
          sticky ="e", padx = 10)
   ## Get rid of welcome frame
   if (as.logical(tkwinfo("ismapped", getAmelia("gui.welcome")))) {
     tkgrid.remove(getAmelia("gui.welcome"))
     tkgrid(getAmelia("gui.skel"), row = 0, column = 0, sticky ="news")
-    tkgrid(statusbar, sticky = "sew")
+    tkgrid(getAmelia("statusbar"), sticky = "sew")
   }
   ## initialize values
 
@@ -296,7 +299,7 @@ activateGUI <- function(session = FALSE) {
 
   if (!session) {
     opt.holder <- vector("numeric",ncol(getAmelia("amelia.data")))
-    names(opt.holder) <- varnames
+    names(opt.holder) <- getAmelia("varnames")
     putAmelia("noms", opt.holder)
     putAmelia("ords", opt.holder)
     putAmelia("logs", opt.holder)
@@ -309,7 +312,7 @@ activateGUI <- function(session = FALSE) {
     boundsholder <- matrix(NA, nrow = ncol(getAmelia("amelia.data")),
                            ncol = 3)
     boundsholder[,1] <- 1:ncol(getAmelia("amelia.data"))
-    rownames(boundsholder) <- varnames
+    rownames(boundsholder) <- getAmelia("varnames")
 
     putAmelia("num.poly",tclVar("0"))
     putAmelia("intercs",tclVar("0"))
@@ -332,8 +335,8 @@ activateGUI <- function(session = FALSE) {
   } else {
     for (i in factorVars) {
       if (all(getAmelia("idvar")[i]==0,
-              getAmelia("csvar")!=varnames[i],getAmelia("noms")[i]==0)) {
-        tcl(getAmelia("main.tree"), "item", varnames[i], image = redFlagIcon)
+              getAmelia("csvar")!=getAmelia("varnames")[i],getAmelia("noms")[i]==0)) {
+        tcl(getAmelia("main.tree"), "item", getAmelia("varnames")[i], image = getAmelia("redFlagIcon"))
       }
     }
   }
@@ -372,7 +375,7 @@ save.session <- function() {
   putAmelia("tol.value", tclvalue(getAmelia("tol")))
   putAmelia("splinestime.value", tclvalue(getAmelia("splinestime")))
 
-  save(list = sessionList, envir=ameliaEnv(), file = file.select)
+  save(list = sessionList, envir=ameliaEnv, file = file.select)
   return(NULL)
 }
 
@@ -385,7 +388,7 @@ load.session <- function() {
     return(NULL)
 
   ## try loading the RData file and stop if it doesn't work
-  tryloadsess <- try(load(file=file.select, envir=ameliaEnv()), silent=TRUE)
+  tryloadsess <- try(load(file=file.select, envir=ameliaEnv), silent=TRUE)
 
   if (inherits(tryloadsess,"try-error")) {
     tkmessageBox(parent=getAmelia("gui"),message="Error loading session.  This is not a valid session file.",icon="error",type="ok")
@@ -393,7 +396,7 @@ load.session <- function() {
   }
 
   ## make sure that the RData file loaded the right list
-  if (!("session.flag" %in% ls(ameliaEnv())) | !getAmelia("session.flag")) {
+  if (!("session.flag" %in% ls(ameliaEnv)) | !getAmelia("session.flag")) {
     tkmessageBox(parent=getAmelia("gui"), message="Not an Amelia session file.  Try again.",icon="error",type="ok")
     return(NULL)
   }
@@ -401,34 +404,34 @@ load.session <- function() {
 
   nn <- ncol(getAmelia("amelia.data"))
   if (!is.null(getAmelia("tsvar"))) {
-    tcl(getAmelia("main.tree"), "item", getAmelia("tsvar"), image = clockIcon)
+    tcl(getAmelia("main.tree"), "item", getAmelia("tsvar"), image = getAmelia("clockIcon"))
     tkentryconfigure(getAmelia("main.menu.options"),0, state="normal")
     for (i in 1:nn) {
       if (getAmelia("lags")[i] == 1)
-        tkset(getAmelia("main.tree"), varnames[i], "lag", "X")
+        tkset(getAmelia("main.tree"), getAmelia("varnames")[i], "lag", "X")
       if (getAmelia("leads")[i] == 1)
-        tkset(getAmelia("main.tree"), varnames[i], "lead", "X")
+        tkset(getAmelia("main.tree"), getAmelia("varnames")[i], "lead", "X")
     }
   }
   if (!is.null(getAmelia("csvar"))) {
-    tcl(getAmelia("main.tree"), "item", getAmelia("csvar"), image = userIcon)
+    tcl(getAmelia("main.tree"), "item", getAmelia("csvar"), image = getAmelia("userIcon"))
     tkentryconfigure(getAmelia("main.menu.options"), 1, state="normal")
     tkentryconfigure(getAmelia("main.menu.options"), 1, variable = getAmelia("intercs"))
   }
 
   for (i in 1:nn) {
     if (getAmelia("idvar")[i] == 1)
-      tkset(getAmelia("main.tree"), varnames[i], "transform", "ID")
+      tkset(getAmelia("main.tree"), getAmelia("varnames")[i], "transform", "ID")
     if (getAmelia("ords")[i] == 1)
-      tkset(getAmelia("main.tree"), varnames[i], "transform", "Ordinal")
+      tkset(getAmelia("main.tree"), getAmelia("varnames")[i], "transform", "Ordinal")
     if (getAmelia("noms")[i] == 1)
-      tkset(getAmelia("main.tree"), varnames[i], "transform", "Nominal")
+      tkset(getAmelia("main.tree"), getAmelia("varnames")[i], "transform", "Nominal")
     if (getAmelia("logs")[i] == 1)
-      tkset(getAmelia("main.tree"), varnames[i], "transform", "Log")
+      tkset(getAmelia("main.tree"), getAmelia("varnames")[i], "transform", "Log")
     if (getAmelia("sqrt")[i] == 1)
-      tkset(getAmelia("main.tree"), varnames[i], "transform", "Square Root")
+      tkset(getAmelia("main.tree"), getAmelia("varnames")[i], "transform", "Square Root")
     if (getAmelia("lgstc")[i] == 1)
-      tkset(getAmelia("main.tree"), varnames[i], "transform", "Logistic")
+      tkset(getAmelia("main.tree"), getAmelia("varnames")[i], "transform", "Logistic")
   }
   for (i in 1:nn) {
     bdMin <- getAmelia("boundsmat")[i,2]
@@ -438,7 +441,7 @@ load.session <- function() {
     } else {
       treeBounds <- ""
     }
-    tkset(getAmelia("main.tree"), varnames[i], "bounds", treeBounds)
+    tkset(getAmelia("main.tree"), getAmelia("varnames")[i], "bounds", treeBounds)
   }
 
   tcl("set", getAmelia("seed"), getAmelia("seed.value"))
@@ -683,7 +686,7 @@ amelia.save <- function(out,outname,m)  {
                  separate = FALSE, version = 10)
   }
   if (save.type == 8) {
-    save(list = "ameliaObject", envir = ameliaEnv(),
+    save(list = "ameliaObject", envir = ameliaEnv,
          file = paste(outname, ".RData", sep = ""))
   }
 }
@@ -748,7 +751,7 @@ unsetCS <- function() {
   tkentryconfigure(getAmelia("main.menu.options"),0, state="normal")
   if (is.factor(getAmelia("amelia.data")[,csvartemp]) |
       is.character(getAmelia("amelia.data")[,csvartemp])) {
-    tcl(getAmelia("main.tree"), "item", csvartemp, image = redFlagIcon)
+    tcl(getAmelia("main.tree"), "item", csvartemp, image = getAmelia("redFlagIcon"))
   }
 }
 
@@ -768,7 +771,7 @@ setCS <- function() {
   if (!is.null(getAmelia("csvar"))) {
     if (is.factor(getAmelia("amelia.data")[,getAmelia("csvar")]) |
         is.character(getAmelia("amelia.data")[,getAmelia("csvar")])) {
-      tcl(getAmelia("main.tree"), "item", getAmelia("csvar"), image = redFlagIcon)
+      tcl(getAmelia("main.tree"), "item", getAmelia("csvar"), image = getAmelia("redFlagIcon"))
     } else {
       tcl(getAmelia("main.tree"), "item", getAmelia("csvar"), image = "")
     }
@@ -907,196 +910,196 @@ AmeliaView<-function() {
   putAmelia("gui", tktoplevel())
   tkwm.title(getAmelia("gui"), "AmeliaView")
   tkwm.protocol(getAmelia("gui"),"WM_DELETE_WINDOW", function() main.close())
-  tkwm.geometry(gui, "800x500")
+  tkwm.geometry(getAmelia("gui"), "800x500")
   ##Menu
   putAmelia("main.menu", tkmenu(getAmelia("gui")))
-  putAmelia("main.menu.file", tkmenu(main.menu, tearoff=0))
-  putAmelia("main.menu.demo", tkmenu(main.menu, tearoff=0))
-  putAmelia("main.menu.import", tkmenu(main.menu, tearoff=0))
-  putAmelia("main.menu.options", tkmenu(main.menu, tearoff=0))
-  putAmelia("main.menu.splines", tkmenu(main.menu, tearoff=0))
-  putAmelia("main.menu.output", tkmenu(main.menu, tearoff=0))
-  putAmelia("main.menu.help", tkmenu(main.menu, tearoff=0))
-  putAmelia("main.menu.variables", tkmenu(main.menu, tearoff=0,
+  putAmelia("main.menu.file", tkmenu(getAmelia("main.menu"), tearoff=0))
+  putAmelia("main.menu.demo", tkmenu(getAmelia("main.menu"), tearoff=0))
+  putAmelia("main.menu.import", tkmenu(getAmelia("main.menu"), tearoff=0))
+  putAmelia("main.menu.options", tkmenu(getAmelia("main.menu"), tearoff=0))
+  putAmelia("main.menu.splines", tkmenu(getAmelia("main.menu"), tearoff=0))
+  putAmelia("main.menu.output", tkmenu(getAmelia("main.menu"), tearoff=0))
+  putAmelia("main.menu.help", tkmenu(getAmelia("main.menu"), tearoff=0))
+  putAmelia("main.menu.variables", tkmenu(getAmelia("main.menu"), tearoff=0,
                                           postcommand = variableOptionsPost))
-  putAmelia("main.menu.trans", tkmenu(main.menu, tearoff=0))
-  putAmelia("main.menu.outfile", tkmenu(main.menu, tearoff=0))
-  tkadd(main.menu.file,"command",label="Load R Data File...",command=function()loadRData(),
+  putAmelia("main.menu.trans", tkmenu(getAmelia("main.menu"), tearoff=0))
+  putAmelia("main.menu.outfile", tkmenu(getAmelia("main.menu"), tearoff=0))
+  tkadd(getAmelia("main.menu.file"),"command",label="Load R Data File...",command=function()loadRData(),
         underline = 5)
-  tkadd(main.menu.import,"command",label="Import comma-separated value data...",
+  tkadd(getAmelia("main.menu.import"),"command",label="Import comma-separated value data...",
         command=loadCSV, underline = 7)
-  tkadd(main.menu.import,"command",label="Import tab-delimited data...",
+  tkadd(getAmelia("main.menu.import"),"command",label="Import tab-delimited data...",
         command=loadTAB, underline = 7)
-  tkadd(main.menu.import,"command",label="Import Stata dta file...",
+  tkadd(getAmelia("main.menu.import"),"command",label="Import Stata dta file...",
         command=loadStata, underline = 13)
-  tkadd(main.menu.import,"command",label="Import SPSS data...",
+  tkadd(getAmelia("main.menu.import"),"command",label="Import SPSS data...",
         command=loadSPSS, underline = 7)
-  tkadd(main.menu.import,"command",label="Import SAS Transport data...",
+  tkadd(getAmelia("main.menu.import"),"command",label="Import SAS Transport data...",
         command=loadSAS, underline = 8)
-  tkadd(main.menu.file,"cascade",menu=main.menu.import,label="Import Data",
+  tkadd(getAmelia("main.menu.file"),"cascade",menu=getAmelia("main.menu.import"),label="Import Data",
         underline = 0)
-  tkadd(main.menu.demo,"command",label="africa", command=function()
+  tkadd(getAmelia("main.menu.demo"),"command",label="africa", command=function()
         loadDemo(name="africa"), underline = 0)
-  tkadd(main.menu.demo,"command",label="freetrade", command=function()
+  tkadd(getAmelia("main.menu.demo"),"command",label="freetrade", command=function()
         loadDemo(name="freetrade"), underline = 0)
-  tkadd(main.menu.file,"cascade",menu=main.menu.demo,label="Load Package Data",
+  tkadd(getAmelia("main.menu.file"),"cascade",menu=getAmelia("main.menu.demo"),label="Load Package Data",
         underline = 5)
-  tkadd(main.menu.file,"command",command =
+  tkadd(getAmelia("main.menu.file"),"command",command =
         setWorkingDir,label="Set Working Directory...", underline = 4)
-  tkadd(main.menu.file,"command",label="Edit Data...",
+  tkadd(getAmelia("main.menu.file"),"command",label="Edit Data...",
         command=function(){putAmelia("amelia.data",
           edit(getAmelia("amelia.data")));updateTreeStats()},state="disabled",
         underline = 0)
-  tkadd(main.menu.file,"separator")
-  tkadd(main.menu.file,"command",label="Load Session...",command=function()load.session(),
+  tkadd(getAmelia("main.menu.file"),"separator")
+  tkadd(getAmelia("main.menu.file"),"command",label="Load Session...",command=function()load.session(),
         underline = 0)
-  tkadd(main.menu.file,"command",label="Save Session...",command=function()save.session(),
+  tkadd(getAmelia("main.menu.file"),"command",label="Save Session...",command=function()save.session(),
         state="disabled", underline = 0)
-  tkadd(main.menu.file,"separator")
-  tkadd(main.menu.file,"command",label="Quit Amelia",command=function()main.close(),
+  tkadd(getAmelia("main.menu.file"),"separator")
+  tkadd(getAmelia("main.menu.file"),"command",label="Quit Amelia",command=function()main.close(),
         underline = 0)
-  tkadd(main.menu.variables, "command", label =
+  tkadd(getAmelia("main.menu.variables"), "command", label =
         "Set as Time-Series Variable", command = setTS, state = "disabled",
         underline = 0)
-  tkadd(main.menu.variables, "command", label =
+  tkadd(getAmelia("main.menu.variables"), "command", label =
         "Set as Cross-Section Variable", command = setCS, state =
         "disabled", underline = 7)
-  tkadd(main.menu.variables, "command", label =
+  tkadd(getAmelia("main.menu.variables"), "command", label =
         "Unset as Time-Series Variable", command = unsetTS, state =
         "disabled", underline = 0)
-  tkadd(main.menu.variables, "command", label =
+  tkadd(getAmelia("main.menu.variables"), "command", label =
         "Unset as Cross-Section Variable", command = unsetCS, state =
         "disabled", underline = 23)
-  tkadd(main.menu.variables,"separator")
-  tkadd(main.menu.variables, "command", label = "Add Lag", command =
+  tkadd(getAmelia("main.menu.variables"),"separator")
+  tkadd(getAmelia("main.menu.variables"), "command", label = "Add Lag", command =
         function() addLag(), state = "disabled", underline = 0)
-  tkadd(main.menu.variables, "command", label = "Add Lead", command =
+  tkadd(getAmelia("main.menu.variables"), "command", label = "Add Lead", command =
         function() addLead(), state = "disabled", underline = 4)
-  tkadd(main.menu.variables, "command", label = "Remove Lag", command
+  tkadd(getAmelia("main.menu.variables"), "command", label = "Remove Lag", command
         = function() dropLag(), state = "disabled", underline = 0)
-  tkadd(main.menu.variables, "command", label = "Remove Lead", command
+  tkadd(getAmelia("main.menu.variables"), "command", label = "Remove Lead", command
         = function() dropLead(), state = "disabled", underline = 1)
-  tkadd(main.menu.variables,"separator")
+  tkadd(getAmelia("main.menu.variables"),"separator")
 
-  tkadd(main.menu.variables, "command", label =
+  tkadd(getAmelia("main.menu.variables"), "command", label =
         "Plot Histogram(s) of Selected", command = plotHist, state =
         "disabled", underline = 0)
-  tkadd(main.menu.trans, "command", label = "Log", command =
+  tkadd(getAmelia("main.menu.trans"), "command", label = "Log", command =
         function(x) setTrans("logs"), underline = 0)
-  tkadd(main.menu.trans, "command", label = "Square Root", command =
+  tkadd(getAmelia("main.menu.trans"), "command", label = "Square Root", command =
         function(x) setTrans("sqrt"), underline = 0)
-  tkadd(main.menu.trans, "command", label = "Logistic", command =
+  tkadd(getAmelia("main.menu.trans"), "command", label = "Logistic", command =
         function(x) setTrans("lgstc"), underline = 1)
-  tkadd(main.menu.trans, "command", label = "Nominal", command =
+  tkadd(getAmelia("main.menu.trans"), "command", label = "Nominal", command =
         function(x) setTrans("noms"), underline = 0)
-  tkadd(main.menu.trans, "command", label = "Ordinal", command =
+  tkadd(getAmelia("main.menu.trans"), "command", label = "Ordinal", command =
         function(x) setTrans("ords"), underline = 0)
-  tkadd(main.menu.trans, "command", label = "ID Variable", command =
+  tkadd(getAmelia("main.menu.trans"), "command", label = "ID Variable", command =
         function(x) setTrans("idvar"), underline = 0)
-  tkadd(main.menu.variables, "cascade", label =
-        "Add Transformation...", menu = main.menu.trans, state = "disabled",
+  tkadd(getAmelia("main.menu.variables"), "cascade", label =
+        "Add Transformation...", menu = getAmelia("main.menu.trans"), state = "disabled",
         underline = 4)
-  tkadd(main.menu.variables, "command", label =
+  tkadd(getAmelia("main.menu.variables"), "command", label =
         "Remove Transformations", command = dropTrans, state =
         "disabled", underline = 2)
-  tkadd(main.menu.variables,"separator")
-  tkadd(main.menu.variables, "command", label =
+  tkadd(getAmelia("main.menu.variables"),"separator")
+  tkadd(getAmelia("main.menu.variables"), "command", label =
         "Add or Edit Bounds", command = addBounds, state = "disabled",
         underline = 12)
   for (i in 0:10)
-    tkadd(main.menu.splines, "radiobutton", variable =
+    tkadd(getAmelia("main.menu.splines"), "radiobutton", variable =
           getAmelia("splinestime"), label = paste(i,"knots"), value = i,
           underline = 0)
-  tkadd(main.menu.options, "cascade", label =
-        "Splines of Time with...", menu=main.menu.splines,
+  tkadd(getAmelia("main.menu.options"), "cascade", label =
+        "Splines of Time with...", menu = getAmelia("main.menu.splines"),
         state="disabled", underline = 0)
-  tkadd(main.menu.options, "checkbutton", label =
+  tkadd(getAmelia("main.menu.options"), "checkbutton", label =
         "Interact Spline With Cross-Section?", variable =
         getAmelia("intercs"), onvalue=1,offvalue=0, state="disabled",
         underline = 0)
 
-  tkadd(main.menu.options,"separator")
-  tkadd(main.menu.options,"command", label =
+  tkadd(getAmelia("main.menu.options"),"separator")
+  tkadd(getAmelia("main.menu.options"),"command", label =
         "Add Observations Priors...", command = gui.pri.setup,
         state="disabled", underline = 17)
-  tkadd(main.menu.options, "separator")
-  tkadd(main.menu.options, "command", label = "Numerical Options",
+  tkadd(getAmelia("main.menu.options"), "separator")
+  tkadd(getAmelia("main.menu.options"), "command", label = "Numerical Options",
         command = buildNumericalOptions, state = "disabled", underline
         = 0)
-  tkadd(main.menu.options, "command", label = "Draw Missingness Map",
+  tkadd(getAmelia("main.menu.options"), "command", label = "Draw Missingness Map",
         command = drawMissMap, state="disabled", underline = 5)
-  tkadd(main.menu.options, "command", label = "Output File Options...",
+  tkadd(getAmelia("main.menu.options"), "command", label = "Output File Options...",
         command = buildOutputOptions, state = "disabled", underline = 0)
   for (i in 1:length(output.types)) {
-    tkadd(main.menu.outfile, "radiobutton", variable =
+    tkadd(getAmelia("main.menu.outfile"), "radiobutton", variable =
           getAmelia("outtype"), label = output.types[i], value = i-1)
   }
-  tkadd(main.menu.options, "cascade", label = "Output File Type...",
-        menu = main.menu.outfile, state = "disabled", underline = 7)
-  tkadd(main.menu.output,"command", label =
+  tkadd(getAmelia("main.menu.options"), "cascade", label = "Output File Type...",
+        menu = getAmelia("main.menu.outfile"), state = "disabled", underline = 7)
+  tkadd(getAmelia("main.menu.output"),"command", label =
         "Imputation Diagnostics...", command = gui.diag.setup,
         state="disabled", underline = 11)
-  tkadd(main.menu.output,"command", label = "Output Log", command =
+  tkadd(getAmelia("main.menu.output"),"command", label = "Output Log", command =
         show.output.log, state="disabled", underline = 0)
-  tkadd(main.menu.output,"command", label =
+  tkadd(getAmelia("main.menu.output"),"command", label =
         "Open Folder Containing Imputated Data", command =
         showImputedFiles, state="disabled", underline = 12)
-  tkadd(main.menu.help,"command",label="Amelia Website",command=
+  tkadd(getAmelia("main.menu.help"),"command",label="Amelia Website",command=
         function()browseURL("http://gking.harvard.edu/amelia/"),
         underline = 7)
-  tkadd(main.menu.help,"command",label="Documentation",command=
+  tkadd(getAmelia("main.menu.help"),"command",label="Documentation",command=
         function() browseURL("http://gking.harvard.edu/amelia/docs/"),
         underline = 0)
 
-  tkadd(main.menu.help,"command",label="About...",command=
+  tkadd(getAmelia("main.menu.help"),"command",label="About...",command=
         function()buildAboutDialog(), underline = 0)
 
-  tkadd(main.menu,"cascade",label="File",menu=main.menu.file,
-        underline = 0)
-  tkadd(main.menu,"cascade",label="Variables",menu=main.menu.variables,
-        underline = 0)
-  tkadd(main.menu,"cascade",label="Options",menu=main.menu.options,
-        underline = 0)
-  tkadd(main.menu,"cascade",label="Output",menu=main.menu.output,
-        underline = 1)
-  tkadd(main.menu,"cascade",label="Help",menu=main.menu.help,
-        underline = 0)
-  tkconfigure(getAmelia("gui"), menu = main.menu)
+  tkadd(getAmelia("main.menu"),"cascade",label="File",
+        menu = getAmelia("main.menu.file"), underline = 0)
+  tkadd(getAmelia("main.menu"),"cascade",label="Variables",
+        menu = getAmelia("main.menu.variables"), underline = 0)
+  tkadd(getAmelia("main.menu"),"cascade",label="Options",
+        menu = getAmelia("main.menu.options"), underline = 0)
+  tkadd(getAmelia("main.menu"),"cascade",label="Output",
+        menu = getAmelia("main.menu.output"), underline = 1)
+  tkadd(getAmelia("main.menu"),"cascade",label="Help",
+        menu = getAmelia("main.menu.help"), underline = 0)
+  tkconfigure(getAmelia("gui"), menu = getAmelia("main.menu"))
 
 
   ## Welcome Screen
-  putAmelia("gui.welcome", ttkframe(gui))
-  ameliaPicLabel <- ttklabel(gui.welcome, relief = "groove", image = getAmelia("ameliaPic"))
-  loadRButton <- ttkbutton(gui.welcome, text = "Load R Data",
-                           image = rPic, compound = "top",
+  putAmelia("gui.welcome", ttkframe(getAmelia("gui")))
+  ameliaPicLabel <- ttklabel(getAmelia("gui.welcome"), relief = "groove", image = getAmelia("ameliaPic"))
+  loadRButton <- ttkbutton(getAmelia("gui.welcome"), text = "Load R Data",
+                           image = getAmelia("rPic"), compound = "top",
                            command = loadRData)
-  loadCSVButton <- ttkbutton(gui.welcome, text = "Import CSV",
-                             image = tablePic, compound = "top",
+  loadCSVButton <- ttkbutton(getAmelia("gui.welcome"), text = "Import CSV",
+                             image = getAmelia("tablePic"), compound = "top",
                              command = loadCSV)
-  loadStataButton <- ttkbutton(gui.welcome, text = "Import STATA",
-                               image = dtaPic, compound = "top",
+  loadStataButton <- ttkbutton(getAmelia("gui.welcome"), text = "Import STATA",
+                               image = getAmelia("dtaPic"), compound = "top",
                                command = loadStata)
-  loadSPSSButton <- ttkbutton(gui.welcome, text = "Import SPSS",
-                              image = spssPic, compound = "top",
+  loadSPSSButton <- ttkbutton(getAmelia("gui.welcome"), text = "Import SPSS",
+                              image = getAmelia("spssPic"), compound = "top",
                               command = loadSPSS)
-  loadDemoButton <- ttkbutton(gui.welcome, text = "Load Demo",
-                              image = tablePic, compound = "top",
+  loadDemoButton <- ttkbutton(getAmelia("gui.welcome"), text = "Load Demo",
+                              image = getAmelia("tablePic"), compound = "top",
                               command = function () loadDemo(name = "africa"))
 
   tkgrid(ameliaPicLabel, row = 0, column = 0, columnspan = 6, padx =
          10, pady = 10)
-  tkgrid(ttklabel(gui.welcome,
+  tkgrid(ttklabel(getAmelia("gui.welcome"),
                   text=paste("Welcome to AmeliaView ",packageDescription("Amelia",
                     fields="Version"), "!", sep="")),
          row = 1, column = 0, columnspan = 6, padx = 10, pady = 10)
-  tkgrid(ttklabel(gui.welcome, text="Please load a dataset:"),
+  tkgrid(ttklabel(getAmelia("gui.welcome"), text="Please load a dataset:"),
          row = 2, column = 0, columnspan = 6, padx = 10, pady = 10)
   tkgrid(loadRButton, row = 3, column = 0, padx = 10, pady = 10)
   tkgrid(loadCSVButton, row = 3, column = 1, padx = 10, pady = 10)
   tkgrid(loadStataButton, row = 3, column = 2, padx = 10, pady = 10)
   tkgrid(loadSPSSButton, row = 3, column = 3, padx = 10, pady = 10)
   tkgrid(loadDemoButton, row = 3, column = 4, padx = 10, pady = 10)
-  tkgrid(gui.welcome, row = 0, column = 0)
+  tkgrid(getAmelia("gui.welcome"), row = 0, column = 0)
   ##Frame
   putAmelia("gui.skel", ttkpanedwindow(getAmelia("gui"), orient = "vertical"))
 
@@ -1104,57 +1107,57 @@ AmeliaView<-function() {
 ### Toolbar ###
 ###############
 
-  toolbar <- ttkframe(gui.skel)
+  toolbar <- ttkframe(getAmelia("gui.skel"))
   putAmelia("loadSessionButton",
             ttkbutton(toolbar, text = "Load Session",
-                      command = load.session, image = pageUpIcon, compound = "top",
+                      command = load.session, image = getAmelia("pageUpIcon"), compound = "top",
                       style="Toolbutton"))
   putAmelia("saveSessionButton",
             ttkbutton(toolbar, text = "Save Session",
-                      command = save.session, image = saveIcon, compound = "top",
+                      command = save.session, image = getAmelia("saveIcon"), compound = "top",
                       style="Toolbutton"))
   putAmelia("plotHistButton",
             ttkbutton(toolbar, text = "Plot Histogram", state =
-                      "disabled", command = plotHist, image = histIcon, compound = "top",
+                      "disabled", command = plotHist, image = getAmelia("histIcon"), compound = "top",
                       style="Toolbutton"))
   putAmelia("editDataButton",
             ttkbutton(toolbar, text = "Edit Data", state = "disabled",
                       command = function(){putAmelia("amelia.data", edit(getAmelia("amelia.data")));updateTreeStats()}, image =
-                      pageEditIcon, compound = "top",
+                      getAmelia("pageEditIcon"), compound = "top",
                       style="Toolbutton"))
   putAmelia("missmapButton",
             ttkbutton(toolbar, text = "Missingness Map", state = "disabled",
                       command = drawMissMap, image =
-                      worldIcon, compound = "top",
+                      getAmelia("worldIcon"), compound = "top",
                       style="Toolbutton"))
   putAmelia("output.run",
             ttkbutton(toolbar,text="Impute!", state = "disabled",
                       command = run.amelia, image =
-                      action.go.icon, compound = "top",
+                      getAmelia("action.go.icon"), compound = "top",
                       style="Toolbutton"))
 
   putAmelia("showLogButton",
             ttkbutton(toolbar, text = "Output Log", state = "disabled",
                       command = show.output.log, image =
-                      pageTextIcon, compound = "top",
+                      getAmelia("pageTextIcon"), compound = "top",
                       style="Toolbutton"))
-  tkgrid(loadSessionButton, row =0, column = 0, sticky = "ew")
-  tkgrid(saveSessionButton, row =0, column = 1, sticky = "ew")
+  tkgrid(getAmelia("loadSessionButton"), row =0, column = 0, sticky = "ew")
+  tkgrid(getAmelia("saveSessionButton"), row =0, column = 1, sticky = "ew")
   tkgrid(ttkseparator(toolbar, orient = "vertical"), row = 0, column =
          2, padx=5, pady=5, sticky="ns")
-  tkgrid(plotHistButton, row = 0, column = 3, sticky = "ew")
-  tkgrid(editDataButton, row = 0, column = 4, sticky = "ew")
-  tkgrid(missmapButton, row = 0, column = 5, sticky="ew")
+  tkgrid(getAmelia("plotHistButton"), row = 0, column = 3, sticky = "ew")
+  tkgrid(getAmelia("editDataButton"), row = 0, column = 4, sticky = "ew")
+  tkgrid(getAmelia("missmapButton"), row = 0, column = 5, sticky="ew")
   tkgrid(ttkseparator(toolbar, orient = "vertical"), row = 0, column =
          6, padx=5, pady=5, sticky="ns")
-  tkgrid(output.run, row = 0 , column = 7, sticky = "ew")
-  tkgrid(showLogButton, row = 0, column = 8, sticky = "ew")
+  tkgrid(getAmelia("output.run"), row = 0 , column = 7, sticky = "ew")
+  tkgrid(getAmelia("showLogButton"), row = 0, column = 8, sticky = "ew")
 
 ##########################
 ### Variable Dashboard ###
 ##########################
 
-  dashboard   <- ttkframe(gui.skel)
+  dashboard   <- ttkframe(getAmelia("gui.skel"))
 
   yscr <- ttkscrollbar(dashboard,  orient = "vertical",
                        command=function(...)tkyview(getAmelia("main.tree"),...))
@@ -1219,20 +1222,20 @@ AmeliaView<-function() {
   tkbind(getAmelia("main.tree"),"<<TreeviewSelect>>",function()
          refreshSelection(getAmelia("main.tree")))
   putAmelia("legendFrame", ttkframe(dashboard))
-  tkgrid(ttklabel(legendFrame, text="= Time-Series Variable", image =
-                  clockIcon, compound = "left"), row = 0, column = 0,  sticky="w",
+  tkgrid(ttklabel(getAmelia("legendFrame"), text="= Time-Series Variable", image =
+                  getAmelia("clockIcon"), compound = "left"), row = 0, column = 0,  sticky="w",
          padx = 5)
-  tkgrid(ttklabel(legendFrame, text="= Cross-Section Variable", image =
-                  userIcon, compound = "left"), row = 0, column = 1,
+  tkgrid(ttklabel(getAmelia("legendFrame"), text="= Cross-Section Variable", image =
+                  getAmelia("userIcon"), compound = "left"), row = 0, column = 1,
          sticky="w", padx = 5)
-  tkgrid(ttklabel(legendFrame, text="= Unhandled Factor Variable", image =
-                  redFlagIcon, compound = "left"), row = 0, column =
+  tkgrid(ttklabel(getAmelia("legendFrame"), text="= Unhandled Factor Variable", image =
+                  getAmelia("redFlagIcon"), compound = "left"), row = 0, column =
          2, sticky="w", padx = 5)
 
-  tkgrid(main.tree, row=0,column=0, sticky="news")
+  tkgrid(getAmelia("main.tree"), row=0,column=0, sticky="news")
   tkgrid(yscr, row = 0, column = 1, sticky = "ns")
   tkgrid(xscr, row = 1, column = 0, sticky = "ew")
-  tkgrid(legendFrame, row = 2, column = 0, sticky = "ew")
+  tkgrid(getAmelia("legendFrame"), row = 2, column = 0, sticky = "ew")
   tkgrid.rowconfigure(dashboard, 0, weight = 1)
   tkgrid.columnconfigure(dashboard, 0, weight = 1)
   ##Output Frame
@@ -1242,51 +1245,51 @@ AmeliaView<-function() {
 
 
   ##grid the whole thing
-  tkadd(gui.skel, toolbar)
-  tkadd(gui.skel, dashboard)
+  tkadd(getAmelia("gui.skel"), toolbar)
+  tkadd(getAmelia("gui.skel"), dashboard)
 
   tkgrid(toolbar, row = 0, column = 1, padx = 2, pady=2, sticky = "ew")
   tkgrid(dashboard,row = 1,  column = 1, sticky = "news", padx = 10,
          pady = 5)
 
-  tkgrid.rowconfigure(gui.skel, 1, weight = 1)
-  tkgrid.columnconfigure(gui.skel, 1, weight = 1)
+  tkgrid.rowconfigure(getAmelia("gui.skel"), 1, weight = 1)
+  tkgrid.columnconfigure(getAmelia("gui.skel"), 1, weight = 1)
                                         #tkgrid(gui.skel,sticky="news")
-  tkgrid.rowconfigure(gui, 0, weight = 1)
-  tkgrid.columnconfigure(gui, 0, weight = 1)
+  tkgrid.rowconfigure(getAmelia("gui"), 0, weight = 1)
+  tkgrid.columnconfigure(getAmelia("gui"), 0, weight = 1)
 
   ##statusbar at the bottom.
   putAmelia("statusbar", ttkframe(getAmelia("gui"), relief = "groove", borderwidth = 3))
-  statusbar.lab1a <- ttklabel(statusbar, text = "Data Loaded:", anchor = "w",
+  statusbar.lab1a <- ttklabel(getAmelia("statusbar"), text = "Data Loaded:", anchor = "w",
                               padding = c(2,0))
   putAmelia("statusbar.lab1b",
-            ttklabel(statusbar, text = "Unspecified", relief = "sunken",
+            ttklabel(getAmelia("statusbar"), text = "Unspecified", relief = "sunken",
                      anchor = "w", foreground = "red",padding = c(2,0),
                      width = 35))
-  statusbar.nlab <- ttklabel(statusbar, text = "Obs:", anchor="e", padding = c(2,0))
+  statusbar.nlab <- ttklabel(getAmelia("statusbar"), text = "Obs:", anchor="e", padding = c(2,0))
   putAmelia("statusbar.n",
-            ttklabel(statusbar, text = "----", relief = "sunken",
+            ttklabel(getAmelia("statusbar"), text = "----", relief = "sunken",
                      anchor = "w", foreground = "red",padding = c(2,0,0,0),
                      width = 6))
 
-  statusbar.klab <- ttklabel(statusbar, text = "Vars:", anchor="e",
+  statusbar.klab <- ttklabel(getAmelia("statusbar"), text = "Vars:", anchor="e",
                              padding = c(2,0))
 
   putAmelia("statusbar.k",
-            ttklabel(statusbar, text = "----", relief = "sunken", anchor = "w",
+            ttklabel(getAmelia("statusbar"), text = "----", relief = "sunken", anchor = "w",
                      foreground = "red", padding = c(2,0,0,0), width = 6))
 
   putAmelia("runAmeliaProgress",
-            ttkprogressbar(statusbar, value = 0, length = 200,
+            ttkprogressbar(getAmelia("statusbar"), value = 0, length = 200,
                            mode = "determinate"))
-  putAmelia("error.label", ttkbutton(statusbar, text =
+  putAmelia("error.label", ttkbutton(getAmelia("statusbar"), text =
                                      "Error! See Output Log.", image =
-                                     redStopIcon, compound = "left", style =
+                                     getAmelia("redStopIcon"), compound = "left", style =
                                      "Toolbutton", command = show.output.log))
-  putAmelia("allgood.label", ttkbutton(statusbar, text = "Successful Imputation.", image =
-                                       greenCheckIcon, compound = "left",
+  putAmelia("allgood.label", ttkbutton(getAmelia("statusbar"), text = "Successful Imputation.", image =
+                                       getAmelia("greenCheckIcon"), compound = "left",
                                        style = "Toolbutton", command = showImputedFiles))
-  putAmelia("noimps.label", ttklabel(statusbar, text =
+  putAmelia("noimps.label", ttklabel(getAmelia("statusbar"), text =
                                      "No imputations run.", justify = "right"))
 
   tkgrid(statusbar.lab1a,row = 2, column = 1, sticky="w")
@@ -1295,9 +1298,9 @@ AmeliaView<-function() {
   tkgrid(getAmelia("statusbar.n"),row = 2, column = 4, sticky="w")
   tkgrid(statusbar.klab,row = 2, column = 5, sticky="w")
   tkgrid(getAmelia("statusbar.k"), row = 2, column = 6, sticky = "w")
-  tkgrid(noimps.label, row = 2, column = 7,
+  tkgrid(getAmelia("noimps.label"), row = 2, column = 7,
          sticky ="e", padx = 10)
-  tkgrid.rowconfigure(statusbar, 2, weight = 1)
+  tkgrid.rowconfigure(getAmelia("statusbar"), 2, weight = 1)
                                         #tkgrid(statusbar, sticky = "sew")
 
 
@@ -1342,25 +1345,25 @@ AmeliaView<-function() {
 
 buildNumericalOptions <- function() {
   onCancel <- function(){
-    tcl("set", getAmelia("seed"), temp.seed)
-    tcl("set", getAmelia("tol"), temp.tol)
-    tkwm.withdraw(numericalWindow)
-    tkgrab.release(numericalWindow)
+    tcl("set", getAmelia("seed"), getAmelia("temp.seed"))
+    tcl("set", getAmelia("tol"), getAmelia("temp.tol"))
+    tkwm.withdraw(getAmelia("numericalWindow"))
+    tkgrab.release(getAmelia("numericalWindow"))
     tkfocus(getAmelia("gui"))
   }
 
   putAmelia("temp.seed", tclvalue(getAmelia("seed")))
   putAmelia("temp.tol", tclvalue(getAmelia("tol")))
 
-  if (exists("numericalWindow", envir = ameliaEnv())) {
+  if (exists("numericalWindow", envir = ameliaEnv)) {
     tkwm.deiconify(getAmelia("numericalWindow"))
     tkraise(getAmelia("numericalWindow"))
     return()
   }
 
   putAmelia("numericalWindow", tktoplevel())
-  tkwm.title(numericalWindow, "Numerical Options")
-  numericalBox <- ttkframe(numericalWindow)
+  tkwm.title(getAmelia("numericalWindow"), "Numerical Options")
+  numericalBox <- ttkframe(getAmelia("numericalWindow"))
   putAmelia("output.seedlab", ttklabel(numericalBox, text="Seed:"))
   putAmelia("output.seed",
             ttkentry(numericalBox, width="7", textvariable=getAmelia("seed")))
@@ -1375,7 +1378,7 @@ buildNumericalOptions <- function() {
             ttklabel(numericalBox,text="Maximum Resample for Bounds:"))
 
   buttonBox <- ttkframe(numericalBox)
-  okButton <- ttkbutton(buttonBox, text = "OK", width = 10, command = function() {tkwm.withdraw(numericalWindow);tkgrab.release(numericalWindow);tkfocus(getAmelia("gui"))})
+  okButton <- ttkbutton(buttonBox, text = "OK", width = 10, command = function() {tkwm.withdraw(getAmelia("numericalWindow"));tkgrab.release(getAmelia("numericalWindow"));tkfocus(getAmelia("gui"))})
   cancelButton <- ttkbutton(buttonBox, width = 10, text = "Cancel", command = onCancel)
 
 
@@ -1397,9 +1400,9 @@ buildNumericalOptions <- function() {
   tkgrid(buttonBox, row = 5, column = 1, sticky = "e", columnspan = 2)
   tkgrid(numericalBox, sticky = "news")
 
-  tkwm.protocol(numericalWindow, "WM_DELETE_WINDOW", onCancel)
+  tkwm.protocol(getAmelia("numericalWindow"), "WM_DELETE_WINDOW", onCancel)
 
-  centerModalDialog(numericalWindow, resize=FALSE)
+  centerModalDialog(getAmelia("numericalWindow"), resize=FALSE)
 
   bindTooltip(widget = "empri.ent", "Ridge prior that shrinks the covariances, which stabilizes estimation. Five percent of the number of observations is a useful default.")
   bindTooltip(widget = "empri.label", "Ridge prior that shrinks the covariances, which stabilizes estimation. Five percent of the number of observations is a useful default.")
@@ -1418,25 +1421,25 @@ buildNumericalOptions <- function() {
 
 buildOutputOptions <- function() {
   onCancel <- function(){
-    tcl("set", getAmelia("outname"), temp.name)
-    tcl("set", getAmelia("outnum"), temp.num)
-    tkwm.withdraw(outputWindow)
-    tkgrab.release(outputWindow)
+    tcl("set", getAmelia("outname"), getAmelia("temp.name"))
+    tcl("set", getAmelia("outnum"), getAmelia("temp.num"))
+    tkwm.withdraw(getAmelia("outputWindow"))
+    tkgrab.release(getAmelia("outputWindow"))
     tkfocus(getAmelia("gui"))
   }
 
   putAmelia("temp.name", tclvalue(getAmelia("outname")))
   putAmelia("temp.num", tclvalue(getAmelia("outnum")))
 
-  if (exists("outputWindow", envir = ameliaEnv())) {
+  if (exists("outputWindow", envir = ameliaEnv)) {
     tkwm.deiconify(getAmelia("outputWindow"))
     tkraise(getAmelia("outputWindow"))
     return()
   }
 
   putAmelia("outputWindow", tktoplevel())
-  tkwm.title(outputWindow, "Output Options")
-  outputBox <- ttkframe(outputWindow)
+  tkwm.title(getAmelia("outputWindow"), "Output Options")
+  outputBox <- ttkframe(getAmelia("outputWindow"))
 
   putAmelia("output.label", ttklabel(outputBox, text="Name the Imputed Dataset:"))
   putAmelia("output.entry",
@@ -1449,7 +1452,7 @@ buildOutputOptions <- function() {
                      textvariable = getAmelia("outnum")))
 
   buttonBox <- ttkframe(outputBox)
-  okButton <- ttkbutton(buttonBox, text = "OK", width = 10, command = function() {tkwm.withdraw(outputWindow);tkgrab.release(outputWindow);tkfocus(getAmelia("gui"))})
+  okButton <- ttkbutton(buttonBox, text = "OK", width = 10, command = function() {tkwm.withdraw(getAmelia("outputWindow"));tkgrab.release(getAmelia("outputWindow"));tkfocus(getAmelia("gui"))})
   cancelButton <- ttkbutton(buttonBox, width = 10, text = "Cancel", command = onCancel)
 
 
@@ -1463,9 +1466,9 @@ buildOutputOptions <- function() {
   tkgrid(buttonBox, row = 3, column = 1, sticky = "e", columnspan = 2)
   tkgrid(outputBox, sticky = "news")
 
-  tkwm.protocol(outputWindow, "WM_DELETE_WINDOW", onCancel)
+  tkwm.protocol(getAmelia("outputWindow"), "WM_DELETE_WINDOW", onCancel)
 
-  centerModalDialog(outputWindow, resize=FALSE)
+  centerModalDialog(getAmelia("outputWindow"), resize=FALSE)
 
   bindTooltip(widget = "output.entry", tip = "The prefix for the saved imputed datasets. For most saving options they will be in the following format: \n\nmyprefix1.out\nmyprefix2.out\n...\n\nAnd so on, where \"out\" is the file extension.")
   bindTooltip(widget = "output.label", tip = "The prefix for the saved imputed datasets. For most saving options they will be in the following format: \n\nmyprefix1.out\nmyprefix2.out\n...\n\nAnd so on, where \"out\" is the file extension.")
@@ -1477,14 +1480,14 @@ buildOutputOptions <- function() {
 
 
 buildAboutDialog <- function() {
-  if (exists("aboutWindow", envir = ameliaEnv())) {
+  if (exists("aboutWindow", envir = ameliaEnv)) {
     tkwm.deiconify(getAmelia("aboutWindow"))
     tkraise(getAmelia("aboutWindow"))
     return()
   }
   putAmelia("aboutWindow", tktoplevel(parent=getAmelia("gui")))
-  tkwm.title(aboutWindow, "About AmeliaView")
-  aboutBox <- ttkframe(aboutWindow, height = 150, width = 200)
+  tkwm.title(getAmelia("aboutWindow"), "About AmeliaView")
+  aboutBox <- ttkframe(getAmelia("aboutWindow"), height = 150, width = 200)
                                         #ameliaPic <- tkimage.create("photo",file=ameliaFile)
   picLabel <- ttklabel(aboutBox, image=getAmelia("ameliaPic"), relief="groove", borderwidth=2)
   tkgrid(ttkframe(aboutBox,width=100), row=0,column=1)
@@ -1494,7 +1497,7 @@ buildAboutDialog <- function() {
   tkgrid(ttklabel(aboutBox, text="James Honaker, Gary King, Matthew Blackwell", justify="center"), row = 3, column = 1, padx=20)
   tkgrid(ttklabel(aboutBox, text="\uA9 2006-2010", justify="center"), row = 4, column = 1, padx=20)
   buttonBox <- ttkframe(aboutBox)
-  closeButton <- ttkbutton(buttonBox, text = "Close", command = function() {tkwm.withdraw(aboutWindow);tkgrab.release(aboutWindow);tkfocus(getAmelia("gui"))}, width = 10)
+  closeButton <- ttkbutton(buttonBox, text = "Close", command = function() {tkwm.withdraw(getAmelia("aboutWindow"));tkgrab.release(getAmelia("aboutWindow"));tkfocus(getAmelia("gui"))}, width = 10)
   websiteButton <- ttkbutton(buttonBox, text = "Website",
                              command = function() browseURL("http://gking.harvard.edu/amelia/"))
   tkgrid(websiteButton, row=0, column = 0, sticky="w", padx=10, pady=10)
@@ -1502,87 +1505,11 @@ buildAboutDialog <- function() {
   tkgrid.columnconfigure(buttonBox, 0, weight=1)
   tkgrid(buttonBox, row=5, column = 1, sticky="ew")
   tkgrid(aboutBox, sticky = "nsew")
-  tkwm.protocol(aboutWindow, "WM_DELETE_WINDOW", function() {tkwm.withdraw(aboutWindow);tkgrab.release(aboutWindow);tkfocus(getAmelia("gui"))})
+  tkwm.protocol(getAmelia("aboutWindow"), "WM_DELETE_WINDOW", function() {tkwm.withdraw(getAmelia("aboutWindow"));tkgrab.release(getAmelia("aboutWindow"));tkfocus(getAmelia("gui"))})
 
-  centerModalDialog(aboutWindow, resize=FALSE)
+  centerModalDialog(getAmelia("aboutWindow"), resize=FALSE)
 }
 
-
-sum.data <-function() {
-
-  RightClick <- function(x, y) { # x and y are the mouse coordinates
-    rootx <- as.integer(tkwinfo("rootx", getAmelia("summary.tree")))  # tkwinfo() return several infos
-    rooty <- as.integer(tkwinfo("rooty", getAmelia("summary.tree")))
-    xTxt <- as.integer(x) + rootx
-    yTxt <- as.integer(y) + rooty
-                                        # Create a Tcl command in a character string and run it
-    var <- tkindex(getAmelia("summary.tree"),tclvalue(tcl(getAmelia("summary.tree"), "selection")))
-    var <- as.numeric(var) + 1
-    if (is.factor(getAmelia("amelia.data")[,var]) |
-        is.character(getAmelia("amelia.data")[,var])) {
-      .Tcl(paste("tk_popup", .Tcl.args(getAmelia("sum.right.dis"), xTxt, yTxt)))
-    } else {
-      .Tcl(paste("tk_popup", .Tcl.args(getAmelia("sum.right.click"), xTxt, yTxt)))
-    }
-  }
-  tt <- tktoplevel()
-  tkwm.title(tt, "Data Summary")
-
-  yscr <- ttkscrollbar(tt,  orient = "vertical",
-                       command=function(...)tkyview(getAmelia("summary.tree"),...))
-  xscr <- ttkscrollbar(tt, orient = "horizontal",
-                       command=function(...)tkxview(getAmelia("summary.tree"),...))
-  putAmelia("summary.tree", ttktreeview(tt, columns = "Min Max Mean SD Missing",
-                                        yscrollcommand=function(...)tkset(yscr,...), xscrollcommand=function(...)tkset(xscr,...),
-                                        selectmode = "browse"))
-
-  putAmelia("sum.right.click",tkmenu(getAmelia("summary.tree"), tearoff = FALSE) )
-  tkadd(getAmelia("sum.right.click"), "command", label = "Plot Histogram of Selected", command = function() sum.plot())
-  tkbind(getAmelia("summary.tree"), "<Button-3>", RightClick)
-  putAmelia("sum.right.dis",tkmenu(getAmelia("summary.tree"), tearoff = FALSE) )
-  tkadd(getAmelia("sum.right.dis"), "command", label = "Plot Histogram of Selected", state = "disabled")
-
-  tcl(getAmelia("summary.tree"), "column", "#0", width = 80)
-  tcl(getAmelia("summary.tree"), "column", 0, width = 80, anchor = "center")
-  tcl(getAmelia("summary.tree"), "column", 1, width = 80, anchor = "center")
-  tcl(getAmelia("summary.tree"), "column", 2, width = 80, anchor = "center")
-  tcl(getAmelia("summary.tree"), "column", 3, width = 80, anchor = "center")
-  tcl(getAmelia("summary.tree"), "column", 4, width = 80, anchor = "center")
-  tcl(getAmelia("summary.tree"), "heading", "#0", text = "Variable")
-  tcl(getAmelia("summary.tree"), "heading", 0, text = "Minimum")
-  tcl(getAmelia("summary.tree"), "heading", 1, text = "Maximum")
-  tcl(getAmelia("summary.tree"), "heading", 2, text = "Mean")
-  tcl(getAmelia("summary.tree"), "heading", 3, text = "SD")
-  tcl(getAmelia("summary.tree"), "heading", 4, text = "Missing")
-  ## Windows 7 doesn't handle treeview selection correctly
-  if (.Platform$OS.type == "windows") {
-    tktag.configure(getAmelia("summary.tree"),"normal", background="white")
-    tktag.configure(getAmelia("summary.tree"),"selected", background="#107FC9")
-    tkbind(getAmelia("summary.tree"),"<<TreeviewSelect>>",function() refreshSelection(getAmelia("summary.tree")))
-  }
-  for (i in 1:ncol(getAmelia("amelia.data"))) {
-    if (is.factor(getAmelia("amelia.data")[,i]) |
-        is.character(getAmelia("amelia.data")[,i])) {
-      vals <- c("(factor)","...","...","...","...")
-    } else {
-      vals <- c(min(getAmelia("amelia.data")[,i],na.rm=T), max(getAmelia("amelia.data")[,i],na.rm=T),
-                mean(getAmelia("amelia.data")[,i],na.rm=T), sd(getAmelia("amelia.data")[,i],na.rm=T))
-      vals <- signif(vals, digits = 4)
-      vals <- c(vals,paste(sum(is.na(getAmelia("amelia.data")[,i])),
-                           nrow(getAmelia("amelia.data")), sep="/"))
-    }
-    tkinsert(getAmelia("summary.tree"),"","end", values = vals,tag="normal",
-             text = names(getAmelia("amelia.data"))[i])
-  }
-
-  tkgrid(getAmelia("summary.tree"), row = 0, column = 0, sticky = "nsew")
-  tkgrid(yscr, row = 0, column = 1, sticky = "nse")
-  tkgrid(xscr, row = 1, column = 0, sticky = "ews")
-                                        #tkgrid(gui.frame, sticky = "nsew")
-  tkgrid.rowconfigure(tt, 0, weight = 1)
-  tkgrid.columnconfigure(tt, 0, weight = 1)
-  centerModalDialog(tt, resize=TRUE)
-}
 
 
 
@@ -1793,7 +1720,7 @@ gui.pri.setup <- function() {
 
   putAmelia("temp.priorsmat", getAmelia("priorsmat"))
 
-  if (exists("priorsWindow", envir=ameliaEnv())) {
+  if (exists("priorsWindow", envir=ameliaEnv)) {
     updateTree()
     resetEntries()
     tkwm.deiconify(getAmelia("priorsWindow"))
@@ -1802,9 +1729,9 @@ gui.pri.setup <- function() {
     return()
   }
   putAmelia("priorsWindow", tktoplevel())
-  tkwm.title(priorsWindow,"Observational Priors")
+  tkwm.title(getAmelia("priorsWindow"),"Observational Priors")
 
-  priorsBox <- ttkframe(priorsWindow)
+  priorsBox <- ttkframe(getAmelia("priorsWindow"))
 
   prior.frame <- ttkpanedwindow(priorsBox, orient = "horizontal")
   prior.disp  <- ttklabelframe(prior.frame, text = "Observational priors ", height = 200, width = 200)
@@ -1888,8 +1815,8 @@ gui.pri.setup <- function() {
   tkgrid(ttklabel(add.dist.frame, text="Standard Deviation:"), column=1,
          row=4, sticky = "e")
 
-  tkgrid(meanBox, column=2, row=3, pady=5, padx=5)
-  tkgrid(sdBox, column=2, row=4, pady=5, padx=5)
+  tkgrid(getAmelia("meanBox"), column=2, row=3, pady=5, padx=5)
+  tkgrid(getAmelia("sdBox"), column=2, row=4, pady=5, padx=5)
 
   ## Range prior note
 
@@ -1927,9 +1854,9 @@ gui.pri.setup <- function() {
   tkgrid(ttklabel(add.range.frame, text="Confidence:"), column=1, row=5, sticky = "e")
                                         #tkgrid(tkframe(add.range.frame, width = 20, height = 0), column = 1, row = 6)
 
-  tkgrid(minBox, column=2, row=3, pady=5, padx=5)
-  tkgrid(maxBox, column=2, row=4, pady=5, padx=5)
-  tkgrid(confBox, column=2, row=5, pady=5, padx=5)
+  tkgrid(getAmelia("minBox"), column=2, row=3, pady=5, padx=5)
+  tkgrid(getAmelia("maxBox"), column=2, row=4, pady=5, padx=5)
+  tkgrid(getAmelia("confBox"), column=2, row=5, pady=5, padx=5)
 
   tkadd(getAmelia("addpri.note"), add.dist.frame, text = "Add Distribution Prior")
   tkadd(getAmelia("addpri.note"), add.range.frame, text = "Add Range Prior")
@@ -1937,10 +1864,10 @@ gui.pri.setup <- function() {
 
   tkgrid(getAmelia("addpri.note"), row = 1, sticky = "nsew")
 
-  tkgrid(prior.add.but, sticky = "se", padx = 10, pady = 10)
+  tkgrid(getAmelia("prior.add.but"), sticky = "se", padx = 10, pady = 10)
   but.frame <- ttkframe(priorsBox)
-  putAmelia("pri.ok", ttkbutton(but.frame, text = "OK", command = function(){tkwm.withdraw(priorsWindow);tkgrab.release(priorsWindow);tkfocus(getAmelia("gui"))}, width = 10))
-  putAmelia("pri.can", ttkbutton(but.frame, text = "Cancel", width = 10, command = function() {cancelPriors();tkwm.withdraw(priorsWindow);tkgrab.release(priorsWindow);tkfocus(getAmelia("gui"))}))
+  putAmelia("pri.ok", ttkbutton(but.frame, text = "OK", command = function(){tkwm.withdraw(getAmelia("priorsWindow"));tkgrab.release(getAmelia("priorsWindow"));tkfocus(getAmelia("gui"))}, width = 10))
+  putAmelia("pri.can", ttkbutton(but.frame, text = "Cancel", width = 10, command = function() {cancelPriors();tkwm.withdraw(getAmelia("priorsWindow"));tkgrab.release(getAmelia("priorsWindow"));tkfocus(getAmelia("gui"))}))
 
 
   tkgrid(getAmelia("priors.tree"), row = 1, column = 1, sticky = "nsew")
@@ -1952,19 +1879,19 @@ gui.pri.setup <- function() {
   tkadd(prior.frame, prior.disp)
 
   tkgrid(prior.frame, row = 1, column = 0, columnspan = 2, padx = 10, pady = 10, sticky = "news")
-  tkgrid(pri.ok, row = 0, column = 1, sticky = "ne", padx = 10, pady = 10)
-  tkgrid(pri.can, row = 0, column = 2, sticky = "ne", padx = 10, pady = 10)
+  tkgrid(getAmelia("pri.ok"), row = 0, column = 1, sticky = "ne", padx = 10, pady = 10)
+  tkgrid(getAmelia("pri.can"), row = 0, column = 2, sticky = "ne", padx = 10, pady = 10)
   tkgrid(but.frame, row = 2, column = 1, sticky = "ne")
   tkgrid.rowconfigure(priorsBox, 1, weight = 1)
   tkgrid.columnconfigure(priorsBox, 0, weight = 1)
   tkgrid.columnconfigure(priorsBox, 1, weight = 1)
   tkgrid(priorsBox, row = 0, column = 0, sticky = "news")
-  tkgrid.rowconfigure(priorsWindow, 0, weight = 1)
-  tkgrid.columnconfigure(priorsWindow, 0, weight = 1)
+  tkgrid.rowconfigure(getAmelia("priorsWindow"), 0, weight = 1)
+  tkgrid.columnconfigure(getAmelia("priorsWindow"), 0, weight = 1)
 
-  tkwm.protocol(priorsWindow, "WM_DELETE_WINDOW", function() {tkwm.withdraw(priorsWindow);tkgrab.release(priorsWindow);tkfocus(getAmelia("gui"))})
+  tkwm.protocol(getAmelia("priorsWindow"), "WM_DELETE_WINDOW", function() {tkwm.withdraw(getAmelia("priorsWindow"));tkgrab.release(getAmelia("priorsWindow"));tkfocus(getAmelia("gui"))})
 
-  centerModalDialog(priorsWindow, resize = TRUE)
+  centerModalDialog(getAmelia("priorsWindow"), resize = TRUE)
 
   bindTooltip(widget = "priors.tree", "Currently set observation-level priors for the data. You can remove these using the right-click menu.")
   bindTooltip(widget = "pri.ok", tip = "Save changes and close window.")
@@ -1985,16 +1912,16 @@ gui.pri.setup <- function() {
 
 gui.diag.setup <- function() {
 
-  if (exists("diagWindow", envir = ameliaEnv())) {
+  if (exists("diagWindow", envir = ameliaEnv)) {
     tkwm.deiconify(getAmelia("diagWindow"))
     tkraise(getAmelia("diagWindow"))
     tkfocus(getAmelia("diagWindow"))
     return()
   }
   putAmelia("diagWindow", tktoplevel())
-  tkwm.title(diagWindow, "Diagnostics")
+  tkwm.title(getAmelia("diagWindow"), "Diagnostics")
 
-  diagBox <- ttkframe(diagWindow)
+  diagBox <- ttkframe(getAmelia("diagWindow"))
   gui.top<-ttkpanedwindow(diagBox, orient = "vertical")
   var.diags <- ttklabelframe(gui.top, text = "Individual Variable Plots", width = 100, height = 100)
   tscs.diags <- ttklabelframe(gui.top, text = "Time-Series Cross-Sectional Plots", width = 100, height = 100)
@@ -2086,23 +2013,23 @@ gui.diag.setup <- function() {
   tkgrid(ttklabel(disp.diags,text="Number of dispersions:"),row=2,column=1,
          sticky="e")
   tkgrid(ttkframe(disp.diags, width = 50, height = 0), row = 5)
-  tkgrid(disp.imps,column=2,row=2,sticky="nw", padx = 10, pady = 10)
+  tkgrid(getAmelia("disp.imps"),column=2,row=2,sticky="nw", padx = 10, pady = 10)
   tkgrid(ttklabel(disp.diags,text="One Dimension:"),row=3,column=1, sticky = "e")
   tkgrid(ttklabel(disp.diags,text="Two Dimensions:"),row=4,column=1, sticky = "e")
-  tkgrid(onedim,row=3,column=2,padx=10,pady=5)
-  tkgrid(twodims,row=4,column=2,padx=10)
-  tkgrid(disp.but,row=4,column=3,padx=15, pady=10,sticky="news")
+  tkgrid(getAmelia("onedim"),row=3,column=2,padx=10,pady=5)
+  tkgrid(getAmelia("twodims"),row=4,column=2,padx=10)
+  tkgrid(getAmelia("disp.but"),row=4,column=3,padx=15, pady=10,sticky="news")
 
   tkadd(gui.top, var.diags)
   tkadd(gui.top, tscs.diags)
   tkadd(gui.top, disp.diags)
   tkgrid(gui.top, row = 0, padx = 20, pady = 20)
   tkgrid(diagBox, sticky = "news", row = 0, column = 0)
-  tkgrid.rowconfigure(diagWindow, 0, weight = 1)
-  tkgrid.columnconfigure(diagWindow, 0, weight = 1)
+  tkgrid.rowconfigure(getAmelia("diagWindow"), 0, weight = 1)
+  tkgrid.columnconfigure(getAmelia("diagWindow"), 0, weight = 1)
 
-  tkwm.protocol(diagWindow, "WM_DELETE_WINDOW", function() {tkwm.withdraw(diagWindow);tkgrab.release(diagWindow);tkfocus(getAmelia("gui"))})
-  centerModalDialog(diagWindow, resize = FALSE)
+  tkwm.protocol(getAmelia("diagWindow"), "WM_DELETE_WINDOW", function() {tkwm.withdraw(getAmelia("diagWindow"));tkgrab.release(getAmelia("diagWindow"));tkfocus(getAmelia("gui"))})
+  centerModalDialog(getAmelia("diagWindow"), resize = FALSE)
 
   bindTooltip(widget = "var.diags.combo", tip = "Variable for either the density comparison plot or the overimputation plot.")
   bindTooltip(widget = "tscs.var.combo", tip = "Variable to use for the time-series cross-sectional plot.")
@@ -2124,23 +2051,15 @@ gui.diag.setup <- function() {
 
 
 ## the following functions have been imported from Rcmdr
-ameliaEnv <- function() {
-  pos <-  match("ameliaEnv", search())
-  if (is.na(pos)) { # Must create it
-    ameliaEnv <- list()
-    attach(ameliaEnv, pos = length(search()) - 1)
-    rm(ameliaEnv)
-    pos <- match("ameliaEnv", search())
-  }
-  return(pos.to.env(pos))
-}
 
 putAmelia <- function(x, value) {
-  assign(x, value, envir = ameliaEnv())
+  assign(x, value, envir = ameliaEnv)
 }
 
 getAmelia <- function(x, mode="any")
-  get(x, envir = ameliaEnv(), mode = mode, inherits = FALSE)
+  get(x, envir = ameliaEnv, mode = mode, inherits = FALSE)
+
+
 getAmeliaInd <- function(x) {
   as.numeric(tkindex(getAmelia(x), "current"))
 }
@@ -2166,7 +2085,7 @@ show.output.log <- function() {
   }
 
 
-  if (exists("log.top", envir = ameliaEnv())) {
+  if (exists("log.top", envir = ameliaEnv)) {
     tkdelete(getAmelia("log.viewer"), 0, "end")
     tkinsert(getAmelia("log.viewer"), "end",
              paste(getAmelia("output.log"), collapse = ""))
@@ -2176,21 +2095,21 @@ show.output.log <- function() {
     return()
   }
   putAmelia("log.top", tktoplevel())
-  tkwm.title(log.top, "Output Log")
-  scr <- ttkscrollbar(log.top,
+  tkwm.title(getAmelia("log.top"), "Output Log")
+  scr <- ttkscrollbar(getAmelia("log.top"),
                       command=function(...)tkyview(getAmelia("log.viewer"),...))
 
-  putAmelia("log.viewer", tktext(log.top, width = 80, height = 25,
+  putAmelia("log.viewer", tktext(getAmelia("log.top"), width = 80, height = 25,
                                  yscrollcommand=function(...)tkset(scr,...)))
   tkinsert(getAmelia("log.viewer"), "end", paste(getAmelia("output.log"), collapse = ""))
   tkconfigure(getAmelia("log.viewer"), state = "disabled")
-  main.menu      <- tkmenu(log.top)
+  main.menu      <- tkmenu(getAmelia("log.top"))
   main.menu.file <- tkmenu(main.menu, tearoff=0)
   tkadd(main.menu.file,"command",label="Save log file",command=function() save.log())
-  tkadd(main.menu.file,"command",label="Close",command=function(){tkwm.withdraw(log.top);tkgrab.release(log.top);tkfocus(getAmelia("gui"))})
+  tkadd(main.menu.file,"command",label="Close",command=function(){tkwm.withdraw(getAmelia("log.top"));tkgrab.release(getAmelia("log.top"));tkfocus(getAmelia("gui"))})
 
   tkadd(main.menu,"cascade",label="File",menu=main.menu.file)
-  tkconfigure(log.top,menu=main.menu)
+  tkconfigure(getAmelia("log.top"),menu=main.menu)
 
 
   putAmelia("log.right.click",tkmenu(getAmelia("log.viewer"), tearoff = FALSE) )
@@ -2202,10 +2121,10 @@ show.output.log <- function() {
   tkgrid(getAmelia("log.viewer"), row = 0, column = 0, sticky = "news")
   tkgrid(scr, row =0, column = 1, sticky = "ns")
                                         #tkgrid.columnconfigure(log.top, 1, weight = 1)
-  tkgrid.columnconfigure(log.top, 0, weight = 1)
-  tkgrid.rowconfigure(log.top, 0, weight = 1)
-  tkwm.protocol(log.top, "WM_DELETE_WINDOW", function() {tkwm.withdraw(log.top);tkgrab.release(log.top);tkfocus(getAmelia("gui"))})
-  centerModalDialog(log.top, resize=TRUE)
+  tkgrid.columnconfigure(getAmelia("log.top"), 0, weight = 1)
+  tkgrid.rowconfigure(getAmelia("log.top"), 0, weight = 1)
+  tkwm.protocol(getAmelia("log.top"), "WM_DELETE_WINDOW", function() {tkwm.withdraw(getAmelia("log.top"));tkgrab.release(getAmelia("log.top"));tkfocus(getAmelia("gui"))})
+  centerModalDialog(getAmelia("log.top"), resize=TRUE)
 
 
 }
@@ -2243,7 +2162,7 @@ showTooltip <- function(widget, text) {
     tiplabel.name <- paste(widget, "tiplabel",sep=".")
 
 
-    if (exists(tip.name, envir = ameliaEnv())) {
+    if (exists(tip.name, envir = ameliaEnv)) {
       if (as.logical(tkwinfo("exists",getAmelia(tip.name)))) {
         if (as.logical(tkwinfo("ismapped",getAmelia(tip.name)))) {
           return()
@@ -2257,7 +2176,7 @@ showTooltip <- function(widget, text) {
 
 
     tclServiceMode(on=FALSE)
-    if (!exists(tip.name, envir = ameliaEnv())) {
+    if (!exists(tip.name, envir = ameliaEnv)) {
       if (.Platform$OS.type == "windows") {
         borderColor <- "SystemWindowFrame"
         bgColor <- "SystemWindow"
@@ -2309,7 +2228,7 @@ showTooltip <- function(widget, text) {
 
 killTooltip <- function(widget) {
   tip.name <- paste(widget,"tip", sep = ".")
-  if (exists(tip.name, envir = ameliaEnv())) {
+  if (exists(tip.name, envir = ameliaEnv)) {
     tkwm.withdraw(getAmelia(tip.name))
   }
 }
@@ -2373,8 +2292,8 @@ mainTreeRightClick <- function(x, y) { # x and y are the mouse coordinates
                                         # Create a Tcl command in a character string and run it
   sel <- strsplit(tclvalue(tcl(getAmelia("main.tree"), "selection")), " ")[[1]]
   states <- variableOptionStatus(sel)
-  main.tree.right.click <- tkmenu(main.tree, tearoff = FALSE)
-  main.tree.trans <- tkmenu(main.tree, tearoff = FALSE)
+  main.tree.right.click <- tkmenu(getAmelia("main.tree"), tearoff = FALSE)
+  main.tree.trans <- tkmenu(getAmelia("main.tree"), tearoff = FALSE)
   tkadd(main.tree.right.click, "command", label = "Set as Time-Series Variable", command = setTS, state = states[1])
   tkadd(main.tree.right.click, "command", label = "Set as Cross-Section Variable", command = setCS, state = states[2])
   tkadd(main.tree.right.click, "command", label = "Unset as Time-Series Variable", command = unsetTS, state = states[3])
@@ -2470,7 +2389,7 @@ dropTrans <- function() {
     tkset(getAmelia("main.tree"), j,"transform", "")
   if (is.factor(getAmelia("amelia.data")[,j]) |
       is.character(getAmelia("amelia.data")[,j])) {
-    tcl(getAmelia("main.tree"), "item", j, image = redFlagIcon)
+    tcl(getAmelia("main.tree"), "item", j, image = getAmelia("redFlagIcon"))
   }
 
   for (i in all.trans) {
@@ -2516,8 +2435,8 @@ addBounds <- function() {
       treeBounds <- ""
     }
     tkset(getAmelia("main.tree"), sel, "bounds", treeBounds)
-    tkwm.withdraw(addBoundsWindow)
-    tkgrab.release(addBoundsWindow)
+    tkwm.withdraw(getAmelia("addBoundsWindow"))
+    tkgrab.release(getAmelia("addBoundsWindow"))
     tkfocus(getAmelia("gui"))
     return()
   }
@@ -2545,7 +2464,7 @@ addBounds <- function() {
   putAmelia("boundMax", tclVar(ifelse(is.na(currMax), "",
                                       currMax)))
 
-  if (exists("addBoundsWindow", envir = ameliaEnv())) {
+  if (exists("addBoundsWindow", envir = ameliaEnv)) {
     tkconfigure(getAmelia("maxBox"), textvar = getAmelia("boundMax"))
     tkconfigure(getAmelia("minBox"), textvar = getAmelia("boundMin"))
     tkconfigure(getAmelia("bd.ok"), command = function() onOK(sel))
@@ -2554,8 +2473,8 @@ addBounds <- function() {
     return()
   }
   putAmelia("addBoundsWindow", tktoplevel())
-  tkwm.title(addBoundsWindow, "Add or Edit Bounds")
-  bounds.add   <- ttkframe(addBoundsWindow)
+  tkwm.title(getAmelia("addBoundsWindow"), "Add or Edit Bounds")
+  bounds.add   <- ttkframe(getAmelia("addBoundsWindow"))
 
 
   putAmelia("minBox", ttkentry(bounds.add, textvar=getAmelia("boundMin"), validate="key",
@@ -2569,21 +2488,21 @@ addBounds <- function() {
   tkgrid(ttklabel(bounds.add, text="Maximum:"), column=1, row=3,
          sticky = "e", padx = 10, pady = 10)
 
-  tkgrid(minBox, column=2, row=2, pady=5, padx=5)
-  tkgrid(maxBox, column=2, row=3, pady=5, padx=5)
+  tkgrid(getAmelia("minBox"), column=2, row=2, pady=5, padx=5)
+  tkgrid(getAmelia("maxBox"), column=2, row=3, pady=5, padx=5)
   but.frame <- ttkframe(bounds.add)
   putAmelia("bd.ok", ttkbutton(but.frame, text = "OK", command = function() onOK(sel)))
   putAmelia("bd.can", ttkbutton(but.frame, text = "Cancel", width =
-                                10, command = function() {tkwm.withdraw(addBoundsWindow);tkgrab.release(addBoundsWindow);tkfocus(getAmelia("gui"))}))
-  tkgrid(bd.ok, row = 0, column = 1, sticky = "ne", padx = 10, pady = 10)
-  tkgrid(bd.can, row = 0, column = 2, sticky = "ne", padx = 10, pady = 10)
+                                10, command = function() {tkwm.withdraw(getAmelia("addBoundsWindow"));tkgrab.release(getAmelia("addBoundsWindow"));tkfocus(getAmelia("gui"))}))
+  tkgrid(getAmelia("bd.ok"), row = 0, column = 1, sticky = "ne", padx = 10, pady = 10)
+  tkgrid(getAmelia("bd.can"), row = 0, column = 2, sticky = "ne", padx = 10, pady = 10)
   tkgrid(but.frame, row = 4, column = 1, columnspan = 2, sticky =
          "ne")
   tkgrid(bounds.add, sticky = "news")
 
-  tkwm.protocol(addBoundsWindow, "WM_DELETE_WINDOW", function() {tkwm.withdraw(addBoundsWindow);tkgrab.release(addBoundsWindow);tkfocus(getAmelia("gui"))})
+  tkwm.protocol(getAmelia("addBoundsWindow"), "WM_DELETE_WINDOW", function() {tkwm.withdraw(getAmelia("addBoundsWindow"));tkgrab.release(getAmelia("addBoundsWindow"));tkfocus(getAmelia("gui"))})
 
-  centerModalDialog(addBoundsWindow, resize=FALSE)
+  centerModalDialog(getAmelia("addBoundsWindow"), resize=FALSE)
 }
 
 
@@ -2674,10 +2593,10 @@ drawArrow <- function(col, down) {
   }
   if (down) {
     tcl(getAmelia("main.tree"), "heading", col,
-        image = upArrowIcon)
+        image = getAmelia("upArrowIcon"))
   } else {
     tcl(getAmelia("main.tree"), "heading", col,
-        image = downArrowIcon)
+        image = getAmelia("downArrowIcon"))
   }
   return(NULL)
 }
@@ -2753,30 +2672,69 @@ showImputedFiles <- function() {
   return(NULL)
 }
 
-if (getRversion() >= "2.15.1") {
-  globalVariables(c('gui', 'main.menu', 'main.menu.file',
-                    'main.menu.import', 'main.menu.demo',
-                    'main.menu.variables','main.menu.trans',
-                    'main.menu.splines', 'main.menu.options',
-                    'main.menu.outfile', 'main.menu.output',
-                    'main.menu.help', 'gui.welcome', 'rPic',
-                    'tablePic', 'dtaPic', 'spssPic', 'gui.skel',
-                    'pageUpIcon', 'saveIcon', 'histIcon',
-                    'pageEditIcon', 'worldIcon', 'action.go.icon',
-                    'pageTextIcon', 'loadSessionButton',
-                    'saveSessionButton', 'plotHistButton',
-                    'editDataButton', 'missmapButton', 'output.run',
-                    'showLogButton', 'legendFrame', 'clockIcon',
-                    'userIcon', 'redFlagIcon', 'main.tree',
-                    'statusbar', 'redStopIcon', 'greenCheckIcon',
-                    'noimps.label', 'addBoundsWindow', 'minBox',
-                    'maxBox', 'bd.ok', 'bd.can', 'aboutWindow',
-                    'temp.seed', 'temp.tol', 'numericalWindow',
-                    'temp.name', 'temp.num', 'outputWindow',
-                    'upArrowIcon', 'downArrowIcon', 'diagWindow',
-                    'disp.imps', 'onedim', 'twodims', 'disp.but',
-                    'priorsWindow', 'meanBox', 'sdBox', 'confBox',
-                    'prior.add.but', 'pri.ok', 'pri.can', 'clockIcon',
-                    'varnames', 'userIcon', 'amelia.data',
-                    'main.tree', 'log.top', 'sum.plot'))
-}
+
+## Here is (finally) a decent solution to the tcl/tk issues with
+## global variables. Here we create new environment, whose parent is
+## the Amelia namespace. We then make sure that all of the GUI
+## functions use that as their enclosure. This means that any of these
+## functions can use values in the ameliaEnv. This eliminates the need
+## for any "getAmelia" calls, but we still have to be careful since
+## assigning values in these functions is local and doesn't
+## automatically add the value to ameliaEnv. So, for assigning,
+## 'putAmelia' probably still makes sense. We could use
+## assign("foo", "bar", envir = parent.frame())
+## but putAmelia is probably more clear. getAmelia() is probably still
+## a little more safe to use because it will throw an error if
+## something is missing, whereas relying on lexical scoping will try
+## to use something with the same name in the search path.
+ameliaEnv <- new.env()
+environment(main.close) <- ameliaEnv
+environment(setWorkingDir) <- ameliaEnv
+environment(loadStata) <- ameliaEnv
+environment(loadSPSS) <- ameliaEnv
+environment(loadSAS) <- ameliaEnv
+environment(loadTAB) <- ameliaEnv
+environment(loadCSV) <- ameliaEnv
+environment(loadRData) <- ameliaEnv
+environment(loadDemo) <- ameliaEnv
+environment(drawMissMap) <- ameliaEnv
+environment(activateGUI) <- ameliaEnv
+environment(save.session) <- ameliaEnv
+environment(load.session) <- ameliaEnv
+environment(run.amelia) <- ameliaEnv
+environment(amelia.save) <- ameliaEnv
+environment(set.out) <- ameliaEnv
+environment(setTS) <- ameliaEnv
+environment(unsetTS) <- ameliaEnv
+environment(setCS) <- ameliaEnv
+environment(unsetCS) <- ameliaEnv
+environment(fillMainTree) <- ameliaEnv
+environment(AmeliaView) <- ameliaEnv
+environment(buildNumericalOptions) <- ameliaEnv
+environment(buildOutputOptions) <- ameliaEnv
+environment(buildAboutDialog) <- ameliaEnv
+environment(gui.pri.setup) <- ameliaEnv
+environment(gui.diag.setup) <- ameliaEnv
+environment(save.log) <- ameliaEnv
+environment(show.output.log) <- ameliaEnv
+environment(bindTooltip) <- ameliaEnv
+environment(showTooltip) <- ameliaEnv
+environment(killTooltip) <- ameliaEnv
+environment(refreshSelection) <- ameliaEnv
+environment(variableOptionStatus) <- ameliaEnv
+environment(variableOptionsPost) <- ameliaEnv
+environment(mainTreeRightClick) <- ameliaEnv
+environment(addLag) <- ameliaEnv
+environment(addLead) <- ameliaEnv
+environment(dropLag) <- ameliaEnv
+environment(dropLead) <- ameliaEnv
+environment(setTrans) <- ameliaEnv
+environment(dropTrans) <- ameliaEnv
+environment(addBounds) <- ameliaEnv
+environment(plotHist) <- ameliaEnv
+environment(sortTreeBy) <- ameliaEnv
+environment(drawArrow) <- ameliaEnv
+environment(bandTree) <- ameliaEnv
+environment(updateTreeStats) <- ameliaEnv
+environment(centerModalDialog) <- ameliaEnv
+environment(showImputedFiles) <- ameliaEnv

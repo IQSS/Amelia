@@ -2245,6 +2245,6 @@ diagnostics using the sessions feature of \AmeliaView.
 
 \bibliographystyle{apsr}
 \bibsep=0in
-\bibliography{gk.bib,gkpubs.bib}
+\bibliography{gk,gkpubs}
 \end{document}
 
