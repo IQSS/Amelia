@@ -686,8 +686,6 @@ amelia.save <- function(out,outname,m)  {
     save(list = "ameliaObject", envir = ameliaEnv(),
          file = paste(outname, ".RData", sep = ""))
   }
-  if (save.type == 9)
-    assign(x = outname, value = out,envir = .GlobalEnv)
 }
 
 set.out<-function(...) {
@@ -863,8 +861,7 @@ AmeliaView<-function() {
                     "Stata 8/9",
                     "Stata 10+",
                     "Stata 10+ (stacked)",
-                    "RData",
-                    "Hold in R memory")
+                    "RData")
   ampath <- .find.package(package = "Amelia")[1]
   ameliaFile <- file.path(ampath, "gui/gallery19.gif")
   goFile <- file.path(ampath, "gui/action_go.gif")
