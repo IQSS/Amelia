@@ -1,1 +1,3 @@
 amelia-setup.exe
+^.*\.Rproj$
+^\.Rproj\.user$

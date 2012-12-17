@@ -1,2 +1,2 @@
 Makefile
-copyRd.Rout
+doc/.*[.]png$

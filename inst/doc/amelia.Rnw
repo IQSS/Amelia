@@ -118,7 +118,7 @@ to all of this, \AmeliaII\ provides many diagnostic functions that
 help users check the validity of their imputation model.  This
 software implements the ideas developed in \citet*{HonKin10}.
 
-\section{What \Amelia\ Does}
+\section[What Amelia Does]{What \Amelia\ Does}
 \label{sec:what}
 
 Multiple imputation involves imputing $m$ values for each missing cell
@@ -352,7 +352,7 @@ results/.style= {circle, draw=blue!50, fill=blue!20, thick}]
 algorithm. }
 \end{figure}
 
-\section{Versions of \Amelia\ }
+\section[Versions of Amelia]{Versions of \Amelia\ }
 
 \label{sec:versions}
 Two versions of \AmeliaII\ are available, each with its own advantages
@@ -396,7 +396,7 @@ use the command
 \end{verbatim}
 
 
-\subsection{Installation in Windows of \AmeliaView\ as a Standalone Program}
+\subsection[Installation in Windows of AmeliaView as a Standalone Program]{Installation in Windows of \AmeliaView\ as a Standalone Program}
 \label{sec:win-install}
 To install a standalone version of \AmeliaView\ in the Windows environment,
 simply download the installer \texttt{setup.exe} from
@@ -627,7 +627,7 @@ belongs. See Section~\ref{sec:analysis} for a description of how to
 use this stacked dataset with the \code{mi} commands in Stata. 
 
 
-\subsubsection{Combining Multiple \Amelia\ Runs}
+\subsubsection[Combining Multiple Amelia Runs]{Combining Multiple \Amelia\ Runs}
 The EMB algorithm is what computer scientists call \emph{embarrassingly
   parallel}, meaning that it is simple to separate each imputation into
 parallel processes. With \Amelia\ it is simple to run subsets of the
@@ -1845,7 +1845,7 @@ Within VCE type:          OLS                     Prob > F        =     0.0008
 \end{verbatim}
 
 
-\subsection{The \texttt{amelia} class}
+\subsection[The amelia class]{The \texttt{amelia} class}
 \label{sec:out}
 
 The output from the \code{amelia} function is an instance of the S3 class
@@ -1869,7 +1869,7 @@ algorithm enters a problematic part of the parameter space.
 \clearpage
 
 
-\section{\AmeliaView\ Menu Guide}
+\section[AmeliaView Menu Guide]{\AmeliaView\ Menu Guide}
 \label{sec:menu}
 Below is a guide to the \AmeliaView\ menus with references back to the
 users's guide. The same principles from the user's guide apply to
@@ -1878,7 +1878,7 @@ Whether you use the GUI or the command line versions, the same
 underlying code is being called, and so you can read the command
 line-oriented discussion above even if you intend to use the GUI.
 
-\subsection{Loading \AmeliaView}
+\subsection[Loading AmeliaView]{Loading \AmeliaView}
 
 The easiest way to load \AmeliaView\ is to open an \R\ session and type
 the following two commands:
@@ -1895,7 +1895,7 @@ Desktop icon for \AmeliaView. Simply double-click this icon and the
 \AmeliaView\ window should appear. If, for some reason, this approach does
 not work, simply open an \R\ session and use the approach above.
 
-\subsection{Loading a data set into \AmeliaView }
+\subsection[Loading a data set into AmeliaView]{Loading a data set into \AmeliaView }
 \label{sec:step1}
 \begin{figure}[ht]
   \centering 
@@ -2008,7 +2008,7 @@ variable name.
 \end{enumerate}
 
 
-\subsection{\Amelia\ Options}
+\subsection[Amelia Options]{\Amelia\ Options}
 \label{sec:optsmenu}
 \begin{figure}[ht]
   \centering 

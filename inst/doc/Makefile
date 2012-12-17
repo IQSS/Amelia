@@ -11,3 +11,6 @@ all:	amelia.pdf
 	pdflatex \$*
 	pdflatex \$*
 	pdflatex \$*
+
+clean: 
+	rm -rf *.aux *.tex *.bbl *.bcf *.log *.out *.toc amelia-*.pdf
