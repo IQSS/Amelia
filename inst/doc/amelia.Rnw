@@ -1401,7 +1401,7 @@ options(SweaveHooks = list(fig = function() par(mfrow=c(1,1))))
 \end{center}
 \end{figure}
 
-Our overimputation diagnostic, shown in \ref{f:oi2}, runs this procedure
+Our overimputation diagnostic, shown in Figure~\ref{f:oi2}, runs this procedure
 through all of the observed values for a user selected variable.  We can
 graph the estimates of each observation against the true values of the
 observation.  On this graph, a $y=x$ line indicates the line of perfect
@@ -1429,7 +1429,7 @@ overimpute(aa.out, var = 2, main = "Observed versus Imputed Values")
   \caption{Another example of the overimpute diagnostic graph. Note that
     the red lines are those observations that have fewer covariates
     observed and have a higher variance across the imputed values. }
-  \label{f:oi}
+  \label{f:oi-bad}
 \end{center}
 \end{figure}
 
@@ -1444,7 +1444,7 @@ impute that observation with when we pretend that it is missing, other
 than the mean and variance of that variable.  In these cases, we
 should correctly expect the confidence interval to be very large.
 
-An example of this graph is shown in figure \ref{f:oi}.  In this
+An example of this graph is shown in figure \ref{f:oi-bad}.  In this
 simulated bivariate dataset, one variable is overimputed and the
 results displayed.  The second variable is either observed, in which
 case the confidence intervals are very small and the imputations
@@ -1513,7 +1513,6 @@ options(SweaveHooks = list(fig = function() par(mfrow=c(1,2))))
 <<disp1dfig, echo=FALSE, fig=TRUE, eps=FALSE, width=9, height=5.5>>=
 <<disp1d>>
 @
-\label{f:overgood}
    \caption{A plot from the overdispersion diagnostic where all EM chains
      are converging to the same mode, regardless of starting value.  On
      the left, the $y$-axis represents movement in the (very high
@@ -1524,12 +1523,13 @@ options(SweaveHooks = list(fig = function() par(mfrow=c(1,2))))
      is no longer represented on the $y$-axis, although the distance
      between iterations is marked by the distance between arrowheads on
      each chain.}
+   \label{f:overgood}
   \end{center}
 \end{figure}
 
 In one dimension, the diagnostic plots movement of the chain on the
 $y$-axis and time, in the form of the iteration number, on the $x$-axis.
-Figures \ref{f:overgood} show two examples of these plots.  The
+Figures~\ref{f:overgood} show two examples of these plots.  The
 first shows a well behaved likelihood, as the starting values all converge
 to the same point.  The black horizontal line is the point where \Amelia\
 converges when it uses the default method for choosing the starting
@@ -1563,7 +1563,7 @@ a.out.bad
 @ 
 
 But if we were to run \code{disperse}, we would end up with the
-problematic figure \ref{f:overbad}:
+problematic Figure~\ref{f:overbad}:
 
 <<dispbad, include=FALSE>>=
 disperse(a.out.bad, dims = 1, m = 10)
@@ -1584,10 +1584,10 @@ options(SweaveHooks = list(fig = function() par(mfrow=c(1,1))))
 <<dispbadfig, echo=FALSE, fig=TRUE, width = 7, height = 7>>=
 <<dispbad>>
 @
-\label{f:overbad}
   \caption{ A problematic plot from the overdispersion diagnostic
     showing that EM chains are converging to one of two different
     modes, depending upon the starting value of the chain.}
+  \label{f:overbad}
   \end{center}
 \end{figure}
 
@@ -1621,12 +1621,12 @@ confidence bands. We draw these bands by imputing each of missing values
 <<tsplot2, echo=FALSE, fig=TRUE, width = 7, height = 7>>=
 <<tsplot1>>
 @
-\label{fig:tsplot1}
   \caption{Tariff rates in Malaysia, 1980-2000. An example of the
     \texttt{tscsPlot} function, the black points are observed values of
     the time series and the red points are the mean of the imputation
     distributions. The red lines represent the 95\% confidence bands of
     the imputation distribution.}
+  \label{fig:tsplot1}
   \end{center}
 \end{figure}
 
@@ -1688,9 +1688,9 @@ of the cross-sections begin.
 <<mmap2, echo=FALSE, fig=TRUE, width = 7, height = 7>>=
 <<mmap1>>
 @
-\label{fig:missmap}
   \caption{Missingness map of the \texttt{freetrade} data. Missing values
     are in tan and observed values are in red.}
+  \label{fig:missmap}
   \end{center}
 \end{figure}
 
@@ -2245,6 +2245,6 @@ diagnostics using the sessions feature of \AmeliaView.
 
 \bibliographystyle{apsr}
 \bibsep=0in
-\bibliography{gk,gkpubs}
+\bibliography{amelia}
 \end{document}
 
