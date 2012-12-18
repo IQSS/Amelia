@@ -13,4 +13,4 @@ all:	amelia.pdf
 	pdflatex \$*
 
 clean: 
-	rm -rf *.aux *.tex *.bbl *.blg *.bcf *.log *.out *.toc amelia-*.pdf
+	rm -rf *.aux *.tex *.bbl *.blg *.bcf *.log *.out *.rel *.toc amelia-*.pdf
