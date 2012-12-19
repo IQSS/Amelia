@@ -66,11 +66,18 @@ citebordercolor={0 0 1}]{hyperref}
 \title{${\mathbb{AMELIA~II}}$: A Program for Missing Data}
 
 % rbuild: replace 'Version ' '\\' Version
-\date{Version \\ \today}
+
 
 \author{James Honaker, Gary King, and Matthew Blackwell}
 
 \begin{document}
+
+<<echo=FALSE, print=FALSE>>=
+ameliaVersion <- packageVersion("Amelia")
+@
+
+
+\date{Version \Sexpr{ameliaVersion}\\ \today}
 \maketitle
 
 \tableofcontents
