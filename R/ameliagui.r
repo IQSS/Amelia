@@ -232,11 +232,7 @@ loadDemo <- function(name) {
 }
 
 drawMissMap <- function() {
-  if (.Platform$OS.type == "windows")
-    windows()
-  else
-    x11()
-
+  dev.new()
   missmap(getAmelia("amelia.data"), csvar = getAmelia("csvar"), tsvar = getAmelia("tsvar"))
 }
 
@@ -2520,11 +2516,7 @@ plotHist <- function() {
                  "Cannot plot non-numeric variables.")
     return(NULL)
   }
-  if (.Platform$OS.type == "windows")
-    windows()
-  else
-    x11()
-
+  dev.new()
   mfrow <- set.mfrow(nvars = length(sel))
   on.exit(par(NULL))
   layout <- par(mfrow = mfrow)
@@ -2533,10 +2525,7 @@ plotHist <- function() {
     j <- j + 1
     if (j > 9) {
       j <- 1
-      if (.Platform$OS.type == "windows")
-        windows()
-      else
-        x11()
+      dev.new()
       layout <- par(mfrow = mfrow)
     }
 
