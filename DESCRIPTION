@@ -6,7 +6,8 @@ Author: James Honaker <jhonaker@iq.harvard.edu>,
         Gary King <king@harvard.edu>,
         Matthew Blackwell <m.blackwell@rochester.edu>
 Maintainer: Matthew Blackwell <m.blackwell@rochester.edu>
-Depends: R (>= 2.14.0), foreign, utils
+Depends: R (>= 2.14.0), foreign, utils, Rcpp (>= 0.10.0.4), RcppArmadillo
+LinkingTo: Rcpp, RcppArmadillo
 Description: Amelia II "multiply imputes" missing data in a single cross-section
   (such as a survey), from a time series (like variables collected for
   each year in a country), or from a time-series-cross-sectional data
@@ -25,6 +26,7 @@ Description: Amelia II "multiply imputes" missing data in a single cross-section
   works from the R command line or via a graphical user interface that
   does not require users to know R.
 License: GPL (>= 2)
+
 URL: http://gking.harvard.edu/amelia
 Suggests: tcltk, Zelig
 Packaged: 2012-12-18 01:51:14 UTC; rbuild
