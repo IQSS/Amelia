@@ -276,9 +276,11 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
     AMr1 <- 1 * indx$AMr1
     oo <- 1 * indx$o
     mm <- 1 * indx$m
-
+    if (is.null(empri)) {
+      empri <- 0
+    }
     theta <- .Call("emcore", x, AMr1, oo, mm,
-                   indx$ivector, thetaold, tolerance, emburn, p2s, PACKAGE="Amelia")
+                   indx$ivector, thetaold, tolerance, emburn, p2s, empri, PACKAGE="Amelia")
   } else {
     if (p2s) cat("\n","No missing data in bootstrapped sample:  EM chain unnecessary")
     pp1<-ncol(x)+1                       # p (the number of variables) plus one

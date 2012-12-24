@@ -17,7 +17,7 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
   NumericVector emburn(emburns);
   NumericVector p2sr(p2ss);
   // NumericMatrix prr(prs);
-  NumericVextor empri(empris);
+  NumericVector empri(empris);
   // NumericVector frontend(fends);
   // NumericVector allthetas(alls);
   // NumericVector autopri(autos);
@@ -123,7 +123,8 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
     sweeppos(0) = 1;
     sweep(thetanew, sweeppos);
     theta = arma::abs(thetanew - thetaold);
-    thetaleft = arma::find(theta > tol(0));
+    if (count == 1) Rcpp::Rcout << std::endl << thetanew(0)<< "  " << thetaold(0) << std::endl;
+    thetaleft = arma::find(arma::trimatu(theta) > tol(0));
     cvalue = thetaleft.n_elem;
     thetaold = thetanew;
 
@@ -204,6 +205,7 @@ void sweep(arma::mat& g, arma::vec m) {
     h(k,kcompl) = h(k,k) * g(k,kcompl);
     h(kcompl,k) = arma::trans(h(k,kcompl));
     h(kcompl, kcompl) = g(kcompl, kcompl) - (g(kcompl, k)* h(k,k) * g(k,kcompl));
+    h(k,k) = -h(k,k);
     g = h;
   }
 
