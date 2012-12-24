@@ -17,13 +17,14 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
   NumericVector emburn(emburns);
   NumericVector p2sr(p2ss);
   // NumericMatrix prr(prs);
-  NumericVector empri(empris);
+  NumericVector emprir(empris);
   // NumericVector frontend(fends);
   // NumericVector allthetas(alls);
   // NumericVector autopri(autos);
   
-  int p2s = p2sr(0);
+  int p2s = p2sr(0), empri = emprir(0);
   int n = xr.nrow(), k = xr.ncol();
+  int const AMn = n, AMk = k;
   // int npr = prr.nrow(), knr = prr.ncol();
   int npatt = orr.nrow();
   int cvalue = 1;
@@ -37,7 +38,8 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
   //Rcpp::Rcout << "Set up arma things. "  << std::endl;
   int count = 0;
   int is, isp;
-  arma::mat xplay(n,k);
+
+  arma::mat xplay = arma::zeros<arma::mat>(AMn,k);
   arma::mat hmcv(k,k);
   arma::mat imputations(2,k);
   arma::vec music(k);
@@ -58,13 +60,18 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
   } else {
     st = 0;
   }
+  //  if (empri > 0) {
+  arma::mat hold = empri * arma::eye(k,k);
+  arma::mat simple(k,k);
+//}
+
   if (p2s > 0) Rcpp::Rcout << std::endl;
   //Rcpp::Rcout << "Starting loop. "  << std::endl;
   while ( (cvalue > 0 | count < emburn(0)) & (count < emburn(1) | emburn(1) < 1)) {
     count++;
-    hmcv.zeros();
-    music.zeros();
-    xplay.zeros();
+    hmcv.zeros(k,k);
+    music.zeros(k);
+    xplay.zeros(AMn,k);
 
     if (p2s > 0) {
       if (count < 10) {
@@ -76,11 +83,13 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
         Rcpp::Rcout << std::endl;
       }
     }
+
     if (st == 1) {
       xplay.rows(0,ii(1)-2) = x.rows(0,ii(1)-2);
-    }
-    
+    }    
+
     for (ss = st; ss < obsmat.n_rows; ss++) {
+
       is = ii(ss)-1;
       isp = ii(ss+1)-2;
       
@@ -96,9 +105,9 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
       imputations = x.rows(is, isp) * theta(arma::span(1,k), arma::span(1,k));
       imputations.each_row() += theta(0, arma::span(1,k));
       imputations = AMr1.rows(is, isp) % imputations;
-      
+
       xplay.rows(is, isp) = x.rows(is, isp) + imputations;
-      
+
       mispos = arma::find(mismat.row(ss));
       hmcv(mispos, mispos) += (1+ isp - is) *  theta(mispos+1, mispos+1);
       
@@ -106,18 +115,20 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
                                                    
                                           
     }
+
     hmcv += arma::trans(xplay) * xplay;
     music += arma::trans(arma::sum(xplay));
-    if (empri(0) > 0) {
-      
-    }
-    //Rcpp::Rcout << "xplay: " << music << std::endl;
-    thetanew(0,0) = n;
+    if (empri > 0) {
+      simple = (music * arma::trans(music))/AMn;
+      hmcv = (( (double)AMn/(AMn+empri+k+2)) * (hmcv - simple + hold)) + simple;
+    } 
+
+    thetanew(0,0) = AMn;
     thetanew(0, arma::span(1,k)) = arma::trans(music);
     thetanew(arma::span(1,k), 0) = music;
     thetanew(arma::span(1,k), arma::span(1,k)) = hmcv;
     
-    thetanew = thetanew/n;
+    thetanew = thetanew/AMn;
 
     sweeppos.zeros();
     sweeppos(0) = 1;
@@ -200,7 +211,7 @@ void sweep(arma::mat& g, arma::vec m) {
   if (k.n_elem == p) {
     g = -arma::inv(g);
   } else {
-    h(k,k) = arma::inv(g(k,k));
+    h(k,k) = arma::pinv(g(k,k));
     h(k,kcompl) = h(k,k) * g(k,kcompl);
     h(kcompl,k) = arma::trans(h(k,kcompl));
     h(kcompl, kcompl) = g(kcompl, kcompl) - (g(kcompl, k)* h(k,k) * g(k,kcompl));
