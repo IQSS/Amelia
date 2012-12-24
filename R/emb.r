@@ -273,9 +273,23 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
     AM1stln<-sum(indx$m[1,])==0 & nrow(indx$m) > 1
     count<-0
     diff<- 1+tolerance
+    AMr1 <- 1 * indx$AMr1
+    oo <- 1 * indx$o
+    mm <- 1 * indx$m
 
-    theta <- .Call("emcore", x, indx$AMr1, indx$o, indx$m,
-                   indx$ivector, thetaold, tolerance)
+    theta <- .Call("emcore", x, AMr1, oo, mm,
+                   indx$ivector, thetaold, tolerance, emburn, p2s, PACKAGE="Amelia")
+  } else {
+    if (p2s) cat("\n","No missing data in bootstrapped sample:  EM chain unnecessary")
+    pp1<-ncol(x)+1                       # p (the number of variables) plus one
+    means<-colMeans(x)
+    thetanew<-matrix(0,pp1,pp1)
+    thetanew[1,1]<-(-1)
+    thetanew[2:pp1,1]<-means
+    thetanew[1,2:pp1]<-means
+    thetanew[2:pp1,2:pp1]<-cov(x)              # Need to consider Priors in these cases,
+    iter.hist<-NA                              # Although not currently necessary.
+  }
 
   ##   while ( (diff>0 | count<emburn[1] ) & (count<emburn[2] | emburn[2]<1) ){    # emburn[1] is a minimum EM chain length, emburn[2] is a maximum, ignored if less than 1.
   ##     if (collect)
@@ -364,7 +378,7 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
   ## }
   ## if (allthetas)
   ##   return(list(thetanew=cbind(thetahold,(thetanew[upper.tri(thetanew,diag=TRUE)])[-1]),iter.hist=iter.hist))
-  return(list(thetanew=theta$thetaold,iter.hist=theta$iterHist))
+  return(list(thetanew=theta$theta,iter.hist=theta$iter.hist))
 }
 
 ## Draw imputations for missing values from a given theta matrix
@@ -1093,8 +1107,8 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
     }
     flush.console()
 
-    ##thetanew<-emarch(x.stacked$x,p2s=p2s,thetaold=NULL,tolerance=tolerance,startvals=startvals,x.stacked$priors,empri=empri,frontend=frontend,collect=collect,autopri=prepped$autopri,emburn=emburn)
-    thetanew <- .Call("emarch", PACKAGE = "Amelia")
+    thetanew<-emarch(x.stacked$x,p2s=p2s,thetaold=NULL,tolerance=tolerance,startvals=startvals,x.stacked$priors,empri=empri,frontend=frontend,collect=collect,autopri=prepped$autopri,emburn=emburn)
+    ##thetanew <- .Call("emarch", PACKAGE = "Amelia")
     ## update the amelia ouptut
     impdata$iterHist[[i]]    <- thetanew$iter.hist
     impdata$theta[,,i]       <- thetanew$thetanew

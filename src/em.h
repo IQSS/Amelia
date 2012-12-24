@@ -1,6 +1,5 @@
 #ifndef _Amelia_EMCORE_H
 #define _Amelia_EMCORE_H
-#include <Rcpp.h>
 #include <RcppArmadillo.h>
 
 
@@ -15,6 +14,8 @@
 * by .Call. See the thread http://thread.gmane.org/gmane.comp.lang.r.rcpp/649/focus=672
 * on Rcpp-devel for a misuse of RcppExport
 */
-RcppExport SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP is, SEXP p2ss, SEXP thetas, SEXP tols, SEXP prs, SEXP empris, SEXP fends, SEXP alls, SEXP autos, SEXP emburns) ;
+RcppExport SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP is, SEXP thetas, SEXP tols, SEXP emburn, SEXP p2ss, SEXP empris) ;
+
+void sweep(arma::mat& g, arma::vec m);
 
 #endif
