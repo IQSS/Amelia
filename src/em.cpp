@@ -123,7 +123,6 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
     sweeppos(0) = 1;
     sweep(thetanew, sweeppos);
     theta = arma::abs(thetanew - thetaold);
-    if (count == 1) Rcpp::Rcout << std::endl << thetanew(0)<< "  " << thetaold(0) << std::endl;
     thetaleft = arma::find(arma::trimatu(theta) > tol(0));
     cvalue = thetaleft.n_elem;
     thetaold = thetanew;
