@@ -14,7 +14,7 @@
 * by .Call. See the thread http://thread.gmane.org/gmane.comp.lang.r.rcpp/649/focus=672
 * on Rcpp-devel for a misuse of RcppExport
 */
-RcppExport SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP is, SEXP thetas, SEXP tols, SEXP emburn, SEXP p2ss, SEXP empris) ;
+RcppExport SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP is, SEXP thetas, SEXP tols, SEXP emburn, SEXP p2ss, SEXP empris, SEXP autos, SEXP alls) ;
 
 void sweep(arma::mat& g, arma::vec m);
 

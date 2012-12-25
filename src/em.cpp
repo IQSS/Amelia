@@ -3,7 +3,7 @@
 
 using namespace Rcpp ;
 
-SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP tols, SEXP emburns, SEXP p2ss, SEXP empris){
+SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP tols, SEXP emburns, SEXP p2ss, SEXP empris, SEXP autos, SEXP alls){
 
   //, SEXP p2ss, SEXP prs, SEXP empris, SEXP fends, SEXP alls, SEXP autos, SEXP emburns//
 
@@ -19,8 +19,8 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
   // NumericMatrix prr(prs);
   NumericVector emprir(empris);
   // NumericVector frontend(fends);
-  // NumericVector allthetas(alls);
-  // NumericVector autopri(autos);
+  NumericVector allthetas(alls);
+  NumericVector autopri(autos);
   
   int p2s = p2sr(0), empri = emprir(0);
   int n = xr.nrow(), k = xr.ncol();
@@ -38,7 +38,10 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
   //Rcpp::Rcout << "Set up arma things. "  << std::endl;
   int count = 0;
   int is, isp;
-
+  
+  int nparam = arma::accu(arma::find(arma::trimatu(thetaold)));
+  
+  arma::uvec upperpos = arma::find(arma::trimatu(arma::abs(arma::randu<arma::mat>(k+1,k+1))));
   arma::mat xplay = arma::zeros<arma::mat>(AMn,k);
   arma::mat hmcv(k,k);
   arma::mat imputations(2,k);
@@ -50,6 +53,9 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
   arma::uvec thetaleft;
   arma::vec etest;
   arma::mat iterHist(1,3);
+  arma::mat thetaHolder(upperpos.n_elem,1);
+  thetaHolder.col(0) = thetaold.elem(upperpos);
+  
   iterHist.zeros();
   sweeppos.zeros();
   hmcv.zeros();
@@ -65,7 +71,7 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
   arma::mat simple(k,k);
 //}
 
-  if (p2s > 0) Rcpp::Rcout << std::endl;
+  if (p2s > 0) Rcpp::Rcout << std::endl << upperpos.n_elem << std::endl;
   //Rcpp::Rcout << "Starting loop. "  << std::endl;
   while ( (cvalue > 0 | count < emburn(0)) & (count < emburn(1) | emburn(1) < 1)) {
     count++;
@@ -96,12 +102,12 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
       theta = thetaold;
       sweeppos.zeros();
       sweeppos(arma::span(1,k)) = arma::trans(obsmat.row(ss));
-      //Rcpp::Rcout << std::endl << theta.row(1);
+
       sweep(theta, sweeppos);
-      //Rcpp::Rcout << std::endl << theta.row(1);
+
       imputations.zeros();
       imputations.set_size(isp - is, k);
-      
+
       imputations = x.rows(is, isp) * theta(arma::span(1,k), arma::span(1,k));
       imputations.each_row() += theta(0, arma::span(1,k));
       imputations = AMr1.rows(is, isp) % imputations;
@@ -110,7 +116,7 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
 
       mispos = arma::find(mismat.row(ss));
       hmcv(mispos, mispos) += (1+ isp - is) *  theta(mispos+1, mispos+1);
-      
+
 
                                                    
                                           
@@ -127,7 +133,6 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
     thetanew(0, arma::span(1,k)) = arma::trans(music);
     thetanew(arma::span(1,k), 0) = music;
     thetanew(arma::span(1,k), arma::span(1,k)) = hmcv;
-    
     thetanew = thetanew/AMn;
 
     sweeppos.zeros();
@@ -140,10 +145,19 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
 
     if (cvalue > iterHist(count-1,0) & count > 20) {
       monoFlag = 1;
+      if (autopri(0) > 0) {
+        if (arma::accu(iterHist(arma::span(count - 20, count - 1), 2)) > 3) {
+          if (empri < (autopri(0) * (double)n)) {
+            empri = empri + 0.01 * (double)n;
+          }
+        }
+      }
     } else {
       monoFlag = 0;
     }
+
     etest = arma::eig_sym(thetaold(arma::span(1,k), arma::span(1,k)));
+
     if (arma::accu(etest <= 0)) {
       singFlag = 1;
     } else {
@@ -162,13 +176,23 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
     iterHist(count, 0) = cvalue;
     iterHist(count, 1) = singFlag;
     iterHist(count, 2) = monoFlag;
-  
+    if (allthetas(0) == 1) {   
+      thetaHolder.resize(thetaHolder.n_rows, thetaHolder.n_cols + 1);
+      thetaHolder.col(count) = thetaold.elem(upperpos);
+    }
   }
   iterHist.shed_row(0);
-
+  
   if (p2s > 0) Rcpp::Rcout << std::endl;
-  List z = List::create(Rcpp::Named("theta") = thetaold, 
-                        Rcpp::Named("iter.hist") = iterHist) ;
+  List z;
+  if (allthetas(0) == 1) {
+    thetaHolder.shed_row(0);
+    z = List::create(Rcpp::Named("thetanew") = thetaHolder, 
+                     Rcpp::Named("iter.hist") = iterHist);
+  } else {
+    z = List::create(Rcpp::Named("theta") = thetaold, 
+                     Rcpp::Named("iter.hist") = iterHist);
+  }
   return z ;
 }
 
@@ -211,7 +235,7 @@ void sweep(arma::mat& g, arma::vec m) {
   if (k.n_elem == p) {
     g = -arma::inv(g);
   } else {
-    h(k,k) = arma::pinv(g(k,k));
+    h(k,k) = arma::inv(g(k,k));
     h(k,kcompl) = h(k,k) * g(k,kcompl);
     h(kcompl,k) = arma::trans(h(k,kcompl));
     h(kcompl, kcompl) = g(kcompl, kcompl) - (g(kcompl, k)* h(k,k) * g(k,kcompl));
