@@ -37,9 +37,15 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
   //Rcpp::Rcout << "Set up arma things. "  << std::endl;
 
   // Bring out your priors.
-  NumericMatrix prr(prs);
-  int npr = prr.nrow(), knr = prr.ncol();
-  arma::mat priors(prr.begin(), npr, knr, false);
+  NumericMatrix prr;
+  int npr, knr;
+  arma::mat priors;
+  if (!Rf_isNull(prs)) {
+    prr = NumericMatrix(prs);
+    npr = prr.nrow();
+    knr = prr.ncol();
+    priors = arma::mat(prr.begin(), npr, knr, false); 
+  }
 
   int count = 0;
   int is, isp;
