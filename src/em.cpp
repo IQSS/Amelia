@@ -3,7 +3,7 @@
 
 using namespace Rcpp ;
 
-SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP tols, SEXP emburns, SEXP p2ss, SEXP empris, SEXP autos, SEXP alls){
+SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP tols, SEXP emburns, SEXP p2ss, SEXP empris, SEXP autos, SEXP alls, SEXP prs){
 
   //, SEXP p2ss, SEXP prs, SEXP empris, SEXP fends, SEXP alls, SEXP autos, SEXP emburns//
 
@@ -16,7 +16,7 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
   NumericVector ir(ivec);
   NumericVector emburn(emburns);
   NumericVector p2sr(p2ss);
-  // NumericMatrix prr(prs);
+
   NumericVector emprir(empris);
   // NumericVector frontend(fends);
   NumericVector allthetas(alls);
@@ -25,17 +25,22 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
   int p2s = p2sr(0), empri = emprir(0);
   int n = xr.nrow(), k = xr.ncol();
   int const AMn = n, AMk = k;
-  // int npr = prr.nrow(), knr = prr.ncol();
   int npatt = orr.nrow();
   int cvalue = 1;
+
   arma::mat x(xr.begin(), n, k, false);
   arma::mat thetaold(thetar.begin(), k + 1, k + 1, false);
-  //arma::mat priors(prr.begin(), npr, knr, false);
   arma::mat AMr1(AMr1r.begin(), n, k, false);
   arma::mat obsmat(orr.begin(), npatt, k, false);
   arma::mat mismat(mr.begin(), npatt, k, false);
   arma::vec ii(ir.begin(), n, false);
   //Rcpp::Rcout << "Set up arma things. "  << std::endl;
+
+  // Bring out your priors.
+  NumericMatrix prr(prs);
+  int npr = prr.nrow(), knr = prr.ncol();
+  arma::mat priors(prr.begin(), npr, knr, false);
+
   int count = 0;
   int is, isp;
   
@@ -71,7 +76,7 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
   arma::mat simple(k,k);
 //}
 
-  if (p2s > 0) Rcpp::Rcout << std::endl << upperpos.n_elem << std::endl;
+  if (p2s > 0) Rcpp::Rcout << std::endl;
   //Rcpp::Rcout << "Starting loop. "  << std::endl;
   while ( (cvalue > 0 | count < emburn(0)) & (count < emburn(1) | emburn(1) < 1)) {
     count++;
@@ -93,33 +98,78 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
     if (st == 1) {
       xplay.rows(0,ii(1)-2) = x.rows(0,ii(1)-2);
     }    
+    if (Rf_isNull(prs)) {
+      for (ss = st; ss < obsmat.n_rows; ss++) {
+        
+        is = ii(ss)-1;
+        isp = ii(ss+1)-2;
+        
+        theta = thetaold;
+        sweeppos.zeros();
+        sweeppos(arma::span(1,k)) = arma::trans(obsmat.row(ss));
+        
+        sweep(theta, sweeppos);
+        
+        imputations.zeros();
+        imputations.set_size(isp - is, k);
+        
+        imputations = x.rows(is, isp) * theta(arma::span(1,k), arma::span(1,k));
+        imputations.each_row() += theta(0, arma::span(1,k));
+        imputations = AMr1.rows(is, isp) % imputations;
 
-    for (ss = st; ss < obsmat.n_rows; ss++) {
+        xplay.rows(is, isp) = x.rows(is, isp) + imputations;
+        
+        mispos = arma::find(mismat.row(ss));
+        hmcv(mispos, mispos) += (1+ isp - is) *  theta(mispos+1, mispos+1);
+        
+        
+        
+        
+      }
+    } else {
+      for (ss = st; ss < obsmat.n_rows; ss++) {
+        is = ii(ss)-1;
+        isp = ii(ss+1)-2;
+        
+        theta = thetaold;
+        sweeppos.zeros();
+        sweeppos(arma::span(1,k)) = arma::trans(obsmat.row(ss));
+        
+        sweep(theta, sweeppos);
 
-      is = ii(ss)-1;
-      isp = ii(ss+1)-2;
-      
-      theta = thetaold;
-      sweeppos.zeros();
-      sweeppos(arma::span(1,k)) = arma::trans(obsmat.row(ss));
+        imputations.zeros();
+        imputations.set_size(isp - is, k);
+        
+        imputations = x.rows(is, isp) * theta(arma::span(1,k), arma::span(1,k));
+        imputations.each_row() += theta(0, arma::span(1,k));
+        imputations = AMr1.rows(is, isp) % imputations;
+        
+        mispos = arma::find(mismat.row(ss));
+        arma::mat solveSigma = arma::inv(theta(mispos + 1, mispos + 1));
+        arma::mat diagLambda = arma::zeros<arma::mat>(mispos.n_elem, mispos.n_elem);
+        for (int p = 0; p <= isp-is; p++) {
+          arma::uvec prRow = arma::find(priors.col(0) == p + is + 1);
+          if (prRow.n_elem > 0) {
+            arma::uvec pu(1);
+            pu(0) = p;
+            arma::mat thisPrior = priors.rows(prRow);
+            arma::uvec theseCols = arma::conv_to<arma::uvec>::from(thisPrior.col(1)-1);
+            arma::vec prHolder = arma::zeros<arma::vec>(k);
+            prHolder.elem(theseCols) = thisPrior.col(3);
+            diagLambda.diag() = prHolder.elem(mispos);
+            arma::mat wvar = arma::inv(diagLambda + solveSigma);
+            prHolder.elem(theseCols) = thisPrior.col(2);
+            arma::mat muMiss = wvar * (prHolder.elem(mispos) + solveSigma * imputations(pu, mispos));
+            imputations(pu, mispos) = muMiss;
+            hmcv(mispos, mispos) +=  wvar;
+          } else {
+            hmcv(mispos, mispos) += theta(mispos + 1, mispos + 1);
+          }
+          
+        }
+        xplay.rows(is, isp) = x.rows(is, isp) + imputations;
+      }
 
-      sweep(theta, sweeppos);
-
-      imputations.zeros();
-      imputations.set_size(isp - is, k);
-
-      imputations = x.rows(is, isp) * theta(arma::span(1,k), arma::span(1,k));
-      imputations.each_row() += theta(0, arma::span(1,k));
-      imputations = AMr1.rows(is, isp) % imputations;
-
-      xplay.rows(is, isp) = x.rows(is, isp) + imputations;
-
-      mispos = arma::find(mismat.row(ss));
-      hmcv(mispos, mispos) += (1+ isp - is) *  theta(mispos+1, mispos+1);
-
-
-                                                   
-                                          
     }
 
     hmcv += arma::trans(xplay) * xplay;

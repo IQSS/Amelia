@@ -266,7 +266,16 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
     indx<-indxs(x)                      # This needs x.NA
     if (!identical(priors,NULL)){
       priors[,4]<-1/priors[,4]          # change sd to 1/var
-      priors[,3]<-priors[,3]*priors[,4] # get the precision-weighted mus
+      priors[,3]<-priors[,3]*priors[,4] # get the precision-weighted
+                                        # mus
+      priors <- priors[order(priors[,1],priors[,2]),]
+      priorList <- list()
+      for (ss in 1:nrow(indx$o)) {
+        is <- indx$ivector[ss]
+        isp <- indx$ivector[ss+1] - 1
+        priorList[[ss]] <- priors[priors[,1] %in% is:isp,, drop = FALSE]
+      }
+
     }
 
     x[is.na(x)]<-0                      # Change x.NA to x.0s
@@ -281,7 +290,7 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
     }
     theta <- .Call("emcore", x, AMr1, oo, mm,
                    indx$ivector, thetaold, tolerance, emburn, p2s,
-                   empri,autopri, allthetas, PACKAGE="Amelia")
+                   empri,autopri, allthetas, priors, PACKAGE="Amelia")
   } else {
     if (p2s) cat("\n","No missing data in bootstrapped sample:  EM chain unnecessary")
     pp1<-ncol(x)+1                       # p (the number of variables) plus one
