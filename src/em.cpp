@@ -291,7 +291,8 @@ void sweep(arma::mat& g, arma::vec m) {
   if (k.n_elem == p) {
     g = -arma::inv(g);
   } else {
-    h(k,k) = arma::inv(g(k,k));
+    try {h(k,k) = arma::inv(g(k,k));}
+    catch (...) {h(k,k) = arma::pinv(g(k,k));}
     h(k,kcompl) = h(k,k) * g(k,kcompl);
     h(kcompl,k) = arma::trans(h(k,kcompl));
     h(kcompl, kcompl) = g(kcompl, kcompl) - (g(kcompl, k)* h(k,k) * g(k,kcompl));
