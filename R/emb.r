@@ -1052,11 +1052,11 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
                            overimp = NULL, ...) {
 
 
-                                        #Generates the Amelia Output window for the frontend
-  if (frontend) {
-    require(tcltk)
-    tcl("update")
-  }
+  ## Generates the Amelia Output window for the frontend
+  ## if (frontend) {
+  ##   require(tcltk)
+  ##   tcl("update")
+  ## }
   if (p2s==2) {
     cat("\namelia starting\n")
     flush.console()
@@ -1114,10 +1114,10 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
     x.stacked<-amstack(x.boot$x,colorder=FALSE,x.boot$priors)   # Don't reorder columns thetanew will not align with d.stacked$x
 
     if (p2s) cat("-- Imputation", i, "--\n")
-    if (frontend) {
-      putAmelia("output.log", c(getAmelia("output.log"),paste("-- Imputation",i,"--\n")))
-    }
-    flush.console()
+    ## if (frontend) {
+    ##   putAmelia("output.log", c(getAmelia("output.log"),paste("-- Imputation",i,"--\n")))
+    ## }
+    ## flush.console()
 
     thetanew<-emarch(x.stacked$x,p2s=p2s,thetaold=NULL,tolerance=tolerance,startvals=startvals,x.stacked$priors,empri=empri,frontend=frontend,collect=collect,autopri=prepped$autopri,emburn=emburn)
     ##thetanew <- .Call("emarch", PACKAGE = "Amelia")
@@ -1136,9 +1136,9 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
       code <- 2
       cat("\n\nThe resulting variance matrix was not invertible.  Please check
 your data for highly collinear variables.\n\n")
-      if (frontend) {
-        putAmelia("output.log", c(getAmelia("output.log"),"\n\nThe resulting variance matrix was not invertible.  Please check your data for highly collinear variables.\n\n"))
-      }
+      ## if (frontend) {
+      ##   putAmelia("output.log", c(getAmelia("output.log"),"\n\nThe resulting variance matrix was not invertible.  Please check your data for highly collinear variables.\n\n"))
+      ## }
       next()
 
     }
@@ -1172,7 +1172,7 @@ your data for highly collinear variables.\n\n")
     if (p2s) cat("\n")
     if (frontend) {
       tcl(getAmelia("runAmeliaProgress"), "step",(100/m -1))
-      putAmelia("output.log", c(getAmelia("output.log"),"\n"))
+      ## putAmelia("output.log", c(getAmelia("output.log"),"\n"))
     }
 
 
@@ -1185,9 +1185,10 @@ your data for highly collinear variables.\n\n")
   } else {
     impdata$message <- paste("Normal EM convergence.")
   }
-  if (frontend) {
-    putAmelia("output.log", c(getAmelia("output.log"),paste(impdata$message,"\n")))
-  }
+
+  ## if (frontend) {
+  ##   putAmelia("output.log", c(getAmelia("output.log"),paste(impdata$message,"\n")))
+  ## }
                                         #  if (archive)
 
   names(impdata$imputations) <- paste("imp", 1:m, sep = "")
