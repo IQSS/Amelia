@@ -4,8 +4,8 @@
 \usepackage{upquote}
 
 
-% === for bad lm output === 
-% this wasn't working with rbuild 
+% === for bad lm output ===
+% this wasn't working with rbuild
 %% so i took out the signficance stars
 %\usepackage[utf8]{inputenc}
 
@@ -91,7 +91,7 @@ Missing data is a ubiquitous problem in social science data.
 Respondents do not answer every question, countries do not collect
 statistics every year, archives are incomplete, subjects drop out of
 panels. Most statistical analysis methods, however, assume the absence of
-missing data, and are only able to include observations for which 
+missing data, and are only able to include observations for which
 every variable is measured. \AmeliaII\ allows users to impute (``fill in'' or
 rectangularize) incomplete data sets so that analyses which require
 complete observations can appropriately use all the information
@@ -105,7 +105,7 @@ shown to reduce bias and increase efficiency compared to listwise
 deletion. Furthermore, ad-hoc methods of imputation, such as mean
 imputation, can lead to serious biases in variances and covariances.
 Unfortunately, creating multiple imputations can be a burdensome
-process due to the technical nature of algorithms involved. \Amelia\ 
+process due to the technical nature of algorithms involved. \Amelia\
 provides users with a simple way to create and implement an imputation model,
 generate imputed datasets, and check its fit using diagnostics.
 
@@ -164,7 +164,7 @@ vector $\mu$ and covariance matrix $\Sigma$. The multivariate normal
 distribution is often a crude approximation to the true distribution of
 the data, yet there is evidence that this model works as well as other,
 more complicated models even in the face of categorical or mixed data
-\citep[see][]{Schafer97, SchOls98}. Furthermore, transformations of many types of variables 
+\citep[see][]{Schafer97, SchOls98}. Furthermore, transformations of many types of variables
 can often make this normality assumption more plausible (see
 \ref{sec:trans} for more information on how to implement this in \Amelia).
 
@@ -189,7 +189,7 @@ on the data at all, we say that the data are \emph{missing completely
   at random} (MCAR).  \Amelia\ requires both the multivariate
 normality and the MAR assumption (or the simpler special case of
 MCAR).  Note that the MAR assumption can be made more plausible by
-including additional variables in the dataset $D$ in the imputation 
+including additional variables in the dataset $D$ in the imputation
 dataset than just those eventually envisioned to be used in the analysis model.
 
 \subsection{Algorithm}
@@ -207,17 +207,17 @@ $p(D^{\obs}, M|\theta)$. Using the MAR assumption\footnote{There is an
 As we only care about inference on the complete data parameters, we can
 write the likelihood as
 \begin{align}
-  L(\theta|D^{\obs}) &\propto p(D^{\obs}|\theta), 
+  L(\theta|D^{\obs}) &\propto p(D^{\obs}|\theta),
 \end{align}
 which we can rewrite using the law of iterated expectations as
 \begin{align}
   p(D^{\obs}|\theta) &= \int p(D|\theta) dD^{\mis}.
 \end{align}
 With this likelihood and a flat prior on $\theta$, we can see that the
-posterior is 
+posterior is
 \begin{equation}
   p(\theta | D^{\obs}) \propto p(D^{\obs}|\theta) = \int p(D|\theta)
-  dD^{\mis}. 
+  dD^{\mis}.
 \end{equation}
 The main computational difficulty in the analysis of incomplete data
 is taking draws from this posterior. The EM algorithm
@@ -250,7 +250,7 @@ Alternatively, you can combine directly and use as the multiple
 imputation estimate of this parameter, $\bar{q}$, the average of the
 $m$ separate estimates, $q_j$ $(j=1,\dots,m)$:
 \begin{equation}
-  \bar{q}=\frac{1}{m}\sum^{m}_{j=1}q_j.  
+  \bar{q}=\frac{1}{m}\sum^{m}_{j=1}q_j.
 \end{equation}
 
 The variance of the point estimate is the average of the estimated
@@ -275,7 +275,7 @@ missdata/.style={rectangle, draw=red!50, fill=red!20, thick},
 results/.style= {circle, draw=blue!50, fill=blue!20, thick}]
 
 \node  (odata) at (3,3) [missdata] {};
-\node [red!80,right] at (5.25,3) {incomplete data}; 
+\node [red!80,right] at (5.25,3) {incomplete data};
 
 
 \node (boot1) at (1,1) [missdata] {}
@@ -289,7 +289,7 @@ results/.style= {circle, draw=blue!50, fill=blue!20, thick}]
 \node (boot5) at (5,1) [missdata] {}
   edge [<-, bend right=40] (odata);
 
-  
+
 
 %% add "random question marks"
 \node[red!50!black] at (2.95,3.1) {\tiny ?};
@@ -313,7 +313,7 @@ results/.style= {circle, draw=blue!50, fill=blue!20, thick}]
 \node[red!50!black] at (4.95,0.9) {\tiny ?};
 \node[red!50!black] at (5.15,1.1) {\tiny ?};
 
-  
+
 \node [black!80,right] at (5.25,2) {bootstrap};
 \node [red!80, right] at (5.25, 1) {bootstrapped data};
 
@@ -354,7 +354,7 @@ results/.style= {circle, draw=blue!50, fill=blue!20, thick}]
 
 \node [black!80, right] at (5.25, -2) {combination};
 \node [green!80!black!80, right] at (5.25, -3) { final results};
-\end{tikzpicture}  
+\end{tikzpicture}
 \caption{A schematic of our approach to multiple imputation with the EMB
 algorithm. }
 \end{figure}
@@ -408,7 +408,7 @@ use the command
 To install a standalone version of \AmeliaView\ in the Windows environment,
 simply download the installer \texttt{setup.exe} from
 \url{http://gking.harvard.edu/amelia/} and run it.  The installer will ask
-you to choose a location to install \AmeliaII.  If you have installed \R\ 
+you to choose a location to install \AmeliaII.  If you have installed \R\
 with the default options, \AmeliaII\ will automatically find the location
 of \R.  If the installer cannot find \R, it will ask you to locate the
 directory of the most current version of \R.  Make sure you choose the
@@ -449,7 +449,7 @@ this line:
 \begin{verbatim}
 .libPath("~/myrlibrary")
 \end{verbatim}
-This will add your local library to the list of library paths that \R\ 
+This will add your local library to the list of library paths that \R\
 searches in when you load libraries.
 
 Linux users can use \AmeliaView\ in the same way as Windows users of
@@ -484,7 +484,7 @@ agreement in that year (\code{signed}), a measure of financial openness
 (\code{fivop}), and a measure of US hegemony\footnote{This measure of US
   hegemony is the US imports and exports as a percent of the world total
   imports and exports.} (\code{usheg}). These variables correspond to the
-variables used in the analysis model of \citet{MilKub05} in table 2.  
+variables used in the analysis model of \citet{MilKub05} in table 2.
 
 <<echo=FALSE, print=FALSE>>=
 options("digits"=4)
@@ -505,20 +505,20 @@ missingness on many of the variables:
 
 <<<echo=TRUE, print=TRUE>>=
 summary(freetrade)
-@ 
+@
 
 In the presence of missing data, most statistical packages use
 \emph{listwise deletion}, which removes any row that contains a missing
 value from the analysis. Using the base model of \citet{MilKub05} table 2,
 we run a simple linear model in \R, which uses listwise deletion:
 <<echo=TRUE, print=TRUE>>=
-summary(lm(tariff ~ polity + pop + gdp.pc + year + country, 
-          data = freetrade)) 
-@ 
+summary(lm(tariff ~ polity + pop + gdp.pc + year + country,
+          data = freetrade))
+@
 
 Note that 60 of the 171 original observations are deleted due to
-missingness. These observations, however, are partially observed, and 
-contain valuable information about the relationships between those 
+missingness. These observations, however, are partially observed, and
+contain valuable information about the relationships between those
 variables which are present in the partially completed observations.
 Multiple imputation will help us retrieve that information and make
 better, more efficient, inferences.
@@ -531,7 +531,7 @@ variables to include in the imputation model.  It is crucial to include at least
 as much information as will be used in the analysis model. That is, any variable
 that will be in the analysis model should also be in the imputation
 model. This includes any transformations or interactions of variables that will
-appear in the analysis model.  
+appear in the analysis model.
 
 In fact, it is often useful to add more information to the imputation model than
 will be present when the analysis is run. Since
@@ -539,7 +539,7 @@ imputation is predictive, any variables that would increase predictive
 power should be included in the model, even if including them in the
 analysis model would produce bias in estimating a causal effect (such as for post-treatment
 variables) or collinearity would preclude determining which variable had a relationship
-with the dependent variable (such as including multiple alternate measures of GDP). 
+with the dependent variable (such as including multiple alternate measures of GDP).
 In our case, we include all the variables in
 \code{freetrade} in the imputation model, even though our analysis
 model focuses on \code{polity}, \code{pop} and
@@ -548,18 +548,18 @@ model focuses on \code{polity}, \code{pop} and
   only have force when we also include \texttt{polytime} or
   \texttt{intercs}, discussed in section \ref{sec:tscs}}.
 
-To create multiple imputations in \Amelia, we can simply run 
+To create multiple imputations in \Amelia, we can simply run
 <<echo=TRUE, print=FALSE>>=
 a.out <- amelia(freetrade, m = 5, ts = "year", cs = "country")
 a.out
-@ 
+@
 
-Note that our example dataset is deliberately small both in variables and in 
-cross-sectional elements.  Typical datasets may often have hundreds or possibly a 
-couple thousand steps to the EM algorithm.  Long chains should remind the analyst 
-to consider whether transformations of the variables would more closely fit the 
-multivariate normal assumptions of the model (correct but omitted transformations 
-will shorten the number of steps and improve the fit of the imputations), but do not 
+Note that our example dataset is deliberately small both in variables and in
+cross-sectional elements.  Typical datasets may often have hundreds or possibly a
+couple thousand steps to the EM algorithm.  Long chains should remind the analyst
+to consider whether transformations of the variables would more closely fit the
+multivariate normal assumptions of the model (correct but omitted transformations
+will shorten the number of steps and improve the fit of the imputations), but do not
 necessarily denote problems with the imputation model.
 
 The output gives some information about how the algorithm ran. Each of the
@@ -575,14 +575,14 @@ hist(a.out$imputations[[3]]$tariff, col="grey", border="white")
 
 <<echo=FALSE, results = hide>>=
 options(SweaveHooks = list(fig = function() par(mfrow=c(1,1))))
-@ 
+@
 
-\begin{figure} 
-\begin{center}   
+\begin{figure}
+\begin{center}
 <<label=hist1, fig=TRUE, echo=FALSE, width=7, height=7>>=
 <<hist1plot>>
 @
-   
+
 \caption{Histogram of the \texttt{tariff} variable from the 3rd imputed dataset.}
 \label{fig:hist1}
 \end{center}
@@ -631,7 +631,7 @@ size $(N \cdot (m+1))\times p$ if it is included (\code{orig.data =
   TRUE}). The stacked dataset will include a variable (set with
 \code{impvar}) that indicates to which imputed dataset the observation
 belongs. See Section~\ref{sec:analysis} for a description of how to
-use this stacked dataset with the \code{mi} commands in Stata. 
+use this stacked dataset with the \code{mi} commands in Stata.
 
 
 \subsubsection[Combining Multiple Amelia Runs]{Combining Multiple \Amelia\ Runs}
@@ -640,26 +640,26 @@ The EMB algorithm is what computer scientists call \emph{embarrassingly
 parallel processes. With \Amelia\ it is simple to run subsets of the
 imputations on different machines and then combine them after the
 imputation for use in analysis model. This allows for a huge increase in
-the speed of the algorithm. 
+the speed of the algorithm.
 
-Output lists from different \Amelia\ runs can be combined together into a 
+Output lists from different \Amelia\ runs can be combined together into a
 new list.  For instance, suppose that we wanted to add another ten imputed datasets
 to our earlier call to \code{amelia}. First, run the function to get
 these additional imputations,
 <<>>=
 a.out.more <- amelia(freetrade, m = 10, ts = "year", cs = "country", p2s=0)
 a.out.more
-@ 
+@
 then combine this output with our original output using the
 \code{ameliabind} function,
 <<>>=
 a.out.more <- ameliabind(a.out, a.out.more)
 a.out.more
-@ 
+@
 This function binds the two outputs into the same output so that you can
 pass the combined imputations easily to analysis models and
 diagnostics. Note that \code{a.out.more} now has a total of 15
-imputations. 
+imputations.
 
 A simple way to execute a parallel processing scheme with \Amelia\ would
 be to run \code{amelia} with \code{m} set to 1 on $m$ different machines
@@ -704,11 +704,11 @@ model\footnote{Problems of non-invertible matrices often mean that current
   may be two highly correlated variables in the model. One way to resolve
   is to use a ridge prior (see \ref{sec:prior})}.
 
-An example of the output when \code{p2s} is 2 would be 
+An example of the output when \code{p2s} is 2 would be
 
 <<echo=TRUE, print=FALSE>>=
 amelia(freetrade, m = 1, ts = "year", cs = "country", p2s = 2)
-@ 
+@
 
 \subsection{Imputation-improving Transformations}
 \label{sec:trans}
@@ -762,7 +762,7 @@ should be allowed to take on continuously valued imputations.
 
 In the \code{freetrade} data, one such ordinal variable is \code{polity}
 which ranges from -10 (full autocracy) to 10 (full democracy). If we
-tabulate this variable from one of the imputed datasets, 
+tabulate this variable from one of the imputed datasets,
 
 
 <<echo=TRUE, print=TRUE>>=
@@ -771,7 +771,7 @@ table(a.out$imputations[[3]]$polity)
 we can see that there is one imputation between -4 and -3 and one
 imputation between 6 and 7. Again, the interpretation of these values is
 rather straightforward even if they are not strictly in the coding of the
-original Polity data. 
+original Polity data.
 
 Often, however, analysis models require some variables to be strictly
 ordinal, as for example, when the dependent variable will be modeled in a logistical or
@@ -786,9 +786,9 @@ For our data we can simply add \code{polity} to the \code{ords} argument:
 a.out1 <- amelia(freetrade, m = 5, ts = "year", cs = "country", ords =
                  "polity", p2s = 0)
 table(a.out1$imputations[[3]]$polity)
-@ 
+@
 Now, we can see that all of the imputations fall into one of the original
-polity categories. 
+polity categories.
 
 \subsubsection{Nominal}
 \label{sec:nom}
@@ -804,7 +804,7 @@ first imputation did not limit the imputations to these two categories
 
 <<>>=
 table(a.out1$imputations[[3]]$signed)
-@ 
+@
 
 In order to fix this for a $ p$-category multinomial variable,\Amelia\ will
 determine $ p$ (as long as your data contain at least one value in each
@@ -824,11 +824,11 @@ For our data we can simply add \code{signed} to the \code{noms} argument:
 a.out2 <- amelia(freetrade, m = 5, ts = "year", cs = "country", noms =
                  "signed", p2s = 0)
 table(a.out2$imputations[[3]]$signed)
-@ 
+@
 Note that \Amelia\ can only fit imputations into categories that exist in
 the original data. Thus, if there was a third category of signed, say 2,
 that corresponded to a different kind of IMF agreement, but it never
-occurred in the original data, \Amelia\ could not match imputations to it. 
+occurred in the original data, \Amelia\ could not match imputations to it.
 
 Since \Amelia\ properly treats a $ p$-category multinomial
 variable as $ p-1$ variables, one should understand the number of
@@ -842,7 +842,7 @@ use a ridge prior as in section \ref{sec:prior}.
 If one of your variables is heavily skewed or has outliers that may
 alter the imputation in an unwanted way, you can use a natural
 logarithm transformation of that variable in order to normalize its
-distribution.  This transformed distribution helps \Amelia\ 
+distribution.  This transformed distribution helps \Amelia\
 to avoid imputing values that depend too heavily on outlying data
 points.  Log transformations are common in expenditure and economic
 variables where we have strong beliefs that the marginal relationship
@@ -850,7 +850,7 @@ between two variables decreases as we move across the range.
 
 For instance, figure \ref{fig:logshist} show the \code{tariff} variable
 clearly has positive (or, right) skew while its natural log transformation
-has a roughly normal distribution. 
+has a roughly normal distribution.
 
 <<label=logshist, include=FALSE, echo=FALSE>>=
 hist(freetrade$tariff, col="grey", border="white")
@@ -859,10 +859,10 @@ hist(log(freetrade$tariff), col="grey", border="white")
 
 <<echo=FALSE, results = hide>>=
 options(SweaveHooks = list(fig = function() par(mfrow=c(1,2))))
-@ 
+@
 
-\begin{figure} 
-\begin{center}  
+\begin{figure}
+\begin{center}
 <<label=hist2, fig=TRUE, echo=FALSE, eps=FALSE, width=10, height=6>>=
 <<logshist>>
 @
@@ -874,7 +874,7 @@ options(SweaveHooks = list(fig = function() par(mfrow=c(1,2))))
 
 <<echo=FALSE, results = hide>>=
 options(SweaveHooks = list(fig = function() par(mfrow=c(1,1))))
-@ 
+@
 
 \subsubsection{Square Root}
 \label{sec:sqrt}
@@ -883,7 +883,7 @@ relationships with other variables.  One common transformation to
 tailor the linear model to count data is to take the square roots of
 the counts.  This is a transformation that can be set as an option in
 \Amelia.
- 
+
 \subsubsection{Logistic}
 \label{sec:lgstc}
 Proportional data is sharply bounded between 0 and 1.  A logistic
@@ -910,7 +910,7 @@ labels, we could omit them from the imputation:
 
 <<results = hide>>=
 amelia(freetrade, idvars = c("year", "country"))
-@ 
+@
 Note that Amelia will return with an error if your dataset contains a
 factor or character variable that is not marked as a nominal or
 identification variable. Thus, if we were to omit the factor
@@ -918,7 +918,7 @@ identification variable. Thus, if we were to omit the factor
 receive an error:
 <<>>=
 a.out2 <- amelia(freetrade, idvars = c("year"))
-@ 
+@
 
 In order to conserve memory, it is wise to remove unnecessary
 variables from a data set before loading it into \Amelia.
@@ -927,7 +927,7 @@ The only variables you should include in your data when running
 and those variables that will help in the imputation model.  While it
 may be tempting to simply mark unneeded variables as IDs, it only
 serves to waste memory and slow down the imputation procedure.
- 
+
 \subsection{Time Series, or Time Series Cross Sectional Data} \label{sec:tscs}
 
 Many variables that are recorded over time within a cross-sectional unit
@@ -955,10 +955,10 @@ We can implement this with the \code{ts} and \code{polytime} arguments. If
 we thought that a second-order polynomial would help predict we could run
 <<results = hide>>=
 a.out2 <- amelia(freetrade, ts = "year", cs = "country", polytime = 2)
-@ 
+@
 With this input, \Amelia\ will add covariates to the model that correspond
 to time and its polynomials. These covariates will help better predict the
-missing values. 
+missing values.
 
 If cross-sectional units are specified these polynomials can be interacted
 with the cross-section unit to allow the patterns over time to vary
@@ -981,24 +981,24 @@ a.out.time <- amelia(freetrade, ts = "year", cs = "country", polytime = 2,
 
 Note that attempting to use \code{polytime} without the \code{ts}
 argument, or \code{intercs} without the \code{cs} argument will result in
-an error. 
+an error.
 
 Using the \code{tscsPlot} function (discussed below), we can see in figure
 \ref{fig:tcomp} that we have a much better prediction about the missing
 values when incorporating time than when we omit it:
 
 <<tcomp1, include = FALSE>>=
-tscsPlot(a.out, cs = "Malaysia", main = "Malaysia (no time settings)", 
+tscsPlot(a.out, cs = "Malaysia", main = "Malaysia (no time settings)",
          var = "tariff", ylim = c(-10, 60))
 
-tscsPlot(a.out.time, cs = "Malaysia", main = "Malaysia (with time settings)", 
+tscsPlot(a.out.time, cs = "Malaysia", main = "Malaysia (with time settings)",
          var = "tariff", ylim = c(-10, 60))
-@ 
+@
 
 
 <<echo=FALSE, results = hide>>=
 options(SweaveHooks = list(fig = function() par(mfrow=c(1,2))))
-@ 
+@
 \begin{figure}
 \begin{center}
 <<label = timecompare, echo=FALSE, fig=TRUE, eps=FALSE, width=10, height=6>>=
@@ -1032,10 +1032,10 @@ simply pass this to the \code{lags} and \code{leads} arguments:
 <<results = hide>>=
 a.out2 <- amelia(freetrade, ts = "year", cs = "country", lags = "tariff",
                  leads = "tariff")
-@ 
+@
 
 
-\subsection{Including Prior Information} 
+\subsection{Including Prior Information}
 
 \Amelia\ has a number of methods of setting priors within the imputation
 model.  Two of these are commonly used and discussed below, ridge priors
@@ -1060,7 +1060,7 @@ are added, the EM algorithm can become unstable, as indicated by the
 vastly differing chain lengths for each imputation:
 <<>>=
 a.out.time
-@ 
+@
 
 In these circumstances, we recommend adding a ridge prior which will help
 with numerical stability by shrinking the covariances among the variables
@@ -1086,21 +1086,21 @@ For our data, it is easy to code up a 1 percent ridge prior:
 a.out.time2 <- amelia(freetrade, ts = "year", cs = "country", polytime = 2,
                  intercs = TRUE, p2s = 0, empri = .01*nrow(freetrade))
 a.out.time2
-@ 
+@
 This new imputation model is much more stable and, as shown by using
 \code{tscsPlot}, produces about the same imputations as the original
 model (see figure \ref{fig:tcomp2}):
 <<tcomp2, include = FALSE>>=
-tscsPlot(a.out.time, cs = "Malaysia", main = "Malaysia (no ridge prior)", 
+tscsPlot(a.out.time, cs = "Malaysia", main = "Malaysia (no ridge prior)",
          var = "tariff", ylim = c(-10, 60))
 
-tscsPlot(a.out.time2, cs = "Malaysia", main = "Malaysia (with ridge prior)", 
+tscsPlot(a.out.time2, cs = "Malaysia", main = "Malaysia (with ridge prior)",
          var = "tariff", ylim = c(-10, 60))
-@ 
+@
 
 <<echo=FALSE, results = hide>>=
 options(SweaveHooks = list(fig = function() par(mfrow=c(1,2))))
-@ 
+@
 
 \begin{figure}
   \begin{center}
@@ -1117,13 +1117,13 @@ options(SweaveHooks = list(fig = function() par(mfrow=c(1,2))))
 \subsubsection{Observation-level priors}
 \label{sec:obspri}
 
-Researchers often have additional prior information about missing data 
-values based on previous research, academic consensus, or personal 
-experience.  \Amelia\ can incorporate this information to produce vastly 
-improved imputations.  The \Amelia\ algorithm allows users to include 
-informative Bayesian priors about individual missing data cells 
-instead of the more general model parameters, many of which have 
-little direct meaning.  
+Researchers often have additional prior information about missing data
+values based on previous research, academic consensus, or personal
+experience.  \Amelia\ can incorporate this information to produce vastly
+improved imputations.  The \Amelia\ algorithm allows users to include
+informative Bayesian priors about individual missing data cells
+instead of the more general model parameters, many of which have
+little direct meaning.
 
 The incorporation of priors follows basic Bayesian analysis where the
 imputation turns out to be a weighted average of the model-based
@@ -1147,11 +1147,11 @@ observation or one variable.  In any row, the entry in the first column is
 the row of the observation and the entry is the second column is the
 column of the observation.  In the four column priors matrix the third and
 fourth columns are the mean and standard deviation of the prior
-distribution of the missing value.  
+distribution of the missing value.
 
 For instance, suppose that we had some expert prior information about
 tariff rates in Thailand. We know from the data that Thailand is missing
-tariff rates in many years, 
+tariff rates in many years,
 
 <<>>=
 freetrade[freetrade$country == "Thailand", c("year","country","tariff")]
@@ -1164,7 +1164,7 @@ corresponds to a standard deviation of about 3. In order to include this
 information, we must form the priors matrix:
 
 <<>>=
-pr <- matrix(c(158,159,160,3,3,3,40,40,40,3,3,3), nrow=3, ncol=4) 
+pr <- matrix(c(158,159,160,3,3,3,40,40,40,3,3,3), nrow=3, ncol=4)
 pr
 @
 
@@ -1174,7 +1174,7 @@ in these three years, the second column refers to the column number of
 prior. Once we have this matrix, we can pass it to \code{amelia},
 <<results = hide>>=
 a.out.pr <- amelia(freetrade, ts = "year", cs = "country", priors = pr)
-@ 
+@
 
 In the five column matrix, the last three columns describe a confidence
 range of the data. The columns are a lower bound, an upper bound, and a
@@ -1187,7 +1187,7 @@ pr.2 <- matrix(c(158,159,160,3,3,3,34,34,34,46,46,46,.95,.95,.95), nrow=3, ncol=
 pr.2
 @
 These priors indicate that we are 95\% confident that these missing values
-are in the range 34 to 46. 
+are in the range 34 to 46.
 
 If a prior has the value 0 in the first column, this prior will be applied
 to all missing values in this variable, except for explicitly set priors.
@@ -1198,9 +1198,9 @@ but still keep the above specific priors with the following code:
 <<>>=
 pr.3 <- matrix(c(158,159,160,0,3,3,3,3,40,40,40,20,3,3,3,5), nrow=4, ncol=4)
 pr.3
-@ 
+@
 
-%% add section on bounds, get rid of sessions, etc. 
+%% add section on bounds, get rid of sessions, etc.
 
 \subsubsection{Logical bounds}
 
@@ -1214,7 +1214,7 @@ transformations, \Amelia\ can take draws from a truncated normal
 distribution in order to achieve imputations that satisfy the
 bounds. Note, however, that this procedure imposes extremely strong
 restrictions on the imputations and can lead to lower variances than the
-imputation model implies. The mean value across all the imputed values of 
+imputation model implies. The mean value across all the imputed values of
 a missing cell is the best guess from the imputation model of that missing value.
 The variance of the distribution across imputed datasets correctly reflects the
 uncertainty in that imputation.  It is often the mean imputed value that should conform
@@ -1244,14 +1244,14 @@ dataset), we would create the matrix,
 <<>>=
 bds <- matrix(c(3, 30, 40), nrow = 1, ncol = 3)
 bds
-@ 
+@
 
 which we can pass to the \code{bounds} argument,
 
 <<>>=
 a.out.bds <- amelia(freetrade, ts = "year", cs = "country", bounds = bds,
                     max.resample = 1000)
-@ 
+@
 
 The difference in results between the bounded and unbounded model are not
 obvious from the output, but inspection of the imputed tariff rates for
@@ -1265,17 +1265,17 @@ tscsPlot(a.out, cs = "Malaysia", main = "No logical bounds", var =
 
 tscsPlot(a.out.bds, cs = "Malaysia", main = "Bounded between 30 and 40", var =
          "tariff", ylim = c(-10,60))
-@ 
+@
 
 Again, analysts should be extremely cautious when using these bounds as
 they can seriously affect the inferences from the imputation model, as
 shown in this example. Even when logical bounds exist, we recommend simply
 imputing variables normally, as the violation of the logical bounds
-represents part of the true uncertainty of imputation. 
+represents part of the true uncertainty of imputation.
 
 <<echo=FALSE, results = hide>>=
 options(SweaveHooks = list(fig = function() par(mfrow=c(1,2))))
-@ 
+@
 
 \begin{figure}
   \begin{center}
@@ -1293,7 +1293,7 @@ options(SweaveHooks = list(fig = function() par(mfrow=c(1,2))))
 \subsection{Diagnostics}\label{sec:diag}
 
 \Amelia\ currently provides a number of diagnostic tools to inspect the
-imputations that are created. 
+imputations that are created.
 
 \subsubsection{Comparing Densities}
 
@@ -1304,7 +1304,7 @@ be identical as the missing values may differ systematically from the
 observed value--this is fundamental reason to impute to begin with! Imputations
 with strange distributions or those that are far from the observed data
 may indicate that imputation model needs at least some investigation and
-possibly some improvement. 
+possibly some improvement.
 
 The \code{plot} method works on output from \code{amelia} and, by default,
 shows for each variable a plot of the relative frequencies of the
@@ -1312,15 +1312,15 @@ observed data with an overlay of the relative frequency of the imputed
 values.
 <<plotmeth, include = FALSE>>=
 plot(a.out, which.vars = 3:6)
-@ 
+@
 where the argument \code{which.vars} indicates which of the variables to
-plot (in this case, we are taking the 3rd through the 6th variables). 
+plot (in this case, we are taking the 3rd through the 6th variables).
 
 \begin{figure}
   \begin{center}
 <<plot1, echo=FALSE, fig=TRUE, eps=FALSE, height = 7, width = 7>>=
 <<plotmeth>>
-@ 
+@
 \caption{The output of the \texttt{plot} method as applied to output from
   \texttt{amelia}. In the upper panels, the distribution of mean imputations
   (in red) is overlayed on the distribution of observed values (in black)
@@ -1350,11 +1350,11 @@ plots for an individual variable:
 
 <<include=FALSE>>=
 compare.density(a.out, var = "signed")
-@ 
+@
 
 <<echo=FALSE, results = hide>>=
 options(SweaveHooks = list(fig = function() par(mfrow=c(1,1))))
-@ 
+@
 \subsubsection{Overimpute}
 \label{sec:overimpute}
 
@@ -1377,18 +1377,18 @@ of imputations allows us to construct a confidence interval of what
 the imputed value would have been, had any of the observed data been
 missing.  We can then graphically inspect whether our observed data
 tends to fall within the region where it would have been imputed had
-it been missing. 
+it been missing.
 
 For example, we can run the overimputation diagnostic on our data by
 running
 
 <<overimp, include=FALSE>>=
 overimpute(a.out, var = "tariff")
-@ 
+@
 
 <<echo=FALSE, results = hide>>=
 options(SweaveHooks = list(fig = function() par(mfrow=c(1,1))))
-@ 
+@
 
 \begin{figure}[htp!]
   \begin{center}
@@ -1426,7 +1426,7 @@ ddmiss <- sample(1:50, replace = FALSE, size = 10)
 is.na(dd) <- ddmiss
 aa.out <- amelia(dd, m= 5)
 overimpute(aa.out, var = 2, main = "Observed versus Imputed Values")
-@ 
+@
 
 \begin{figure}[htp!]
   \begin{center}
@@ -1506,15 +1506,15 @@ For our original model, this is a simple call to \code{disperse}:
 <<disp1d>>=
 disperse(a.out, dims = 1, m = 5)
 disperse(a.out, dims = 2, m = 5)
-@ 
+@
 
 where \code{m} designates the number of places to start EM chains from and
 \code{dims} are the number of dimensions of the principal components to
-show. 
+show.
 
 <<echo=FALSE, results = hide>>=
 options(SweaveHooks = list(fig = function() par(mfrow=c(1,2))))
-@ 
+@
 \begin{figure}[ht]
   \begin{center}
 <<disp1dfig, echo=FALSE, fig=TRUE, eps=FALSE, width=9, height=5.5>>=
@@ -1542,61 +1542,61 @@ to the same point.  The black horizontal line is the point where \Amelia\
 converges when it uses the default method for choosing the starting
 values.  The diagnostic takes the end point of this chain as the possible
 maximum and disperses the starting values away from it to see if the chain
-will ever finish at another mode.  
+will ever finish at another mode.
 
-A few of the iterations of this diagnostic can ending up in vastly
-different locations of the parameter space.  This can happen for a variety
-of reasons.  For instance, suppose that we created another dataset and
-accidentally included a linear function of another variable in this dataset:
-<<echo=FALSE, results=hide>>=
-set.seed(02138)
-@ 
-<<>>=
-freetrade2 <- freetrade
-freetrade2$tariff2 <- freetrade2$tariff*2+3
-@ 
-<<echo=FALSE, results=hide>>=
-## We add a little bit of noise here to avoid numeric problems
-freetrade2$tariff2 <- freetrade2$tariff*2+3 +
-  rnorm(nrow(freetrade), 0, 0.000001)
-@ 
+% A few of the iterations of this diagnostic can ending up in vastly
+% different locations of the parameter space.  This can happen for a variety
+% of reasons.  For instance, suppose that we created another dataset and
+% accidentally included a linear function of another variable in this dataset:
+%<<echo=FALSE, results=hide>>=
+%set.seed(02138)
+%@
+%<<>>=
+%freetrade2 <- freetrade
+%freetrade2$tariff2 <- freetrade2$tariff*2+3
+%@
+%<<echo=FALSE, results=hide>>=
+%## We add a little bit of noise here to avoid numeric problems
+%freetrade2$tariff2 <- freetrade2$tariff*2+3 +
+%  rnorm(nrow(freetrade), 0, 0.000001)
+%@
 
-If we tried to impute this dataset, \Amelia\ could draw imputations without
-any problems:
+%If we tried to impute this dataset, \Amelia\ could draw imputations without
+%any problems:
+%
+%<<>>=
+%a.out.bad <- amelia(freetrade2, ts = "year", cs = "country")
+%a.out.bad
+%@
 
-<<>>=
-a.out.bad <- amelia(freetrade2, ts = "year", cs = "country")
-a.out.bad
-@ 
+%But if we were to run \code{disperse}, we would end up with the
+%problematic Figure~\ref{f:overbad}:
 
-But if we were to run \code{disperse}, we would end up with the
-problematic Figure~\ref{f:overbad}:
+%<<dispbad, include=FALSE>>=
+%disperse(a.out.bad, dims = 1, m = 10)
+%@
 
-<<dispbad, include=FALSE>>=
-disperse(a.out.bad, dims = 1, m = 10)
-@ 
-
-While this is a special case of a problematic likelihood, situations very
-similar to this can go undetected without using the proper diagnostics.
-More generally, an unidentified imputation model will lead to non-unique
-ML estimates (see \citet{King89} for a more detailed discussion of
-identification and likelihoods).
+% While this is a special case of a problematic likelihood, situations very
+% similar to this can go undetected without using the proper diagnostics.
+% More generally, an unidentified imputation model will lead to non-unique
+% ML estimates (see \citet{King89} for a more detailed discussion of
+% identification and likelihoods).
 
 
-<<echo=FALSE, results = hide>>=
-options(SweaveHooks = list(fig = function() par(mfrow=c(1,1))))
-@ 
-\begin{figure}
-  \begin{center} 
-<<dispbadfig, echo=FALSE, fig=TRUE, width = 7, height = 7>>=
-<<dispbad>>
-@
-  \caption{ A problematic plot from the overdispersion diagnostic
-    showing that EM chains are converging to one of two different
-    modes, depending upon the starting value of the chain.}
-  \label{f:overbad}
-  \end{center}
-\end{figure}
+% <<echo=FALSE, results = hide>>=
+% options(SweaveHooks = list(fig = function() par(mfrow=c(1,1))))
+% @
+%\begin{figure}
+%  \begin{center}
+%<<dispbadfig, echo=FALSE, fig=TRUE, width = 7, height = 7>>=
+%<<dispbad>>
+%@
+%   \caption{ A problematic plot from the overdispersion diagnostic
+%     showing that EM chains are converging to one of two different
+%     modes, depending upon the starting value of the chain.}
+%   \label{f:overbad}
+%   \end{center}
+% \end{figure}
 
 
 \subsubsection{Time-series plots}
@@ -1614,17 +1614,17 @@ variable (with the \code{var} argument) and the cross-section (with the
 distributions of the imputed values for each missing time period. For
 instance, we can run
 <<tsplot1, include=FALSE>>=
-tscsPlot(a.out.time, cs = "Malaysia", main = "Malaysia (with time settings)", 
+tscsPlot(a.out.time, cs = "Malaysia", main = "Malaysia (with time settings)",
          var = "tariff", ylim = c(-10, 60))
 @
 to get the plot in figure \ref{fig:tsplot1}. Here, the black point are
 observed tariff rates for Malaysia from 1980 to 2000. The red points are
 the mean imputation for each of the missing values, along with their 95\%
 confidence bands. We draw these bands by imputing each of missing values
-100 times to get the imputation distribution for that observation. 
+100 times to get the imputation distribution for that observation.
 
 \begin{figure}
-  \begin{center} 
+  \begin{center}
 <<tsplot2, echo=FALSE, fig=TRUE, width = 7, height = 7>>=
 <<tsplot1>>
 @
@@ -1641,7 +1641,7 @@ to get the plot in figure \ref{fig:tsplot1}. Here, the black point are
 observed tariff rates for Malaysia from 1980 to 2000. The red points are
 the mean imputation for each of the missing values, along with their 95\%
 confidence bands. We draw these bands by imputing each of missing values
-100 times to get the imputation distribution for that observation. 
+100 times to get the imputation distribution for that observation.
 
 In figure \ref{fig:tsplot1}, we can see that the imputed 1990 tariff rate
 is quite in line with the values around it. Notice also that values toward
@@ -1649,7 +1649,7 @@ the beginning and end of the time series have higher imputation variance.
 This occurs because the fit of the polynomials of time in the imputation
 model have higher variance at the beginning and end of the time
 series. This is intuitive because these points have fewer neighbors from
-which to draw predictive power. 
+which to draw predictive power.
 
 A word of caution is in order. As with comparing the histograms of imputed
 and observed values, there could be reasons that the missing values are
@@ -1676,22 +1676,22 @@ One useful tool for exploring the missingness in a dataset is a
 and colors the grid by missingness status. The column of the grid are the
 variables and the rows are the observations, as in any spreadsheet
 program. This tool allows for a quick summary of the patterns of
-missingness in the data. 
+missingness in the data.
 
 If we simply call the \code{missmap} function on our output from
 \code{amelia},
 <<mmap1, include=FALSE>>=
-missmap(a.out) 
-@ 
+missmap(a.out)
+@
 we get the plot in figure \ref{fig:missmap}. The \code{missmap} function
 arrange the columns so that the variables are in decreasing order of
 missingness from left to right. If the \code{cs} argument was set in the
 \code{amelia} function, the labels for the rows will indicate where each
-of the cross-sections begin. 
+of the cross-sections begin.
 
 
 \begin{figure}
-  \begin{center} 
+  \begin{center}
 <<mmap2, echo=FALSE, fig=TRUE, width = 7, height = 7>>=
 <<mmap1>>
 @
@@ -1713,7 +1713,7 @@ finding updated versions of the relevant variables.
 
 The missingness map is an important tool for understanding the patterns of
 missingness in the data and can often indicate potential ways to improve
-the imputation model or data collection process. 
+the imputation model or data collection process.
 
 \subsection{Post-imputation Transformations}
 \label{sec:postimptrans}
@@ -1731,16 +1731,16 @@ head(a.out$imputations[[1]][,c("country", "year","gdp.pc", "lgdp")])
 To create an interaction between two variables, we could simply use:
 <<>>=
 a.out <- transform(a.out, pol_gdp = polity * gdp.pc)
-@ 
+@
 Each transformation is recorded and the \code{summary} command prints
 out each transformation that has been performed:
 <<>>=
 summary(a.out)
-@ 
+@
 Note the updated output is almost exactly the same as the fresh
 \code{amelia} output. You can pass the transformed output back to
 \code{amelia} and it will add imputations and update these imputations
-with the transformations you have performed. 
+with the transformations you have performed.
 \subsection{Analysis Models}
 \label{sec:analysis}
 
@@ -1755,11 +1755,11 @@ analysis with the original data simply by running
 <<results = hide>>=
 require(Zelig)
 z.out <- zelig(tariff ~ polity + pop + gdp.pc + year +country, data = freetrade, model = "ls")
-@ 
+@
 
 <<>>=
 summary(z.out)
-@ 
+@
 
 Running the same model with imputed data is almost identical. Simply
 replace the original data set with the imputations from the \code{amelia}
@@ -1771,9 +1771,9 @@ z.out.imp <- zelig(tariff ~ polity + pop + gdp.pc + year +country, data =
                    a.out$imputations, model = "ls")
 @ %$
 
-<<>>= 
+<<>>=
 summary(z.out.imp)
-@ 
+@
 
 
 Zelig is one way to run analysis models on imputed data, but certainly not
@@ -1784,7 +1784,7 @@ imputed dataset and combine the results using the rules described in
 \citet{KinHonJos01} and \citet{Schafer97}. Furthermore, users can easily
 export their imputations using the \code{write.amelia} function as
 described in \ref{sec:saving} and use statistical packages other than {\sf
-  R} for the analysis model. 
+  R} for the analysis model.
 
 \Amelia\ also has the ability combine quantities of interest from
 arbitrary models using the \code{mi.meld} function. This command takes
@@ -1862,7 +1862,7 @@ the posterior draws of the means of the complete data. The
 \code{covMatrices} contains the posterior draws of the covariance
 matrices of the complete data. Note that these correspond to the variables
 as they are sent to the EM algorithm. Namely, they refer to the variables
-after being transformed, centered and scaled. 
+after being transformed, centered and scaled.
 
 The \code{iterHist} object is a list of \code{m} 3-column matrices. Each
 row of the matrices corresponds to an iteration of the EM algorithm. The
@@ -1871,7 +1871,7 @@ iteration. The second column indicates if the EM algorithm made a step
 that decreased the number of converged parameters. The third column
 indicates whether the covariance matrix at this iteration was
 singular. Clearly, the last two columns are meant to indicate when the EM
-algorithm enters a problematic part of the parameter space. 
+algorithm enters a problematic part of the parameter space.
 
 \clearpage
 
@@ -1893,7 +1893,7 @@ the following two commands:
 > library(Amelia)
 > AmeliaView()
 \end{verbatim}
-This will bring up the \AmeliaView\ window on any platform. 
+This will bring up the \AmeliaView\ window on any platform.
 
 On the Windows operating system, there is an alternative way to start
 \AmeliaView\ from the Desktop. See section \ref{sec:win-install} for a
@@ -1905,7 +1905,7 @@ not work, simply open an \R\ session and use the approach above.
 \subsection[Loading a data set into AmeliaView]{Loading a data set into \AmeliaView }
 \label{sec:step1}
 \begin{figure}[ht]
-  \centering 
+  \centering
     \includegraphics[width = 6in]{splash.png}
   \caption{\AmeliaView\ welcome screen.}
   \label{f:splash}
@@ -1925,7 +1925,7 @@ that your file has a header (that is, a row at the top of the data
 indicating the variable names).
 
 \begin{figure}[ht]
-  \centering 
+  \centering
     \includegraphics[width = 3in]{import.png}
   \caption{\AmeliaView File and import menu.}
   \label{f:file}
@@ -1937,7 +1937,7 @@ more than one \code{data.frame}, a pop-up window will ask to you find
 the dataset you would like to load. In the file menu, you can also
 change the underlying working directory. This is where \AmeliaView\
 will look for data by default and where it will save imputed
-datasets. 
+datasets.
 
 \subsection{Variable dashboard}
 
@@ -1976,58 +1976,58 @@ variable by default, since a \code{factor} cannot be included in the
 imputation without being set as an ID variable, a nominal variable, or
 the cross-section variable. If there is a \code{factor} that fails to
 meet one of these conditions, a red flag will appear next to the
-variable name. 
+variable name.
 
 \begin{enumerate}
 \item \textbf{Set as Time-Series Variable} - Sets the currently
   selected variable to the time-series variable. Disabled when more
   than one variable is selected. Once this is set, you can add lags
   and leads and add splines of time. The time-series variable will
-  have a clock icon next to it. 
+  have a clock icon next to it.
 \item \textbf{Set as Cross-Section Variable} - Sets the currently
   selected variable to the cross-section variable. Disabled when more
   than one variable is selected. Once this is set, you can interact
   the splines of time with the cross-section. The cross-section
-  variable will have a person icon next to it. 
+  variable will have a person icon next to it.
 \item \textbf{Unset as Time-Series Variable} - Removes the time-series
   status of the variable. This will remove any lags, leads, or splines
-  of time. 
+  of time.
 \item \textbf{Unset as Cross-Section Variable} - Removes the cross-section
   status of the variable. This will remove any intersection of the
-  splines of time and the cross-section. 
+  splines of time and the cross-section.
 \item \textbf{Add Lag/Lead} - Adds versions of the
   selected variables either lagged back (``lag'') or
   forward(``lead''). See \ref{sec:lags} above.
 \item \textbf{Remove Lag/Lead} - Removes any lags or leads on
-  the selected variables. 
+  the selected variables.
 \item \textbf{Plot Histogram of Selected} - Plots a histogram of the
   selected variables. This command will attempt to put all of the
   histograms on one page, but if more than nine histograms are
-  requested, they will appear on multiple pages. 
+  requested, they will appear on multiple pages.
 \item \textbf{Add Transformation...} - Adds a transformation setting
   for the selected variables. Note that each variable can only have
   one transformation and the time-series and cross-section variables
-  cannot be transformed. 
+  cannot be transformed.
 \item \textbf{Remove Transformation} - Removes any transformation for
-  the selected variables. 
+  the selected variables.
 \item \textbf{Add or Edit Bounds} - Opens a dialog box to set logical
-  bounds for the selected variable. 
+  bounds for the selected variable.
 \end{enumerate}
 
 
 \subsection[Amelia Options]{\Amelia\ Options}
 \label{sec:optsmenu}
 \begin{figure}[ht]
-  \centering 
+  \centering
     \includegraphics[width = 3in]{options.png}
   \caption{Options menu.}
   \label{f:opts}
 \end{figure}
 The Variable menu and the variable dashboard are the place to set
 variable-level options, but global options are set in the
-\underline{O}ptions menu. 
+\underline{O}ptions menu.
 \begin{enumerate}
-  
+
 \item \textbf{Splines of Time with...} - This option, if activated, will have
   \Amelia\ use flexible trends of time with the specified number of
   knots in the imputation. The higher the number of knots the greater
@@ -2047,9 +2047,9 @@ variable-level options, but global options are set in the
 \item \textbf{Numerical Options} - Brings a dialog window to set the
   tolerance of the EM algorithm, the seed of the random number
   generator, the ridge prior for numerical stability, and the maximum
-  number of redraws for the logical bounds. 
+  number of redraws for the logical bounds.
 \item \textbf{Draw Missingness Map} - Draws a missingness map. See
-  \ref{sec:missmaps} for more details on missingness maps. 
+  \ref{sec:missmaps} for more details on missingness maps.
 \item \textbf{Output File Options} - Bring a dialog to set the stub of
   the prefix of the imputed data files and the number of
   imputations. If you set the prefix to ``mydata'', your output files
@@ -2063,7 +2063,7 @@ variable-level options, but global options are set in the
   work if you have called \AmeliaView\ from an \R\ session and want to
   return to the \R\ command line to work with the output. Its name in
   R workspace will be the file prefix. The stacked version of the
-  Stata output will work with their built-in \code{mi} tools. 
+  Stata output will work with their built-in \code{mi} tools.
 
 \end{enumerate}
 
@@ -2071,27 +2071,27 @@ variable-level options, but global options are set in the
 \subsubsection{Numerical Options}
 \label{sec:numopts}
 \begin{figure}[h]
-  \centering 
+  \centering
     \includegraphics[width=2in]{numopts.png}
   \caption{Options menu.}
   \label{f:numopts}
 \end{figure}
 \begin{enumerate}
-  
+
 \item \textbf{Seed} - Sets the seed for the random number generator
   used by \Amelia. Useful if you need to have the same output twice.
-  
+
 \item \textbf{Tolerance} - Adjust the level of tolerance that \Amelia\
   uses to check convergence of the EM algorithm.  In very large
   datasets, if your imputation chains run a long time without
   converging, increasing the tolerance will allow a lower threshold to
   judge convergence and end chains after fewer iterations.
-  
+
 \item \textbf{Empirical Prior} - A prior that adds observations to
   your data in order to shrink the covariances.  A useful place to
   start is around 0.5\% of the total number of observations in the
   dataset (see \ref{sec:prior}).
-  
+
 \item \textbf{Maximum Resample for Bounds} - Amelia fits logical bounds by
   rejecting any draws that do not fall within the bounds. This value
   sets the number of times Amelia should attempt to resample to fit
@@ -2118,17 +2118,17 @@ variable-level options, but global options are set in the
   observation.
 \item \textbf{Variable} - The variable associated with the prior you would like
   specify.  The list provided only shows the missing variables for the currently
-  selected observation.  
+  selected observation.
 \item \textbf{Mean} - The mean value of the prior. The textbox will not accept
   letters or out of place punctuation.
 \item \textbf{Standard Deviation} - The standard deviation of the prior.  The
-  textbox will only accept positive non-zero values.  
+  textbox will only accept positive non-zero values.
 \end{enumerate}
 
 
 \subsubsection{Add Range Prior}\label{sec:refrangepri}
 \begin{figure}[h]
-  \centering 
+  \centering
     \includegraphics[width = 5in]{rangepri.png}
   \caption{Detail for Add Range Prior dialog.}
 \end{figure}
@@ -2142,7 +2142,7 @@ variable-level options, but global options are set in the
   observation.
 \item \textbf{Variable} - The variable associated with the prior you would like
   specify.  The list provided only shows the missing variables for the currently
-  selected observation.  
+  selected observation.
 \item \textbf{Minimum} - The minimum value of the prior. The textbox will not accept
   letters or out of place punctuation.
 \item \textbf{Maximum} - The maximum value of the prior. The textbox will not accept
@@ -2151,7 +2151,7 @@ variable-level options, but global options are set in the
   between 0 and 1, non-inclusive.  This value represents how certain your priors
   are.  This value cannot be 1, even if you are absolutely certain of a give
   range.  This is used to convert the range into an appropriate distributional
-  prior.  
+  prior.
 \end{enumerate}
 
 
@@ -2160,7 +2160,7 @@ variable-level options, but global options are set in the
 
 
 \begin{figure}[ht]
-  \centering 
+  \centering
     \includegraphics[width = 5in]{output-log.png}
   \caption{Output log showing \Amelia\ output for a successful imputation.}
 \end{figure}
@@ -2170,7 +2170,7 @@ corner of the window, you will see a progress bar that indicates the
 progress of the imputations. For large datasets this could take some
 time. Once the imputations are complete, you should see a ``Successful
 Imputation!'' message appear where the progress bar was. You can click
-on this message to open the folder containing the imputed datasets. 
+on this message to open the folder containing the imputed datasets.
 
 If there was an error during the imputation, the output log will
 pop-up and give you the error message along with some information
@@ -2194,7 +2194,7 @@ same imputation from the \R\ command line.\footnote{You will have to
 
 Upon the successful completion of an imputation, the diagnostics menu
 will become available. Here you can use all of the diagnostics
-available at the command-line. 
+available at the command-line.
 \begin{enumerate}
 \item \textbf{Compare Plots} - This will display the relative
   densities of the observed (red) and imputed (black) data.  The
@@ -2232,7 +2232,7 @@ simply by clicking the \textbf{Load Session} button and finding the
 relevant RData file. All of the settings will be restored, including
 any completed imputations. Thus, if you save the session after
 imputing, you can always load up those imputations and view their
-diagnostics using the sessions feature of \AmeliaView. 
+diagnostics using the sessions feature of \AmeliaView.
 
 %\clearpage
 
@@ -2254,4 +2254,3 @@ diagnostics using the sessions feature of \AmeliaView.
 \bibsep=0in
 \bibliography{amelia}
 \end{document}
-
