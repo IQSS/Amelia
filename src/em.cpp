@@ -1,6 +1,7 @@
 #include "em.h"
 #include <RcppArmadillo.h>
 
+
 using namespace Rcpp ;
 
 SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP tols, SEXP emburns, SEXP p2ss, SEXP empris, SEXP autos, SEXP alls, SEXP prs){
@@ -177,7 +178,7 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
       }
 
     }
-
+    
     hmcv += arma::trans(xplay) * xplay;
     music += arma::trans(arma::sum(xplay));
     if (empri > 0) {
@@ -291,8 +292,12 @@ void sweep(arma::mat& g, arma::vec m) {
   if (k.n_elem == p) {
     g = -arma::inv(g);
   } else {
-    try {h(k,k) = arma::inv(g(k,k));}
-    catch (...) {h(k,k) = arma::pinv(g(k,k));}
+    arma::vec etest = arma::eig_sym(g(k,k));
+    if (arma::accu(etest <= sqrt(arma::datum::eps))) {
+      h(k,k) = arma::pinv(g(k,k), sqrt(arma::datum::eps));
+    } else {
+      h(k,k) = arma::inv(g(k,k));
+    }
     h(k,kcompl) = h(k,k) * g(k,kcompl);
     h(kcompl,k) = arma::trans(h(k,kcompl));
     h(kcompl, kcompl) = g(kcompl, kcompl) - (g(kcompl, k)* h(k,k) * g(k,kcompl));

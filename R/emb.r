@@ -268,13 +268,7 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
       priors[,4]<-1/priors[,4]          # change sd to 1/var
       priors[,3]<-priors[,3]*priors[,4] # get the precision-weighted
                                         # mus
-      priors <- priors[order(priors[,1],priors[,2]),]
-      priorList <- list()
-      for (ss in 1:nrow(indx$o)) {
-        is <- indx$ivector[ss]
-        isp <- indx$ivector[ss+1] - 1
-        priorList[[ss]] <- priors[priors[,1] %in% is:isp,, drop = FALSE]
-      }
+      priors <- priors[order(priors[,1],priors[,2]),,drop = FALSE]
 
     }
 
