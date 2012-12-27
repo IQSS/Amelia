@@ -578,7 +578,7 @@ run.amelia <- function() {
   putAmelia("wdForLastImputation", getwd())
   ## run amelia! or at least try, and put the output in a list
   ## the name of the list will be the output name set by user
-  output.connection <- textConnection(".Output", open="w")
+  output.connection <- textConnection(".Output", open="w", local = TRUE)
   sink(output.connection, type="output")
   putAmelia("ameliaObject",
             try(amelia.default(x        = getAmelia("amelia.data"),
@@ -604,7 +604,7 @@ run.amelia <- function() {
                                tolerance= as.numeric(tclvalue(getAmelia("tol")))),
                 silent=TRUE))
   sink(type = "output")
-  putAmelia("output.log", c(getAmelia("output.log"), paste(.Output, "\n")))
+  putAmelia("output.log", c(getAmelia("output.log"), paste(textConnectionValue(output.connection), "\n")))
 
   tkgrid.remove(getAmelia("runAmeliaProgress"))
   tkconfigure(getAmelia("runAmeliaProgress"), value = 0)

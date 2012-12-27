@@ -25,7 +25,7 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
   
   int p2s = p2sr(0), empri = emprir(0);
   int n = xr.nrow(), k = xr.ncol();
-  int const AMn = n, AMk = k;
+  int const AMn = n;
   int npatt = orr.nrow();
   int cvalue = 1;
 
@@ -85,7 +85,7 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
 
   if (p2s > 0) Rcpp::Rcout << std::endl;
   //Rcpp::Rcout << "Starting loop. "  << std::endl;
-  while ( (cvalue > 0 | count < emburn(0)) & (count < emburn(1) | emburn(1) < 1)) {
+while ( ( (cvalue > 0) | (count < emburn(0)) )  & ( (count < emburn(1)) | (emburn(1) < 1))) {
     count++;
     hmcv.zeros(k,k);
     music.zeros(k);
@@ -285,7 +285,7 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
 // }
 
 void sweep(arma::mat& g, arma::vec m) {
-  int p = g.n_rows, j, i;
+  int p = g.n_rows;
   arma::uvec k = arma::find(m);
   arma::uvec kcompl = arma::find(1-m);   
   arma::mat h(g);
