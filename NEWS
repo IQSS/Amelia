@@ -4,6 +4,10 @@
 //
 //
 
+== Dev (28 Dec 2012) ==
+   * Ported core EM algorithm to C++. Speed should increase. 
+   * Plots in AmeliaView should now use Quartz on Mac OS X instead of X11.
+
 == 1.6 (22 Feb 2012) ==
    * Added a transform function to create transformed variables 
    in the imputed datasets.
