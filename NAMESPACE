@@ -22,3 +22,5 @@ S3method(amelia, molist)
 S3method(moPrep, molist)
 S3method(moPrep, default)
 S3method(transform, amelia)
+
+useDynLib(Amelia)

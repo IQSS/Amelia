@@ -266,83 +266,25 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
     indx<-indxs(x)                      # This needs x.NA
     if (!identical(priors,NULL)){
       priors[,4]<-1/priors[,4]          # change sd to 1/var
-      priors[,3]<-priors[,3]*priors[,4] # get the precision-weighted mus
+      priors[,3]<-priors[,3]*priors[,4] # get the precision-weighted
+                                        # mus
+      priors <- priors[order(priors[,1],priors[,2]),,drop = FALSE]
+
     }
 
     x[is.na(x)]<-0                      # Change x.NA to x.0s
     AM1stln<-sum(indx$m[1,])==0 & nrow(indx$m) > 1
     count<-0
     diff<- 1+tolerance
-    thetahold<-c()
-    while ( (diff>0 | count<emburn[1] ) & (count<emburn[2] | emburn[2]<1) ){    # emburn[1] is a minimum EM chain length, emburn[2] is a maximum, ignored if less than 1.
-      if (collect)
-        gc()
-      count<-count+1
-      if (p2s==1){
-        if (identical((count %% 20),1)) {cat("\n")}
-        if (count<10) cat(" ")
-        cat(count," ",sep="")
-        flush.console()
-      }
-      if(p2s==2){
-        if (identical((count %% 10),1)) {cat("\n")}
-        if (count<10) cat(" ")
-        cat(count)
-        flush.console()
-      }
-      if (frontend) {
-        if (identical((count %% 20),1)) {
-          putAmelia("output.log", c(getAmelia("output.log"),paste("\n")))
-        }
-        if (count<10) {
-          putAmelia("output.log", c(getAmelia("output.log")," "))
-        }
-        putAmelia("output.log", c(getAmelia("output.log"),paste(count," ",sep="")))
-        tcl("update")   #Forces tcltk to update the text widget that holds the amelia output
-      }
-
-      thetanew<-emfred(x,thetaold,indx$o,indx$m,indx$ivector,indx$icap,indx$AMr1,indx$AMr2,AM1stln=AM1stln,returntype="theta",priors=priors,empri=empri,collect=collect)
-
-      diff2<-sqrt(sum((thetanew-thetaold)^2))
-      diff<-(abs(thetanew-thetaold)>tolerance)
-      diff<-sum(diff*upper.tri(diff,diag=TRUE))
-
-      if (diff > iter.hist[count,1] && count > 20) {                                #checks to see if step length has increased
-        mono.flag<-1
-
-        if (autopri > 0) {
-          if (sum(iter.hist[count:(count-20),3]) >= 3) {
-                                        #if step length has increased for more 3 steps
-            if (is.null(empri)) {                                                      #the ridge prior is increased by 1%  of
-              empri<-trunc(.01*nrow(x))                                                #the rows of data, up to "autopri"% of the rows.
-            } else {
-              if (empri < (autopri*nrow(x))) empri<-empri+trunc(.01*nrow(x))        # This does not necessarily need to be an integer
-            }
-          }
-        }
-      } else {
-        mono.flag<-0
-      }
-      if (all(eigen(thetanew[2:nrow(thetanew),2:ncol(thetanew)],only.values=TRUE, symmetric=TRUE)$values > .Machine$double.eps))
-        sing.flag<-0
-      else
-        sing.flag<-1
-      if(p2s==2){
-        cat("(",diff,sep="")
-        if (all(mono.flag == 1, count > 50))
-          cat("*",sep="")
-        if (sing.flag == 1)
-          cat("!",sep="")
-        cat(")",sep="")
-        flush.console()
-      }
-
-      iter.hist<-rbind(iter.hist,c(diff,sing.flag,mono.flag))
-      if (allthetas)
-        thetahold<-cbind(thetahold,(thetanew[upper.tri(thetanew,diag=TRUE)])[-1])
-      thetaold<-thetanew
+    AMr1 <- 1 * indx$AMr1
+    oo <- 1 * indx$o
+    mm <- 1 * indx$m
+    if (is.null(empri)) {
+      empri <- 0
     }
-    iter.hist<-iter.hist[2:nrow(iter.hist),]
+    theta <- .Call("emcore", x, AMr1, oo, mm,
+                   indx$ivector, thetaold, tolerance, emburn, p2s,
+                   empri,autopri, allthetas, priors, PACKAGE="Amelia")
   } else {
     if (p2s) cat("\n","No missing data in bootstrapped sample:  EM chain unnecessary")
     pp1<-ncol(x)+1                       # p (the number of variables) plus one
@@ -355,13 +297,94 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
     iter.hist<-NA                              # Although not currently necessary.
   }
 
-  if (p2s) cat("\n")
-  if (frontend) {
-    putAmelia("output.log", c(getAmelia("output.log"),paste("\n")))
-  }
-  if (allthetas)
-    return(list(thetanew=cbind(thetahold,(thetanew[upper.tri(thetanew,diag=TRUE)])[-1]),iter.hist=iter.hist))
-  return(list(thetanew=thetanew,iter.hist=iter.hist))
+  ##   while ( (diff>0 | count<emburn[1] ) & (count<emburn[2] | emburn[2]<1) ){    # emburn[1] is a minimum EM chain length, emburn[2] is a maximum, ignored if less than 1.
+  ##     if (collect)
+  ##       gc()
+  ##     count<-count+1
+  ##     if (p2s==1){
+  ##       if (identical((count %% 20),1)) {cat("\n")}
+  ##       if (count<10) cat(" ")
+  ##       cat(count," ",sep="")
+  ##       flush.console()
+  ##     }
+  ##     if(p2s==2){
+  ##       if (identical((count %% 10),1)) {cat("\n")}
+  ##       if (count<10) cat(" ")
+  ##       cat(count)
+  ##       flush.console()
+  ##     }
+  ##     if (frontend) {
+  ##       if (identical((count %% 20),1)) {
+  ##         putAmelia("output.log", c(getAmelia("output.log"),paste("\n")))
+  ##       }
+  ##       if (count<10) {
+  ##         putAmelia("output.log", c(getAmelia("output.log")," "))
+  ##       }
+  ##       putAmelia("output.log", c(getAmelia("output.log"),paste(count," ",sep="")))
+  ##       tcl("update")   #Forces tcltk to update the text widget that holds the amelia output
+  ##     }
+
+  ##     thetanew<-emfred(x,thetaold,indx$o,indx$m,indx$ivector,indx$icap,indx$AMr1,indx$AMr2,AM1stln=AM1stln,returntype="theta",priors=priors,empri=empri,collect=collect)
+
+  ##     diff2<-sqrt(sum((thetanew-thetaold)^2))
+  ##     diff<-(abs(thetanew-thetaold)>tolerance)
+  ##     diff<-sum(diff*upper.tri(diff,diag=TRUE))
+
+  ##     if (diff > iter.hist[count,1] && count > 20) {                                #checks to see if step length has increased
+  ##       mono.flag<-1
+
+  ##       if (autopri > 0) {
+  ##         if (sum(iter.hist[count:(count-20),3]) >= 3) {
+  ##                                       #if step length has increased for more 3 steps
+  ##           if (is.null(empri)) {                                                      #the ridge prior is increased by 1%  of
+  ##             empri<-trunc(.01*nrow(x))                                                #the rows of data, up to "autopri"% of the rows.
+  ##           } else {
+  ##             if (empri < (autopri*nrow(x))) empri<-empri+trunc(.01*nrow(x))        # This does not necessarily need to be an integer
+  ##           }
+  ##         }
+  ##       }
+  ##     } else {
+  ##       mono.flag<-0
+  ##     }
+  ##     if (all(eigen(thetanew[2:nrow(thetanew),2:ncol(thetanew)],only.values=TRUE, symmetric=TRUE)$values > .Machine$double.eps))
+  ##       sing.flag<-0
+  ##     else
+  ##       sing.flag<-1
+  ##     if(p2s==2){
+  ##       cat("(",diff,sep="")
+  ##       if (all(mono.flag == 1, count > 50))
+  ##         cat("*",sep="")
+  ##       if (sing.flag == 1)
+  ##         cat("!",sep="")
+  ##       cat(")",sep="")
+  ##       flush.console()
+  ##     }
+
+  ##     iter.hist<-rbind(iter.hist,c(diff,sing.flag,mono.flag))
+  ##     if (allthetas)
+  ##       thetahold<-cbind(thetahold,(thetanew[upper.tri(thetanew,diag=TRUE)])[-1])
+  ##     thetaold<-thetanew
+  ##   }
+  ##   iter.hist<-iter.hist[2:nrow(iter.hist),]
+  ## } else {
+  ##   if (p2s) cat("\n","No missing data in bootstrapped sample:  EM chain unnecessary")
+  ##   pp1<-ncol(x)+1                       # p (the number of variables) plus one
+  ##   means<-colMeans(x)
+  ##   thetanew<-matrix(0,pp1,pp1)
+  ##   thetanew[1,1]<-(-1)
+  ##   thetanew[2:pp1,1]<-means
+  ##   thetanew[1,2:pp1]<-means
+  ##   thetanew[2:pp1,2:pp1]<-cov(x)              # Need to consider Priors in these cases,
+  ##   iter.hist<-NA                              # Although not currently necessary.
+  ## }
+
+  ## if (p2s) cat("\n")
+  ## if (frontend) {
+  ##   putAmelia("output.log", c(getAmelia("output.log"),paste("\n")))
+  ## }
+  ## if (allthetas)
+  ##   return(list(thetanew=cbind(thetahold,(thetanew[upper.tri(thetanew,diag=TRUE)])[-1]),iter.hist=iter.hist))
+  return(list(thetanew=theta$theta,iter.hist=theta$iter.hist))
 }
 
 ## Draw imputations for missing values from a given theta matrix
@@ -1023,11 +1046,11 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
                            overimp = NULL, ...) {
 
 
-                                        #Generates the Amelia Output window for the frontend
-  if (frontend) {
-    require(tcltk)
-    tcl("update")
-  }
+  ## Generates the Amelia Output window for the frontend
+  ## if (frontend) {
+  ##   require(tcltk)
+  ##   tcl("update")
+  ## }
   if (p2s==2) {
     cat("\namelia starting\n")
     flush.console()
@@ -1085,13 +1108,13 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
     x.stacked<-amstack(x.boot$x,colorder=FALSE,x.boot$priors)   # Don't reorder columns thetanew will not align with d.stacked$x
 
     if (p2s) cat("-- Imputation", i, "--\n")
-    if (frontend) {
-      putAmelia("output.log", c(getAmelia("output.log"),paste("-- Imputation",i,"--\n")))
-    }
-    flush.console()
+    ## if (frontend) {
+    ##   putAmelia("output.log", c(getAmelia("output.log"),paste("-- Imputation",i,"--\n")))
+    ## }
+    ## flush.console()
 
     thetanew<-emarch(x.stacked$x,p2s=p2s,thetaold=NULL,tolerance=tolerance,startvals=startvals,x.stacked$priors,empri=empri,frontend=frontend,collect=collect,autopri=prepped$autopri,emburn=emburn)
-
+    ##thetanew <- .Call("emarch", PACKAGE = "Amelia")
     ## update the amelia ouptut
     impdata$iterHist[[i]]    <- thetanew$iter.hist
     impdata$theta[,,i]       <- thetanew$thetanew
@@ -1107,9 +1130,9 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
       code <- 2
       cat("\n\nThe resulting variance matrix was not invertible.  Please check
 your data for highly collinear variables.\n\n")
-      if (frontend) {
-        putAmelia("output.log", c(getAmelia("output.log"),"\n\nThe resulting variance matrix was not invertible.  Please check your data for highly collinear variables.\n\n"))
-      }
+      ## if (frontend) {
+      ##   putAmelia("output.log", c(getAmelia("output.log"),"\n\nThe resulting variance matrix was not invertible.  Please check your data for highly collinear variables.\n\n"))
+      ## }
       next()
 
     }
@@ -1143,7 +1166,7 @@ your data for highly collinear variables.\n\n")
     if (p2s) cat("\n")
     if (frontend) {
       tcl(getAmelia("runAmeliaProgress"), "step",(100/m -1))
-      putAmelia("output.log", c(getAmelia("output.log"),"\n"))
+      ## putAmelia("output.log", c(getAmelia("output.log"),"\n"))
     }
 
 
@@ -1156,9 +1179,10 @@ your data for highly collinear variables.\n\n")
   } else {
     impdata$message <- paste("Normal EM convergence.")
   }
-  if (frontend) {
-    putAmelia("output.log", c(getAmelia("output.log"),paste(impdata$message,"\n")))
-  }
+
+  ## if (frontend) {
+  ##   putAmelia("output.log", c(getAmelia("output.log"),paste(impdata$message,"\n")))
+  ## }
                                         #  if (archive)
 
   names(impdata$imputations) <- paste("imp", 1:m, sep = "")
