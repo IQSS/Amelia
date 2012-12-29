@@ -1045,7 +1045,7 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
                            emburn=c(0,0),bounds=NULL,max.resample=100,
                            overimp = NULL,
                            parallel = c("no", "multicore", "snow"),
-                           ncpus = getOption("amelia.ncpus", 1L), ...) {
+                           ncpus = getOption("amelia.ncpus", 1L), cl = NULL, ...) {
 
   ## parellel infrastructure modeled off of 'boot' package
   if (missing(parallel)) parallel <- getOption("amelia.parallel", "no")

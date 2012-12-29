@@ -17,7 +17,9 @@
        logs = NULL, sqrts = NULL, lgstc = NULL, noms = NULL, ords = NULL,
        incheck = TRUE, collect = FALSE, arglist = NULL, empri = NULL,
        priors = NULL, autopri = 0.05, emburn = c(0,0), bounds = NULL,
-       max.resample = 100, overimp = NULL, ...)
+       max.resample = 100, overimp = NULL,
+       parallel = c("no", "multicore", "snow"),
+       ncpus = getOption("amelia.ncpus", 1L), cl = NULL, ...)
 
 \method{amelia}{amelia}(x, m = 5, p2s = 1, frontend = FALSE, ...)
 \method{amelia}{molist}(x, ...)
@@ -139,6 +141,17 @@
     column)} pair. Each of these cells will be treated as missing and
   replaced with draws from the imputation model.}
 
+  \item{parallel}{the type of parallel operation to be used (if any). If
+    missing, the default is taken from the option
+    \code{"amelia.parallel"} (and if that is not set, \code{"no"}).}
+
+  \item{ncpus}{integer: the number of processes to be used in parallel
+    operation: typically one would choose the number of available CPUs.}
+
+  \item{cl}{an optional \pkg{parallel} or \pkg{snow} cluster for use if
+    \code{parallel = "snow"}. If not supplied, a cluster on the local
+    machine is created for the duration of the \code{amelia} call.}
+  
   \item{...}{further arguments to be passed.}
 
 }
