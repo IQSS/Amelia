@@ -962,7 +962,7 @@ ameliabind <- function(...) {
     class(out) <- "amelia"
     class(out$imputations) <- c("mi","list")
   } else {
-    out <- args
+    out <- args[[1]]
   }
   return(out)
 }
@@ -1062,8 +1062,6 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
     cat("\namelia starting\n")
     flush.console()
   }
-
-  code <- 1
   am.call <- match.call(expand.dots = TRUE)
   archv <- am.call
 
@@ -1093,6 +1091,8 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
     } else {
       ovars <- 1:k
     }
+
+    code <- 1
 
     impdata <- list(imputations = list(),
                     m           = 1,
