@@ -1043,14 +1043,19 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
                            incheck=TRUE,collect=FALSE,arglist=NULL,
                            empri=NULL,priors=NULL,autopri=0.05,
                            emburn=c(0,0),bounds=NULL,max.resample=100,
-                           overimp = NULL, ...) {
+                           overimp = NULL, .parallel = FALSE, ...) {
 
 
-  ## Generates the Amelia Output window for the frontend
-  ## if (frontend) {
-  ##   require(tcltk)
-  ##   tcl("update")
-  ## }
+  if (.parallel) {
+    if (!require("foreach")) {
+      stop("foreach package required for parallel Amelia runs", call. = FALSE)
+    }
+    if (getDoParWorkers() == 1) {
+      warning("No parallel backend registered", call. = TRUE)
+    }
+  }
+
+
   if (p2s==2) {
     cat("\namelia starting\n")
     flush.console()
@@ -1074,120 +1079,117 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
     return(invisible(list(code=prepped$code,message=prepped$message)))
   }
 
-  k <- ncol(prepped$x)
-  if (!is.null(colnames(x))) {
-    ovars <- colnames(x)
-  } else {
-    ovars <- 1:k
-  }
-  impdata <- list(imputations = list(),
-                  m           = integer(0),
-                  missMatrix  = prepped$missMatrix,
-                  overvalues  = prepped$overvalues,
-                  theta       = array(NA, dim = c(k+1,k+1,m) ),
-                  mu          = matrix(NA, nrow = k, ncol = m),
-                  covMatrices = array(NA, dim = c(k,k,m)),
-                  code        = integer(0),
-                  message     = character(0),
-                  iterHist    = list(),
-                  arguments   = list(),
-                  orig.vars   = ovars)
 
-  impdata$m <- m
-  class(impdata) <- "amelia"
-  class(impdata$imputations) <- c("mi","list")
-
-  for (i in 1:m){
+  do.amelia <- function(i = 1, ...) {
 
     if (p2s==2) {
       cat("running bootstrap\n")
-      flush.console()
     }
+    k <- ncol(prepped$x)
+    if (!is.null(colnames(x))) {
+      ovars <- colnames(x)
+    } else {
+      ovars <- 1:k
+    }
+
+    impdata <- list(imputations = list(),
+                    m           = 1,
+                    missMatrix  = prepped$missMatrix,
+                    overvalues  = prepped$overvalues,
+                    theta       = array(NA, dim = c(k+1,k+1,1) ),
+                    mu          = matrix(NA, nrow = k, ncol = 1),
+                    covMatrices = array(NA, dim = c(k,k,1)),
+                    code        = integer(0),
+                    message     = character(0),
+                    iterHist    = list(),
+                    arguments   = list(),
+                    orig.vars   = ovars)
+    class(impdata) <- "amelia"
+    class(impdata$imputations) <- c("mi","list")
 
     x.boot<-bootx(prepped$x,prepped$priors)
     x.stacked<-amstack(x.boot$x,colorder=FALSE,x.boot$priors)   # Don't reorder columns thetanew will not align with d.stacked$x
 
     if (p2s) cat("-- Imputation", i, "--\n")
-    ## if (frontend) {
-    ##   putAmelia("output.log", c(getAmelia("output.log"),paste("-- Imputation",i,"--\n")))
-    ## }
-    ## flush.console()
 
-    thetanew<-emarch(x.stacked$x,p2s=p2s,thetaold=NULL,tolerance=tolerance,startvals=startvals,x.stacked$priors,empri=empri,frontend=frontend,collect=collect,autopri=prepped$autopri,emburn=emburn)
+    thetanew <- emarch(x.stacked$x, p2s = p2s, thetaold = NULL,
+                       tolerance = tolerance, startvals = startvals,
+                       priors = x.stacked$priors, empri = empri,
+                       frontend = frontend, collect = collect,
+                       autopri = prepped$autopri, emburn = emburn)
+
     ##thetanew <- .Call("emarch", PACKAGE = "Amelia")
     ## update the amelia ouptut
-    impdata$iterHist[[i]]    <- thetanew$iter.hist
-    impdata$theta[,,i]       <- thetanew$thetanew
-    impdata$mu[,i]           <- thetanew$thetanew[-1,1]
-    impdata$covMatrices[,,i] <- thetanew$thetanew[-1,-1]
+    impdata$iterHist[[1]]    <- thetanew$iter.hist
+    impdata$theta[,,1]       <- thetanew$thetanew
+    impdata$mu[,1]           <- thetanew$thetanew[-1,1]
+    impdata$covMatrices[,,1] <- thetanew$thetanew[-1,-1]
     dimnames(impdata$covMatrices)[[1]] <- prepped$theta.names
     dimnames(impdata$covMatrices)[[2]] <- prepped$theta.names
     dimnames(impdata$mu)[[1]] <- prepped$theta.names
 
     if
     (any(eigen(thetanew$thetanew[2:nrow(thetanew$thetanew),2:ncol(thetanew$thetanew)], only.values=TRUE, symmetric=TRUE)$values < .Machine$double.eps)) {
-      impdata$imputations[[i]] <- NA
-      code <- 2
-      cat("\n\nThe resulting variance matrix was not invertible.  Please check
-your data for highly collinear variables.\n\n")
-      ## if (frontend) {
-      ##   putAmelia("output.log", c(getAmelia("output.log"),"\n\nThe resulting variance matrix was not invertible.  Please check your data for highly collinear variables.\n\n"))
-      ## }
-      next()
-
+      impdata$imputations[[1]] <- NA
+      impdata$code <- 2
+      cat("\n\nThe resulting variance matrix was not invertible.",
+          "  Please check your data for highly collinear variables.\n\n")
+      return(impdata)
     }
 
-    ximp<-amelia.impute(prepped$x, thetanew$thetanew,priors=prepped$priors,bounds=prepped$bounds,max.resample)
-    ximp<-amunstack(ximp,n.order=prepped$n.order,p.order=prepped$p.order)
-    ximp<-unscale(ximp,mu=prepped$scaled.mu,sd=prepped$scaled.sd)
-    ximp<-unsubset(x.orig=prepped$trans.x,x.imp=ximp,blanks=prepped$blanks,idvars=prepped$idvars,ts=prepped$ts,cs=prepped$cs,polytime=polytime,splinetime=splinetime,intercs=intercs,noms=prepped$noms,index=prepped$index,ords=prepped$ords)
-    ximp<-untransform(ximp,logs=prepped$logs,xmin=prepped$xmin,sqrts=prepped$sqrts,lgstc=prepped$lgstc)
+    ximp <- amelia.impute(prepped$x, thetanew$thetanew, priors = prepped$priors,
+                          bounds = prepped$bounds, max.resample)
+    ximp <- amunstack(ximp, n.order = prepped$n.order,
+                      p.order = prepped$p.order)
+    ximp <- unscale(ximp, mu = prepped$scaled.mu, sd = prepped$scaled.sd)
+    ximp <- unsubset(x.orig = prepped$trans.x, x.imp = ximp,
+                     blanks = prepped$blanks, idvars = prepped$idvars,
+                     ts = prepped$ts, cs = prepped$cs, polytime = polytime,
+                     splinetime = splinetime, intercs = intercs,
+                     noms = prepped$noms, index = prepped$index,
+                     ords = prepped$ords)
+    ximp <- untransform(ximp, logs = prepped$logs, xmin = prepped$xmin,
+                        sqrts = prepped$sqrts, lgstc = prepped$lgstc)
 
     if (p2s==2) {
       cat("\n saving and cleaning\n")
-      flush.console()
     }
 
     ## here we deal with the imputed matrix.
 
-                                        # first, we put the data into the output list and name it
-    impdata$imputations[[i]]<-impfill(x.orig=x,x.imp=ximp,noms=prepped$noms,ords=prepped$ords,priors=priors)
-
-                                        # if the user wants to save it, do that
-                                        #    if (write.out) {
-                                        #      write.csv(impdata$imputations, file=paste(prepped$outname,i,".csv",sep=""))
-                                        #    }
-
-                                        # if the user wants to save memory, dump the copy in memory.
-                                        #    if (!keep.data) {
-                                        #      impdata[[i]]<-NA
-                                        #    }
+    ## first, we put the data into the output list and name it
+    impdata$imputations[[1]] <- impfill(x.orig = x, x.imp = ximp,
+                                        noms = prepped$noms,
+                                        ords = prepped$ords, priors = priors)
 
     if (p2s) cat("\n")
     if (frontend) {
       tcl(getAmelia("runAmeliaProgress"), "step",(100/m -1))
-      ## putAmelia("output.log", c(getAmelia("output.log"),"\n"))
     }
 
+    impdata$code <- code
+    names(impdata$imputations) <- paste("imp", i, sep = "")
+    impdata$arguments <- prepped$archv
+    class(impdata$arguments) <- c("ameliaArgs", "list")
 
+    return(impdata)
   }
-
-
-  impdata$code <- code
-  if (code == 2) {
-    impdata$message<-paste("One or more of the imputations resulted in a covariance matrix that was not invertible.")
+  if (.parallel) {
+    impdata <- foreach(i = 1:m) %dopar% do.amelia(i)
   } else {
-    impdata$message <- paste("Normal EM convergence.")
+    impdata <- list()
+    for (i in 1:m) impdata[[i]] <- do.amelia(i)
   }
 
-  ## if (frontend) {
-  ##   putAmelia("output.log", c(getAmelia("output.log"),paste(impdata$message,"\n")))
-  ## }
-                                        #  if (archive)
-
-  names(impdata$imputations) <- paste("imp", 1:m, sep = "")
-  impdata$arguments <- prepped$archv
-  class(impdata$arguments) <- c("ameliaArgs", "list")
+  if (all(sapply(impdata, is, class="amelia"))) {
+    impdata <- do.call(ameliabind, impdata)
+    if (impdata$code == 2) {
+      impdata$message <- paste("One or more of the imputations resulted in a",
+                               "covariance matrix that was not invertible.")
+    } else {
+      impdata$message <- paste("Normal EM convergence.")
+    }
+  }
 
 
   return(impdata)
