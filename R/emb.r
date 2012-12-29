@@ -1043,16 +1043,18 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
                            incheck=TRUE,collect=FALSE,arglist=NULL,
                            empri=NULL,priors=NULL,autopri=0.05,
                            emburn=c(0,0),bounds=NULL,max.resample=100,
-                           overimp = NULL, .parallel = FALSE, ...) {
+                           overimp = NULL,
+                           parallel = c("no", "multicore", "snow"),
+                           ncpus = getOption("amelia.ncpus", 1L), ...) {
 
-
-  if (.parallel) {
-    if (!require("foreach")) {
-      stop("foreach package required for parallel Amelia runs", call. = FALSE)
-    }
-    if (getDoParWorkers() == 1) {
-      warning("No parallel backend registered", call. = TRUE)
-    }
+  ## parellel infrastructure modeled off of 'boot' package
+  if (missing(parallel)) parallel <- getOption("amelia.parallel", "no")
+  parallel <- match.arg(parallel)
+  have_mc <- have_snow <- FALSE
+  if (parallel != "no" && ncpus > 1L) {
+    if (parallel == "multicore") have_mc <- .Platform$OS.type != "windows"
+    else if (parallel == "snow") have_snow <- TRUE
+    if (!have_mc && !have_snow) ncpus <- 1L
   }
 
 
@@ -1080,7 +1082,7 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
   }
 
 
-  do.amelia <- function(i = 1, ...) {
+  do.amelia <- function(X,...) {
 
     if (p2s==2) {
       cat("running bootstrap\n")
@@ -1110,7 +1112,7 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
     x.boot<-bootx(prepped$x,prepped$priors)
     x.stacked<-amstack(x.boot$x,colorder=FALSE,x.boot$priors)   # Don't reorder columns thetanew will not align with d.stacked$x
 
-    if (p2s) cat("-- Imputation", i, "--\n")
+    if (p2s) cat("-- Imputation", X, "--\n")
 
     thetanew <- emarch(x.stacked$x, p2s = p2s, thetaold = NULL,
                        tolerance = tolerance, startvals = startvals,
@@ -1168,18 +1170,28 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
     }
 
     impdata$code <- code
-    names(impdata$imputations) <- paste("imp", i, sep = "")
     impdata$arguments <- prepped$archv
     class(impdata$arguments) <- c("ameliaArgs", "list")
 
     return(impdata)
   }
-  if (.parallel) {
-    impdata <- foreach(i = 1:m) %dopar% do.amelia(i)
-  } else {
-    impdata <- list()
-    for (i in 1:m) impdata[[i]] <- do.amelia(i)
-  }
+
+  ## parallel infrastructure from the 'boot' package
+  impdata <- if (ncpus > 1L && (have_mc || have_snow)) {
+    if (have_mc) {
+      parallel::mclapply(seq_len(m), do.amelia, mc.cores = ncpus)
+    } else if (have_snow) {
+      list(...) # evaluate any promises
+      if (is.null(cl)) {
+        cl <- parallel::makePSOCKcluster(rep("localhost", ncpus))
+        if(RNGkind()[1L] == "L'Ecuyer-CMRG")
+          parallel::clusterSetRNGStream(cl)
+        res <- parallel::parLapply(cl, seq_len(m), do.amelia)
+        parallel::stopCluster(cl)
+        res
+      } else parallel::parLapply(cl, seq_len(m), do.amelia)
+    }
+  } else lapply(seq_len(m), do.amelia)
 
   if (all(sapply(impdata, is, class="amelia"))) {
     impdata <- do.call(ameliabind, impdata)
@@ -1190,7 +1202,7 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
       impdata$message <- paste("Normal EM convergence.")
     }
   }
-
+  names(impdata$imputations) <- paste("imp", 1:m, sep = "")
 
   return(impdata)
 }
