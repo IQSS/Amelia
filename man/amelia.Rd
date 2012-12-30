@@ -218,6 +218,21 @@ or,
   We have included a number of commonly needed transformations for data.
   Note that the data will not be transformed in the output datasets and the
   transformation is simply useful for climbing the likelihood.
+
+  Amelia can run its imputations in parallel using the methods of the
+  \pkg{parallel} package. The \code{parallel} argument names the
+  parallel backend that Amelia should use. Users on Windows systems must
+  use the \code{"snow"} option and users on Unix-like systems should use
+  \code{"multicore"}.  The \code{multicore} backend sets itself up
+  automatically, but the \code{snow} backend requires more setup. You
+  can pass a predefined cluster from the
+  \code{parallel::makePSOCKcluster} function to the \code{cl}
+  argument. Without this cluster, Amelia will attempt to create a
+  reasonable default cluster and stop it once computation is
+  complete. When using the parallel backend, users can set the number of
+  CPUs to use with the \code{ncpus} argument. The defaults for these two
+  arguments can be set with the options \code{"amelia.parallel"} and
+  \code{"amelia.ncpus"}.
   
   Please refer to the Amelia manual for more information on the function
   or the options.
