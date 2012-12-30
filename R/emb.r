@@ -260,7 +260,7 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
   }
 
   iter.hist<-matrix(0,nrow=1,ncol=3)
-  if (nrow(packr(x))<nrow(x)){          # Check for fully observed data
+  if (sum(complete.cases(x)) < nrow(x)){          # Check for fully observed data
 
     if (identical(thetaold,NULL)) thetaold<-startval(x,startvals=startvals,priors=priors)
     indx<-indxs(x)                      # This needs x.NA
@@ -285,6 +285,9 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
     theta <- .Call("emcore", x, AMr1, oo, mm,
                    indx$ivector, thetaold, tolerance, emburn, p2s,
                    empri,autopri, allthetas, priors, PACKAGE="Amelia")
+    if (!exists("theta")) {
+      cat('hiiiiiiii')
+    }
   } else {
     if (p2s) cat("\n","No missing data in bootstrapped sample:  EM chain unnecessary")
     pp1<-ncol(x)+1                       # p (the number of variables) plus one
@@ -294,96 +297,10 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
     thetanew[2:pp1,1]<-means
     thetanew[1,2:pp1]<-means
     thetanew[2:pp1,2:pp1]<-cov(x)              # Need to consider Priors in these cases,
-    iter.hist<-NA                              # Although not currently necessary.
+    iter.hist<-NA                              # Although not
+                                        # currently necessary.
+    return(list(thetanew=thetanew,iter.hist=iter.hist))
   }
-
-  ##   while ( (diff>0 | count<emburn[1] ) & (count<emburn[2] | emburn[2]<1) ){    # emburn[1] is a minimum EM chain length, emburn[2] is a maximum, ignored if less than 1.
-  ##     if (collect)
-  ##       gc()
-  ##     count<-count+1
-  ##     if (p2s==1){
-  ##       if (identical((count %% 20),1)) {cat("\n")}
-  ##       if (count<10) cat(" ")
-  ##       cat(count," ",sep="")
-  ##       flush.console()
-  ##     }
-  ##     if(p2s==2){
-  ##       if (identical((count %% 10),1)) {cat("\n")}
-  ##       if (count<10) cat(" ")
-  ##       cat(count)
-  ##       flush.console()
-  ##     }
-  ##     if (frontend) {
-  ##       if (identical((count %% 20),1)) {
-  ##         putAmelia("output.log", c(getAmelia("output.log"),paste("\n")))
-  ##       }
-  ##       if (count<10) {
-  ##         putAmelia("output.log", c(getAmelia("output.log")," "))
-  ##       }
-  ##       putAmelia("output.log", c(getAmelia("output.log"),paste(count," ",sep="")))
-  ##       tcl("update")   #Forces tcltk to update the text widget that holds the amelia output
-  ##     }
-
-  ##     thetanew<-emfred(x,thetaold,indx$o,indx$m,indx$ivector,indx$icap,indx$AMr1,indx$AMr2,AM1stln=AM1stln,returntype="theta",priors=priors,empri=empri,collect=collect)
-
-  ##     diff2<-sqrt(sum((thetanew-thetaold)^2))
-  ##     diff<-(abs(thetanew-thetaold)>tolerance)
-  ##     diff<-sum(diff*upper.tri(diff,diag=TRUE))
-
-  ##     if (diff > iter.hist[count,1] && count > 20) {                                #checks to see if step length has increased
-  ##       mono.flag<-1
-
-  ##       if (autopri > 0) {
-  ##         if (sum(iter.hist[count:(count-20),3]) >= 3) {
-  ##                                       #if step length has increased for more 3 steps
-  ##           if (is.null(empri)) {                                                      #the ridge prior is increased by 1%  of
-  ##             empri<-trunc(.01*nrow(x))                                                #the rows of data, up to "autopri"% of the rows.
-  ##           } else {
-  ##             if (empri < (autopri*nrow(x))) empri<-empri+trunc(.01*nrow(x))        # This does not necessarily need to be an integer
-  ##           }
-  ##         }
-  ##       }
-  ##     } else {
-  ##       mono.flag<-0
-  ##     }
-  ##     if (all(eigen(thetanew[2:nrow(thetanew),2:ncol(thetanew)],only.values=TRUE, symmetric=TRUE)$values > .Machine$double.eps))
-  ##       sing.flag<-0
-  ##     else
-  ##       sing.flag<-1
-  ##     if(p2s==2){
-  ##       cat("(",diff,sep="")
-  ##       if (all(mono.flag == 1, count > 50))
-  ##         cat("*",sep="")
-  ##       if (sing.flag == 1)
-  ##         cat("!",sep="")
-  ##       cat(")",sep="")
-  ##       flush.console()
-  ##     }
-
-  ##     iter.hist<-rbind(iter.hist,c(diff,sing.flag,mono.flag))
-  ##     if (allthetas)
-  ##       thetahold<-cbind(thetahold,(thetanew[upper.tri(thetanew,diag=TRUE)])[-1])
-  ##     thetaold<-thetanew
-  ##   }
-  ##   iter.hist<-iter.hist[2:nrow(iter.hist),]
-  ## } else {
-  ##   if (p2s) cat("\n","No missing data in bootstrapped sample:  EM chain unnecessary")
-  ##   pp1<-ncol(x)+1                       # p (the number of variables) plus one
-  ##   means<-colMeans(x)
-  ##   thetanew<-matrix(0,pp1,pp1)
-  ##   thetanew[1,1]<-(-1)
-  ##   thetanew[2:pp1,1]<-means
-  ##   thetanew[1,2:pp1]<-means
-  ##   thetanew[2:pp1,2:pp1]<-cov(x)              # Need to consider Priors in these cases,
-  ##   iter.hist<-NA                              # Although not currently necessary.
-  ## }
-
-  ## if (p2s) cat("\n")
-  ## if (frontend) {
-  ##   putAmelia("output.log", c(getAmelia("output.log"),paste("\n")))
-  ## }
-  ## if (allthetas)
-  ##   return(list(thetanew=cbind(thetahold,(thetanew[upper.tri(thetanew,diag=TRUE)])[-1]),iter.hist=iter.hist))
   return(list(thetanew=theta$theta,iter.hist=theta$iter.hist))
 }
 
@@ -1055,6 +972,9 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
     if (parallel == "multicore") have_mc <- .Platform$OS.type != "windows"
     else if (parallel == "snow") have_snow <- TRUE
     if (!have_mc && !have_snow) ncpus <- 1L
+    if (p2s == 2) {
+      cat("\nUsing '", parallel, "' parallel backend with", ncpus, "cores.")
+    }
   }
 
 
@@ -1171,6 +1091,7 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
 
     impdata$code <- code
     impdata$arguments <- prepped$archv
+    names(impdata$imputations) <- paste("imp", X, sep = "")
     class(impdata$arguments) <- c("ameliaArgs", "list")
 
     return(impdata)
@@ -1202,7 +1123,7 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
       impdata$message <- paste("Normal EM convergence.")
     }
   }
-  names(impdata$imputations) <- paste("imp", 1:m, sep = "")
+
 
   return(impdata)
 }
