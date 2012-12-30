@@ -1,18 +1,18 @@
 ##
 ## prep.r
 ##
-## Various routines for transforming the original data to the imputation model, 
+## Various routines for transforming the original data to the imputation model,
 ## and reverting back to the format of the original data
 ## 28/04/06 mb functions extracted from emb.r to prep.r
 ## 29/04/06 jh revised unsubset for memory issues
-## 04/05/06 mb moved parameter vs. observation check to the end of prep. 
+## 04/05/06 mb moved parameter vs. observation check to the end of prep.
 ## 18/05/06 mb 'ords' unsubset fixed to have range of original values
 ## 15/06/06 jh revised "generatepriors"
 ## 26/06/06 mb fixed archive to work with session loading.
 ## 27/06/06 mb amelia.prep accepts, checks, and processes 'arglist'
-## 27/07/06 mb amsubset changes from dataframe to matrix after subsetting to 
+## 27/07/06 mb amsubset changes from dataframe to matrix after subsetting to
 ##             avoid eating it on strings.
-## 02/08/06 mb frame.to.matrix now converts chars to either factors (cs,noms) 
+## 02/08/06 mb frame.to.matrix now converts chars to either factors (cs,noms)
 ##             or junk (idvars). added to subset/unsubset (ignore last update).
 ## 02/08/06 mb fixed bug where polytime=0 would make for odd behaviour/crashing
 ## 11/09/06 mb fixed bug in unsubset: 'index' too long to subset w/o 'which'
@@ -30,7 +30,7 @@
 
 nametonumber<-function(x,ts,cs,idvars,noms,ords,logs,sqrts,lgstc,lags,leads)
 {
-  
+
   listconvert<-function(opt) {
     junk.seq<-1:ncol(x)
     junk.names<-dimnames(x)[[2]]
@@ -71,10 +71,10 @@ nametonumber<-function(x,ts,cs,idvars,noms,ords,logs,sqrts,lgstc,lags,leads)
   output<-list(code=code,ts=ts,cs=cs,idvars=idvars,noms=noms,
                ords=ords,logs=logs,sqrts=sqrts,lgstc=lgstc,
                lags=lags,leads=leads,mess=mess)
-  
-  if (any(is.na(output))) 
+
+  if (any(is.na(output)))
       output$code<-1
-  
+
   return(output)
 }
 
@@ -93,7 +93,7 @@ nametonumber<-function(x,ts,cs,idvars,noms,ords,logs,sqrts,lgstc,lags,leads)
 
 
 
-  
+
 #  if (ncol(priors) == 4) {
 #    #generate output priors matrix, the size of the data
 #    out.means <- matrix(NA, nrow = nrow, ncol = ncol)
@@ -108,7 +108,7 @@ nametonumber<-function(x,ts,cs,idvars,noms,ords,logs,sqrts,lgstc,lags,leads)
 #    return(list(means = out.means, sds = out.sds))
 #  }
 
-  
+
 #  if (ncol(priors) == 5) {
 #    out.mins  <- matrix(NA, nrow = nrow, ncol = ncol)
 #    out.maxs  <- matrix(NA, nrow = nrow, ncol = ncol)
@@ -132,7 +132,7 @@ nametonumber<-function(x,ts,cs,idvars,noms,ords,logs,sqrts,lgstc,lags,leads)
 ##   lgstc:  variable list of logistic transformations
 ##   xmin:   vector of column minimums
 amtransform<-function(x,logs,sqrts,lgstc) {
-  
+
   logs<-unique(logs)
   sqrts<-unique(sqrts)
   lgstc<-unique(lgstc)
@@ -194,11 +194,11 @@ frame.to.matrix<-function(x,idvars) {
         x[,i]<-as.factor(x[,i])         #changes cs/noms char. vars to factors
       else
         x[,i]<-1                        #junks id char vars.
-        
-        
+
+
   return(data.matrix(x))                #return it as matrix
 }
-      
+
 
 
 ## Remove rows and columns from dataset that do not belong
@@ -291,14 +291,14 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
     index<-index[index!=cs]
     idvars<-c(idvars,cs)
   }
-  
+
   #nominals
   if (!is.null(noms)) {
     for (i in noms) {
       values<-unique(na.omit(x[,i]))
       newx<-matrix(0,nrow=nrow(x),ncol=length(values)-1)
       theta.names <- theta.names[index != i]
-      index<-index[index!=i]      
+      index<-index[index!=i]
       for (j in 2:length(values)) {
         newx[,j-1]<-ifelse(x[,i] == values[j],1,0)
         index<-c(index,-i)
@@ -307,13 +307,13 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
       x<-cbind(x,newx)
       idvars<-c(idvars,i)
 
-      
+
     }
   }
 
 ## REVISION TODAY BEGINS HERE
 
-  #basis functions for time    
+  #basis functions for time
   if (!identical(polytime,NULL) | !identical(splinetime,NULL) ){
 
     if (!identical(splinetime,NULL)){
@@ -373,7 +373,7 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
   }
 
   if (!identical(idvars,NULL))
-    x<-x[,-idvars, drop = FALSE]   
+    x<-x[,-idvars, drop = FALSE]
 
   if (p2s == 2) {
     cat("Variables used: ", theta.names,"\n")
@@ -381,7 +381,7 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
 
   AMr1<-is.na(x)
   flag<-rowSums(AMr1)==ncol(x)
-  
+
   if (max(flag)==1){
     blanks<-1:nrow(x)
     blanks<-blanks[flag]
@@ -389,9 +389,9 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
     if (!is.null(priors)) {
       priors <- priors[!(priors[,1] %in% blanks),]
       priors[,1] <- priors[,1,drop=FALSE] - colSums(sapply(priors[,1,drop=FALSE],">",blanks))
-    
+
     }
-  
+
 
     if (p2s) cat("Warning: There are observations in the data that are completely missing.","\n",
                  "        These observations will remain unimputed in the final datasets.","\n")
@@ -400,7 +400,7 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
   }
   priors[,2] <- match(priors[,2], index)
   bounds[,1] <- match(bounds[,1], index)
-  
+
   if (is.null(dim(x))) {
     x <- matrix(x, ncol = 1)
   }
@@ -427,7 +427,7 @@ return(list(x=x,index=index,idvars=idvars,blanks=blanks,priors=priors,bounds=bou
 
 unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,splinetime,intercs,noms,index,ords){
 
-  ## create 
+  ## create
   if (is.data.frame(x.orig)) {
     oldidvars<-idvars[-match(cs,idvars)]
     x.orig<-frame.to.matrix(x.orig,oldidvars)
@@ -438,7 +438,7 @@ unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,splinetime,intercs,
   ## we need these changed here.
   if (identical(blanks,NULL)) {blanks<- -(1:nrow(x.orig))}
   if (identical(idvars,NULL)) {idvars<- -(1:ncol(x.orig))}
-  
+
   ## noms are idvars, so we'll fill them in manually
   ## (mb 2 Apr 09 -- fixed handling of "blanks")
   if (!is.null(noms)) {
@@ -463,7 +463,7 @@ unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,splinetime,intercs,
   if (!is.null(ords)) {
     ords <- unique(ords)
 
-    # find where the ordinals are in the 
+    # find where the ordinals are in the
     impords <- match(ords,index)
     x <- x.imp[,impords] * AMr1.orig[-blanks,ords]
 
@@ -503,7 +503,7 @@ unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,splinetime,intercs,
 #   x.orig[,ords] <- ifelse(AMr1.orig[,ords]==1,0,x.orig[,ords]) + newimp
 
   }
-  ## now we'll fill the imputations back into the original. 
+  ## now we'll fill the imputations back into the original.
   if (!identical(c(blanks,idvars),c(NULL,NULL))){
     x.orig[-blanks,-idvars]<-x.imp[,1:ncol(x.orig[,-idvars, drop=FALSE])]
   } else {
@@ -533,7 +533,7 @@ scalecenter<-function(x,priors=NULL,bounds=NULL){
     bounds[,2] <- (bounds[,2]-meanx[bounds[,1]])/stdvx[bounds[,1]]
     bounds[,3] <- (bounds[,3]-meanx[bounds[,1]])/stdvx[bounds[,1]]
   }
-    
+
 return(list(x=x.ztrans,mu=meanx,sd=stdvx,priors=priors,bounds=bounds))
 }
 
@@ -588,11 +588,11 @@ generatepriors<-function(AMr1,empri=NULL,priors=NULL){
   if (!identical(priors,NULL)) {
     if (ncol(priors) == 5){
       new.priors<-matrix(NA, nrow = nrow(priors), ncol = 4)
-      new.priors[,1:2]<-priors[,1:2]           
+      new.priors[,1:2]<-priors[,1:2]
       new.priors[,3]<-priors[,3] + ((priors[,4] - priors[,3])/2)
       new.priors[,4]<-(priors[,4]-priors[,3])/(2*qnorm(1-(1-priors[,5])/2))
                                         #NOTE: FIX THIS: Currently ignores CONF- ASSUMES CI95
-      
+
     } else {
       new.priors <-priors
     }
@@ -625,7 +625,7 @@ generatepriors<-function(AMr1,empri=NULL,priors=NULL){
 # NOTE: does not preserve options. assumes the first is right.
 #       also, errors could happen in the perverse case where
 #       a non-amelia output list with "amelia.args" in it and it's
-#       not the last argument. 
+#       not the last argument.
 
 combine.output <- function(...) {
   cl <- match.call()
@@ -633,13 +633,13 @@ combine.output <- function(...) {
   cool <- unlist(lapply(cl, function(x) is.null(eval(x,parent.frame())$amelia.args)))
   if (max(cool[-1])==1)
     stop("One of the arguments is not an Amelia output list.")
-  
-  
+
+
   # we need the total number of imputations, so we'll
   # grab it from each argument (each ameliaoutput)
   # NOTE: the 'lapply' subset will be NULL for things in the call
   #       that aren't amelia.output. 'unlist' then ignores those NULLs.
-  
+
   ms <- unlist(lapply(cl,function(x) eval(x, parent.frame())$amelia.args$m))
   m <- sum(ms)
   new.out <- vector("list", 2*m+1)
@@ -674,8 +674,8 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   code <- 1
 
   ## If there is an ameliaArgs passed, then we should use
-  ## those. 
-  
+  ## those.
+
   if (!identical(arglist,NULL)) {
     if (!("ameliaArgs" %in% class(arglist))) {
       error.code <- 46
@@ -705,14 +705,14 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     overimp   <- arglist$overimp
     max.resample <- arglist$max.resample
   }
-  
-  
+
+
   numopts<-nametonumber(x=x,ts=ts,cs=cs,idvars=idvars,noms=noms,ords=ords,
                         logs=logs,sqrts=sqrts,lgstc=lgstc,lags=lags,leads=leads)
   if (numopts$code == 1) {
     return(list(code=44,message=numopts$mess))
   }
-  
+
   if (incheck) {
 
     checklist<-amcheck(x = x, m = m, idvars = numopts$idvars, priors =
@@ -728,19 +728,19 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     #check.call <- match.call()
     #check.call[[1]] <- as.name("amcheck")
     #checklist <- eval(check.call, parent.frame())
-    
+
     if (!is.null(checklist$code)) {
       return(list(code=checklist$code,message=checklist$mess))
     }
     m <- checklist$m
     priors <- checklist$priors
   }
-  
-  
+
+
   priors <- generatepriors(AMr1 = is.na(x),empri = empri, priors = priors)
   archv <- match.call(expand.dots=TRUE)
   archv[[1]] <- NULL
-  
+
   archv <- list(idvars=numopts$idvars, logs=numopts$logs, ts=numopts$ts, cs=numopts$cs,
                 empri=empri, tolerance=tolerance,
                 polytime=polytime, splinetime=splinetime, lags=numopts$lags, leads=numopts$leads,
@@ -748,16 +748,16 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                 noms=numopts$noms, ords=numopts$ords,
                 priors=priors, autopri=autopri, bounds=bounds,
                 max.resample=max.resample, startvals=startvals,
-                overimp = overimp)        
+                overimp = overimp)
                                                                                 #change 2
-  
-  
+
+
   if (p2s==2) {
     cat("beginning prep functions\n")
     flush.console()
   }
-  
-  d.trans<-amtransform(x,logs=numopts$logs,sqrts=numopts$sqrts,lgstc=numopts$lgstc)  
+
+  d.trans<-amtransform(x,logs=numopts$logs,sqrts=numopts$sqrts,lgstc=numopts$lgstc)
   d.subset<-amsubset(d.trans$x,idvars=numopts$idvars,p2s=p2s,ts=numopts$ts,cs=numopts$cs,polytime=polytime,splinetime=splinetime,intercs=intercs,noms=numopts$noms,priors=priors,bounds=bounds,
   lags=numopts$lags, leads=numopts$leads, overimp=overimp)
   d.scaled<-scalecenter(d.subset$x,priors=d.subset$priors,bounds=d.subset$bounds)
@@ -779,16 +779,16 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       if (realAMp*4 > realAMn +empri) {
         warning("You have a small number of observations, relative to the number, of variables in the imputation model.  Consider removing some variables, or reducing the order of time polynomials to reduce the number of parameters.")
       }
-  
+
   } else {
     if (realAMp*2 > realAMn) {
-      error.code<-34      
+      error.code<-34
         error.mess<-paste("The number of observations is too low to estimate the number of \n",
                         "parameters.  You can either remove some variables, reduce \n",
                         "the order of the time polynomial, or increase the empirical prior.")
       return(list(code=error.code,message=error.mess))
     }
-    
+
     if (realAMp*4 > realAMn) {
         warning("You have a small number of observations, relative to the number, of variables in the imputation model.  Consider removing some variables, or reducing the order of time polynomials to reduce the number of parameters.")
     }
@@ -796,7 +796,7 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
 }
 
 
-  
+
   return(list(
     x            = d.stacked$x,
     code         = code,
@@ -826,7 +826,7 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     theta.names  = d.subset$theta.names,
     missMatrix = d.subset$missMatrix,
     overvalues = d.subset$overvalues,
-    empri        = empri,    #change 3a 
+    empri        = empri,    #change 3a
     tolerance    = tolerance))  #change 3b
-    
+
 }

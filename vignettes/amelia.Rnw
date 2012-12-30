@@ -710,6 +710,48 @@ An example of the output when \code{p2s} is 2 would be
 amelia(freetrade, m = 1, ts = "year", cs = "country", p2s = 2)
 @
 
+\subsection{Parallel Imputation Using Multicore CPUs}
+\label{sec:parallel}
+
+Each imputation in the above EMB algorithm is completely independent
+of any other imputation, a property called embarrassingly
+parallel. This type of approach can take advantage of the multiple
+-core infrastructure of modern CPUs. Each core in a multi-core
+processor can execute independent operations in parallel. \Amelia\ can
+utilize this parallel processing internally \emph{via} the
+\code{parallel} and the \code{ncpus} arguments. The \code{parallel}
+argument sets the parallel processing backend, either with
+\code{"multicore"} or \code{"snow"} (or \code{"no"} for no parallel
+processing). The \code{"multicore"} backend is not available on
+Windows systems, but tends to be quicker at parallel processing. On a
+Windows system, the \code{"snow"} backend provides parallel processing
+through a cluster of worker processes across the CPUs. You can set the
+default for this argument using the \code{"amelia.parallel"}
+option. This allows you to run Amelia in parallel as the default for
+an entire R session without setting arguments in the \code{amelia}
+call.
+
+For each of the parallel backends, \Amelia\ requires a number of CPUs
+to use in parallel. This can be set using the \code{ncpus}
+argument. It can be higher than the number of physical cores in
+the system if hyperthreading or other technologies are available. You
+can use the \code{parallel::detectCores} function to determine how
+many cores are available on your machine. The default for this
+argument can be set using the \code{"amelia.ncpus"} option. 
+
+On Unix-alike systems (such as Mac OS X and Linux distributions), the
+\code{"multicore"} backend automatically sets up and stops the
+parallel workers by forking the process. On Windows, the \code{"snow"}
+backend requires more attention. \Amelia\ will attempt to create a
+parallel cluster of worker processes (since Windows systems cannot
+fork a process) and will stop this cluster after the
+imputations are complete. Alternatively, \Amelia\ also has a \code{cl}
+argument, which accepts a predefined cluster made using the
+\code{parallel::makePSOCKcluster}. For more information about parallel
+processing in R, see the documentation for the \pkg{parallel} package
+that ships along with R. 
+
+
 \subsection{Imputation-improving Transformations}
 \label{sec:trans}
 
