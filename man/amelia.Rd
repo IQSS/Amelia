@@ -17,7 +17,9 @@
        logs = NULL, sqrts = NULL, lgstc = NULL, noms = NULL, ords = NULL,
        incheck = TRUE, collect = FALSE, arglist = NULL, empri = NULL,
        priors = NULL, autopri = 0.05, emburn = c(0,0), bounds = NULL,
-       max.resample = 100, overimp = NULL, ...)
+       max.resample = 100, overimp = NULL,
+       parallel = c("no", "multicore", "snow"),
+       ncpus = getOption("amelia.ncpus", 1L), cl = NULL, ...)
 
 \method{amelia}{amelia}(x, m = 5, p2s = 1, frontend = FALSE, ...)
 \method{amelia}{molist}(x, ...)
@@ -139,6 +141,17 @@
     column)} pair. Each of these cells will be treated as missing and
   replaced with draws from the imputation model.}
 
+  \item{parallel}{the type of parallel operation to be used (if any). If
+    missing, the default is taken from the option
+    \code{"amelia.parallel"} (and if that is not set, \code{"no"}).}
+
+  \item{ncpus}{integer: the number of processes to be used in parallel
+    operation: typically one would choose the number of available CPUs.}
+
+  \item{cl}{an optional \pkg{parallel} or \pkg{snow} cluster for use if
+    \code{parallel = "snow"}. If not supplied, a cluster on the local
+    machine is created for the duration of the \code{amelia} call.}
+  
   \item{...}{further arguments to be passed.}
 
 }
@@ -205,6 +218,21 @@ or,
   We have included a number of commonly needed transformations for data.
   Note that the data will not be transformed in the output datasets and the
   transformation is simply useful for climbing the likelihood.
+
+  Amelia can run its imputations in parallel using the methods of the
+  \pkg{parallel} package. The \code{parallel} argument names the
+  parallel backend that Amelia should use. Users on Windows systems must
+  use the \code{"snow"} option and users on Unix-like systems should use
+  \code{"multicore"}.  The \code{multicore} backend sets itself up
+  automatically, but the \code{snow} backend requires more setup. You
+  can pass a predefined cluster from the
+  \code{parallel::makePSOCKcluster} function to the \code{cl}
+  argument. Without this cluster, Amelia will attempt to create a
+  reasonable default cluster and stop it once computation is
+  complete. When using the parallel backend, users can set the number of
+  CPUs to use with the \code{ncpus} argument. The defaults for these two
+  arguments can be set with the options \code{"amelia.parallel"} and
+  \code{"amelia.ncpus"}.
   
   Please refer to the Amelia manual for more information on the function
   or the options.
