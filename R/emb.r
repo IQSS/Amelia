@@ -919,12 +919,18 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
   } else lapply(seq_len(m), do.amelia)
 
   if (all(sapply(impdata, is, class="amelia"))) {
-    impdata <- do.call(ameliabind, impdata)
-    if (impdata$code == 2) {
-      impdata$message <- paste("One or more of the imputations resulted in a",
-                               "covariance matrix that was not invertible.")
+    if (!all(sapply(impdata, function(x) is.na(x$imputations)))) {
+      impdata <- do.call(ameliabind, impdata)
+      if (impdata$code == 2) {
+        impdata$message <- paste("One or more of the imputations resulted in a",
+                                 "covariance matrix that was not invertible.")
+      } else {
+        impdata$message <- paste("Normal EM convergence.")
+      }
     } else {
-      impdata$message <- paste("Normal EM convergence.")
+      impdata$code <- 2
+      impdata$message <- paste("All of the imputations resulted in a covariance",
+                               "matrix that is not invertible.")
     }
   }
 
