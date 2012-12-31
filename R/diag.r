@@ -62,9 +62,9 @@ compare.density <- function(output,var,col=c("red","black"),scaled=FALSE,lwd=1,m
     varimp <- rowMeans(varimp)
   }
 
-  if (frontend)
+  if (frontend) {
     dev.new()
-
+  }
 
   vars <- data[,var]
   if (scaled)
@@ -315,11 +315,7 @@ overimpute <- function(output, var, subset, legend = TRUE, xlab, ylab,
   }
 
   if (frontend) {
-    if (.Platform$OS.type == "windows") {
-      windows()
-    } else {
-      dev.new()
-    }
+    dev.new()
   }
   ci.order<-order(uppers-lowers,decreasing=TRUE)     # Allows smallest CI's to be printed last, and thus not buried in the plot.
   overplot<-plot(xplot[ci.order],means[ci.order],xlab=xlab,ylab=ylab,ylim=range(c(lowers-addedroom,uppers)),type='p',main=main,
@@ -424,8 +420,9 @@ disperse <- function(output, m = 5, dims = 1, p2s = 0, frontend=FALSE,...) {
 
   cols <- rainbow(m)
                                         # plot the imputations
-  if (frontend)
+  if (frontend) {
     dev.new()
+  }
   if (dims==1) {
     addedroom<-(max(reduced.imps)-min(reduced.imps))*0.1
     x<-seq(iters[1])
@@ -695,11 +692,7 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
   if (missing(ylab)) ylab <- names(data)[var]
 
   if (frontend) {
-    if (.Platform$OS.type == "windows") {
-      windows()
-    } else {
-      dev.new()
-    }
+    dev.new()
   }
 
   count<-0
