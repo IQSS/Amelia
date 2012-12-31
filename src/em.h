@@ -18,4 +18,9 @@ RcppExport SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP is, SEXP thet
 
 void sweep(arma::mat& g, arma::vec m);
 
+RcppExport SEXP ameliaImpute(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP prs, SEXP bdss, SEXP maxres);
+
+arma::mat resampler(arma::mat x, arma::mat ci, arma::mat imps, arma::uvec mss,
+                    arma::mat bounds, int maxsample); 
+
 #endif

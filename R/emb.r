@@ -317,181 +317,184 @@ amelia.impute<-function(x,thetareal,priors=NULL,bounds=NULL,max.resample=NULL){
 
   x[is.na(x)]<-0                      # Change x.NA to x.0s
   AM1stln<-sum(indx$m[1,])==0 & nrow(indx$m) > 1  # Create sundry simple indicators
-  o<-indx$o
-  m<-indx$m
   i<-indx$ivector
   iii<-indx$icap
-  AMr1<-indx$AMr1
-  AMr2<-indx$AMr2
   AMp<-ncol(x)
   AMn<-nrow(x)
+  AMr1 <- 1 * indx$AMr1
+  oo <- 1 * indx$o
+  mm <- 1 * indx$m
+  if (is.null(bounds)) max.resample <- NULL
+  imp <- .Call("ameliaImpute", x, AMr1, oo, mm, indx$ivector, thetareal,
+                  priors, bounds, max.resample, PACKAGE="Amelia")
+  return(imp)
 
-  I <- diag(1,AMp)                    # A reference identity matrix for speed
+  ## I <- diag(1,AMp)                    # A reference identity matrix for speed
 
-  xplay<-matrix(0,nrow=AMn,ncol=AMp)
-  if (!AM1stln){
-    st<-1
-  } else {
-    xplay[i[1]:(i[2]-1),]<-x[i[1]:(i[2]-1),]
-    st<-2
-  }
+  ## xplay<-matrix(0,nrow=AMn,ncol=AMp)
+  ## if (!AM1stln){
+  ##   st<-1
+  ## } else {
+  ##   xplay[i[1]:(i[2]-1),]<-x[i[1]:(i[2]-1),]
+  ##   st<-2
+  ## }
 
-  if (identical(priors,NULL) | !identical(priors,NULL)){                     # No Observation Level Priors in Dataset
+  ## if (identical(priors,NULL) | !identical(priors,NULL)){                     # No Observation Level Priors in Dataset
 
-    for (ss in st:(length(i)-1)){
+  ##   for (ss in st:(length(i)-1)){
 
-      theta<-amsweep(thetareal,c(FALSE,o[ss,]))
+  ##     theta<-amsweep(thetareal,c(FALSE,o[ss,]))
 
-      is<-i[ss]
-      isp<-i[ss+1]-1
+  ##     is<-i[ss]
+  ##     isp<-i[ss+1]-1
 
-      Ci<-matrix(0,AMp,AMp)
-      hold<-chol(theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])])
-      Ci[m[ss,],m[ss,]]<-hold
-
-
-      imputations<-AMr1[is:isp, , drop=FALSE] * ((x[is:isp, , drop=FALSE] %*% theta[2:(AMp+1),2:(AMp+1) , drop=FALSE])
-                                    + (matrix(1,1+isp-is,1) %*% theta[1,2:(AMp+1) , drop=FALSE]) )
-
-      if (!identical(bounds,NULL)) {
-        xplay[is:isp,] <- am.resample(x.ss=x[is:isp,,drop=FALSE], ci=Ci, imps=imputations,
-                                      m.ss=m[ss,], bounds=bounds,
-                                      max.resample=max.resample)
-      } else {
-        junk<-matrix(rnorm((i[ss+1]-is) * AMp), i[ss+1]-is, AMp) %*% Ci
-        xplay[is:isp,]<-x[is:isp,,drop=FALSE] + imputations + junk
-      }
-    }
-
-  } else {                                    # Observation Level Priors Used
-
-    for (ss in st:(length(i)-1)){
-
-      theta<-amsweep(thetareal,c(FALSE,o[ss,]))
-
-      is<-i[ss]
-      isp<-i[ss+1]-1
+  ##     Ci<-matrix(0,AMp,AMp)
+  ##     hold<-chol(theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])])
+  ##     Ci[m[ss,],m[ss,]]<-hold
 
 
-      imputations<- AMr1[is:isp, , drop=FALSE] * ((x[is:isp, , drop=FALSE] %*%
-                                     theta[2:(AMp+1),2:(AMp+1) , drop=FALSE]) + (matrix(1,1+isp-is,1) %*%
-                                                                   theta[1,2:(AMp+1) , drop=FALSE]) )
+  ##     imputations<-AMr1[is:isp, , drop=FALSE] * ((x[is:isp, , drop=FALSE] %*% theta[2:(AMp+1),2:(AMp+1) , drop=FALSE])
+  ##                                   + (matrix(1,1+isp-is,1) %*% theta[1,2:(AMp+1) , drop=FALSE]) )
 
-      ## get the prior rows and non-prior rows
-      priorsinpatt <- which(is:isp %in% priors[,1])
+  ##     if (!identical(bounds,NULL)) {
+  ##       xplay[is:isp,] <- am.resample(x.ss=x[is:isp,,drop=FALSE], ci=Ci, imps=imputations,
+  ##                                     m.ss=m[ss,], bounds=bounds,
+  ##                                     max.resample=max.resample)
+  ##     } else {
+  ##       junk<-matrix(rnorm((i[ss+1]-is) * AMp), i[ss+1]-is, AMp) %*% Ci
+  ##       xplay[is:isp,]<-x[is:isp,,drop=FALSE] + imputations + junk
+  ##     }
+  ##   }
 
-      nopri <- !(is:isp %in% priors[,1])
+  ## } else {                                    # Observation Level Priors Used
 
+  ##   for (ss in st:(length(i)-1)){
 
-      hasPrior <- priors[,1] %in% is:isp
-      priorsForPatt <- priors[hasPrior, , drop = FALSE]
-      priorsForPatt <- priorsForPatt[order(priorsForPatt[,1],priorsForPatt[,2]), , drop = FALSE]
+  ##     theta<-amsweep(thetareal,c(FALSE,o[ss,]))
 
-      numRowsWithPrior <- length(unique(priorsForPatt[,1]))
-      mu.prior <- matrix(0, nrow = sum(m[ss,]), ncol = numRowsWithPrior)
-
-      ## create one large matrix to house all the lambdas
-
-      solve.Lambda <- array(0, c(sum(m[ss,]), sum(m[ss,]), numRowsWithPrior))
-
-
-      colsWithPriors <- tapply(priorsForPatt[,2], priorsForPatt[,1],
-                               function(x) (1:AMp %in% x)[m[ss,]])
-
-                                        #      colsWithPriors <- colsWithPriors[rep(m[ss,], times = length(priorsinpatt))]
-
-      inds <- cbind(rep(1:sum(m[ss,]),numRowsWithPrior),
-                    rep(1:sum(m[ss,]),numRowsWithPrior),
-                    sort(rep(1:numRowsWithPrior,sum(m[ss,]))))
+  ##     is<-i[ss]
+  ##     isp<-i[ss+1]-1
 
 
-      diag.Lambda <- rep(0, sum(m[ss,])*numRowsWithPrior)
-      diag.Lambda[unlist(colsWithPriors)] <- priorsForPatt[,4]
-      mu.prior[unlist(colsWithPriors)] <- priorsForPatt[,3]
-      solve.Lambda[inds] <- diag.Lambda
+  ##     imputations<- AMr1[is:isp, , drop=FALSE] * ((x[is:isp, , drop=FALSE] %*%
+  ##                                    theta[2:(AMp+1),2:(AMp+1) , drop=FALSE]) + (matrix(1,1+isp-is,1) %*%
+  ##                                                                  theta[1,2:(AMp+1) , drop=FALSE]) )
+
+  ##     ## get the prior rows and non-prior rows
+  ##     priorsinpatt <- which(is:isp %in% priors[,1])
+
+  ##     nopri <- !(is:isp %in% priors[,1])
 
 
-      solve.Sigma  <- am.inv(theta[c(FALSE,m[ss,]),
-                                   c(FALSE,m[ss,]),drop=FALSE])
+  ##     hasPrior <- priors[,1] %in% is:isp
+  ##     priorsForPatt <- priors[hasPrior, , drop = FALSE]
+  ##     priorsForPatt <- priorsForPatt[order(priorsForPatt[,1],priorsForPatt[,2]), , drop = FALSE]
 
-      junk <- matrix(0,nrow(imputations),AMp)
-      ## we should only try to fill non-prior cases when they actually
-      ## exist in the patter of missingness
-      if (sum(nopri) > 0) {
-        Ci<-matrix(0,AMp,AMp)
-        hold<-chol(theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])])
-        Ci[m[ss,],m[ss,]]<-hold
+  ##     numRowsWithPrior <- length(unique(priorsForPatt[,1]))
+  ##     mu.prior <- matrix(0, nrow = sum(m[ss,]), ncol = numRowsWithPrior)
+
+  ##     ## create one large matrix to house all the lambdas
+
+  ##     solve.Lambda <- array(0, c(sum(m[ss,]), sum(m[ss,]), numRowsWithPrior))
 
 
-        if (!identical(bounds,NULL)) {
-          xplay[(is:isp)[nopri],] <- am.resample(x.ss=x[(is:isp)[nopri],,drop=FALSE], ci=Ci,
-                                                 imps=imputations[nopri,,drop=FALSE],
-                                                 m.ss=m[ss,], bounds=bounds,
-                                                 max.resample=max.resample)
-        } else {
-          junk[nopri,] <- matrix(rnorm(sum(nopri)*AMp), sum(nopri), AMp) %*% Ci
-          xplay[(is:isp)[nopri],]<-x[(is:isp)[nopri],,drop=FALSE] +
-            imputations[nopri,,drop=FALSE] + junk[nopri,,drop=FALSE]
-        }
-      }
+  ##     colsWithPriors <- tapply(priorsForPatt[,2], priorsForPatt[,1],
+  ##                              function(x) (1:AMp %in% x)[m[ss,]])
 
-      if (length(priorsinpatt) == 0) next()
+  ##                                       #      colsWithPriors <- colsWithPriors[rep(m[ss,], times = length(priorsinpatt))]
 
-      for (jj in 1:length(priorsinpatt)){
-        or <- (is:isp)[priorsinpatt[jj]]  ## original rows
-        rowInPatt <- priorsinpatt[jj]
+  ##     inds <- cbind(rep(1:sum(m[ss,]),numRowsWithPrior),
+  ##                   rep(1:sum(m[ss,]),numRowsWithPrior),
+  ##                   sort(rep(1:numRowsWithPrior,sum(m[ss,]))))
 
-        ##priorsForThisRow <- priors[priors[,1] == or, , drop = FALSE]
-        ##priorsForThisRow <- priorsForThisRow[order(priorsForThisRow[,2]),,drop=FALSE]
-        ##columnsWithPriors <- c(1:AMp) %in% priorsForThisRow[, 2]
 
-        ##npr <- nrow(priorsForThisRow)
+  ##     diag.Lambda <- rep(0, sum(m[ss,])*numRowsWithPrior)
+  ##     diag.Lambda[unlist(colsWithPriors)] <- priorsForPatt[,4]
+  ##     mu.prior[unlist(colsWithPriors)] <- priorsForPatt[,3]
+  ##     solve.Lambda[inds] <- diag.Lambda
 
-                                        # Calculate sd2
-        ##solve.Sigma  <- am.inv(theta[c(FALSE,m[ss,]),
-        ##                             c(FALSE,m[ss,]),drop=FALSE])
 
-        ##solve.Lambda <- matrix(0,sum(m[ss,]),sum(m[ss,]))
-        ##diag.Lambda <- rep(0, sum(m[ss,]))
-        ##diag.Lambda[columnsWithPriors[m[ss,]]] <- priorsForThisRow[,4]
-        ##diag(solve.Lambda) <- diag.Lambda
+  ##     solve.Sigma  <- am.inv(theta[c(FALSE,m[ss,]),
+  ##                                  c(FALSE,m[ss,]),drop=FALSE])
 
-        wvar <- am.inv(solve.Lambda[,,jj] + solve.Sigma)
+  ##     junk <- matrix(0,nrow(imputations),AMp)
+  ##     ## we should only try to fill non-prior cases when they actually
+  ##     ## exist in the patter of missingness
+  ##     if (sum(nopri) > 0) {
+  ##       Ci<-matrix(0,AMp,AMp)
+  ##       hold<-chol(theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])])
+  ##       Ci[m[ss,],m[ss,]]<-hold
 
-                                        # Weight these together
-        ##mu.prior <- rep(0, sum(m[ss,]))
-        ##mu.prior[columnsWithPriors[m[ss,]]] <- priorsForThisRow[,3]
-        mu.miss <- (wvar) %*% (mu.prior[,jj] +
-                               solve.Sigma  %*% imputations[rowInPatt,m[ss,]])
 
-        imputations[rowInPatt,m[ss,]] <- mu.miss
+  ##       if (!identical(bounds,NULL)) {
+  ##         xplay[(is:isp)[nopri],] <- am.resample(x.ss=x[(is:isp)[nopri],,drop=FALSE], ci=Ci,
+  ##                                                imps=imputations[nopri,,drop=FALSE],
+  ##                                                m.ss=m[ss,], bounds=bounds,
+  ##                                                max.resample=max.resample)
+  ##       } else {
+  ##         junk[nopri,] <- matrix(rnorm(sum(nopri)*AMp), sum(nopri), AMp) %*% Ci
+  ##         xplay[(is:isp)[nopri],]<-x[(is:isp)[nopri],,drop=FALSE] +
+  ##           imputations[nopri,,drop=FALSE] + junk[nopri,,drop=FALSE]
+  ##       }
+  ##     }
 
-                                        # update **theta**
-        copy.theta <- theta
-        copy.theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])] <- wvar
+  ##     if (length(priorsinpatt) == 0) next()
 
-        ## Create "noise" term from updated theta
-        Ci<-matrix(0,AMp,AMp)
-        hold<-chol(copy.theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])])
-        Ci[m[ss,],m[ss,]]<-hold
+  ##     for (jj in 1:length(priorsinpatt)){
+  ##       or <- (is:isp)[priorsinpatt[jj]]  ## original rows
+  ##       rowInPatt <- priorsinpatt[jj]
 
-                                        # fork for the bounds resampler
-        if (!identical(bounds,NULL)) {
-          xplay[or,] <- am.resample(x.ss=x[or,,drop=FALSE], ci=Ci, imps=imputations[rowInPatt,,drop=FALSE],
-                                    m.ss=m[ss,], bounds=bounds,
-                                    max.resample=max.resample)
+  ##       ##priorsForThisRow <- priors[priors[,1] == or, , drop = FALSE]
+  ##       ##priorsForThisRow <- priorsForThisRow[order(priorsForThisRow[,2]),,drop=FALSE]
+  ##       ##columnsWithPriors <- c(1:AMp) %in% priorsForThisRow[, 2]
 
-        } else {
-          junk[rowInPatt,]<-matrix(rnorm(AMp), 1, AMp) %*% Ci
+  ##       ##npr <- nrow(priorsForThisRow)
 
-                                        # Piece together this observation
-          xplay[or,]<-x[or,] + (AMr1[or, , drop=FALSE] * (imputations[rowInPatt,] + junk[rowInPatt,]))
-        }
-      }
-    }
-  }
+  ##                                       # Calculate sd2
+  ##       ##solve.Sigma  <- am.inv(theta[c(FALSE,m[ss,]),
+  ##       ##                             c(FALSE,m[ss,]),drop=FALSE])
 
-  return(xplay)
+  ##       ##solve.Lambda <- matrix(0,sum(m[ss,]),sum(m[ss,]))
+  ##       ##diag.Lambda <- rep(0, sum(m[ss,]))
+  ##       ##diag.Lambda[columnsWithPriors[m[ss,]]] <- priorsForThisRow[,4]
+  ##       ##diag(solve.Lambda) <- diag.Lambda
+
+  ##       wvar <- am.inv(solve.Lambda[,,jj] + solve.Sigma)
+
+  ##                                       # Weight these together
+  ##       ##mu.prior <- rep(0, sum(m[ss,]))
+  ##       ##mu.prior[columnsWithPriors[m[ss,]]] <- priorsForThisRow[,3]
+  ##       mu.miss <- (wvar) %*% (mu.prior[,jj] +
+  ##                              solve.Sigma  %*% imputations[rowInPatt,m[ss,]])
+
+  ##       imputations[rowInPatt,m[ss,]] <- mu.miss
+
+  ##                                       # update **theta**
+  ##       copy.theta <- theta
+  ##       copy.theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])] <- wvar
+
+  ##       ## Create "noise" term from updated theta
+  ##       Ci<-matrix(0,AMp,AMp)
+  ##       hold<-chol(copy.theta[c(FALSE,m[ss,]),c(FALSE,m[ss,])])
+  ##       Ci[m[ss,],m[ss,]]<-hold
+
+  ##                                       # fork for the bounds resampler
+  ##       if (!identical(bounds,NULL)) {
+  ##         xplay[or,] <- am.resample(x.ss=x[or,,drop=FALSE], ci=Ci, imps=imputations[rowInPatt,,drop=FALSE],
+  ##                                   m.ss=m[ss,], bounds=bounds,
+  ##                                   max.resample=max.resample)
+
+  ##       } else {
+  ##         junk[rowInPatt,]<-matrix(rnorm(AMp), 1, AMp) %*% Ci
+
+  ##                                       # Piece together this observation
+  ##         xplay[or,]<-x[or,] + (AMr1[or, , drop=FALSE] * (imputations[rowInPatt,] + junk[rowInPatt,]))
+  ##       }
+  ##     }
+  ##   }
+  ## }
+
+  ## return(xplay)
 }
 
 
