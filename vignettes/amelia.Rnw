@@ -737,7 +737,7 @@ argument. It can be higher than the number of physical cores in
 the system if hyperthreading or other technologies are available. You
 can use the \code{parallel::detectCores} function to determine how
 many cores are available on your machine. The default for this
-argument can be set using the \code{"amelia.ncpus"} option. 
+argument can be set using the \code{"amelia.ncpus"} option.
 
 On Unix-alike systems (such as Mac OS X and Linux distributions), the
 \code{"multicore"} backend automatically sets up and stops the
@@ -749,7 +749,7 @@ imputations are complete. Alternatively, \Amelia\ also has a \code{cl}
 argument, which accepts a predefined cluster made using the
 \code{parallel::makePSOCKcluster}. For more information about parallel
 processing in R, see the documentation for the \pkg{parallel} package
-that ships along with R. 
+that ships along with R.
 
 
 \subsection{Imputation-improving Transformations}
@@ -1643,6 +1643,9 @@ will ever finish at another mode.
 
 \subsubsection{Time-series plots}
 \label{sec:tscsplots}
+<<echo=FALSE, results = hide>>=
+options(SweaveHooks = list(fig = function() par(mfrow=c(1,1))))
+@
 
 As discussed above, information about time trends and fixed effects can
 help produce better imputations. One way to check the plausibility of our
