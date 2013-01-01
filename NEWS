@@ -7,6 +7,8 @@
 == Dev (28 Dec 2012) ==
    * Ported core EM algorithm to C++. Speed should increase. 
    * Plots in AmeliaView should now use Quartz on Mac OS X instead of X11.
+   * Amelia now requires R >=2.14.0.
+   * Amelia now can run its imputations in parallel using infrastructure from R's parallel package. 
 
 == 1.6 (22 Feb 2012) ==
    * Added a transform function to create transformed variables 
