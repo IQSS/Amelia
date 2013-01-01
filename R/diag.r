@@ -225,7 +225,8 @@ overimpute <- function(output, var, subset, legend = TRUE, xlab, ylab,
     o<-!is.na(x)
     miss<-!o
     x[is.na(x)]<-0
-
+    oo <- 1 * o
+    mm <- 1 * miss
                                         #o<-!AMr1[i,]
                                         #o[stacked.var]<-FALSE
 
@@ -243,17 +244,10 @@ overimpute <- function(output, var, subset, legend = TRUE, xlab, ylab,
       ## the kth theta matrix.
 
       thetareal<-output$theta[,,k]
-      theta <- amsweep(thetareal, c(FALSE,o))
-      Ci<-matrix(0,AMp,AMp)
-      hold<-chol(theta[c(FALSE,miss),c(FALSE,miss)])
-      Ci[miss,miss]<-hold
-      imputations<-AMr1[i, , drop=FALSE] * ((x %*% theta[2:(AMp+1),2:(AMp+1) , drop=FALSE])
-                               + (matrix(1,1,1) %*% theta[1,2:(AMp+1) , drop=FALSE]) )
-
-      junk <- matrix(rnorm(20*AMp), 20, AMp) %*% Ci
-      xc <- matrix(x,20,AMp,byrow=TRUE) +
-        matrix(imputations, 20, AMp, byrow=TRUE) +
-          junk
+      xx <- matrix(x, 20, AMp, byrow = TRUE)
+      rr <- matrix(AMr1[i,], 20, AMp, byrow = TRUE)
+      xc <- .Call("ameliaImpute", xx, rr, oo, mm, c(1,nrow(xx)+1), thetareal, NULL,
+                   NULL, NULL, package = "Amelia")
       conf <- c(conf, xc[,stacked.var])
     }
 
