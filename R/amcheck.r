@@ -333,13 +333,20 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                                         #warning message
                                         #logs with negative values
   if (!is.null(logs)) {
-    if (any(na.omit(x[,logs]) < 0)) {
-      warning(paste("The log transformation is being used on \n",
-                    "variables with negative values. The values \n",
-                    "will be shifted up by 1 plus the minimum value \n",
-                    "of that variable."))
+    triggered<-FALSE
+  	for(localindex in 1:length(logs)){
+	  if(!triggered){
+        if (any(na.omit(x[,logs[localindex]]) < 0)) {
+          warning(paste("The log transformation is being used on \n",
+                        "variables with negative values. The values \n",
+                        "will be shifted up by 1 plus the minimum value \n",
+                        "of that variable."))
+		  triggered<-TRUE
+        }
+      }  
     }
   }
+
 
                                         #Error code: 11
                                         #0-1 Bounds on logistic transformations
