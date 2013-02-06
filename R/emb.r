@@ -453,6 +453,10 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
   parallel <- match.arg(parallel)
   have_mc <- have_snow <- FALSE
   if (parallel != "no" && ncpus > 1L) {
+    ## We should drop this once we can force a dependency on 2.15.3 or 3.0.0
+    if ("tcltk" %in% names(getLoadedDLLs()) && Sys.info()['sysname'] == "Linux") {
+      stop("On Linux machines cannot have tcltk loaded and Amelia in parallel. Restart R to properly unload tcltk.")
+    }
     if (parallel == "multicore") have_mc <- .Platform$OS.type != "windows"
     else if (parallel == "snow") have_snow <- TRUE
     if (!have_mc && !have_snow) ncpus <- 1L
