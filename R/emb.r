@@ -119,7 +119,7 @@ impfill<-function(x.orig,x.imp,noms,ords,priors) {
       if (orig.fact[i])
         x.orig[is.na(x.orig[,i]),i]<- levels(x.orig[,i])[x.imp[is.na(x.orig[,i]),i]]
       else if (orig.char[i])
-        x.orig[,i]<-unique(na.omit(x.orig[,i]))[x.imp[,i]]
+        x.orig[,i]<-levels(factor(x.orig[,i]))[x.imp[,i]]
       else
         x.orig[is.na(x.orig[,i]),i] <- x.imp[is.na(x.orig[,i]),i]
     }
