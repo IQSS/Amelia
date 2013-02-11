@@ -485,9 +485,10 @@ arma::mat resampler(arma::mat x, arma::mat ci, arma::mat imps, arma::uvec mss,
   lb.fill(-arma::datum::inf);
   arma::mat xp = arma::zeros<arma::mat>(nss, k);
   
-  arma::mat junk = rnorm(nss * k, 0, 1);
+  arma::mat junk = Rcpp::rnorm(nss * k, 0, 1);
   junk.reshape(nss, k);
   junk = junk * ci;
+
   int nb = 0, bdvar;
   for (int j = 0; j < bounds.n_rows; j++) {
     bdvar = (int) bounds(j,0) - 1;
@@ -498,10 +499,12 @@ arma::mat resampler(arma::mat x, arma::mat ci, arma::mat imps, arma::uvec mss,
     }
   }
   
+  
   if (nb == 0) {
-    return x;
+    return x + imps + junk;
   }
 
+  //Rcpp::Rcout << ub << std::endl;
   int samp = 0;
   arma::colvec done = arma::zeros<arma::colvec>(nss);
   arma::colvec left = arma::ones<arma::colvec>(nss);
@@ -518,15 +521,16 @@ arma::mat resampler(arma::mat x, arma::mat ci, arma::mat imps, arma::uvec mss,
 
     ub.rows(finished).fill(arma::datum::inf);
     lb.rows(finished).fill(-arma::datum::inf);
-    xp.rows(finished) = imps.rows(finished) + junk.rows(finished);
+    xp.rows(finished) = x.rows(finished) + imps.rows(finished) + junk.rows(finished);
     
-    junk = rnorm(nss * k, 0, 1);
+    junk = Rcpp::rnorm(nss * k, 0, 1);
     junk.reshape(nss, k);
     junk = junk * ci;
 
   }
   
   if (arma::accu(left) > 0) {
+    xp.rows(arma::find(left)) = x.rows(arma::find(left)) + imps.rows(arma::find(left)) + junk.rows(arma::find(left));
     utest = (imps + junk) > ub;
     ltest = (imps + junk) < lb;
     arma::uvec ufails = arma::find(utest);
