@@ -224,7 +224,7 @@ loadDemo <- function(name) {
     if (tclvalue(sure) == "no")
       return(NULL)
   }
-  data(list=name, package="Amelia")
+  data(list=name, package="Amelia", envir = ameliaEnv)
   putAmelia("amelia.data", eval(as.name(name)))
   putAmelia("am.filetype", "demo")
   putAmelia("am.filename", name)
