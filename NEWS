@@ -4,11 +4,12 @@
 //
 //
 
-== 1.7 (01 Jan 2013) ==
+== 1.7 (10 Feb 2013) ==
    * Ported core EM algorithm to C++. Speed should increase. 
    * Plots in AmeliaView should now use Quartz on Mac OS X instead of X11.
    * Amelia now requires R >=2.14.0.
-   * Amelia now can run its imputations in parallel using infrastructure from R's parallel package. 
+   * Amelia now can run its imputations in parallel using infrastructure from R's parallel package. Note that R < 2.15.3 will crash if parallel is used while tcltk is loaded (or has been loaded and then unloaded). This will be fixed in R 2.15.3 (the patched version of 2.15.2) and we will require R>=2.15.3 when that version is released. 
+   * Fixed bug with character variables set to nominal. 
 
 == 1.6 (22 Feb 2012) ==
    * Added a transform function to create transformed variables 

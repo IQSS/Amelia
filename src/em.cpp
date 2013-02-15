@@ -135,6 +135,7 @@ while ( ( (cvalue > 0) | (count < emburn(0)) )  & ( (count < emburn(1)) | (embur
       }
     } else {
       for (ss = st; ss < obsmat.n_rows; ss++) {
+
         is = ii(ss)-1;
         isp = ii(ss+1)-2;
         
@@ -150,7 +151,7 @@ while ( ( (cvalue > 0) | (count < emburn(0)) )  & ( (count < emburn(1)) | (embur
         imputations = x.rows(is, isp) * theta(arma::span(1,k), arma::span(1,k));
         imputations.each_row() += theta(0, arma::span(1,k));
         imputations = AMr1.rows(is, isp) % imputations;
-        
+
         mispos = arma::find(mismat.row(ss));
         arma::mat solveSigma = arma::inv(theta(mispos + 1, mispos + 1));
         arma::mat diagLambda = arma::zeros<arma::mat>(mispos.n_elem, mispos.n_elem);
@@ -166,8 +167,11 @@ while ( ( (cvalue > 0) | (count < emburn(0)) )  & ( (count < emburn(1)) | (embur
             diagLambda.diag() = prHolder.elem(mispos);
             arma::mat wvar = arma::inv(diagLambda + solveSigma);
             prHolder.elem(theseCols) = thisPrior.col(2);
-            arma::mat muMiss = wvar * (prHolder.elem(mispos) + solveSigma * imputations(pu, mispos));
-            imputations(pu, mispos) = muMiss;
+            arma::mat firstInner = solveSigma * arma::trans(imputations(pu, mispos));
+            arma::mat secondInner = prHolder.elem(mispos);
+            arma::mat muMiss = wvar * (secondInner + firstInner);
+
+            imputations(pu, mispos) = arma::trans(muMiss);
             hmcv(mispos, mispos) +=  wvar;
           } else {
             hmcv(mispos, mispos) += theta(mispos + 1, mispos + 1);
@@ -446,8 +450,8 @@ SEXP ameliaImpute(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas,
           diagLambda.diag() = prHolder.elem(mispos);
           arma::mat wvar = arma::inv(diagLambda + solveSigma);
           prHolder.elem(theseCols) = thisPrior.col(2);
-          arma::mat muMiss = wvar * (prHolder.elem(mispos) + solveSigma * imputations(pu, mispos));
-          imputations(pu, mispos) = muMiss;
+          arma::mat muMiss = wvar * (prHolder.elem(mispos) + solveSigma * arma::trans(imputations(pu, mispos)));
+          imputations(pu, mispos) = arma::trans(muMiss);
           Ci(mispos, mispos) = wvar;
         } else {
           Ci(mispos, mispos) = theta(mispos + 1, mispos + 1);
@@ -481,9 +485,10 @@ arma::mat resampler(arma::mat x, arma::mat ci, arma::mat imps, arma::uvec mss,
   lb.fill(-arma::datum::inf);
   arma::mat xp = arma::zeros<arma::mat>(nss, k);
   
-  arma::mat junk = rnorm(nss * k, 0, 1);
+  arma::mat junk = Rcpp::rnorm(nss * k, 0, 1);
   junk.reshape(nss, k);
   junk = junk * ci;
+
   int nb = 0, bdvar;
   for (int j = 0; j < bounds.n_rows; j++) {
     bdvar = (int) bounds(j,0) - 1;
@@ -494,10 +499,12 @@ arma::mat resampler(arma::mat x, arma::mat ci, arma::mat imps, arma::uvec mss,
     }
   }
   
+  
   if (nb == 0) {
-    return x;
+    return x + imps + junk;
   }
 
+  //Rcpp::Rcout << ub << std::endl;
   int samp = 0;
   arma::colvec done = arma::zeros<arma::colvec>(nss);
   arma::colvec left = arma::ones<arma::colvec>(nss);
@@ -514,15 +521,16 @@ arma::mat resampler(arma::mat x, arma::mat ci, arma::mat imps, arma::uvec mss,
 
     ub.rows(finished).fill(arma::datum::inf);
     lb.rows(finished).fill(-arma::datum::inf);
-    xp.rows(finished) = imps.rows(finished) + junk.rows(finished);
+    xp.rows(finished) = x.rows(finished) + imps.rows(finished) + junk.rows(finished);
     
-    junk = rnorm(nss * k, 0, 1);
+    junk = Rcpp::rnorm(nss * k, 0, 1);
     junk.reshape(nss, k);
     junk = junk * ci;
 
   }
   
   if (arma::accu(left) > 0) {
+    xp.rows(arma::find(left)) = x.rows(arma::find(left)) + imps.rows(arma::find(left)) + junk.rows(arma::find(left));
     utest = (imps + junk) > ub;
     ltest = (imps + junk) < lb;
     arma::uvec ufails = arma::find(utest);

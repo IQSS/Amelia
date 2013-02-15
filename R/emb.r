@@ -119,7 +119,7 @@ impfill<-function(x.orig,x.imp,noms,ords,priors) {
       if (orig.fact[i])
         x.orig[is.na(x.orig[,i]),i]<- levels(x.orig[,i])[x.imp[is.na(x.orig[,i]),i]]
       else if (orig.char[i])
-        x.orig[,i]<-unique(na.omit(x.orig[,i]))[x.imp[,i]]
+        x.orig[,i]<-levels(factor(x.orig[,i]))[x.imp[,i]]
       else
         x.orig[is.na(x.orig[,i]),i] <- x.imp[is.na(x.orig[,i]),i]
     }
@@ -232,9 +232,6 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
     theta <- .Call("emcore", x, AMr1, oo, mm,
                    indx$ivector, thetaold, tolerance, emburn, p2s,
                    empri,autopri, allthetas, priors, PACKAGE="Amelia")
-    if (!exists("theta")) {
-      cat('hiiiiiiii')
-    }
   } else {
     if (p2s) cat("\n","No missing data in bootstrapped sample:  EM chain unnecessary")
     pp1<-ncol(x)+1                       # p (the number of variables) plus one
@@ -453,6 +450,10 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
   parallel <- match.arg(parallel)
   have_mc <- have_snow <- FALSE
   if (parallel != "no" && ncpus > 1L) {
+    ## We should drop this once we can force a dependency on 2.15.3 or 3.0.0
+    if ("tcltk" %in% names(getLoadedDLLs()) && Sys.info()['sysname'] == "Linux") {
+      stop("On Linux machines cannot have tcltk loaded and Amelia in parallel. Restart R to properly unload tcltk.")
+    }
     if (parallel == "multicore") have_mc <- .Platform$OS.type != "windows"
     else if (parallel == "snow") have_snow <- TRUE
     if (!have_mc && !have_snow) ncpus <- 1L
