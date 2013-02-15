@@ -224,7 +224,7 @@ loadDemo <- function(name) {
     if (tclvalue(sure) == "no")
       return(NULL)
   }
-  data(list=name, package="Amelia")
+  data(list=name, package="Amelia", envir = ameliaEnv)
   putAmelia("amelia.data", eval(as.name(name)))
   putAmelia("am.filetype", "demo")
   putAmelia("am.filename", name)
@@ -232,11 +232,7 @@ loadDemo <- function(name) {
 }
 
 drawMissMap <- function() {
-  if (.Platform$OS.type == "windows")
-    windows()
-  else
-    x11()
-
+  dev.new()
   missmap(getAmelia("amelia.data"), csvar = getAmelia("csvar"), tsvar = getAmelia("tsvar"))
 }
 
@@ -582,10 +578,12 @@ run.amelia <- function() {
   putAmelia("wdForLastImputation", getwd())
   ## run amelia! or at least try, and put the output in a list
   ## the name of the list will be the output name set by user
+  output.connection <- textConnection(".Output", open="w", local = TRUE)
+  sink(output.connection, type="output")
   putAmelia("ameliaObject",
             try(amelia.default(x        = getAmelia("amelia.data"),
                                m        = as.numeric(tclvalue(getAmelia("outnum"))),
-                               p2s      = FALSE,
+                               p2s      = 1,
                                idvars   = id,
                                ts       = ts,
                                cs       = cs,
@@ -605,6 +603,9 @@ run.amelia <- function() {
                                max.resample = as.numeric(tclvalue(getAmelia("max.resample"))),
                                tolerance= as.numeric(tclvalue(getAmelia("tol")))),
                 silent=TRUE))
+  sink(type = "output")
+  putAmelia("output.log", c(getAmelia("output.log"), paste(textConnectionValue(output.connection), "\n")))
+
   tkgrid.remove(getAmelia("runAmeliaProgress"))
   tkconfigure(getAmelia("runAmeliaProgress"), value = 0)
   ## check for errors in the process.
@@ -2520,11 +2521,7 @@ plotHist <- function() {
                  "Cannot plot non-numeric variables.")
     return(NULL)
   }
-  if (.Platform$OS.type == "windows")
-    windows()
-  else
-    x11()
-
+  dev.new()
   mfrow <- set.mfrow(nvars = length(sel))
   on.exit(par(NULL))
   layout <- par(mfrow = mfrow)
@@ -2533,10 +2530,7 @@ plotHist <- function() {
     j <- j + 1
     if (j > 9) {
       j <- 1
-      if (.Platform$OS.type == "windows")
-        windows()
-      else
-        x11()
+      dev.new()
       layout <- par(mfrow = mfrow)
     }
 

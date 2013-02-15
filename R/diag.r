@@ -62,9 +62,9 @@ compare.density <- function(output,var,col=c("red","black"),scaled=FALSE,lwd=1,m
     varimp <- rowMeans(varimp)
   }
 
-  if (frontend)
-    x11()
-
+  if (frontend) {
+    dev.new()
+  }
 
   vars <- data[,var]
   if (scaled)
@@ -225,7 +225,8 @@ overimpute <- function(output, var, subset, legend = TRUE, xlab, ylab,
     o<-!is.na(x)
     miss<-!o
     x[is.na(x)]<-0
-
+    oo <- 1 * o
+    mm <- 1 * miss
                                         #o<-!AMr1[i,]
                                         #o[stacked.var]<-FALSE
 
@@ -243,17 +244,10 @@ overimpute <- function(output, var, subset, legend = TRUE, xlab, ylab,
       ## the kth theta matrix.
 
       thetareal<-output$theta[,,k]
-      theta <- amsweep(thetareal, c(FALSE,o))
-      Ci<-matrix(0,AMp,AMp)
-      hold<-chol(theta[c(FALSE,miss),c(FALSE,miss)])
-      Ci[miss,miss]<-hold
-      imputations<-AMr1[i, , drop=FALSE] * ((x %*% theta[2:(AMp+1),2:(AMp+1) , drop=FALSE])
-                               + (matrix(1,1,1) %*% theta[1,2:(AMp+1) , drop=FALSE]) )
-
-      junk <- matrix(rnorm(20*AMp), 20, AMp) %*% Ci
-      xc <- matrix(x,20,AMp,byrow=TRUE) +
-        matrix(imputations, 20, AMp, byrow=TRUE) +
-          junk
+      xx <- matrix(x, 20, AMp, byrow = TRUE)
+      rr <- matrix(AMr1[i,], 20, AMp, byrow = TRUE)
+      xc <- .Call("ameliaImpute", xx, rr, oo, mm, c(1,nrow(xx)+1), thetareal, NULL,
+                   NULL, NULL, package = "Amelia")
       conf <- c(conf, xc[,stacked.var])
     }
 
@@ -315,11 +309,7 @@ overimpute <- function(output, var, subset, legend = TRUE, xlab, ylab,
   }
 
   if (frontend) {
-    if (.Platform$OS.type == "windows") {
-      windows()
-    } else {
-      x11()
-    }
+    dev.new()
   }
   ci.order<-order(uppers-lowers,decreasing=TRUE)     # Allows smallest CI's to be printed last, and thus not buried in the plot.
   overplot<-plot(xplot[ci.order],means[ci.order],xlab=xlab,ylab=ylab,ylim=range(c(lowers-addedroom,uppers)),type='p',main=main,
@@ -424,8 +414,9 @@ disperse <- function(output, m = 5, dims = 1, p2s = 0, frontend=FALSE,...) {
 
   cols <- rainbow(m)
                                         # plot the imputations
-  if (frontend)
-    x11()
+  if (frontend) {
+    dev.new()
+  }
   if (dims==1) {
     addedroom<-(max(reduced.imps)-min(reduced.imps))*0.1
     x<-seq(iters[1])
@@ -628,22 +619,22 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
 
   units <- sort(unique(data[,output$arguments$cs]))
   if(plotall){
-  	cs<-units
+        cs<-units
   }else{
     if (!(all(cs %in% units)))
       stop("some cross-section unit requested for the plot is not in the data")
   }
 
 # Picks a number of rows and columns if not user defined.  Maxs out at 4-by-4, unless user defined
-  	if(missing(nr)){
-  	  nr<-min(4,ceiling(sqrt(length(cs))))		
-  	}
-  	if(missing(nc)){
-  	  nc<-min(4,ceiling(length(cs)/nr))		
-	}
+        if(missing(nr)){
+          nr<-min(4,ceiling(sqrt(length(cs))))
+        }
+        if(missing(nc)){
+          nc<-min(4,ceiling(length(cs)/nr))
+        }
 
-  if(length(cs)>1){    	
-  	oldmfcol<-par()$mfcol
+  if(length(cs)>1){
+        oldmfcol<-par()$mfcol
     par(mfcol=c(nr,nc))
   }
 
@@ -659,7 +650,7 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
 
   time <- data[unit.rows, output$arguments$ts]   # These are the time values for rows appearing in some future plot
   imps.cs<-data[unit.rows,output$arguments$cs]   # These are the cs units for rows appearing in some future plot
-  cross.sec <- prepped$x[!is.na(match(prepped$n.order, unit.rows)),]  
+  cross.sec <- prepped$x[!is.na(match(prepped$n.order, unit.rows)),]
   stacked.var<-match(var,prepped$subset.index[prepped$p.order])
   subset.var<-match(var,prepped$subset.index)
   imps <- array(NA, dim=c(nrow(cross.sec), draws))
@@ -695,11 +686,7 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
   if (missing(ylab)) ylab <- names(data)[var]
 
   if (frontend) {
-    if (.Platform$OS.type == "windows") {
-      windows()
-    } else {
-      x11()
-    }
+    dev.new()
   }
 
   count<-0
@@ -711,29 +698,29 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
       flag<-imps.cs==cs[i]
       current.miss<- miss[flag]
 
-      if(sum(current.miss)>0){                  
-      	  current.imps<-imps[flag,]
-      	  current.means <- rowMeans(current.imps)          
-      	  current.uppers <- apply(current.imps, 1, quantile, probs=(conf + (1 - conf)/2))   # THIS IS LIKELY SLOW
-      	  current.lowers <- apply(current.imps, 1, quantile, probs=(1-conf)/2)              # THIS IS LIKELY SLOW
-  	  } else {
-      	  current.means <- data[current.rows, var]
-    	  current.uppers <- current.lowers <- current.means
-  	  }
+      if(sum(current.miss)>0){
+          current.imps<-imps[flag,]
+          current.means <- rowMeans(current.imps)
+          current.uppers <- apply(current.imps, 1, quantile, probs=(conf + (1 - conf)/2))   # THIS IS LIKELY SLOW
+          current.lowers <- apply(current.imps, 1, quantile, probs=(1-conf)/2)              # THIS IS LIKELY SLOW
+          } else {
+          current.means <- data[current.rows, var]
+          current.uppers <- current.lowers <- current.means
+          }
 
       cols <- ifelse(current.miss, misscol, obscol)
       current.main<-ifelse(missing(main), cs[i], main)  # Allow title to be rolling if not defined
       if(missing(xlim)){                                # Allow axes to vary by unit, if not defined
-      	current.xlim<-range(current.time)
+        current.xlim<-range(current.time)
       }else{
-      	current.xlim<-xlim
+        current.xlim<-xlim
       }
       if(missing(ylim)){
-      	current.ylim<-range(current.uppers,current.lowers,current.means)
+        current.ylim<-range(current.uppers,current.lowers,current.means)
       }else{
-      	current.ylim<-ylim
+        current.ylim<-ylim
       }
-      
+
       plot(x = current.time, y = current.means, col = cols, pch = pch, ylim = current.ylim, xlim = current.xlim,
          ylab = ylab, xlab = xlab, main = current.main, ...)
       segments(x0 = current.time, x1 = current.time, y0 = current.lowers, y1 = current.uppers, col = cols, ...)
@@ -745,20 +732,20 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
       }
 
       # print page if window full
-	  if((!missing(pdfstub)) & (i %% (nr*nc) ==0)){
-	  	count<-count+1
-	  	dev.copy2pdf(file=paste(pdfstub,count,".pdf",sep=""))
-	  }
+          if((!missing(pdfstub)) & (i %% (nr*nc) ==0)){
+                count<-count+1
+                dev.copy2pdf(file=paste(pdfstub,count,".pdf",sep=""))
+          }
   }
 
-  if(!missing(pdfstub)){ 
+  if(!missing(pdfstub)){
     if(i %% (nr*nc) !=0){           # print last page if not complete
-	    count<-count+1
-	    dev.copy2pdf(file=paste(pdfstub,count,".pdf",sep=""))
+            count<-count+1
+            dev.copy2pdf(file=paste(pdfstub,count,".pdf",sep=""))
     }
-    par(mfcol=oldmfcol)             # return to previous windowing 
+    par(mfcol=oldmfcol)             # return to previous windowing
   }                                 # although always now fills by col even if previously by row
- 
+
   invisible(imps)
 
 }
