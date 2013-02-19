@@ -9,7 +9,7 @@
 
 ### Manual installation
 ```R
-install.packages("Amelia", repos = "http://r.iq.harvard.edu/",type  = "source")
+install.packages("Amelia")
 ```
 
 [Amelia II]: http://gking.harvard.edu/amelia
