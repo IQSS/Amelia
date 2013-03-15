@@ -301,6 +301,15 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       return(list(code = error.code, mess = error.mess))
     }
 
+    ## Error code: 60
+    ## no priors on nominal variables
+    if (any(priors[,2] %in% idvars)) {
+      error.code <- 60
+      error.mess <- "Cannot set priors on ID variables. "
+      return(list(code = error.code, mess = error.mess))
+    }
+
+
     ## Error code: 12
     ## confidences have to be in 0-1
     if (ncol(priors) == 5) {
@@ -334,16 +343,16 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                                         #logs with negative values
   if (!is.null(logs)) {
     triggered<-FALSE
-  	for(localindex in 1:length(logs)){
-	  if(!triggered){
+        for(localindex in 1:length(logs)){
+          if(!triggered){
         if (any(na.omit(x[,logs[localindex]]) < 0)) {
           warning(paste("The log transformation is being used on \n",
                         "variables with negative values. The values \n",
                         "will be shifted up by 1 plus the minimum value \n",
                         "of that variable."))
-		  triggered<-TRUE
+                  triggered<-TRUE
         }
-      }  
+      }
     }
   }
 
