@@ -53,7 +53,7 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
   
   int nparam = arma::accu(arma::find(arma::trimatu(thetaold)));
   
-  arma::uvec upperpos = arma::find(arma::trimatu(arma::abs(arma::randu<arma::mat>(k+1,k+1))));
+  arma::uvec upperpos = arma::find(arma::trimatu(arma::ones<arma::mat>(k+1,k+1)));
   arma::mat xplay = arma::zeros<arma::mat>(AMn,k);
   arma::mat hmcv(k,k);
   arma::mat imputations(2,k);
@@ -292,21 +292,21 @@ void sweep(arma::mat& g, arma::vec m) {
   int p = g.n_rows;
   arma::uvec k = arma::find(m);
   arma::uvec kcompl = arma::find(1-m);   
-  arma::mat h(g);
   if (k.n_elem == p) {
-    g = -arma::inv(g);
+    g = -arma::inv(sympd(g));
   } else {
-    arma::vec etest = arma::eig_sym(g(k,k));
-    if (arma::accu(etest <= sqrt(arma::datum::eps))) {
-      h(k,k) = arma::pinv(g(k,k), sqrt(arma::datum::eps));
-    } else {
-      h(k,k) = arma::inv(g(k,k));
+    arma::mat h = g(k, k);
+    try { 
+      g(k,k) = arma::inv(sympd(h));
+    } catch (std::runtime_error &e){
+      g(k,k) = arma::pinv(h, sqrt(arma::datum::eps));
+    } catch (...) {
+      Rcpp::Rcout << "Caught an unknown exception\n";
     }
-    h(k,kcompl) = h(k,k) * g(k,kcompl);
-    h(kcompl,k) = arma::trans(h(k,kcompl));
-    h(kcompl, kcompl) = g(kcompl, kcompl) - (g(kcompl, k)* h(k,k) * g(k,kcompl));
-    h(k,k) = -h(k,k);
-    g = h;
+    g(k,kcompl) = g(k,k) * g(k,kcompl);
+    g(kcompl, kcompl) = g(kcompl, kcompl) - (g(kcompl, k)* g(k,kcompl));
+    g(kcompl,k) = arma::trans(g(k,kcompl));
+    g(k,k) = -g(k,k);
   }
 
 }
