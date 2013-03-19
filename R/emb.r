@@ -255,6 +255,7 @@ amelia.impute<-function(x,thetareal,priors=NULL,bounds=NULL,max.resample=NULL){
   if (!identical(priors,NULL)){
     priors[,4]<-1/priors[,4]
     priors[,3]<-priors[,3]*priors[,4]
+    priors <- priors[order(priors[,1],priors[,2]),,drop = FALSE]
   }
 
 
