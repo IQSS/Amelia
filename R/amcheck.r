@@ -22,7 +22,7 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                     leads=NULL,intercs=FALSE,archive=TRUE,sqrts=NULL,
                     lgstc=NULL,noms=NULL,incheck=TRUE,ords=NULL,collect=FALSE,
                     arglist=NULL, priors=NULL,bounds=NULL,
-                    max.resample=1000, overimp = NULL) {
+                    max.resample=1000, overimp = NULL, emburn=NULL) {
 
                                         #Checks for errors in list variables
   listcheck<-function(vars,optname) {
@@ -929,6 +929,12 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       error.code <- "A row/column pair in overimp is outside the range of the data."
     }
 
+  }
+
+  if (!is.null(emburn)) {
+    if (length(emburn) != 2) {
+      stop("emburn must be length 2")
+    }
   }
 
   if (is.data.frame(x)) {
