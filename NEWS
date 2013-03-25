@@ -4,11 +4,21 @@
 //
 //
 
+== 1.7.1 (24 Mar 2013) == 
+   * Speed improvement (thanks to Paul Johnson).
+   * Amelia now requires R>=2.13.5
+   * missmap() now displays correctly when data is completely observed. 
+   * An error is now called when users try to use overimpute() on a variable marked as nominal. 
+   * Fixed a bug when all imputations resulted in uninvertible covariance matrices. 
+   * Fixed a bug where incorrectly setting the emburn argument could cause a segfault. 
+   * Various package cleanups for CRAN compatibility.
+
 == 1.7 (10 Feb 2013) ==
    * Ported core EM algorithm to C++. Speed should increase. 
    * Plots in AmeliaView should now use Quartz on Mac OS X instead of X11.
    * Amelia now requires R >=2.14.0.
    * Amelia now can run its imputations in parallel using infrastructure from R's parallel package. Note that R < 2.15.3 will crash if parallel is used while tcltk is loaded (or has been loaded and then unloaded). This will be fixed in R 2.15.3 (the patched version of 2.15.2) and we will require R>=2.15.3 when that version is released. 
+   * Fixed bug with priors not working correctly. 
    * Fixed bug with character variables set to nominal. 
 
 == 1.6 (22 Feb 2012) ==
