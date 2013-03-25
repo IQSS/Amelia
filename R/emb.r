@@ -336,7 +336,7 @@ ameliabind <- function(...) {
     out$missMatrix <- args[[1]]$missMatrix
     out$arguments <- args[[1]]$arguments
     out$transform.calls <- args[[1]]$transform.calls
-    out$transform.vars <- args[[1]]$trasnform.vars
+    out$transform.vars <- args[[1]]$transform.vars
 
     ## since code==1 is good and code==2 means we have an NA,
     ## then our new output should inherit a 2 if there are any
