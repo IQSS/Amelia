@@ -22,7 +22,7 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                     leads=NULL,intercs=FALSE,archive=TRUE,sqrts=NULL,
                     lgstc=NULL,noms=NULL,incheck=TRUE,ords=NULL,collect=FALSE,
                     arglist=NULL, priors=NULL,bounds=NULL,
-                    max.resample=1000, overimp = NULL) {
+                    max.resample=1000, overimp = NULL, emburn=NULL) {
 
                                         #Checks for errors in list variables
   listcheck<-function(vars,optname) {
@@ -301,6 +301,15 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       return(list(code = error.code, mess = error.mess))
     }
 
+    ## Error code: 60
+    ## no priors on nominal variables
+    if (any(priors[,2] %in% idvars)) {
+      error.code <- 60
+      error.mess <- "Cannot set priors on ID variables. "
+      return(list(code = error.code, mess = error.mess))
+    }
+
+
     ## Error code: 12
     ## confidences have to be in 0-1
     if (ncol(priors) == 5) {
@@ -333,13 +342,20 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                                         #warning message
                                         #logs with negative values
   if (!is.null(logs)) {
-    if (any(na.omit(x[,logs]) < 0)) {
-      warning(paste("The log transformation is being used on \n",
-                    "variables with negative values. The values \n",
-                    "will be shifted up by 1 plus the minimum value \n",
-                    "of that variable."))
+    triggered<-FALSE
+        for(localindex in 1:length(logs)){
+          if(!triggered){
+        if (any(na.omit(x[,logs[localindex]]) < 0)) {
+          warning(paste("The log transformation is being used on \n",
+                        "variables with negative values. The values \n",
+                        "will be shifted up by 1 plus the minimum value \n",
+                        "of that variable."))
+                  triggered<-TRUE
+        }
+      }
     }
   }
+
 
                                         #Error code: 11
                                         #0-1 Bounds on logistic transformations
@@ -913,6 +929,12 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       error.code <- "A row/column pair in overimp is outside the range of the data."
     }
 
+  }
+
+  if (!is.null(emburn)) {
+    if (length(emburn) != 2) {
+      stop("emburn must be length 2")
+    }
   }
 
   if (is.data.frame(x)) {

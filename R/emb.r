@@ -255,6 +255,7 @@ amelia.impute<-function(x,thetareal,priors=NULL,bounds=NULL,max.resample=NULL){
   if (!identical(priors,NULL)){
     priors[,4]<-1/priors[,4]
     priors[,3]<-priors[,3]*priors[,4]
+    priors <- priors[order(priors[,1],priors[,2]),,drop = FALSE]
   }
 
 
@@ -335,7 +336,7 @@ ameliabind <- function(...) {
     out$missMatrix <- args[[1]]$missMatrix
     out$arguments <- args[[1]]$arguments
     out$transform.calls <- args[[1]]$transform.calls
-    out$transform.vars <- args[[1]]$trasnform.vars
+    out$transform.vars <- args[[1]]$transform.vars
 
     ## since code==1 is good and code==2 means we have an NA,
     ## then our new output should inherit a 2 if there are any
@@ -361,6 +362,8 @@ ameliabind <- function(...) {
     class(out$imputations) <- c("mi","list")
   } else {
     out <- args[[1]]
+    if (out$code > 2)
+      stop("Amelia output contains error.")
   }
   return(out)
 }
@@ -477,7 +480,7 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
                        noms=noms,startvals=startvals,ords=ords,incheck=incheck,
                        collect=collect,
                        arglist=arglist,priors=priors,autopri=autopri,bounds=bounds,
-                       max.resample=max.resample,overimp=overimp)
+                       max.resample=max.resample,overimp=overimp,emburn=emburn)
 
   if (prepped$code!=1) {
     cat("Amelia Error Code: ",prepped$code,"\n",prepped$message,"\n")
@@ -539,6 +542,9 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
     (any(eigen(thetanew$thetanew[2:nrow(thetanew$thetanew),2:ncol(thetanew$thetanew)], only.values=TRUE, symmetric=TRUE)$values < .Machine$double.eps)) {
       impdata$imputations[[1]] <- NA
       impdata$code <- 2
+      impdata$arguments <- prepped$archv
+      class(impdata$arguments) <- c("ameliaArgs", "list")
+
       cat("\n\nThe resulting variance matrix was not invertible.",
           "  Please check your data for highly collinear variables.\n\n")
       return(impdata)
@@ -609,6 +615,7 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
         impdata$message <- paste("Normal EM convergence.")
       }
     } else {
+      impdata <- do.call(ameliabind, impdata)
       impdata$code <- 2
       impdata$message <- paste("All of the imputations resulted in a covariance",
                                "matrix that is not invertible.")

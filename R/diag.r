@@ -173,6 +173,10 @@ overimpute <- function(output, var, subset, legend = TRUE, xlab, ylab,
     if(!is.data.frame(data)){
       stop("var must be identified by column number as dataset is not a data frame.")
     } else {
+      nomnames <- colnames(output$imputations[[1]])[output$arguments$noms]
+      if (var %in% nomnames) {
+        stop("Cannot overimpute variables set to be nominal")
+      }
       varpos<-match(var,colnames(data))
       if(is.na(varpos)){
         stop("The name provided for var argument does not exist in the dataset provided.")

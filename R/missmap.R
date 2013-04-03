@@ -11,7 +11,7 @@
 ## OUPUTS: none
 ##
 
-missmap <- function(obj, legend = TRUE, col = c("wheat","darkred"), main,
+missmap <- function(obj, legend = TRUE, col = c("wheat", "darkred"), main,
                     y.cex = 0.8, x.cex = 0.8, y.labels, y.at, csvar = NULL,
                     tsvar = NULL, rank.order = TRUE, ...) {
 
@@ -97,13 +97,20 @@ missmap <- function(obj, legend = TRUE, col = c("wheat","darkred"), main,
   ## here we fork for data/tscs type plots. users cant set this yet.
   type <- "data"
   if (type == "data") {
+
+    col.fix <- col
+    if (sum(!chess) == 0) {
+      col.fix <- col[2]
+    }
     image(x = 1:(p), y = 1:n, z = chess, axes = FALSE,
-          col = col, xlab="", ylab="", main = main)
+          col = col.fix, xlab="", ylab="", main = main)
 
     axis(1, lwd = 0, labels = vnames, las = 2, at = 1:p, padj = .5,
          pos = 4, cex.axis = x.cex)
     axis(2, lwd = 0, labels = y.labels, las =2, at = y.at, pos =
          .7, hadj = 1, cex.axis = y.cex)
+
+
     if (legend) {
       par(xpd = TRUE)
       legend(x = p*1.07, y = n*1.07, col = col, bty = "n", xjust = 1,

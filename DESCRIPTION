@@ -1,12 +1,12 @@
 Package: Amelia
-Version: 1.7
-Date: 2013-02-10
+Version: 1.7.1
+Date: 2013-02-19
 Title: Amelia II: A Program for Missing Data
 Author: James Honaker <jhonaker@iq.harvard.edu>,
         Gary King <king@harvard.edu>,
         Matthew Blackwell <m.blackwell@rochester.edu>
 Maintainer: Matthew Blackwell <m.blackwell@rochester.edu>
-Depends: R (>= 2.14.0), foreign, utils, Rcpp (>= 0.10.0.4), RcppArmadillo
+Depends: R (>= 2.15.3), foreign, utils, Rcpp (>= 0.10.0.4), RcppArmadillo
 LinkingTo: Rcpp, RcppArmadillo
 Description: Amelia II "multiply imputes" missing data in a single cross-section
   (such as a survey), from a time series (like variables collected for

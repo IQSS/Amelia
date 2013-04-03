@@ -866,7 +866,7 @@ AmeliaView<-function() {
                     "Stata 10+",
                     "Stata 10+ (stacked)",
                     "RData")
-  ampath <- .find.package(package = "Amelia")[1]
+  ampath <- find.package(package = "Amelia")[1]
   ameliaFile <- file.path(ampath, "gui/gallery19.gif")
   goFile <- file.path(ampath, "gui/action_go.gif")
   tableFile <- file.path(ampath, "gui/table.gif")
@@ -1334,7 +1334,7 @@ AmeliaView<-function() {
               "There was an error the last time you ran Amelia. Click here to open the output log to identify the problem and to see how to fix it.")
   ## these commands force R to wait for tcltk
   if (.Platform$OS.type == "windows")
-    tkwm.iconbitmap(getAmelia("gui"),file.path(.find.package(package = "Amelia")[1], "gui/amelia.ico"))
+    tkwm.iconbitmap(getAmelia("gui"),file.path(find.package(package = "Amelia")[1], "gui/amelia.ico"))
   tkraise(getAmelia("gui"))
   tkwm.deiconify(getAmelia("gui"))
   tkfocus(getAmelia("gui"))

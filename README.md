@@ -9,7 +9,13 @@
 
 ### Manual installation
 ```R
-install.packages("Amelia", repos = "http://r.iq.harvard.edu/",type  = "source")
+install.packages("Amelia")
+```
+
+### Installing unstable developer version:
+```R
+require(devtools)
+install_github("Amelia", user = "IQSS", ref = "develop")
 ```
 
 [Amelia II]: http://gking.harvard.edu/amelia
