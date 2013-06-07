@@ -358,6 +358,8 @@ ameliabind <- function(...) {
       out$iterHist    <- c(out$iterHist, args[[i]]$iterHist)
 
     }
+    names(out$imputations) <- paste("imp",1:length(out$imputations),sep="")
+    #or: names(out$imputations) <- paste("imp",1:impindex[i+1],sep="")
     class(out) <- "amelia"
     class(out$imputations) <- c("mi","list")
   } else {
