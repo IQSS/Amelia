@@ -1,3 +1,4 @@
+
 #include "em.h"
 #include <RcppArmadillo.h>
 
@@ -452,9 +453,9 @@ SEXP ameliaImpute(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas,
           prHolder.elem(theseCols) = thisPrior.col(2);
           arma::mat muMiss = wvar * (prHolder.elem(mispos) + solveSigma * arma::trans(imputations(pu, mispos)));
           imputations(pu, mispos) = arma::trans(muMiss);
-          Ci(mispos, mispos) = wvar;
+          Ci(mispos, mispos) = chol(wvar);
         } else {
-          Ci(mispos, mispos) = theta(mispos + 1, mispos + 1);
+          Ci(mispos, mispos) = chol(theta(mispos + 1, mispos + 1));
         }
         junk.row(p) = arma::rowvec(rnorm(k,0,1).begin(), k);
         junk.row(p) = junk.row(p) * Ci;
