@@ -521,8 +521,8 @@ scalecenter<-function(x,priors=NULL,bounds=NULL){
   stdvx<-apply(x,2,sd,na.rm=TRUE)
   no.obs <- colSums(!is.na(x)) == 0
   if (!is.null(priors)) {
-    meanx[no.obs] <- unlist(tapply(priors[,3],priors[,2],mean))[order(unique(priors[,2]))]
-    stdvx[no.obs] <-  unlist(tapply(priors[,3],priors[,2],sd))[order(unique(priors[,2]))]
+    meanx[no.obs] <- 0#unlist(tapply(priors[,3],priors[,2],mean))[order(unique(priors[,2]))]
+    stdvx[no.obs] <- 1#unlist(tapply(priors[,3],priors[,2],sd))[order(unique(priors[,2]))]
   }
   x.ztrans<-(x-(ones %*% meanx))/(ones %*% stdvx)
   if (!is.null(priors)){

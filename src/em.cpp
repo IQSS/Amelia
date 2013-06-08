@@ -1,3 +1,4 @@
+
 #include "em.h"
 #include <RcppArmadillo.h>
 
@@ -378,9 +379,6 @@ SEXP ameliaImpute(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas,
     st = 0;
   }
 
-  //Rcpp::Rcout << "Starting loop. "  << std::endl;
-
-  
   if (st == 1) {
     xplay.rows(0,ii(1)-2) = x.rows(0,ii(1)-2);
   }    
@@ -427,6 +425,8 @@ SEXP ameliaImpute(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas,
       
       sweep(theta, sweeppos);
       junk.zeros(isp - is + 1, k);
+      junk = Rcpp::rnorm((isp - is + 1)* k, 0, 1);
+      junk.reshape(isp - is +1, k);
       imputations.zeros();
       imputations.set_size(isp - is, k);
       
@@ -440,6 +440,7 @@ SEXP ameliaImpute(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas,
       for (int p = 0; p <= isp-is; p++) {
         arma::uvec prRow = arma::find(priors.col(0) == p + is + 1);
         Ci.zeros(k,k);
+        
         if (prRow.n_elem > 0) {
           arma::uvec pu(1);
           pu(0) = p;
@@ -452,11 +453,10 @@ SEXP ameliaImpute(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas,
           prHolder.elem(theseCols) = thisPrior.col(2);
           arma::mat muMiss = wvar * (prHolder.elem(mispos) + solveSigma * arma::trans(imputations(pu, mispos)));
           imputations(pu, mispos) = arma::trans(muMiss);
-          Ci(mispos, mispos) = wvar;
+          Ci(mispos, mispos) = chol(wvar);
         } else {
-          Ci(mispos, mispos) = theta(mispos + 1, mispos + 1);
+          Ci(mispos, mispos) = chol(theta(mispos + 1, mispos + 1));
         }
-        junk.row(p) = arma::rowvec(rnorm(k,0,1).begin(), k);
         junk.row(p) = junk.row(p) * Ci;
         if (Rf_isNull(bdss)) {
           xplay.row(is + p) = x.row(is + p) + imputations.row(p) + junk.row(p);
