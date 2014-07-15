@@ -12,6 +12,9 @@ export(amelia,
        transform.amelia,
        mi.meld)
 
+import(foreign)
+import(utils)
+import(Rcpp)
 
 S3method(print, amelia)
 S3method(plot, amelia)

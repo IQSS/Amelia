@@ -815,7 +815,6 @@ AmeliaView<-function() {
 
   ##Preamble
   require(tcltk) || stop("The package 'tcltk' is required")
-  require(foreign)
 
   if (.Platform$OS.type != "windows") {
     tcl("ttk::style", "theme", "use", "clam")
