@@ -534,7 +534,7 @@ arma::mat resampler(arma::mat x, arma::mat ci, arma::mat imps, arma::uvec mss,
     utest = (imps + junk) > ub;
     ltest = (imps + junk) < lb;
     arma::uvec ufails = arma::find(utest);
-    arma::uvec lfails = arma::find(sum(ltest, 1) > 0);
+    arma::uvec lfails = arma::find(ltest);
     xp.elem(ufails) = ub.elem(ufails);
     xp.elem(lfails) = lb.elem(lfails);
   }
