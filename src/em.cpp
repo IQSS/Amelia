@@ -294,11 +294,11 @@ void sweep(arma::mat& g, arma::vec m) {
   arma::uvec k = arma::find(m);
   arma::uvec kcompl = arma::find(1-m);   
   if (k.n_elem == p) {
-    g = -arma::inv(sympd(g));
+    g = -arma::inv_sympd(g);
   } else {
     arma::mat h = g(k, k);
     try { 
-      g(k,k) = arma::inv(sympd(h));
+      g(k,k) = arma::inv_sympd(h);
     } catch (std::runtime_error &e){
       g(k,k) = arma::pinv(h, sqrt(arma::datum::eps));
     } catch (...) {
