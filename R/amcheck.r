@@ -920,13 +920,15 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     if (!o.num | !o.size) {
       error.code <- 53
       error.mess <- "The overimp matrix needs to be a two-column numeric matrix."
+      return(list(code=error.code,mess=error.mess))
     }
 
     ## Error 54:
     ## overimp out of range
-    if (!o.rows | ! o.cols) {
+    if (!o.rows | !o.cols) {
       error.code <- 54
-      error.code <- "A row/column pair in overimp is outside the range of the data."
+      error.mess <- "A row/column pair in overimp is outside the range of the data."
+      return(list(code=error.code,mess=error.mess))
     }
 
   }
