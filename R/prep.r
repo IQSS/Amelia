@@ -668,7 +668,7 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                         leads=NULL,intercs=FALSE,sqrts=NULL,
                         lgstc=NULL,noms=NULL,incheck=TRUE,ords=NULL,collect=FALSE,
                         arglist=NULL, priors=NULL,var=NULL,autopri=0.05,bounds=NULL,
-                        max.resample=NULL, overimp = NULL, emburn=NULL) {
+                        max.resample=NULL, overimp = NULL, emburn=NULL, boot.type=NULL) {
 
 
   code <- 1
@@ -704,6 +704,7 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     bounds    <- arglist$bounds
     overimp   <- arglist$overimp
     emburn    <- arglist$emburn
+    boot.type <- arglist$boot.type
     max.resample <- arglist$max.resample
   }
 
@@ -725,7 +726,8 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                        intercs = intercs, noms = numopts$noms,
                        startvals = startvals, ords = numopts$ords, collect =
                        collect,  bounds=bounds,
-                       max.resample=max.resample, overimp = overimp, emburn=emburn)
+                       max.resample=max.resample, overimp = overimp, emburn=emburn,
+                       boot.type=boot.type)
     #check.call <- match.call()
     #check.call[[1]] <- as.name("amcheck")
     #checklist <- eval(check.call, parent.frame())
@@ -749,7 +751,7 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                 noms=numopts$noms, ords=numopts$ords,
                 priors=priors, autopri=autopri, bounds=bounds,
                 max.resample=max.resample, startvals=startvals,
-                overimp = overimp, emburn=emburn)
+                overimp = overimp, emburn=emburn, boot.type=boot.type)
                                                                                 #change 2
 
 

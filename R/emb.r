@@ -68,9 +68,14 @@ packr<-function(x) {
 ## Rejects Bootstraps where an entire variable becomes missing
 ##   x:          data (matrix)
 ##   priors:     matrix of priors about means for observations
-bootx<-function(x,priors=NULL){
+bootx<-function(x,priors=NULL, boot.type="np"){
   flag <- TRUE
   AMn <- nrow(x)
+  if (!is.null(boot.type)) {
+      if (boot.type == "none") {
+          return(list(x=x,priors=priors))
+      }
+  }
   while (flag){
     order<-trunc(runif(nrow(x), min=1, max=nrow(x)+1))
     xboot<-x[order,]
@@ -446,7 +451,7 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
                            incheck=TRUE,collect=FALSE,arglist=NULL,
                            empri=NULL,priors=NULL,autopri=0.05,
                            emburn=c(0,0),bounds=NULL,max.resample=100,
-                           overimp = NULL,
+                           overimp = NULL,boot.type = "ordinary",
                            parallel = c("no", "multicore", "snow"),
                            ncpus = getOption("amelia.ncpus", 1L), cl = NULL, ...) {
 
@@ -482,7 +487,8 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
                        noms=noms,startvals=startvals,ords=ords,incheck=incheck,
                        collect=collect,
                        arglist=arglist,priors=priors,autopri=autopri,bounds=bounds,
-                       max.resample=max.resample,overimp=overimp,emburn=emburn)
+                       max.resample=max.resample,overimp=overimp,emburn=emburn,
+                       boot.type=boot.type)
 
   if (prepped$code!=1) {
     cat("Amelia Error Code: ",prepped$code,"\n",prepped$message,"\n")
@@ -519,7 +525,7 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
     class(impdata) <- "amelia"
     class(impdata$imputations) <- c("mi","list")
 
-    x.boot<-bootx(prepped$x,prepped$priors)
+    x.boot<-bootx(prepped$x,prepped$priors, boot.type)
     x.stacked<-amstack(x.boot$x,colorder=FALSE,x.boot$priors)   # Don't reorder columns thetanew will not align with d.stacked$x
 
     if (p2s) cat("-- Imputation", X, "--\n")
