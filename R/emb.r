@@ -99,14 +99,19 @@ bootx<-function(x,priors=NULL, boot.type="np"){
 
 ## Put imputations into the original data format
 ## Converts integer values back to factors or characters
-impfill<-function(x.orig,x.imp,noms,ords,priors) {
+impfill<-function(x.orig, x.imp, noms, ords, priors, overimp) {
   if (!is.null(priors)) {
     is.na(x.orig)[priors[,c(1,2)]] <- TRUE
   }
+
+  if (!is.null(overimp)) {
+    is.na(x.orig)[overimp] <- TRUE
+  }
+
   AMr1.orig <- is.na(x.orig)
   orig.fact <- sapply(x.orig, is.factor)
   orig.char <- sapply(x.orig, is.character)
-  x.imp<-as.data.frame(x.imp[,1:ncol(x.orig)])
+  x.imp <- as.data.frame(x.imp[,1:ncol(x.orig)])
   for (i in 1:ncol(x.orig)) {
     if (is.logical(x.orig[,i]) & sum(!is.na(x.orig[,i])) > 0) {
       x.imp[,i]<-as.logical(x.imp[,i]>0.5)
@@ -117,8 +122,8 @@ impfill<-function(x.orig,x.imp,noms,ords,priors) {
 
   if (!is.null(possibleFactors)) {
     if (ncol(x.orig) > length(possibleFactors)) {
-      AMr1.orig <-is.na(x.orig[,-possibleFactors])
-      x.orig[,-possibleFactors][AMr1.orig]<-x.imp[,-possibleFactors][AMr1.orig]
+      AMr1.orig <- is.na(x.orig[,-possibleFactors])
+      x.orig[,-possibleFactors][AMr1.orig] <- x.imp[,-possibleFactors][AMr1.orig]
     }
     for (i in possibleFactors) {
       if (orig.fact[i])
@@ -129,7 +134,7 @@ impfill<-function(x.orig,x.imp,noms,ords,priors) {
         x.orig[is.na(x.orig[,i]),i] <- x.imp[is.na(x.orig[,i]),i]
     }
   } else {
-    x.orig[AMr1.orig]<-x.imp[AMr1.orig]
+    x.orig[AMr1.orig] <- x.imp[AMr1.orig]
   }
   new.char <- sapply(x.orig, is.character)
   char.match <- orig.char!=new.char
@@ -388,6 +393,7 @@ getOriginalData <- function(obj) {
   return(data)
 }
 
+
 remove.imputations <- function(obj) {
   data <- obj$imputations[[1]]
   is.na(data) <- obj$missMatrix
@@ -581,7 +587,8 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
     ## first, we put the data into the output list and name it
     impdata$imputations[[1]] <- impfill(x.orig = x, x.imp = ximp,
                                         noms = prepped$noms,
-                                        ords = prepped$ords, priors = priors)
+                                        ords = prepped$ords, priors = priors,
+                                        overimp = overimp)
 
     if (p2s) cat("\n")
     if (frontend) {

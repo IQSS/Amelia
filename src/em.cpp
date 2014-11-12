@@ -52,7 +52,7 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
   int count = 0;
   int is, isp;
   
-  int nparam = arma::accu(arma::find(arma::trimatu(thetaold)));
+  //int nparam = arma::accu(arma::find(arma::trimatu(thetaold)));
   
   arma::uvec upperpos = arma::find(arma::trimatu(arma::ones<arma::mat>(k+1,k+1)));
   arma::mat xplay = arma::zeros<arma::mat>(AMn,k);
@@ -329,7 +329,6 @@ SEXP ameliaImpute(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas,
   int n = xr.nrow(), k = xr.ncol();
   int const AMn = n;
   int npatt = orr.nrow();
-  int cvalue = 1;
 
   arma::mat x(xr.begin(), n, k, false);
   arma::mat thetaold(thetar.begin(), k + 1, k + 1, false);
@@ -360,7 +359,7 @@ SEXP ameliaImpute(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas,
 
   int is, isp;
   
-  int nparam = arma::accu(arma::find(arma::trimatu(thetaold)));
+  //int nparam = arma::accu(arma::find(arma::trimatu(thetaold)));
   
   arma::uvec upperpos = arma::find(arma::trimatu(arma::abs(arma::randu<arma::mat>(k+1,k+1))));
   arma::mat xplay = arma::zeros<arma::mat>(AMn,k);

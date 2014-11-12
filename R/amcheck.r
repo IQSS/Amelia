@@ -698,7 +698,7 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   }
                                         #Error code: 39
                                         #No missing observation
-  if (!any(is.na(x[,idcheck,drop=FALSE]))) {
+  if (!any(is.na(x[,idcheck,drop=FALSE])) & is.null(overimp)) {
     error.code<-39
     error.mess<-paste("Your data has no missing values.  Make sure the code for \n",
                       "missing data is set to the code for R, which is NA.")
