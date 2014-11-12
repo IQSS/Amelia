@@ -3,8 +3,14 @@
 plot.amelia <- function(x, which.vars, compare = TRUE, overimpute =
                         FALSE, ask = TRUE, ...) {
 
-  imputedVars <- colSums(x$missMatrix) > 0 
-  numericVars <- sapply(x$imputations[[1]],"is.numeric")
+  imputedVars <- colSums(x$missMatrix) > 0
+
+  ## if it's a matrix, it's already numeric
+  if (is.data.frame(x$imputations[[1]])) {
+    numericVars <- sapply(x$imputations[[1]],"is.numeric")
+  } else {
+    numericVars <- rep(TRUE, length(imputedVars))
+  }
 
   ## Choose the correct variables to plot. Only numerics.
   ## And, if they didn't pick, only show the imputed variables.
@@ -12,9 +18,9 @@ plot.amelia <- function(x, which.vars, compare = TRUE, overimpute =
     which.vars <- which(imputedVars & numericVars)
   } else {
     ## trim user-choosen variables that are not numeric
-    which.vars <- which.vars[numericVars[which.vars]] 
+    which.vars <- which.vars[numericVars[which.vars]]
   }
-  
+
   mfrow <- set.mfrow(nvars = length(which.vars), overimpute)
 
   on.exit(par(NULL))
@@ -30,7 +36,7 @@ plot.amelia <- function(x, which.vars, compare = TRUE, overimpute =
   }
   devAskNewPage(ask=FALSE)
   invisible()
-  
+
 }
 
 ##
