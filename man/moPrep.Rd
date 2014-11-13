@@ -64,7 +64,9 @@ moPrep(x, formula, subset, error.proportion,
   used to estimate the variance of the
   measurement. error. \code{error.proportion} is used to estimate the
   variance of the measurement error by estimating the variance of the
-  mismeasurement and taking the proportion assumed to be due to error. 
+  mismeasurement and taking the proportion assumed to be due to
+  error. \code{error.sd} sets the standard error of the measurement
+  error directly.
 }
 \references{
 Matthew Blackwell, James Honaker, and Gary King, "Multiple
