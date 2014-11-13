@@ -1921,37 +1921,37 @@ indicates whether the covariance matrix at this iteration was
 singular. Clearly, the last two columns are meant to indicate when the EM
 algorithm enters a problematic part of the parameter space.
 
-\section{Multiple Overimputation in Amelia}
-\label{sec:mo}
+% \section{Multiple Overimputation in Amelia}
+% \label{sec:mo}
 
-\citet{BlaHonKin14a} introduces a method, called multiple overimputation (MO), for handling missing data and measurement error at the same time. This approach works by treating any mismeasured cell in the data matrix as missing and imputing it, with a prior distribution on the missing value centered at the observed value with some variance. Practically, this approach can be implemented in Amelia using the \code{overimp} and \code{priors} arguments, but the construction of these matrices can be tedious. Amelia provides helper functions both estimate the measurement error variance and to run MO. 
+% \citet{BlaHonKin14a} introduces a method, called multiple overimputation (MO), for handling missing data and measurement error at the same time. This approach works by treating any mismeasured cell in the data matrix as missing and imputing it, with a prior distribution on the missing value centered at the observed value with some variance. Practically, this approach can be implemented in Amelia using the \code{overimp} and \code{priors} arguments, but the construction of these matrices can be tedious. Amelia provides helper functions both estimate the measurement error variance and to run MO. 
 
-For a given variable we want to overimpute, we assume the following:
-$$w_i = x_i^* + u_i$$
-$$u_i|x_i^* \sim \mathcal{N}(0,\sigma^2_u)$$
-Here, $w_i$ is the observed variable, $x_i^*$ is the unobserved latent
-variable, and $u_i$ is the measurement error. We can think of the
-amount of measurement error, under this simple model, as $\sigma^2_u$.
-We can visualize the set of all $\sigma^2_u$ values as a continuum, where when
-$\sigma^2_u=0$ we observe the latent variable perfectly. When $\sigma^2_u = 0$
-there is no uncertainty about the location of the true value, so our
-belief about the true value, $x_i^*$, is simply a spike at the
-observed location, $w_i$. In between, we have some uncertainty about the location of $x^*_i$, but we know that values closer to $w_i$ are more likely.
+% For a given variable we want to overimpute, we assume the following:
+% $$w_i = x_i^* + u_i$$
+% $$u_i|x_i^* \sim \mathcal{N}(0,\sigma^2_u)$$
+% Here, $w_i$ is the observed variable, $x_i^*$ is the unobserved latent
+% variable, and $u_i$ is the measurement error. We can think of the
+% amount of measurement error, under this simple model, as $\sigma^2_u$.
+% We can visualize the set of all $\sigma^2_u$ values as a continuum, where when
+% $\sigma^2_u=0$ we observe the latent variable perfectly. When $\sigma^2_u = 0$
+% there is no uncertainty about the location of the true value, so our
+% belief about the true value, $x_i^*$, is simply a spike at the
+% observed location, $w_i$. In between, we have some uncertainty about the location of $x^*_i$, but we know that values closer to $w_i$ are more likely.
 
-The main input required to run MO is this measurement error variance. \citet{BlaHonKin14a} and \citet{BlaHonKin14b} present a few different ways to set or estimate the amount of measurement error and Amelia can implement some of these approaches in the \code{moPrep} function. The basic idea is to pass the data and the measurement error structure to \code{moPrep} and then pass the output of \code{moPrep} to \code{amelia}. This will automatically handling the setting of \code{priors} and \code{overimp} for \code{amelia} and replace the observed, noisy data with overimputations. 
+% The main input required to run MO is this measurement error variance. \citet{BlaHonKin14a} and \citet{BlaHonKin14b} present a few different ways to set or estimate the amount of measurement error and Amelia can implement some of these approaches in the \code{moPrep} function. The basic idea is to pass the data and the measurement error structure to \code{moPrep} and then pass the output of \code{moPrep} to \code{amelia}. This will automatically handling the setting of \code{priors} and \code{overimp} for \code{amelia} and replace the observed, noisy data with overimputations. 
 
-To demonstrate this, suppose that we thought that the \code{polity} variable had measurement error in it and that we suspected that the standard deviation of the measurement error was 0.1. We can pass this to \code{moPrep} using the following commands:
-<<>>=
-m.out <- moPrep(freetrade, polity ~ polity, error.sd = 0.1)
-a.mo.out <- amelia(m.out, ts = "year", cs = "country")
+% To demonstrate this, suppose that we thought that the \code{polity} variable had measurement error in it and that we suspected that the standard deviation of the measurement error was 0.1. We can pass this to \code{moPrep} using the following commands:
+%<<>>=
+%m.out <- moPrep(freetrade, polity ~ polity, error.sd = 0.1)
+%a.mo.out <- amelia(m.out, ts = "year", cs = "country")
+%
+%head(freetrade$polity)
+%head(a.mo.out$imputations$imp1$polity)
+%head(a.mo.out$imputations$imp2$polity)
+%@ 
+% There are a few things to notice. First, we pass the name of the data as the first argument to \code{moPrep}. Second, we pass a formula that indicates which variable should be overimputed (the left-hand side) and which variable that contains the mean of the measurement distribution (the right-hand side). By and large, these two variables will be the same, but if there was some known bias or scaling, we could incorporate that into the formula. Finally, we give the standard deviation of the error to the \code{error.sd} argument. Note that we gave \code{moPrep} a single number, but it is also possible to pass an entire vector of values, one for each observation, that would allow for heteroskedastic measurement error.
 
-head(freetrade$polity)
-head(a.mo.out$imputations$imp1$polity)
-head(a.mo.out$imputations$imp2$polity)
-@ 
-There are a few things to notice. First, we pass the name of the data as the first argument to \code{moPrep}. Second, we pass a formula that indicates which variable should be overimputed (the left-hand side) and which variable that contains the mean of the measurement distribution (the right-hand side). By and large, these two variables will be the same, but if there was some known bias or scaling, we could incorporate that into the formula. Finally, we give the standard deviation of the error to the \code{error.sd} argument. Note that we gave \code{moPrep} a single number, but it is also possible to pass an entire vector of values, one for each observation, that would allow for heteroskedastic measurement error.
-
-In addition to specifying the error standard deviation, there are other ways of implicitly or explicitly estimating the error variance. First, we can identify units in the data that have no measurement error, called \emph{gold-standard observations}, and use those to calculate the error variance for the other units. This is possible through the \code{gold.standard} argument. Second, we can specify what proportion of the overall variance in a variable is due to measurement error, for either all observations or a different error proportion for each unit. This can be set with the \code{error.proportion} argument. Finally, if there are two proxies/mismeasurements of the same variable, we can use the covariance between the two to estimate the error variance. To implement this in \code{moPrep}, simply pass the second proxy in the formula: \code{errvar ~ errvar | proxy}.
+% In addition to specifying the error standard deviation, there are other ways of implicitly or explicitly estimating the error variance. First, we can identify units in the data that have no measurement error, called \emph{gold-standard observations}, and use those to calculate the error variance for the other units. This is possible through the \code{gold.standard} argument. Second, we can specify what proportion of the overall variance in a variable is due to measurement error, for either all observations or a different error proportion for each unit. This can be set with the \code{error.proportion} argument. Finally, if there are two proxies/mismeasurements of the same variable, we can use the covariance between the two to estimate the error variance. To implement this in \code{moPrep}, simply pass the second proxy in the formula: \code{errvar ~ errvar | proxy}.
 
 \clearpage
 
