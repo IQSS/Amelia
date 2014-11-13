@@ -958,9 +958,9 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   }
 
   if (is.data.frame(x)) {
-    lmcheck <- lm(I(rnorm(nrow(x)))~ ., data = x[,idcheck])
+    lmcheck <- lm(I(rnorm(AMn))~ ., data = x[,idcheck, drop = FALSE])
   } else {
-    lmcheck <- lm(I(rnorm(nrow(x)))~ ., data = as.data.frame(x[,idcheck]))
+    lmcheck <- lm(I(rnorm(AMn))~ ., data = as.data.frame(x[,idcheck, drop = FALSE]))
   }
   if (any(is.na(coef(lmcheck)))) {
     bad.var <- names(x[,idcheck])[which(is.na(coef(lmcheck))) - 1]
