@@ -11,7 +11,7 @@
 }
 \usage{
 moPrep(x, formula, subset, error.proportion,
-       gold.standard = !missing(subset))
+       gold.standard = !missing(subset), error.sd)
 
 
 }
@@ -30,6 +30,8 @@ moPrep(x, formula, subset, error.proportion,
   \item{gold.standard}{a logical value indicating if values with no
     measurement error should be used to estimate the measurement error
     variance.}
+  \item{error.sd}{an optional vector specifying the standard error of
+    the measurement error.}
 }
 \value{
   An instance of the S3 class "molist" with the following objects:
@@ -77,6 +79,9 @@ data(africa)
 m.out <- moPrep(africa, trade ~ trade, error.proportion = 0.1)
 a.out <- amelia(m.out, ts = "year", cs = "country")
 plot(a.out)
+
+m.out <- moPrep(africa, trade ~ trade, error.sd = 1)
+a.out <- amelia(m.out, ts = "year", cs = "country")
 }
 \author{James Honaker, Gary King, and Matthew Blackwell}
 
