@@ -592,7 +592,8 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
 
     if (p2s) cat("\n")
     if (frontend) {
-      tcl(getAmelia("runAmeliaProgress"), "step",(100/m -1))
+      requireNamespace("tcltk")
+      tcltk::tcl(getAmelia("runAmeliaProgress"), "step",(100/m -1))
     }
 
     impdata$code <- code
