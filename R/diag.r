@@ -200,7 +200,7 @@ overimpute <- function(output, var, subset, legend = TRUE, xlab, ylab,
 
   if (is.na(stacked.var)) {
     if (frontend)
-      tkmessageBox(message="The variable you selected doesn't exist in the Amelia output becuase it wasn't imputed.",icon="error",type="ok")
+      tcltk::tkmessageBox(message="The variable you selected doesn't exist in the Amelia output becuase it wasn't imputed.",icon="error",type="ok")
     stop("var doesn't exist in the amelia output.  It either didn't get imputed or is out of the range of columns.")
   }
 

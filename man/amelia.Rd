@@ -17,7 +17,7 @@
        logs = NULL, sqrts = NULL, lgstc = NULL, noms = NULL, ords = NULL,
        incheck = TRUE, collect = FALSE, arglist = NULL, empri = NULL,
        priors = NULL, autopri = 0.05, emburn = c(0,0), bounds = NULL,
-       max.resample = 100, overimp = NULL,
+       max.resample = 100, overimp = NULL, boot.type = "ordinary",
        parallel = c("no", "multicore", "snow"),
        ncpus = getOption("amelia.ncpus", 1L), cl = NULL, ...)
 
@@ -140,6 +140,10 @@
     overimputed. Each row of the matrix should be a \code{c(row,
     column)} pair. Each of these cells will be treated as missing and
   replaced with draws from the imputation model.}
+
+\item{boot.type}{choice of bootstrap, currently restricted to either
+  \code{"ordinary"} for the usual non-parametric bootstrap and
+  \code{"none"} for no bootstrap.}
 
   \item{parallel}{the type of parallel operation to be used (if any). If
     missing, the default is taken from the option

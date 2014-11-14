@@ -22,7 +22,7 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                     leads=NULL,intercs=FALSE,archive=TRUE,sqrts=NULL,
                     lgstc=NULL,noms=NULL,incheck=TRUE,ords=NULL,collect=FALSE,
                     arglist=NULL, priors=NULL,bounds=NULL,
-                    max.resample=1000, overimp = NULL, emburn=NULL) {
+                    max.resample=1000, overimp = NULL, emburn=NULL, boot.type=NULL) {
 
                                         #Checks for errors in list variables
   listcheck<-function(vars,optname) {
@@ -698,7 +698,7 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   }
                                         #Error code: 39
                                         #No missing observation
-  if (!any(is.na(x[,idcheck,drop=FALSE]))) {
+  if (!any(is.na(x[,idcheck,drop=FALSE])) & is.null(overimp)) {
     error.code<-39
     error.mess<-paste("Your data has no missing values.  Make sure the code for \n",
                       "missing data is set to the code for R, which is NA.")
@@ -920,13 +920,15 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     if (!o.num | !o.size) {
       error.code <- 53
       error.mess <- "The overimp matrix needs to be a two-column numeric matrix."
+      return(list(code=error.code,mess=error.mess))
     }
 
     ## Error 54:
     ## overimp out of range
-    if (!o.rows | ! o.cols) {
+    if (!o.rows | !o.cols) {
       error.code <- 54
-      error.code <- "A row/column pair in overimp is outside the range of the data."
+      error.mess <- "A row/column pair in overimp is outside the range of the data."
+      return(list(code=error.code,mess=error.mess))
     }
 
   }
@@ -934,6 +936,12 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   if (!is.null(emburn)) {
     if (length(emburn) != 2) {
       stop("emburn must be length 2")
+    }
+  }
+
+  if (!is.null(boot.type)) {
+    if (!(boot.type %in% c("ordinary", "none"))) {
+      stop("boot.type must be either 'ordinary' or 'none'")
     }
   }
 
@@ -947,6 +955,17 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       error.mess<-paste("The variable(s)",bad.var,"have length 0 in the data frame. Try removing these variables or reimporting the data.")
       return(list(code=error.code,mess=error.mess))
     }
+  }
+
+  if (is.data.frame(x)) {
+    lmcheck <- lm(I(rnorm(AMn))~ ., data = x[,idcheck, drop = FALSE])
+  } else {
+    lmcheck <- lm(I(rnorm(AMn))~ ., data = as.data.frame(x[,idcheck, drop = FALSE]))
+  }
+  if (any(is.na(coef(lmcheck)))) {
+    bad.var <- names(x[,idcheck])[which(is.na(coef(lmcheck))) - 1]
+    bar.var <- paste(bad.var, collapse = ", ")
+    stop(paste("The variable ",bad.var,"is perfectly collinear with another variable in the data.\n"))
   }
 
   return(list(m=m,priors=priors))

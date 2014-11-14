@@ -52,7 +52,7 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
   int count = 0;
   int is, isp;
   
-  int nparam = arma::accu(arma::find(arma::trimatu(thetaold)));
+  //int nparam = arma::accu(arma::find(arma::trimatu(thetaold)));
   
   arma::uvec upperpos = arma::find(arma::trimatu(arma::ones<arma::mat>(k+1,k+1)));
   arma::mat xplay = arma::zeros<arma::mat>(AMn,k);
@@ -294,11 +294,11 @@ void sweep(arma::mat& g, arma::vec m) {
   arma::uvec k = arma::find(m);
   arma::uvec kcompl = arma::find(1-m);   
   if (k.n_elem == p) {
-    g = -arma::inv(sympd(g));
+    g = -arma::inv_sympd(g);
   } else {
     arma::mat h = g(k, k);
     try { 
-      g(k,k) = arma::inv(sympd(h));
+      g(k,k) = arma::inv_sympd(h);
     } catch (std::runtime_error &e){
       g(k,k) = arma::pinv(h, sqrt(arma::datum::eps));
     } catch (...) {
@@ -329,7 +329,6 @@ SEXP ameliaImpute(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas,
   int n = xr.nrow(), k = xr.ncol();
   int const AMn = n;
   int npatt = orr.nrow();
-  int cvalue = 1;
 
   arma::mat x(xr.begin(), n, k, false);
   arma::mat thetaold(thetar.begin(), k + 1, k + 1, false);
@@ -360,7 +359,7 @@ SEXP ameliaImpute(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas,
 
   int is, isp;
   
-  int nparam = arma::accu(arma::find(arma::trimatu(thetaold)));
+  //int nparam = arma::accu(arma::find(arma::trimatu(thetaold)));
   
   arma::uvec upperpos = arma::find(arma::trimatu(arma::abs(arma::randu<arma::mat>(k+1,k+1))));
   arma::mat xplay = arma::zeros<arma::mat>(AMn,k);
@@ -534,7 +533,7 @@ arma::mat resampler(arma::mat x, arma::mat ci, arma::mat imps, arma::uvec mss,
     utest = (imps + junk) > ub;
     ltest = (imps + junk) < lb;
     arma::uvec ufails = arma::find(utest);
-    arma::uvec lfails = arma::find(sum(ltest, 1) > 0);
+    arma::uvec lfails = arma::find(ltest);
     xp.elem(ufails) = ub.elem(ufails);
     xp.elem(lfails) = lb.elem(lfails);
   }

@@ -4,6 +4,13 @@
 //
 //
 
+== 1.7.3 (14 Nov 2014) ==
+   * Fixed bug with overimp not being respected
+   * Added an argument boot.type='none' to amelia() to allow it to run on the original, non-bootstrapped data
+   * Fixed bug in plot.amelia() with matrix inputs
+   * Fixed bug with lower bounds not being respected
+   * Made compatible with most recent versions of Rcpp and RcppArmadillo
+
 == 1.7.2 (08 Jun 2013) == 
    * Bug fixes to priors (especially important for multiple overimputation).
    * Fixed issue with names of imputations for integration with Zelig.

@@ -68,9 +68,14 @@ packr<-function(x) {
 ## Rejects Bootstraps where an entire variable becomes missing
 ##   x:          data (matrix)
 ##   priors:     matrix of priors about means for observations
-bootx<-function(x,priors=NULL){
+bootx<-function(x,priors=NULL, boot.type="np"){
   flag <- TRUE
   AMn <- nrow(x)
+  if (!is.null(boot.type)) {
+      if (boot.type == "none") {
+          return(list(x=x,priors=priors))
+      }
+  }
   while (flag){
     order<-trunc(runif(nrow(x), min=1, max=nrow(x)+1))
     xboot<-x[order,]
@@ -94,14 +99,19 @@ bootx<-function(x,priors=NULL){
 
 ## Put imputations into the original data format
 ## Converts integer values back to factors or characters
-impfill<-function(x.orig,x.imp,noms,ords,priors) {
+impfill<-function(x.orig, x.imp, noms, ords, priors, overimp) {
   if (!is.null(priors)) {
     is.na(x.orig)[priors[,c(1,2)]] <- TRUE
   }
+
+  if (!is.null(overimp)) {
+    is.na(x.orig)[overimp] <- TRUE
+  }
+
   AMr1.orig <- is.na(x.orig)
   orig.fact <- sapply(x.orig, is.factor)
   orig.char <- sapply(x.orig, is.character)
-  x.imp<-as.data.frame(x.imp[,1:ncol(x.orig)])
+  x.imp <- as.data.frame(x.imp[,1:ncol(x.orig)])
   for (i in 1:ncol(x.orig)) {
     if (is.logical(x.orig[,i]) & sum(!is.na(x.orig[,i])) > 0) {
       x.imp[,i]<-as.logical(x.imp[,i]>0.5)
@@ -112,8 +122,8 @@ impfill<-function(x.orig,x.imp,noms,ords,priors) {
 
   if (!is.null(possibleFactors)) {
     if (ncol(x.orig) > length(possibleFactors)) {
-      AMr1.orig <-is.na(x.orig[,-possibleFactors])
-      x.orig[,-possibleFactors][AMr1.orig]<-x.imp[,-possibleFactors][AMr1.orig]
+      AMr1.orig <- is.na(x.orig[,-possibleFactors])
+      x.orig[,-possibleFactors][AMr1.orig] <- x.imp[,-possibleFactors][AMr1.orig]
     }
     for (i in possibleFactors) {
       if (orig.fact[i])
@@ -124,7 +134,7 @@ impfill<-function(x.orig,x.imp,noms,ords,priors) {
         x.orig[is.na(x.orig[,i]),i] <- x.imp[is.na(x.orig[,i]),i]
     }
   } else {
-    x.orig[AMr1.orig]<-x.imp[AMr1.orig]
+    x.orig[AMr1.orig] <- x.imp[AMr1.orig]
   }
   new.char <- sapply(x.orig, is.character)
   char.match <- orig.char!=new.char
@@ -383,6 +393,7 @@ getOriginalData <- function(obj) {
   return(data)
 }
 
+
 remove.imputations <- function(obj) {
   data <- obj$imputations[[1]]
   is.na(data) <- obj$missMatrix
@@ -446,7 +457,7 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
                            incheck=TRUE,collect=FALSE,arglist=NULL,
                            empri=NULL,priors=NULL,autopri=0.05,
                            emburn=c(0,0),bounds=NULL,max.resample=100,
-                           overimp = NULL,
+                           overimp = NULL,boot.type = "ordinary",
                            parallel = c("no", "multicore", "snow"),
                            ncpus = getOption("amelia.ncpus", 1L), cl = NULL, ...) {
 
@@ -482,7 +493,8 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
                        noms=noms,startvals=startvals,ords=ords,incheck=incheck,
                        collect=collect,
                        arglist=arglist,priors=priors,autopri=autopri,bounds=bounds,
-                       max.resample=max.resample,overimp=overimp,emburn=emburn)
+                       max.resample=max.resample,overimp=overimp,emburn=emburn,
+                       boot.type=boot.type)
 
   if (prepped$code!=1) {
     cat("Amelia Error Code: ",prepped$code,"\n",prepped$message,"\n")
@@ -519,7 +531,7 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
     class(impdata) <- "amelia"
     class(impdata$imputations) <- c("mi","list")
 
-    x.boot<-bootx(prepped$x,prepped$priors)
+    x.boot<-bootx(prepped$x,prepped$priors, boot.type)
     x.stacked<-amstack(x.boot$x,colorder=FALSE,x.boot$priors)   # Don't reorder columns thetanew will not align with d.stacked$x
 
     if (p2s) cat("-- Imputation", X, "--\n")
@@ -575,11 +587,13 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
     ## first, we put the data into the output list and name it
     impdata$imputations[[1]] <- impfill(x.orig = x, x.imp = ximp,
                                         noms = prepped$noms,
-                                        ords = prepped$ords, priors = priors)
+                                        ords = prepped$ords, priors = priors,
+                                        overimp = overimp)
 
     if (p2s) cat("\n")
     if (frontend) {
-      tcl(getAmelia("runAmeliaProgress"), "step",(100/m -1))
+      requireNamespace("tcltk")
+      tcltk::tcl(getAmelia("runAmeliaProgress"), "step",(100/m -1))
     }
 
     impdata$code <- code
