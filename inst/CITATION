@@ -5,7 +5,7 @@ bibentry(
   title        = "{Amelia II}: A Program for Missing Data",
   author       = c(person("James", "Honaker", email="jhonaker@iq.harvard.edu", role="aut"),
                    person("Gary", "King", email="king@harvard.edu", role="aut"),
-                   person("Matthew", "Blackwell", email="", role="aut")),
+                   person("Matthew", "Blackwell", email="mblackwell@gov.harvard.edu", role="aut")),
   journal      = "Journal of Statistical Software",
   year         = "2011",
   volume       = "45",
