@@ -1,10 +1,11 @@
 citHeader("To cite Amelia in publications use:")
 
-citEntry(entry = "Article",
+bibentry(
+  bibtype = "Article",
   title        = "{Amelia II}: A Program for Missing Data",
-  author       = personList(as.person("James Honaker"),
-                   as.person("Gary King"),
-                   as.person("Matthew Blackwell")),
+  author       = c(person("James", "Honaker", email="jhonaker@iq.harvard.edu", role="aut"),
+                   person("Gary", "King", email="king@harvard.edu", role="aut"),
+                   person("Matthew", "Blackwell", email="", role="aut")),
   journal      = "Journal of Statistical Software",
   year         = "2011",
   volume       = "45",
