@@ -956,16 +956,17 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
       return(list(code=error.code,mess=error.mess))
     }
   }
-
-  if (is.data.frame(x)) {
-    lmcheck <- lm(I(rnorm(AMn))~ ., data = x[,idcheck, drop = FALSE])
-  } else {
-    lmcheck <- lm(I(rnorm(AMn))~ ., data = as.data.frame(x[,idcheck, drop = FALSE]))
-  }
-  if (any(is.na(coef(lmcheck)))) {
-    bad.var <- names(x[,idcheck])[which(is.na(coef(lmcheck))) - 1]
-    bar.var <- paste(bad.var, collapse = ", ")
-    stop(paste("The variable ",bad.var,"is perfectly collinear with another variable in the data.\n"))
+  if (nrow(na.omit(as.data.frame(x[ , idcheck, drop = FALSE]))) > 0) {
+    if (is.data.frame(x)) {
+      lmcheck <- lm(I(rnorm(AMn))~ ., data = x[,idcheck, drop = FALSE])
+    } else {
+      lmcheck <- lm(I(rnorm(AMn))~ ., data = as.data.frame(x[,idcheck, drop = FALSE]))
+    }
+    if (any(is.na(coef(lmcheck)))) {
+      bad.var <- names(x[,idcheck])[which(is.na(coef(lmcheck))) - 1]
+      bar.var <- paste(bad.var, collapse = ", ")
+      stop(paste("The variable ",bad.var,"is perfectly collinear with another variable in the data.\n"))
+    }
   }
 
   return(list(m=m,priors=priors))
