@@ -660,7 +660,7 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
   imps <- array(NA, dim=c(nrow(cross.sec), draws))
 
 
-  drawsperimp <- (1/output$m)*draws
+  drawsperimp <- draws/output$m
   if (sum(miss) > 0) {
     for (i in 1:draws) {
       currtheta <- output$theta[,,ceiling(i/drawsperimp)]
