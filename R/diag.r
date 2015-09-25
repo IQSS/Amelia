@@ -358,7 +358,7 @@ disperse <- function(output, m = 5, dims = 1, p2s = 0, frontend=FALSE,...) {
   data <- getOriginalData(output)
 
   if (frontend) {
-    require(tcltk)
+    requireNamespace("tcltk")
     putAmelia("output.log", c(getAmelia("output.log"), "==== Overdispersion Output ====\n"))
   }
 
