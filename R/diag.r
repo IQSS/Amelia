@@ -597,7 +597,7 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
                      pch, ylim, xlim, frontend = FALSE, plotall=FALSE, nr, nc, pdfstub, ...) {
   if (missing(var))
     stop("I don't know which variable (var) to plot")
-  if (missing(cs))
+  if (missing(cs) && !plotall)
     stop("case name (cs) is not specified")
   if (is.null(output$arguments$ts) || is.null(output$arguments$cs))
     stop("both 'ts' and 'cs' need to be set in the amelia output")
