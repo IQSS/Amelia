@@ -964,7 +964,7 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
           lmcheck <- lm(I(rnorm(AMn))~ ., data = as.data.frame(x[,idcheck, drop = FALSE]))
       }
       if (any(is.na(coef(lmcheck)))) {
-          bad.var <- names(x[,idcheck])[which(is.na(coef(lmcheck))) - 1]
+          bad.var <- colnames(x[,idcheck])[which(is.na(coef(lmcheck))) - 1]
           bar.var <- paste(bad.var, collapse = ", ")
           stop(paste("The variable ",bad.var,"is perfectly collinear with another variable in the data.\n"))
       }
