@@ -693,6 +693,9 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
     dev.new()
   }
 
+  if (!missing(main)) {
+    main <- rep(main, length.out = length(cs))
+  }
   count<-0
   for(i in 1:length(cs)){
 
@@ -713,7 +716,7 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
           }
 
       cols <- ifelse(current.miss, misscol, obscol)
-      current.main<-ifelse(missing(main), cs[i], main)  # Allow title to be rolling if not defined
+      current.main<-ifelse(missing(main), as.character(cs[i]), main[i])  # Allow title to be rolling if not defined
       if(missing(xlim)){                                # Allow axes to vary by unit, if not defined
         current.xlim<-range(current.time)
       }else{
