@@ -298,9 +298,14 @@ overimpute <- function(output, var, subset, legend = TRUE, xlab, ylab,
   } else {
     xplot<-data[-prepped$blanks,][prepped$n.order,var][!fully.missing]
   }
-
-
-  addedroom<-(max(uppers)-min(lowers))*0.1
+  addedroom <- (max(uppers)-min(lowers))*0.1
+  if (!hasArg(log)) {
+    this.ylim <- range(c(lowers-addedroom,uppers))
+    legpos <- "bottomright"
+  } else {
+    this.ylim <- range(c(lowers[lowers > 0], uppers + addedroom))
+    legpos <- "topright"
+  }
 
   if (missing(xlab)) {
     xlab <- "Observed Values"
@@ -316,11 +321,11 @@ overimpute <- function(output, var, subset, legend = TRUE, xlab, ylab,
     dev.new()
   }
   ci.order<-order(uppers-lowers,decreasing=TRUE)     # Allows smallest CI's to be printed last, and thus not buried in the plot.
-  overplot<-plot(xplot[ci.order],means[ci.order],xlab=xlab,ylab=ylab,ylim=range(c(lowers-addedroom,uppers)),type='p',main=main,
+  overplot<-plot(xplot[ci.order],means[ci.order],xlab=xlab,ylab=ylab,ylim=this.ylim,type='p',main=main,
                  col=color[ci.order], pch = 19,...)
   segments(xplot[ci.order],lowers[ci.order],xplot[ci.order],uppers[ci.order],col=color[ci.order])
   if (legend) {
-    legend("bottomright",legend=c(" 0-.2",".2-.4",".4-.6",".6-.8",".8-1"),
+    legend(legpos,legend=c(" 0-.2",".2-.4",".4-.6",".6-.8",".8-1"),
            col=spectrum,lty=c(1,1),horiz=TRUE,bty="n")
   }
 
