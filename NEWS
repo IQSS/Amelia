@@ -4,6 +4,14 @@
 //
 //
 
+== 1.7.4 (21 Nov 2015) ==
+   * Fixed issue with log axes in overimpute
+   * Allow for vector in 'main' argument in tscsPlot()
+   * Moved a collinearity check from error to warning.
+   * Handle subsets better in moPrep()
+   * tscsPlot() won't throw an error when cs is unspecified and plotall=TRUE
+   * Fixed other small bugs and issues
+   
 == 1.7.3 (14 Nov 2014) ==
    * Fixed bug with overimp not being respected
    * Added an argument boot.type='none' to amelia() to allow it to run on the original, non-bootstrapped data
