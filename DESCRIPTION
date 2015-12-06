@@ -1,6 +1,6 @@
 Package: Amelia
 Version: 1.7.4
-Date: 2015-11-21
+Date: 2015-12-05
 Title: A Program for Missing Data
 Author: James Honaker <jhonaker@iq.harvard.edu>,
         Gary King <king@harvard.edu>,
@@ -9,7 +9,7 @@ Maintainer: Matthew Blackwell <mblackwell@gov.harvard.edu>
 Depends: R (>= 3.0.2), Rcpp (>= 0.11)
 Imports: foreign, utils, grDevices, graphics, methods, stats
 LinkingTo: Rcpp (>= 0.11), RcppArmadillo
-Description: This package "multiply imputes" missing data in a single cross-section
+Description: A tool that "multiply imputes" missing data in a single cross-section
   (such as a survey), from a time series (like variables collected for
   each year in a country), or from a time-series-cross-sectional data
   set (such as collected by years for each of several countries).
