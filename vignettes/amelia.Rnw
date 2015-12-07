@@ -1802,25 +1802,25 @@ analysis with the original data simply by running
 
 <<results = hide>>=
 require(Zelig)
-z.out <- zelig(tariff ~ polity + pop + gdp.pc + year +country, data = freetrade, model = "ls")
+z5 <- zls$new()
+z5$zelig(tariff ~ polity + pop + gdp.pc + year + country, data = freetrade)
 @
 
 <<>>=
-summary(z.out)
+z5
 @
 
 Running the same model with imputed data is almost identical. Simply
-replace the original data set with the imputations from the \code{amelia}
-output:
+replace the original data set with the  \code{amelia} output:
 
 
 <<>>=
-z.out.imp <- zelig(tariff ~ polity + pop + gdp.pc + year +country, data =
-                   a.out$imputations, model = "ls")
+z5 <- zls$new()
+z5$zelig(tariff ~ polity + pop + gdp.pc + year + country, data = a.out)
 @ %$
 
 <<>>=
-summary(z.out.imp)
+z5
 @
 
 

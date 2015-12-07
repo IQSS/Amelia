@@ -298,9 +298,14 @@ overimpute <- function(output, var, subset, legend = TRUE, xlab, ylab,
   } else {
     xplot<-data[-prepped$blanks,][prepped$n.order,var][!fully.missing]
   }
-
-
-  addedroom<-(max(uppers)-min(lowers))*0.1
+  addedroom <- (max(uppers)-min(lowers))*0.1
+  if (!hasArg(log)) {
+    this.ylim <- range(c(lowers-addedroom,uppers))
+    legpos <- "bottomright"
+  } else {
+    this.ylim <- range(c(lowers[lowers > 0], uppers + addedroom))
+    legpos <- "topright"
+  }
 
   if (missing(xlab)) {
     xlab <- "Observed Values"
@@ -316,11 +321,11 @@ overimpute <- function(output, var, subset, legend = TRUE, xlab, ylab,
     dev.new()
   }
   ci.order<-order(uppers-lowers,decreasing=TRUE)     # Allows smallest CI's to be printed last, and thus not buried in the plot.
-  overplot<-plot(xplot[ci.order],means[ci.order],xlab=xlab,ylab=ylab,ylim=range(c(lowers-addedroom,uppers)),type='p',main=main,
+  overplot<-plot(xplot[ci.order],means[ci.order],xlab=xlab,ylab=ylab,ylim=this.ylim,type='p',main=main,
                  col=color[ci.order], pch = 19,...)
   segments(xplot[ci.order],lowers[ci.order],xplot[ci.order],uppers[ci.order],col=color[ci.order])
   if (legend) {
-    legend("bottomright",legend=c(" 0-.2",".2-.4",".4-.6",".6-.8",".8-1"),
+    legend(legpos,legend=c(" 0-.2",".2-.4",".4-.6",".6-.8",".8-1"),
            col=spectrum,lty=c(1,1),horiz=TRUE,bty="n")
   }
 
@@ -358,7 +363,7 @@ disperse <- function(output, m = 5, dims = 1, p2s = 0, frontend=FALSE,...) {
   data <- getOriginalData(output)
 
   if (frontend) {
-    require(tcltk)
+    requireNamespace("tcltk")
     putAmelia("output.log", c(getAmelia("output.log"), "==== Overdispersion Output ====\n"))
   }
 
@@ -597,7 +602,7 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
                      pch, ylim, xlim, frontend = FALSE, plotall=FALSE, nr, nc, pdfstub, ...) {
   if (missing(var))
     stop("I don't know which variable (var) to plot")
-  if (missing(cs))
+  if (missing(cs) && !plotall)
     stop("case name (cs) is not specified")
   if (is.null(output$arguments$ts) || is.null(output$arguments$cs))
     stop("both 'ts' and 'cs' need to be set in the amelia output")
@@ -660,7 +665,7 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
   imps <- array(NA, dim=c(nrow(cross.sec), draws))
 
 
-  drawsperimp <- (1/output$m)*draws
+  drawsperimp <- draws/output$m
   if (sum(miss) > 0) {
     for (i in 1:draws) {
       currtheta <- output$theta[,,ceiling(i/drawsperimp)]
@@ -693,6 +698,9 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
     dev.new()
   }
 
+  if (!missing(main)) {
+    main <- rep(main, length.out = length(cs))
+  }
   count<-0
   for(i in 1:length(cs)){
 
@@ -713,7 +721,7 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
           }
 
       cols <- ifelse(current.miss, misscol, obscol)
-      current.main<-ifelse(missing(main), cs[i], main)  # Allow title to be rolling if not defined
+      current.main<-ifelse(missing(main), as.character(cs[i]), main[i])  # Allow title to be rolling if not defined
       if(missing(xlim)){                                # Allow axes to vary by unit, if not defined
         current.xlim<-range(current.time)
       }else{

@@ -379,17 +379,20 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
     cat("Variables used: ", theta.names,"\n")
   }
 
-  AMr1<-is.na(x)
-  flag<-rowSums(AMr1)==ncol(x)
+  AMr1 <- is.na(x)
+  flag <- rowSums(AMr1)==ncol(x)
 
-  if (max(flag)==1){
-    blanks<-1:nrow(x)
-    blanks<-blanks[flag]
-    x<-x[!flag,]
+  if (max(flag) == 1){
+    blanks <- which(flag)
+    x <- x[!flag,]
     if (!is.null(priors)) {
       priors <- priors[!(priors[,1] %in% blanks),]
-      priors[,1] <- priors[,1,drop=FALSE] - colSums(sapply(priors[,1,drop=FALSE],">",blanks))
-
+      if (length(blanks) == 1) {
+        row.adjust <- 1 * (priors[, 1, drop = FALSE] > blanks)
+      } else {
+        row.adjust <- colSums(sapply(priors[, 1, drop = FALSE],">",blanks))
+      }
+      priors[,1] <- priors[,1,drop=FALSE] - row.adjust
     }
 
 

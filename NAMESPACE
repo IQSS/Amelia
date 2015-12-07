@@ -27,3 +27,14 @@ S3method(moPrep, default)
 S3method(transform, amelia)
 
 useDynLib(Amelia)
+
+importFrom("grDevices", "chull", "colorRampPalette", "dev.copy2pdf",
+           "dev.new", "devAskNewPage", "heat.colors", "rainbow", "rgb")
+importFrom("graphics", "abline", "arrows", "axis", "hist", "image",
+           "legend", "lines", "matplot", "par", "plot", "plot.new",
+           "plot.window", "points", "rect", "segments", "text",
+           "xinch", "xyinch")
+importFrom("methods", "hasArg", "is")
+importFrom("stats", "coef", "complete.cases", "cov", "density", "lm",
+           "na.omit", "prcomp", "qnorm", "quantile", "rbinom",
+           "reshape", "rnorm", "runif", "sd", "var")

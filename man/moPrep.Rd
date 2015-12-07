@@ -71,7 +71,7 @@ moPrep(x, formula, subset, error.proportion,
 \references{
 Matthew Blackwell, James Honaker, and Gary King, "Multiple
   Overimputation: A Unified Approach to Measurement Error and Missing
-  Data" \url{http://gking.harvard.edu/files/abs/measure-abs.shtml}
+  Data" \url{http://gking.harvard.edu/publications/multiple-Overimputation-Unified-Approach-Measurement-Error-And-Missing-Data}
 }
 \seealso{
   \code{\link{amelia}}

@@ -814,7 +814,7 @@ fillMainTree <- function() {
 AmeliaView<-function() {
 
   ##Preamble
-  require(tcltk) || stop("The package 'tcltk' is required")
+  requireNamespace("tcltk") || stop("The package 'tcltk' is required")
 
   if (.Platform$OS.type != "windows") {
     tcltk::tcl("ttk::style", "theme", "use", "clam")
@@ -2086,9 +2086,11 @@ show.output.log <- function() {
 
 
   if (exists("log.top", envir = ameliaEnv)) {
-    tcltk::tkdelete(getAmelia("log.viewer"), 0, "end")
+    tcltk::tkconfigure(getAmelia("log.viewer"), state = "normal")
+    tcltk::tkdelete(getAmelia("log.viewer"), "0.0", "end")
     tcltk::tkinsert(getAmelia("log.viewer"), "end",
-             paste(getAmelia("output.log"), collapse = ""))
+                    paste(getAmelia("output.log"), collapse = ""))
+    tcltk::tkconfigure(getAmelia("log.viewer"), state = "disabled")
     tcltk::tkwm.deiconify(getAmelia("log.top"))
     tcltk::tkraise(getAmelia("log.top"))
     tcltk::tkfocus(getAmelia("log.top"))

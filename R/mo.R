@@ -62,6 +62,9 @@ moPrep.default <- function(x, formula, subset, error.proportion, gold.standard=!
   m$data <- m$x
   m$x <- NULL
   mf <- eval(m, sys.frame(sys.parent()))
+
+  if (nrow(mf) == 0L)
+    stop("0 cases to overimpute, check subset argument")
   if (!missing(error.proportion)) {
     if (length(error.proportion) == nrow(x)) {
       if (!missing(subset)) {
@@ -98,14 +101,10 @@ moPrep.default <- function(x, formula, subset, error.proportion, gold.standard=!
   }
 
   if (gold.standard && !is.null(m$subset)) {
-    if (is.logical(subset)) {
-      m$subset <- as.name(paste("!",m$subset,sep=""))
-    } else if (is.character(subset)) {
-      m$subset <- as.name(paste("setdiff(rownames(",x,"),",m$subset,")",sep=""))
-    } else {
-      m$subset <- as.name(paste("-",m$subset,sep=""))
-    }
-    gs <- rbind(gs, eval(m, sys.frame(sys.parent())))
+    m$subset <- NULL
+    mf.full <- eval(m, sys.frame(sys.parent()))
+    gs2 <- mf.full[which(!(rownames(mf.full) %in% rownames(mf))), , drop = FALSE]
+    gs <- rbind(gs, gs2)
     var.gs <- var(gs[,1],na.rm=TRUE)
     prior.var <- var.mm - var.gs
   }
