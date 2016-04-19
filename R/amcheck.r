@@ -173,13 +173,18 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   AMp<-ncol(x)
   subbedout<-c(idvars,cs,ts)
 
+  if (is.null(idvars))
+    idcheck <- c(1:AMp)
+  else
+    idcheck <- -idvars
 
-                                        #Error Code: 4
-                                        #Completely missing columns
-  if (any(colSums(!is.na(x)) <= 1)) {
-    all.miss <- colnames(x)[colSums(!is.na(x)) <= 1]
+  ## Error Code: 4
+  ## Completely missing columns
+
+  if (any(colSums(!is.na(x[,idcheck])) <= 1)) {
+    all.miss <- colnames(x[,idcheck])[colSums(!is.na(x[,idcheck])) <= 1]
     if (is.null(all.miss)) {
-      all.miss <- which(colSums(!is.na(x)) <= 1)
+      all.miss <- which(colSums(!is.na(x[,idcheck])) <= 1)
     }
     all.miss <- paste(all.miss, collapse = ", ")
     error.code<-4
@@ -629,14 +634,14 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   }
 
   if (is.null(c(noms,ords,idvars,cs)))
-    fact<-c(1:AMp)
+    fact <- c(1:AMp)
   else
-    fact<--c(noms,ords,idvars,cs)
+    fact <- -c(noms,ords,idvars,cs)
 
   if (is.null(c(cs,idvars)))
-    idcheck<-c(1:AMp)
+    idcheck <- c(1:AMp)
   else
-    idcheck<--c(cs,idvars)
+    idcheck <- -c(cs,idvars)
 
   ##Error code: 37
   ##factors out of the noms,ids,ords,cs
