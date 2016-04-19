@@ -236,8 +236,8 @@ while ( ( (cvalue > 0) | (count < emburn(0)) )  & ( (count < emburn(1)) | (embur
     }
     iterHist.resize(iterHist.n_rows+1, iterHist.n_cols);
     iterHist(count, 0) = cvalue;
-    iterHist(count, 1) = singFlag;
-    iterHist(count, 2) = monoFlag;
+    iterHist(count, 1) = monoFlag;
+    iterHist(count, 2) = singFlag;
     if (allthetas(0) == 1) {   
       thetaHolder.resize(thetaHolder.n_rows, thetaHolder.n_cols + 1);
       thetaHolder.col(count) = thetaold.elem(upperpos);
