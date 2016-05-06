@@ -191,7 +191,7 @@ frame.to.matrix<-function(x,idvars) {
   if (length(char.vars) > 0)
     for (i in char.vars)
       if (is.na(match(i,idvars)))
-        x[,i]<-as.factor(x[,i])         #changes cs/noms char. vars to factors
+        x[,i]<-as.factor(x[[i]])         #changes cs/noms char. vars to factors
       else
         x[,i]<-1                        #junks id char vars.
 
