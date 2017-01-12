@@ -161,19 +161,24 @@
 }
 
 \details{ Multiple imputation is a method for analyzing incomplete
-  multivariate data.  This function will take an incomplete dataset in
+  multivariate data. This function will take an incomplete dataset in
   either data frame or matrix form and return \code{m} imputed datatsets
-  with no missing values. The algorithm first bootstraps a sample dataset
-  with the same dimensions as the original data, estimates the sufficient statistics (with priors if specified) by EM, and then imputes the missing
-  values of sample.  It repeats this process \code{m} times to produce
-  the \code{m} complete datasets where the observed values are the same and the unobserved values are drawn from their posterior distributions.
+  with no missing values. The algorithm first creates a bootstrapped
+  version of the original data, estimates the sufficient statistics
+  (with priors if specified) by EM on this bootstrapped sample, and then
+  imputes the missing values of the original data using the estimated
+  sufficient statistics. It repeats this process \code{m} times to
+  produce the \code{m} complete datasets where the observed values are
+  the same and the unobserved values are drawn from their posterior
+  distributions.
 
   The function will start a "fresh" run of the algorithm if \code{x} is
   either a incomplete matrix or data.frame. In this method, all of the
-  options will be user-defined or set to their default. If \code{x} the output of
-  a previous Amelia run (that is, an object of class "amelia"), then
-  Amelia will run with the options used in that previous run. This is a
-  convenient way to run more imputations of the same model.
+  options will be user-defined or set to their default. If \code{x} the
+  output of a previous Amelia run (that is, an object of class
+  "amelia"), then Amelia will run with the options used in that previous
+  run. This is a convenient way to run more imputations of the same
+  model.
   
   You can provide Amelia with informational priors about the missing
   observations in your data.  To specify priors, pass a four or five
