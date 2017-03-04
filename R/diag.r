@@ -251,7 +251,7 @@ overimpute <- function(output, var, subset, legend = TRUE, xlab, ylab,
       xx <- matrix(x, 20, AMp, byrow = TRUE)
       rr <- matrix(AMr1[i,], 20, AMp, byrow = TRUE)
       xc <- .Call("ameliaImpute", xx, rr, oo, mm, c(1,nrow(xx)+1), thetareal, NULL,
-                   NULL, NULL, package = "Amelia")
+                   NULL, NULL, PACKAGE = "Amelia")
       conf <- c(conf, xc[,stacked.var])
     }
 
