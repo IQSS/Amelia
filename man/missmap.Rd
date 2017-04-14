@@ -36,6 +36,9 @@ missmap(obj, legend = TRUE, col = c("wheat","darkred"), main,
     the order of the variables along the the x-axis is sorted by the
     percent missing (from highest to lowest). If \code{FALSE}, it is
     simply the order of the variables in the data.}
+    \item{margins}{a vector of length two that specifies the bottom and
+      left margins of the plot. Useful for when variable names or
+      row names are long.}
   \item{\dots}{further graphical arguments.}
 }
 

@@ -11,21 +11,23 @@
 ## OUPUTS: none
 ##
 
-missmap <- function(obj, legend = TRUE, col = c("wheat", "darkred"), main,
+missmap <- function(obj, legend = TRUE, col = c("indianred", "dodgerblue"), main,
                     y.cex = 0.8, x.cex = 0.8, y.labels, y.at, csvar = NULL,
-                    tsvar = NULL, rank.order = TRUE, ...) {
+                    tsvar = NULL, rank.order = TRUE, margins = c(5, 5), ...) {
 
   if (class(obj) == "amelia") {
     vnames <- colnames(obj$imputations[[1]])
     n <- nrow(obj$missMatrix)
     p <- ncol(obj$missMatrix)
     percent.missing <- colMeans(obj$missMatrix)
+    pmiss.all <- mean(obj$missMatrix)
     r1 <- obj$missMatrix
   } else {
     vnames <- colnames(obj)
     n <- nrow(obj)
     p <- ncol(obj)
     percent.missing <- colMeans(is.na(obj))
+    pmiss.all <- mean(is.na(obj))
     r1 <- 1*is.na(obj)
   }
 
@@ -94,8 +96,13 @@ missmap <- function(obj, legend = TRUE, col = c("wheat", "darkred"), main,
   if (missing(main))
     main <- "Missingness Map"
 
+  par(mar = c(margins, 2, 1) + 0.1)
   ## here we fork for data/tscs type plots. users cant set this yet.
   type <- "data"
+  if (legend) {
+    layout(matrix(c(1,2), nrow = 1), widths = c(0.75, 0.25))
+    par(mar = c(margins, 2, 0) + 0.1, mgp = c(3, 0.25, 0))
+  }
   if (type == "data") {
 
     col.fix <- col
@@ -105,16 +112,17 @@ missmap <- function(obj, legend = TRUE, col = c("wheat", "darkred"), main,
     image(x = 1:(p), y = 1:n, z = chess, axes = FALSE,
           col = col.fix, xlab="", ylab="", main = main)
 
-    axis(1, lwd = 0, labels = vnames, las = 2, at = 1:p, padj = .5,
-         pos = 4, cex.axis = x.cex)
-    axis(2, lwd = 0, labels = y.labels, las =2, at = y.at, pos =
-         .7, hadj = 1, cex.axis = y.cex)
+    axis(1, lwd = 0, labels = vnames, las = 2, at = 1:p, cex.axis = x.cex)
+    axis(2, lwd = 0, labels = y.labels, las =1, at = y.at, cex.axis = y.cex)
 
 
     if (legend) {
-      par(xpd = TRUE)
-      legend(x = p*1.07, y = n*1.07, col = col, bty = "n", xjust = 1,
-             legend = c("Missing", "Observed"), fill = col, horiz = TRUE)
+      pm.lab <- paste("Missing (", round(100 * pmiss.all), "%)", sep = "")
+      po.lab <- paste("Observed (", 100-round(100 * pmiss.all), "%)", sep = "")
+      par(mar = c(0, 0, 0, 0.3))
+      plot(0,0, type = "n", axes=  FALSE, ann=FALSE)
+      legend("left", col = col, bty = "n", xjust = 0, border = NA,
+             legend = c(pm.lab, po.lab), fill = col, horiz = FALSE)
 
     }
   } else {
@@ -137,7 +145,7 @@ missmap <- function(obj, legend = TRUE, col = c("wheat", "darkred"), main,
          0, las = 1, cex.axis = .8)
 
     if (legend) {
-      par(xpd = TRUE)
+      ## par(xpd = TRUE)
       legend(x = 0.95, y = 1.01, col = cols, bty = "n",
              xjust = 1, legend = c("0-0.2",
                           "0.2-0.4","0.4-0.6","0.6-0.8","0.8-1"), fill =cols, horiz = TRUE)
