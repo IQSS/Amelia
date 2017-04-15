@@ -613,56 +613,71 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
 
                                         # Allow character names as arguments for "var" with data.frames
 
-  if(is.character(var)){
-    if(!is.data.frame(data)){
+  if (is.character(var)) {
+    if (!is.data.frame(data)) {
       stop("'var' must be identified by column number as dataset is not a data frame")
     } else {
-      varpos<-match(var,colnames(data))
-      if(is.na(varpos)){
+      varpos <- match(var, colnames(data))
+      if (is.na(varpos)) {
         stop("the name provided for 'var' argument does not exist in the dataset provided")
       } else {
-        var<-varpos
+        var <- varpos
       }
     }
   }
 
-  units <- sort(unique(data[,output$arguments$cs]))
-  if(plotall){
-        cs<-units
-  }else{
+  csvarname <- output$arguments$cs
+  tsvarname <- output$arguments$ts
+  if (is.data.frame(data)) {
+    csvar <- data[[csvarname]]
+    tsvar <- data[[tsvarname]]
+  } else {
+    csvar <- data[,output$arguments$cs]
+    tsvar <- data[,output$arguments$ts]
+  }
+
+  if (is.factor(csvar)) {
+      units <- levels(csvar)
+  } else {
+      units <- unique(csvar)
+  }
+
+  if (plotall) {
+        cs <- units
+  } else {
     if (!(all(cs %in% units)))
       stop("some cross-section unit requested for the plot is not in the data")
   }
 
 # Picks a number of rows and columns if not user defined.  Maxs out at 4-by-4, unless user defined
-        if(missing(nr)){
-          nr<-min(4,ceiling(sqrt(length(cs))))
-        }
-        if(missing(nc)){
-          nc<-min(4,ceiling(length(cs)/nr))
-        }
-
-  if(length(cs)>1){
-        oldmfcol<-par()$mfcol
-    par(mfcol=c(nr,nc))
+  if (missing(nr)) {
+    nr <- min(4, ceiling(sqrt(length(cs))))
+  }
+  if (missing(nc)) {
+    nc <- min(4, ceiling(length(cs)/nr))
   }
 
-  prepped <- amelia.prep(x = data, arglist=output$arguments)
+  if (length(cs)>1) {
+    oldmfcol <- par()$mfcol
+    par(mfcol = c(nr, nc))
+  }
+
+  prepped <- amelia.prep(x = data, arglist = output$arguments)
   if (!is.null(prepped$blanks)) {
     data <- data[-prepped$blanks,]
-    unit.rows <- which(data[,output$arguments$cs] %in% cs)
+    unit.rows <- which(csvar %in% cs)
     miss <- output$missMatrix[-prepped$blanks,][unit.rows, var] == 1
   } else {
-    unit.rows <- which(data[,output$arguments$cs] %in% cs)
+    unit.rows <- which(csvar %in% cs)
     miss <- output$missMatrix[unit.rows, var] == 1
   }
 
-  time <- data[unit.rows, output$arguments$ts]   # These are the time values for rows appearing in some future plot
-  imps.cs<-data[unit.rows,output$arguments$cs]   # These are the cs units for rows appearing in some future plot
+  time <- tsvar[unit.rows]   # These are the time values for rows appearing in some future plot
+  imps.cs <- csvar[unit.rows]   # These are the cs units for rows appearing in some future plot
   cross.sec <- prepped$x[!is.na(match(prepped$n.order, unit.rows)),]
-  stacked.var<-match(var,prepped$subset.index[prepped$p.order])
-  subset.var<-match(var,prepped$subset.index)
-  imps <- array(NA, dim=c(nrow(cross.sec), draws))
+  stacked.var <- match(var, prepped$subset.index[prepped$p.order])
+  subset.var <- match(var, prepped$subset.index)
+  imps <- array(NA, dim = c(nrow(cross.sec), draws))
 
 
   drawsperimp <- draws/output$m
@@ -677,13 +692,13 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
 
     imps <- imps*prepped$scaled.sd[subset.var] + prepped$scaled.mu[subset.var]
     if (var %in% output$arguments$logs) {
-      imps <- exp(imps)+prepped$xmin[which(var==output$arguments$logs)]
+      imps <- exp(imps) + prepped$xmin[which(var == output$arguments$logs)]
     }
     if (var %in% output$arguments$sqrt) {
       imps <- imps^2
     }
     if (var %in% output$arguments$lgstc) {
-      imps <- exp(imps)/(1+exp(imps))
+      imps <- exp(imps)/(1 + exp(imps))
     }
 
     outoforder <- match(prepped$n.order, unit.rows)[!is.na(match(prepped$n.order, unit.rows))]
@@ -701,61 +716,64 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
   if (!missing(main)) {
     main <- rep(main, length.out = length(cs))
   }
-  count<-0
+  count <- 0
   for(i in 1:length(cs)){
 
-      current.rows<- which(data[,output$arguments$cs]==cs[i])
-      current.time<- data[current.rows, output$arguments$ts]
+      current.rows <- which(csvar == cs[i])
+      current.time <- tsvar[current.rows]
 
-      flag<-imps.cs==cs[i]
-      current.miss<- miss[flag]
+      flag <- imps.cs == cs[i]
+      current.miss <- miss[flag]
 
-      if(sum(current.miss)>0){
-          current.imps<-imps[flag,]
-          current.means <- rowMeans(current.imps)
-          current.uppers <- apply(current.imps, 1, quantile, probs=(conf + (1 - conf)/2))   # THIS IS LIKELY SLOW
-          current.lowers <- apply(current.imps, 1, quantile, probs=(1-conf)/2)              # THIS IS LIKELY SLOW
-          } else {
-          current.means <- data[current.rows, var]
-          current.uppers <- current.lowers <- current.means
-          }
+      if (sum(current.miss) > 0) {
+        current.imps <- imps[flag,]
+        current.means <- rowMeans(current.imps)
+        current.uppers <- apply(current.imps, 1, quantile, probs = (conf + (1 - conf)/2))   # THIS IS LIKELY SLOW
+        current.lowers <- apply(current.imps, 1, quantile, probs = (1-conf)/2)              # THIS IS LIKELY SLOW
+      } else {
+        current.means <- data[[var]][current.rows]
+        current.uppers <- current.lowers <- current.means
+      }
 
       cols <- ifelse(current.miss, misscol, obscol)
-      current.main<-ifelse(missing(main), as.character(cs[i]), main[i])  # Allow title to be rolling if not defined
-      if(missing(xlim)){                                # Allow axes to vary by unit, if not defined
-        current.xlim<-range(current.time)
-      }else{
-        current.xlim<-xlim
+      current.main <- ifelse(missing(main), as.character(cs[i]), main[i])  # Allow title to be rolling if not defined
+      if (missing(xlim)) {                                # Allow axes to vary by unit, if not defined
+        current.xlim <- range(current.time)
+      } else {
+        current.xlim <- xlim
       }
-      if(missing(ylim)){
-        current.ylim<-range(current.uppers,current.lowers,current.means)
-      }else{
-        current.ylim<-ylim
-      }
-
-      plot(x = current.time, y = current.means, col = cols, pch = pch, ylim = current.ylim, xlim = current.xlim,
-         ylab = ylab, xlab = xlab, main = current.main, ...)
-      segments(x0 = current.time, x1 = current.time, y0 = current.lowers, y1 = current.uppers, col = cols, ...)
-
-      oiDetect <- (sum(output$missMatrix[current.rows,var]) +
-               sum(!is.na(data[current.rows, var]))) > length(current.rows)
-      if (oiDetect) {
-        points(x = current.time, y = data[current.rows, var], pch = pch, col = obscol)
+      if (missing(ylim)) {
+        current.ylim <- range(current.uppers,current.lowers,current.means)
+      } else {
+        current.ylim <- ylim
       }
 
-      # print page if window full
-          if((!missing(pdfstub)) & (i %% (nr*nc) ==0)){
-                count<-count+1
-                dev.copy2pdf(file=paste(pdfstub,count,".pdf",sep=""))
-          }
+    plot(x = current.time, y = current.means, col = cols, pch = pch,
+         ylim = current.ylim, xlim = current.xlim, ylab = ylab, xlab = xlab,
+         main = current.main, ...)
+    segments(x0 = current.time, x1 = current.time, y0 = current.lowers,
+             y1 = current.uppers, col = cols, ...)
+
+    oiDetect <- (sum(output$missMatrix[current.rows,var]) +
+                   sum(!is.na(data[current.rows, var]))) > length(current.rows)
+    if (oiDetect) {
+      points(x = current.time, y = data[current.rows, var], pch = pch,
+             col = obscol)
+    }
+
+    # print page if window full
+    if ((!missing(pdfstub)) & (i %% (nr*nc) ==0)) {
+      count <- count + 1
+      dev.copy2pdf(file = paste(pdfstub, count, ".pdf", sep=""))
+    }
   }
 
-  if(!missing(pdfstub)){
-    if(i %% (nr*nc) !=0){           # print last page if not complete
-            count<-count+1
-            dev.copy2pdf(file=paste(pdfstub,count,".pdf",sep=""))
+  if (!missing(pdfstub)) {
+    if ((i %% (nr*nc)) != 0) {           # print last page if not complete
+      count <- count + 1
+      dev.copy2pdf(file = paste(pdfstub, count, ".pdf", sep=""))
     }
-    par(mfcol=oldmfcol)             # return to previous windowing
+    par(mfcol = oldmfcol)             # return to previous windowing
   }                                 # although always now fills by col even if previously by row
 
   invisible(imps)
