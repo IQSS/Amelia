@@ -153,8 +153,8 @@ compare.density <- function(output, var, col = c("red","black"), scaled = FALSE,
 ##
 
 
-overimpute <- function(output, var, subset, legend = TRUE, xlab, ylab,
-                       main, frontend = FALSE,...) {
+overimpute <- function(output, var, draws = 20, subset, legend = TRUE, xlab,
+                       ylab, main, frontend = FALSE, ...) {
 
   if (!("amelia" %in% class(output)))
     stop("The 'output' is not Amelia output.")
@@ -233,6 +233,7 @@ overimpute <- function(output, var, subset, legend = TRUE, xlab, ylab,
   ## }
   AMr1[,stacked.var] <- TRUE
   AMp <- ncol(prepped$x)
+  imphold <- matrix(NA, nrow = nrow(prepped$x), ncol = output$m * draws)
   for (i in 1:nrow(prepped$x)) {
     if (fully.missing[i]) {
       next()
@@ -262,15 +263,15 @@ overimpute <- function(output, var, subset, legend = TRUE, xlab, ylab,
       ## the kth theta matrix.
 
       thetareal <- output$theta[,,k]
-      xx <- matrix(x, 20, AMp, byrow = TRUE)
-      rr <- matrix(AMr1[i,], 20, AMp, byrow = TRUE)
+      xx <- matrix(x, draws, AMp, byrow = TRUE)
+      rr <- matrix(AMr1[i,], draws, AMp, byrow = TRUE)
       xc <- .Call("ameliaImpute", xx, rr, oo, mm, c(1, nrow(xx) + 1), thetareal, NULL,
                    NULL, NULL, PACKAGE = "Amelia")
       conf <- c(conf, xc[, stacked.var])
     }
 
     scaled.conf <- (conf * prepped$scaled.sd[subset.var])  + prepped$scaled.mu[subset.var]
-    varlog <- match(var,prepped$logs)
+    varlog <- match(var, prepped$logs)
 
     if (!is.na(varlog)) {
       scaled.conf <- untransform(as.matrix(scaled.conf), logs = 1,
@@ -304,9 +305,11 @@ overimpute <- function(output, var, subset, legend = TRUE, xlab, ylab,
       color <- c(color, spectrum[4])
     else if (pcntmiss >= .80)
       color <- c(color, spectrum[5])
+
+    imphold[i,] <- scaled.conf
     means <- c(means, mean(scaled.conf))
-    lowers <- c(lowers, sort(scaled.conf)[round(output$m * 20 * 0.05)])
-    uppers <- c(uppers, sort(scaled.conf)[round(output$m * 20 * 0.95)])
+    lowers <- c(lowers, sort(scaled.conf)[round(output$m * draws * 0.05)])
+    uppers <- c(uppers, sort(scaled.conf)[round(output$m * draws * 0.95)])
     pcnts <- c(pcnts, pcntmiss)
 
   }
@@ -359,12 +362,13 @@ overimpute <- function(output, var, subset, legend = TRUE, xlab, ylab,
 
   abline(0,1)
 
-  out <- cbind(row = prepped$n.order[!fully.missing],
-               orig = xplot,
-               mean.overimputed = means,
-               lower.overimputed = lowers,
-               upper.overimputed = uppers,
-               prcntmiss = pcnts)
+  out <- list(row = prepped$n.order[!fully.missing],
+              orig = xplot,
+              mean.overimputed = means,
+              lower.overimputed = lowers,
+              upper.overimputed = uppers,
+              prcntmiss = pcnts,
+              overimps = imphold[!is.na(imphold[,1]),])
   invisible(out)
 }
 
@@ -465,7 +469,7 @@ disperse <- function(output, m = 5, dims = 1, p2s = 0, frontend=FALSE,...) {
     addedroom <- (max(reduced.imps) - min(reduced.imps)) * 0.1
     x <- seq(iters[1])
     y <- reduced.imps[1, 1:iters[1]]
-    patt <- seq(1,length(x) - 1)
+    patt <- seq(1, length(x) - 1)
     plot(x, y, col = 1, main = "Overdispersed Start Values",
          xlab = "Number of Iterations", ylab = "Largest Principle Component",
          xlim = c(0, max(iters)),
@@ -489,7 +493,7 @@ disperse <- function(output, m = 5, dims = 1, p2s = 0, frontend=FALSE,...) {
          xlab = "First Principle Component", ylab = "Second Principle Component",
          col=cols[1], xlim = xrange, ylim = yrange)
     for (i in 2:length(iters)) {
-      x < -reduced.imps[1, (sum(iters[1:(i-1)])+1):(sum(iters[1:i]))]
+      x <- reduced.imps[1, (sum(iters[1:(i-1)])+1):(sum(iters[1:i]))]
       y <- reduced.imps[2, (sum(iters[1:(i-1)])+1):(sum(iters[1:i]))]
       patt <- c()
       xdiffs <- diff(x)
