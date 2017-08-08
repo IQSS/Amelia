@@ -1,0 +1,55 @@
+\name{disperse}
+\alias{disperse}
+
+\title{Overdispersed starting values diagnostic for multiple imputation}
+\description{
+A visual diagnostic of EM convergence from multiple overdispersed
+starting values for an output from \code{amelia}.
+}
+\usage{
+disperse(output, m = 5, dims = 1, p2s = 0, frontend = FALSE, \dots)
+}
+
+
+\arguments{
+  \item{output}{output from the function \code{amelia}.}
+  \item{m}{the number of EM chains to run from overdispersed starting values.}
+  \item{dims}{the number of principle components of the parameters to
+    display and assess convergence on (up to 2).}
+  \item{p2s}{an integer that controls printing to screen. 0 (default)
+    indicates no printing, 1 indicates normal screen output and 2
+    indicates diagnostic output.}
+  \item{frontend}{a logical value used internally for the Amelia GUI.}
+  \item{\dots}{further graphical parameters for the plot.}
+    
+}
+
+\details{
+  This function tracks the convergence of \code{m} EM chains which start
+  from various overdispersed starting values. This plot should give some
+  indication of the sensitivity of the EM algorithm to the choice of
+  starting values in the imputation model in \code{output}. If all of
+  the lines converge to the same point, then we can be confident that
+  starting values are not affecting the EM algorithm.
+
+  As the parameter space of the imputation model is of a
+  high-dimension, this plot tracks how the first (and second if
+  \code{dims} is 2) principle component(s) change over the iterations of
+  the EM algorithm. Thus, the plot is a lower dimensional summary of the
+  convergence and is subject to all the drawbacks inherent in said
+  summaries.
+
+  For \code{dims==1}, the function plots a horizontal line at the
+  position where the first EM chain converges. Thus, we are checking
+  that the other chains converge close to that horizontal line. For
+  \code{dims==2}, the function draws a convex hull around the point of
+  convergence for the first EM chain. The hull is scaled to be within
+  the tolerance of the EM algorithm. Thus, we should check that the
+  other chains end up in this hull. 
+
+}
+
+\seealso{Other imputation diagnostics are
+  \code{\link{compare.density}}, \code{\link{disperse}}, and
+  \code{\link{tscsPlot}}.
+}
