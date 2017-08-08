@@ -1,37 +1,36 @@
-#' Missingness Map
+#'  Missingness Map
 #'
-#' @description Plots a missingness map showing where missingness occurs in
+#'  Plots a missingness map showing where missingness occurs in
 #'  the dataset passed to \code{amelia}.
 #'
-#'
-#'  @param {obj}an object of class "amelia"; typically output from the
+#'  @param obj an object of class "amelia"; typically output from the
 #'    function \code{amelia}, a matrix or a dataframe.
-#'  @param {legend}should a legend be drawn?
-#'  @param {col}{a vector of length two where the first element specifies
+#'  @param legend should a legend be drawn?
+#'  @param col a vector of length two where the first element specifies
 #'    the color for missing cells and the second element specifies
 #'    the color for observed cells.
-#'  @param {main}main title of the plot. Defaults to "Missingness Map".
-#'  @param {x.cex}{expansion for the variables names on the x-axis.
-#'  @param {y.cex}{expansion for the unit names on the y-axis.
-#'  @param {y.labels}{a vector of row labels to print on the y-axis
-#'  @param {y.at}{a vector of the same length as \code{y.labels} with row
+#'  @param main main title of the plot. Defaults to "Missingness Map".
+#'  @param x.cex expansion for the variables names on the x-axis.
+#'  @param y.cex expansion for the unit names on the y-axis.
+#'  @param y.labels a vector of row labels to print on the y-axis
+#'  @param y.at a vector of the same length as \code{y.labels} with row
 #'    nmumbers associated with the labels.
-#'  @param {csvar}column number or name of the variable corresponding to
+#'  @param csvar column number or name of the variable corresponding to
 #'    the unit indicator. Only used when the \code{obj} is not of class
 #'    \code{amelia}.
-#'  @param {tsvar}column number or name of the variable corresponding to
+#'  @param tsvar column number or name of the variable corresponding to
 #'    the time indicator. Only used when the \code{obj} is not of class
-#'  @param {amelia}.
-#'  @param {rank.order} a logical value. If \code{TRUE}, the default, then
+#'  @param amelia.
+#'  @param rank.order a logical value. If \code{TRUE}, the default, then
 #'    the order of the variables along the the x-axis is sorted by the
 #'    percent missing (from highest to lowest). If \code{FALSE}, it is
 #'    simply the order of the variables in the data.
-#'  @param {\dots}further graphical arguments.
+#'  @param \dots further graphical arguments.
 #'
 #'  @details
-#' \code{missmap} draws a map of the missingness in a dataset using the
+#'    \code{missmap} draws a map of the missingness in a dataset using the
 #'  \code{image} function. The columns are reordered to put the most
-#' missing variable farthest to the left. The rows are reordered to a
+#'  missing variable farthest to the left. The rows are reordered to a
 #'  unit-period order if the \code{ts} and \code{cs} arguments were passed
 #'  to \code{amelia}. If not, the rows are not reordered.
 #'  
@@ -42,8 +41,8 @@
 #'  \code{y.at} should refer to the rows of the data, not to any point on
 #'  the plotting region.
 #'  
-#' @seealso {\code{\link{compare.density}}, \code{\link{overimpute}},
-#'  \code{\link{tscsPlot}}, \code{\link{image}}, \code{\link{heatmap}}}
+#' @seealso \code{\link{compare.density}}, \code{\link{overimpute}},
+#'  \code{\link{tscsPlot}}, \code{\link{image}}, \code{\link{heatmap}}
 
 missmap <- function(obj, legend = TRUE, col = c("wheat", "darkred"), main,
                     y.cex = 0.8, x.cex = 0.8, y.labels, y.at, csvar = NULL,

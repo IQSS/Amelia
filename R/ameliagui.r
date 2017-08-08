@@ -1,8 +1,8 @@
 #' Interactive GUI for Amelia
 #' 
-#'@description Brings up the AmeliaView graphical interface, which allows users
-#'             to load datasets, manage options and run Amelia from a traditional 
-#'             windowed environment.
+#' Brings up the AmeliaView graphical interface, which allows users
+#' to load datasets, manage options and run Amelia from a traditional 
+#' windowed environment.
 
 main.close<-function() {
   qvalue<-tcltk::tkmessageBox(parent=getAmelia("gui"), message="Are you sure you want to exit Amelia?",

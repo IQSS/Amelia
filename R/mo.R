@@ -1,39 +1,37 @@
-#' Prepare Multiple Overimputation Settings
-#' @description 
+#'  Prepare Multiple Overimputation Settings
+#' 
 #'  A function to generate priors for multiple overimputation of
 #'  a variable measured with error.
 #'
-#'  @param {x}either a matrix, data.frame, or a object of class "molist"
+#'  @param x either a matrix, data.frame, or a object of class "molist"
 #'    from a previous \code{moPrep} call. The first two derive the priors
-#' from the data given, and the third will derive the priors from the
+#'    from the data given, and the third will derive the priors from the
 #'    first \code{moPrep} call and add them to the already defined
 #'    priors.
-#' @param {formula}a formula describing the nature of the measurement
+#' @param formula a formula describing the nature of the measurement
 #'    error for the variable. See "Details."
-#' @param {subset}an optional vector specifying a subset of observations
+#' @param subset an optional vector specifying a subset of observations
 #'    which possess measurement error.
-#' @param {error.proportion}an optional vector specifying the fraction of
+#' @param error.proportion an optional vector specifying the fraction of
 #'      the observed variance that is due to measurement error.
-#' @param {gold.standard}a logical value indicating if values with no
+#' @param gold.standard a logical value indicating if values with no
 #'    measurement error should be used to estimate the measurement error
 #'    variance.
-#' @param {error.sd}an optional vector specifying the standard error of
+#' @param error.sd an optional vector specifying the standard error of
 #'    the measurement error.
 #'
-#' \value{
 #'  An instance of the S3 class "molist" with the following objects:
-#' @param \item{priors}a four-column matrix of the multiple overimputation priors
-#'      associated with the data. Each row of the matrix is \code{c(row,
-#'                                                                  column, prior.mean, prior.sd)}. 
-#' @param {overimp}a two-column matrix of cells to be overimputed. Each
+#' @param priors a four-column matrix of the multiple overimputation priors
+#'    associated with the data. Each row of the matrix is \code{c(row,column, prior.mean, prior.sd)}. 
+#' @param overimp a two-column matrix of cells to be overimputed. Each
 #'    row of the matrix is of the form \code{c(row, column)}, which
 #'    indicate the row and column of the cell to be overimputed.
-#' @param {data}the object name of the matrix or data.frame to which
+#' @param data the object name of the matrix or data.frame to which
 #'    priors refer.
 #'  
 #'  Note that \code{priors} and \code{overimp} might contain results from
 #'  multiple calls to \code{moPrep}, not just the most recent. 
-#'}
+#'
 #' @details 
 #'  This function generates priors for multiple overimputation of data
 #'  measured with error. With the \code{formula} arugment, you can specify
@@ -56,14 +54,13 @@
 #'  error directly.
 #'
 #'@seealso 
-#'  \code{\link{amelia}
+#'  \code{\link{amelia}}
 #'  
 #' @examples 
 #'  data(africa)
 #'  m.out <- moPrep(africa, trade ~ trade, error.proportion = 0.1)
 #'  a.out <- amelia(m.out, ts = "year", cs = "country")
 #'  plot(a.out)
-#'  
 #'  m.out <- moPrep(africa, trade ~ trade, error.sd = 1)
 #'  a.out <- amelia(m.out, ts = "year", cs = "country")
 

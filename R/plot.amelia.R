@@ -1,19 +1,19 @@
-#' Summary plots for Amelia objects
+#'  Summary plots for Amelia objects
 #'
-#'  @description Plots diagnostic plots for the output from the
+#'  Plots diagnostic plots for the output from the
 #'  \code{amelia} function.
 #'
-#'  @param {x}an object of class "amelia"; typically output from the
-#'    function \code{amelia}.
-#'  @param {which.vars}a vector indicating the variables to plot. The
+#'  @param x an object of class "amelia"; typically output from the
+#'    function \code {amelia}.
+#'  @param which.vars a vector indicating the variables to plot. The
 #'    default is to plot all of the numeric variables that were actually
 #'    imputed.
-#'  @param {compare}plot the density comparisons for each variable?
-#'  @param {overimpute}plot the overimputation for each variable?
-#'  @param {ask}prompt user before changing pages of a plot?
-#'  @param {\dots}further graphical arguments.
+#'  @param compare plot the density comparisons for each variable?
+#'  @param overimpute plot the overimputation for each variable?
+#'  @param ask prompt user before changing pages of a plot?
+#'  @param \dots further graphical arguments.
 #'
-#'  @seealso {\code{\link{compare.density}}, \code{\link{overimpute}}}
+#'  @seealso \code{\link{compare.density}}, \code{\link{overimpute}}
 
 plot.amelia <- function(x, which.vars, compare = TRUE, overimpute =
                         FALSE, ask = TRUE, ...) {
