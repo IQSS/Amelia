@@ -1,27 +1,8 @@
-##  ameliagui.r
-##  a R-tcl/tk based frontend for Amelia (hopefully crossplatform)
-##  mb 23/01/06 - function to be included in amelia package.
-##  05/05/06 mb - catches unexpected amelia errors
-##  09/05/06 mb - cleaned up diags menu, added overimpute button
-##  22/06/06 mb - checks added to session loading.
-##  26/06/06 mb - session saving/loading now mirrors amelia output.
-##  26/07/06 mb - added stata 6/7/8 compatibility.
-##  27/07/06 mb - updated variable options screen.  fixed help links.  cosmetics.
-##  04/08/06 mb - sessions load properly for non-csv files.
-##  24/08/06 mb - added tolerance option on variables page.
-##  11/09/06 mb - actually passes nominals now, fixed char problems on summarize
-##  19/09/06 mb - changed function name to AmeliaView
-##  01/12/06 mb - fixed session loading for 2.4.0, can't compare non-numerics
-##  11/12/06 mb - rehauled priors
-##  04/06/08 mb - added a self-contained gui enviroment to store everything (AmeliaEnv())
-##              - added seed option to output
-##              - added RData save output option
-##              - added "hold in R memory" output option
-##              - sesssions are now saved as .RData files for compression
-## 17/07/08 mb - fixed frontend error bug (dumping output to screen
-## 22/07/08 mb - good coding update: T->TRUE/F->FALSE
-
-
+#' Interactive GUI for Amelia
+#' 
+#'@description Brings up the AmeliaView graphical interface, which allows users
+#'             to load datasets, manage options and run Amelia from a traditional 
+#'             windowed environment.
 
 main.close<-function() {
   qvalue<-tcltk::tkmessageBox(parent=getAmelia("gui"), message="Are you sure you want to exit Amelia?",
