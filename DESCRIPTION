@@ -29,3 +29,4 @@ Description: A tool that "multiply imputes" missing data in a single cross-secti
 License: GPL (>= 2)
 URL: http://gking.harvard.edu/amelia
 Suggests: tcltk, Zelig
+RoxygenNote: 6.0.1
