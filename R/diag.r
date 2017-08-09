@@ -845,23 +845,43 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
 
 }
 
-##
-## mi.meld
-##
-## combines estimated quantities of interest and their standard errors
-##   from multiply imputed datasets
-## Default expects the q's (and their se's) to have all parameters be columns
-##   in a matrix, and the results from each imputed dataset to be a new
-##   row.
-##
-##  INPUTS: q  - matrix of quantities of interest (default m by k, thus each row
-##          represents k parameters from one of m different datasets)
-##          se - matrix of standard errors (default m by k)
-##          byrow - logical.  TRUE: matrix is m-by-k.  FALSE: matrix is k-by-m.
-##  2/21/12 jH
-##
 
-
+#' Combine Multiple Results From Multiply Imputed Datasets
+#' 
+#' Combine sets of estimates (and their standard errors) generated from 
+#' different multiply imputed datasets into one set of results.
+#'
+#' @param q A matrix or data frame of (k) quantities of interest (eg. 
+#'        coefficients, parameters, means) from (m) multiply imputed datasets.  
+#'        Default is to assume the matrix is m-by-k (see \code{byrow}), thus each 
+#'        row represents a set of results from one dataset, and each column 
+#'        represents the different values of a particular quantity of interest 
+#'        across the imputed datasets.
+#' @param se A matrix or data frame of standard errors that correspond to each of the 
+#'        elements of the quantities of interest in \code{q}.  Should be the same 
+#'        dimensions as \code{q}.
+#' @param byrow logical.  If \code{TRUE}, \code{q} and \code{se} are treated as 
+#'        though each row represents the set of results from one dataset 
+#'        (thus m-by-k).  If \code{FALSE}, each column represents results from one 
+#'        dataset (thus k-by-m).
+#'
+#' @details Uses Rubin's rules for combining a set of results from multiply imputed 
+#' datasets to reflect the average result, with standard errors that both average 
+#' uncertainty across models and account for disagreement in the estimated values 
+#' across the models.
+#' 
+#' @return
+#'   \item{q.mi}{Average value of each quantity of interest across the m models}
+#'   \item{se.mi}{Standard errors of each quantity of interest}
+#'   
+#' @references 
+#' Rubin, D. (1987). \emph{Multiple Imputation for Nonresponse in Surveys}.  
+#' New York: Wiley.
+#' 
+#' Honaker, J., King, G., Honaker, J. Joseph, A. Scheve K. (2001). Analyzing 
+#' Incomplete Political Science Data: An Alternative Algorithm for Multiple 
+#' Imputation \emph{American Political Science Review}, \bold{95(1)}, 49--69. (p53)
+#'   
 mi.meld<-function(q, se, byrow = TRUE) {
 
   if (!byrow) {
