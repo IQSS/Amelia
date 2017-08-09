@@ -24,6 +24,44 @@
 ##  02/21/12 jh - added mi.meld to combine multiply imputed quantities of interest and se's.
 ##  10/30/12 jh - tscsPlot: expanded to allow to cycle through sets of cross sectional units efficiently.
 
+#' Compare observed versus imputed densities
+#' 
+#' Plots smoothed density plots of observed and imputed values from output
+#' from the \code{amelia} function.
+#'
+#' @param output output from the function \code{amelia}.
+#' @param var column number or variable name of the variable to plot.
+#' @param col a vector of length 2 containing the color to plot the (1)
+#'        imputed density and (2) the observed density.
+#' @param scaled a logical indicating if the two densities should be
+#'        scaled to reflect the difference in number of units in each.
+#' @param lwd the line width of the density plots.
+#' @param main main title of the plot. The default is to title the plot
+#'        using the variable name.
+#' @param xlab the label for the x-axis. The default is the name of the
+#'        variable.
+#' @param ylab the label for the y-axis. The default is "Relative Density."
+#' @param legend a logical value indicating if a legend should be
+#'        plotted.
+#' @param frontend a logical value used internally for the Amelia GUI.
+#' @param ... further graphical parameters for the plot.
+#'
+#' @details   This function first plots a density plot of the observed units for the
+#' variable \code{var} in \code{col[2]}. The the function plots a density plot of the mean
+#' or modal imputations for the missing units in \code{col[1]}. If a
+#' variable is marked "ordinal" or "nominal" with the \code{ords} or
+#' \code{noms} options in \code{amelia}, then the modal imputation will
+#' be used. If \code{legend} is \code{TRUE}, then a legend is plotted as well.
+#' 
+#' @references 
+#' Abayomi, K. and Gelman, A. and Levy, M. 2005 "Diagnostics for
+#' Multivariate Imputations," \emph{Applied Statistics}. 57,3: 273--291.
+#' 
+#' @seealso For more information on how densities are computed,
+#' \code{\link{density}}; Other imputation diagnostics are
+#' \code{\link{overimpute}}, \code{\link{disperse}}, and
+#' \code{\link{tscsPlot}}.
+#' 
 compare.density <- function(output,var,col=c("red","black"),scaled=FALSE,lwd=1,main,xlab,ylab,legend=TRUE,frontend=FALSE,...) {
 
   if (!("amelia" %in% class(output)))
