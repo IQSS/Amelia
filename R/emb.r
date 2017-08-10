@@ -310,6 +310,14 @@ amelia.impute<-function(x,thetareal,priors=NULL,bounds=NULL,max.resample=NULL){
 #' @return An object of class \code{amelia}.
 #' 
 #' @seealso \code{\link{amelia}}
+#' 
+#' @examples 
+#' data(africa)
+#' a1.out <- amelia(x = africa, cs = "country", ts = "year", logs = "gdp_pc")
+#' a2.out <- amelia(x = africa, cs = "country", ts = "year", logs = "gdp_pc")
+#' all.out <- ameliabind(a1.out, a2.out)
+#' summary(all.out)
+#' plot(all.out)
 #'
 ameliabind <- function(...) {
   args <- list(...)
@@ -432,6 +440,7 @@ remove.imputations <- function(obj) {
 #' @author James Honaker
 #' @author Gary King
 #' @author Matt Blackwell
+#' 
 #'
 #' @param x either a matrix, data.frame, a object of class
 #'        "amelia", or an object of class "molist". The first two will call the 

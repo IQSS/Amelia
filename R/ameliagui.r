@@ -1,9 +1,13 @@
 #' Interactive GUI for Amelia
 #' 
+#' @name ameliagui
+#' 
+#' @description 
 #' Brings up the AmeliaView graphical interface, which allows users
 #' to load datasets, manage options and run Amelia from a traditional 
 #' windowed environment.
 #' 
+#' @usage AmeliaView()
 #' @keywords utilities
 
 main.close<-function() {
@@ -794,6 +798,15 @@ fillMainTree <- function() {
   return()
 }
 
+
+#' Interactive GUI for Amelia
+#' 
+#' Brings up the AmeliaView graphical interface, which allows users to load datasets, 
+#' manage options and run Amelia from a traditional windowed environment.
+#'
+#' @details
+#' Requires the tcltk package.
+#'
 AmeliaView<-function() {
 
   ##Preamble

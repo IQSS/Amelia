@@ -27,6 +27,15 @@ Note that \code{ameliabind} only checks that they arguments and the
 missingness matrix are identical. Thus, it could be fooled by two
 datasets that are identical up to a transformation of one variable.
 }
+\examples{
+data(africa)
+a1.out <- amelia(x = africa, cs = "country", ts = "year", logs = "gdp_pc")
+a2.out <- amelia(x = africa, cs = "country", ts = "year", logs = "gdp_pc")
+all.out <- ameliabind(a1.out, a2.out)
+summary(all.out)
+plot(all.out)
+
+}
 \seealso{
 \code{\link{amelia}}
 }

@@ -635,6 +635,7 @@ generatepriors<-function(AMr1,empri=NULL,priors=NULL){
 #' same except for \code{m}, the number of imputations, and it uses the
 #' arguments from the first output list as the arguments for the combined
 #' output list.
+#' 
 #'
 #' @keywords utilities
 combine.output <- function(...) {

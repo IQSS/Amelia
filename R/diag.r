@@ -57,6 +57,9 @@
 #' Abayomi, K. and Gelman, A. and Levy, M. 2005 "Diagnostics for
 #' Multivariate Imputations," \emph{Applied Statistics}. 57,3: 273--291.
 #' 
+#' @examples 
+#' data(africa)
+#' 
 #' @seealso For more information on how densities are computed,
 #' \code{\link{density}}; Other imputation diagnostics are
 #' \code{\link{overimpute}}, \code{\link{disperse}}, and

@@ -23,4 +23,13 @@ same except for \code{m}, the number of imputations, and it uses the
 arguments from the first output list as the arguments for the combined
 output list.
 }
+\examples{
+data(africa)
+a1.out <- amelia(x = africa, cs = "country", ts = "year", 
+                 logs = "gdp_pc", m = 2)
+a2.out <- amelia(x = africa, cs = "country", ts = "year", 
+                 logs = "gdp_pc", m = 3)
+all.out <- combine.output(a1.out, a2.out)
+
+}
 \keyword{utilities}
