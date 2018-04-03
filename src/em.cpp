@@ -205,7 +205,7 @@ while ( ( (cvalue > 0) | (count < emburn(0)) )  & ( (count < emburn(1)) | (embur
     cvalue = thetaleft.n_elem;
     thetaold = thetanew;
 
-    if (cvalue > iterHist(count-1,0) & count > 20) {
+    if (cvalue > iterHist(count-1,0) && count > 20) {
       monoFlag = 1;
       if (autopri(0) > 0) {
         if (arma::accu(iterHist(arma::span(count - 20, count - 1), 2)) > 3) {
@@ -311,6 +311,12 @@ void sweep(arma::mat& g, arma::vec m) {
   }
 
 }
+
+void glasso(arma::mat& cvmat, double lamda) {
+  
+}
+
+
 
 SEXP ameliaImpute(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas,  SEXP prs, SEXP bdss, SEXP maxres){
 
