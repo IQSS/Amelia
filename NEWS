@@ -4,6 +4,13 @@
 //
 //
 
+== 1.7.5 (07 May 2018) ==
+  * Fixed bug with factor names under perfect collinearity
+  * Added "draws" argument to overimp to control number of overimputation draws
+  * Fix issue with tibbles and tscsPlot()
+  * Fix issues with missmap()
+  * Fixed issue with iterHist indicators being reversed
+
 == 1.7.4 (21 Nov 2015) ==
    * Fixed issue with log axes in overimpute
    * Allow for vector in 'main' argument in tscsPlot()
