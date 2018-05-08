@@ -19,4 +19,4 @@ install_github("IQSS/Amelia", ref = "develop")
 ```
 
 [Amelia II]: http://gking.harvard.edu/amelia
-[R]: http://cran.r-project.org
+[R]: https://cran.r-project.org
