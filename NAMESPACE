@@ -34,7 +34,7 @@ importFrom("grDevices", "chull", "colorRampPalette", "dev.copy2pdf",
 importFrom("graphics", "abline", "arrows", "axis", "hist", "image",
            "legend", "lines", "matplot", "par", "plot", "plot.new",
            "plot.window", "points", "rect", "segments", "text",
-           "xinch", "xyinch")
+           "xinch", "xyinch", "layout")
 importFrom("methods", "hasArg", "is")
 importFrom("stats", "coef", "complete.cases", "cov", "density", "lm",
            "na.omit", "prcomp", "qnorm", "quantile", "rbinom",

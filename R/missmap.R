@@ -100,7 +100,7 @@ missmap <- function(obj, legend = TRUE, col = c("indianred", "dodgerblue"), main
   ## here we fork for data/tscs type plots. users cant set this yet.
   type <- "data"
   if (legend) {
-    layout(matrix(c(1,2), nrow = 1), widths = c(0.75, 0.25))
+    graphics::layout(matrix(c(1,2), nrow = 1), widths = c(0.75, 0.25))
     par(mar = c(margins, 2, 0) + 0.1, mgp = c(3, 0.25, 0))
   }
   if (type == "data") {

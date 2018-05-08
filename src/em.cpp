@@ -312,11 +312,6 @@ void sweep(arma::mat& g, arma::vec m) {
 
 }
 
-void glasso(arma::mat& cvmat, double lamda) {
-  
-}
-
-
 
 SEXP ameliaImpute(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas,  SEXP prs, SEXP bdss, SEXP maxres){
 

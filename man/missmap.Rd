@@ -8,9 +8,9 @@ the dataset passed to \code{amelia}.}
 
 \usage{
 
-missmap(obj, legend = TRUE, col = c("wheat","darkred"), main,
+missmap(obj, legend = TRUE, col = c("indianred", "dodgerblue"), main,
         y.cex = 0.8, x.cex = 0.8, y.labels, y.at, csvar = NULL, tsvar =
-        NULL, rank.order = TRUE, ...)
+        NULL, rank.order = TRUE, margins = c(5, 5), ...)
 
 }
 \arguments{
