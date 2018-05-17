@@ -205,7 +205,7 @@ while ( ( (cvalue > 0) | (count < emburn(0)) )  & ( (count < emburn(1)) | (embur
     cvalue = thetaleft.n_elem;
     thetaold = thetanew;
 
-    if (cvalue > iterHist(count-1,0) & count > 20) {
+    if (cvalue > iterHist(count-1,0) && count > 20) {
       monoFlag = 1;
       if (autopri(0) > 0) {
         if (arma::accu(iterHist(arma::span(count - 20, count - 1), 2)) > 3) {
@@ -236,8 +236,8 @@ while ( ( (cvalue > 0) | (count < emburn(0)) )  & ( (count < emburn(1)) | (embur
     }
     iterHist.resize(iterHist.n_rows+1, iterHist.n_cols);
     iterHist(count, 0) = cvalue;
-    iterHist(count, 1) = singFlag;
-    iterHist(count, 2) = monoFlag;
+    iterHist(count, 1) = monoFlag;
+    iterHist(count, 2) = singFlag;
     if (allthetas(0) == 1) {   
       thetaHolder.resize(thetaHolder.n_rows, thetaHolder.n_cols + 1);
       thetaHolder.col(count) = thetaold.elem(upperpos);
@@ -312,6 +312,7 @@ void sweep(arma::mat& g, arma::vec m) {
 
 }
 
+
 SEXP ameliaImpute(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas,  SEXP prs, SEXP bdss, SEXP maxres){
 
   //, SEXP p2ss, SEXP prs, SEXP empris, SEXP fends, SEXP alls, SEXP autos, SEXP emburns//
@@ -335,8 +336,7 @@ SEXP ameliaImpute(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas,
   arma::mat AMr1(AMr1r.begin(), n, k, false);
   arma::mat obsmat(orr.begin(), npatt, k, false);
   arma::mat mismat(mr.begin(), npatt, k, false);
-  arma::vec ii(ir.begin(), n, false);
-  //Rcpp::Rcout << "Set up arma things. "  << std::endl;
+  arma::vec ii(ir.begin(), npatt + 1, false);
 
   // Bring out your priors.
   NumericMatrix prr;
@@ -380,13 +380,13 @@ SEXP ameliaImpute(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas,
 
   if (st == 1) {
     xplay.rows(0,ii(1)-2) = x.rows(0,ii(1)-2);
-  }    
+  }
+
   if (Rf_isNull(prs)) {
-    for (ss = st; ss < obsmat.n_rows; ss++) {
-      
+    for (ss = st; ss < obsmat.n_rows; ss++) {      
       is = ii(ss)-1;
       isp = ii(ss+1)-2;
-      
+
       theta = thetaold;
       sweeppos.zeros();
       sweeppos(arma::span(1,k)) = arma::trans(obsmat.row(ss));
@@ -468,7 +468,7 @@ SEXP ameliaImpute(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas,
     
   }
 
-      
+         
   return wrap(xplay);
 }
 

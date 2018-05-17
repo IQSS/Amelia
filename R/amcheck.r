@@ -173,13 +173,18 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   AMp<-ncol(x)
   subbedout<-c(idvars,cs,ts)
 
+  if (is.null(idvars))
+    idcheck <- c(1:AMp)
+  else
+    idcheck <- -idvars
 
-                                        #Error Code: 4
-                                        #Completely missing columns
-  if (any(colSums(!is.na(x)) <= 1)) {
-    all.miss <- colnames(x)[colSums(!is.na(x)) <= 1]
+  ## Error Code: 4
+  ## Completely missing columns
+
+  if (any(colSums(!is.na(x[,idcheck])) <= 1)) {
+    all.miss <- colnames(x[,idcheck])[colSums(!is.na(x[,idcheck])) <= 1]
     if (is.null(all.miss)) {
-      all.miss <- which(colSums(!is.na(x)) <= 1)
+      all.miss <- which(colSums(!is.na(x[,idcheck])) <= 1)
     }
     all.miss <- paste(all.miss, collapse = ", ")
     error.code<-4
@@ -629,14 +634,14 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   }
 
   if (is.null(c(noms,ords,idvars,cs)))
-    fact<-c(1:AMp)
+    fact <- c(1:AMp)
   else
-    fact<--c(noms,ords,idvars,cs)
+    fact <- -c(noms,ords,idvars,cs)
 
   if (is.null(c(cs,idvars)))
-    idcheck<-c(1:AMp)
+    idcheck <- c(1:AMp)
   else
-    idcheck<--c(cs,idvars)
+    idcheck <- -c(cs,idvars)
 
   ##Error code: 37
   ##factors out of the noms,ids,ords,cs
@@ -958,16 +963,21 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
   }
 
   if (nrow(na.omit(x[,idcheck,drop=FALSE])) > ncol(x[,idcheck,drop=FALSE])) {
-      if (is.data.frame(x)) {
-          lmcheck <- lm(I(rnorm(AMn))~ ., data = x[,idcheck, drop = FALSE])
+    if (is.data.frame(x)) {
+      lmcheck <- lm(I(rnorm(AMn))~ ., data = x[,idcheck, drop = FALSE])
+    } else {
+      lmcheck <- lm(I(rnorm(AMn))~ ., data = as.data.frame(x[,idcheck, drop = FALSE]))
+    }
+    if (any(is.na(coef(lmcheck)))) {
+      bad.var <- names(coef(lmcheck))[which(is.na(coef(lmcheck)))]
+      if (length(bad.var) == 1) {
+        warning(paste("The variable", bad.var, "is perfectly collinear with another variable in the data.\n"))
       } else {
-          lmcheck <- lm(I(rnorm(AMn))~ ., data = as.data.frame(x[,idcheck, drop = FALSE]))
+        bad.var <- paste(bad.var, collapse = ", ")
+        warning(paste("The variables (or variable with levels)", bad.var, "are perfectly collinear with another variable in the data.\n"))
       }
-      if (any(is.na(coef(lmcheck)))) {
-          bad.var <- colnames(x[,idcheck])[which(is.na(coef(lmcheck))) - 1]
-          bar.var <- paste(bad.var, collapse = ", ")
-          warning(paste("The variable",bad.var,"is perfectly collinear with another variable in the data.\n"))
-      }
+
+    }
   }
 
   return(list(m=m,priors=priors))

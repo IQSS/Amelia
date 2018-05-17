@@ -711,6 +711,10 @@ amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
     max.resample <- arglist$max.resample
   }
 
+  # If data frame is a tibble, code will break because of assumptions about
+  # [, i, drop = TRUE]. Rather than change existing code, convert
+  # `x` to a data.frame
+  if (is.data.frame(x)) x <- as.data.frame(x)
 
   numopts<-nametonumber(x=x,ts=ts,cs=cs,idvars=idvars,noms=noms,ords=ords,
                         logs=logs,sqrts=sqrts,lgstc=lgstc,lags=lags,leads=leads)

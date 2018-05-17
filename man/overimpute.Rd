@@ -9,7 +9,7 @@ model from \code{amelia} output.
 \usage{
 
 
-overimpute(output, var, subset, legend = TRUE, xlab, ylab, main,
+overimpute(output, var, draws = 20, subset, legend = TRUE, xlab, ylab, main,
            frontend = FALSE, \dots)
 
 }
@@ -19,6 +19,9 @@ overimpute(output, var, subset, legend = TRUE, xlab, ylab, main,
   \item{output}{output from the function \code{amelia}.}
   \item{var}{column number or variable name of the variable to
     overimpute.}
+  \item{draws}{the number of draws per imputed dataset to generate
+  overimputations. Total number of simulations will \code{m * draws}
+  where \code{m} is the number of imputations.}
   \item{subset}{an optional vector specifying a subset of observations
     to be used in the overimputation.}
  \item{legend}{a logical value indicating if a legend should be
@@ -53,12 +56,14 @@ overimpute(output, var, subset, legend = TRUE, xlab, ylab, main,
   data frame as if it were attached.
 }
 
-\value{A 5-column matrix that contains (1) the row in the original data,
-(2) the observed value of that observation, (2) the mean of the
-overimputations, (3) the lower bound of the 95\% confidence interval of
-the overimputations, (4) the upper bound of the 95\% confidence interval
-of the overimputations, and (5) the fraction of the variables that were
-missing for that observation in the original data.}
+\value{A list that contains (1) the row in the original data (\code{row}),
+(2) the observed value of that observation (\code{orig}), (2) the mean of the
+overimputations (\code{mean.overimputed}), (3) the lower bound of the 95\% confidence interval of
+the overimputations (\code{lower.overimputed}), (4) the upper bound of the 95\% confidence interval
+of the overimputations (\code{upper.overimputed}), (5) the fraction of the variables that were
+missing for that observation in the original data (\code{prcntmiss}),
+and (6) a matrix of the raw overimputations, with observations in rows
+and the different draws in columns (\code{overimps}).}
 
 \seealso{Other imputation diagnostics are
   \code{\link{compare.density}}, \code{\link{disperse}}, and

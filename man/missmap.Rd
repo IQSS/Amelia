@@ -8,9 +8,9 @@ the dataset passed to \code{amelia}.}
 
 \usage{
 
-missmap(obj, legend = TRUE, col = c("wheat","darkred"), main,
+missmap(obj, legend = TRUE, col = c("indianred", "dodgerblue"), main,
         y.cex = 0.8, x.cex = 0.8, y.labels, y.at, csvar = NULL, tsvar =
-        NULL, rank.order = TRUE, ...)
+        NULL, rank.order = TRUE, margins = c(5, 5), ...)
 
 }
 \arguments{
@@ -36,6 +36,9 @@ missmap(obj, legend = TRUE, col = c("wheat","darkred"), main,
     the order of the variables along the the x-axis is sorted by the
     percent missing (from highest to lowest). If \code{FALSE}, it is
     simply the order of the variables in the data.}
+    \item{margins}{a vector of length two that specifies the bottom and
+      left margins of the plot. Useful for when variable names or
+      row names are long.}
   \item{\dots}{further graphical arguments.}
 }
 
