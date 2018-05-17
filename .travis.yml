@@ -3,3 +3,9 @@
 language: R
 sudo: false
 cache: packages
+r_binary_packages: Zelig
+
+r:
+  - oldrel
+  - release
+  - devel
