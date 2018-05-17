@@ -1,7 +1,7 @@
 .onAttach <- function(...) {
   mylib     <- dirname(system.file(package = "Amelia"))
   ver       <- packageVersion("Amelia")
-  builddate <- packageDescription("Amelia", lib.loc = mylib)$Date
+  builddate <- packageDescription("Amelia")$Date
   curryear  <- format(Sys.time(), "%Y")
   mess <- c("## ", "## Amelia II: Multiple Imputation",
             paste("## (Version ",ver,", built: ", builddate,")", sep=""),

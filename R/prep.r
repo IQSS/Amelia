@@ -620,16 +620,24 @@ generatepriors<-function(AMr1,empri=NULL,priors=NULL){
 }
 
 
-# combine.output
-# a function to combine multiple outputs from amelia
-#
-# args: a number of amelia output lists.
-#
-# NOTE: does not preserve options. assumes the first is right.
-#       also, errors could happen in the perverse case where
-#       a non-amelia output list with "amelia.args" in it and it's
-#       not the last argument.
-
+#' Combine Multiple Amelia Output Lists
+#' 
+#' This function combines output lists from multiple runs of
+#' Amelia, where each run used the same arguments. The result is one
+#' list, formatted as if Amelia had been run once.
+#'
+#' @param ... a list of Amelia output lists from runs of Amelia with the
+#'        same arguments except the number of imputations.
+#'        
+#' @details This function is useful for combining the output from Amelia
+#' runs that occurred at different times or in different sessions of
+#' R. It assumes that the arguments given to the runs of Amelia are the
+#' same except for \code{m}, the number of imputations, and it uses the
+#' arguments from the first output list as the arguments for the combined
+#' output list.
+#' 
+#'
+#' @keywords utilities
 combine.output <- function(...) {
   cl <- match.call()
 

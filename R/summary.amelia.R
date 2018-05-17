@@ -1,4 +1,14 @@
 
+#' Summary of an Amelia object
+#' 
+#' Returns summary information from the Amelia run along with
+#' missingles information.
+#'
+#' @param object an object of class \code{amelia}. Typically, an output
+#'        from the function \code{amelia}.
+#' @param ... further arguments.
+#'
+#' @seealso \code{\link{amelia}}, \code{\link{plot.amelia}}
 summary.amelia <- function(object, ...) {
 
   percent.missing <- colMeans(object$missMatrix)
