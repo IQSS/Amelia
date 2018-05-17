@@ -3,3 +3,4 @@ amelia-setup.exe
 ^\.Rproj\.user$
 .git
 .travis.yml
+^\.travis\.yml$
