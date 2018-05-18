@@ -10,9 +10,6 @@ r:
 
 r_binary_packages:
   - Rcpp
-  - mgcv
-  - nnet
-  - Zelig
   - RcppArmadillo
   - MCMCpack
   
