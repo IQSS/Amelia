@@ -1,10 +1,28 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 
 language: R
-sudo: false
+sudo: true
 cache: packages
 
 r:
   - oldrel
   - release
   - devel
+
+matrix:
+  include:
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-8']
+      env:
+        - COMPILER=g++-8
+        - CC=gcc-8
+        - CXX=g++-8
+before_install:
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 100
+  - mkdir -p ~/.R
+  - echo "VkVSPS04DQpDQz1nY2MkKFZFUikgLXN0ZD1jMTENCkNYWD1nKyskKFZFUikNClNITElCX0NYWExEPWcrKyQoVkVSKQ0KRkM9Z2ZvcnRyYW4NCkY3Nz1nZm9ydHJhbg==" | base64 -d > ~/.R/Makevars
+  - cat ~/.R/Makevars
