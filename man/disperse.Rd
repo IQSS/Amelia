@@ -4,7 +4,8 @@
 \alias{disperse}
 \title{Overdispersed starting values diagnostic for multiple imputation}
 \usage{
-disperse(output, m = 5, dims = 1, p2s = 0, frontend = FALSE, ...)
+disperse(output, m = 5, dims = 1, p2s = 0, frontend = FALSE, ...,
+  xlim = NULL, ylim = NULL)
 }
 \arguments{
 \item{output}{output from the function \code{amelia}.}
@@ -21,6 +22,10 @@ indicates diagnostic output.}
 \item{frontend}{a logical value used internally for the Amelia GUI.}
 
 \item{...}{further graphical parameters for the plot.}
+
+\item{xlim}{limits of the plot in the horizontal dimension.}
+
+\item{ylim}{limits of the plot in vertical dimension.}
 }
 \description{
 A visual diagnostic of EM convergence from multiple overdispersed

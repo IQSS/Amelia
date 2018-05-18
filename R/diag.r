@@ -485,6 +485,8 @@ gethull <- function(st,tol,rots) {
 #'        indicates no printing, 1 indicates normal screen output and 2
 #'        indicates diagnostic output.
 #' @param frontend a logical value used internally for the Amelia GUI.
+#' @param xlim limits of the plot in the horizontal dimension.
+#' @param ylim limits of the plot in vertical dimension.
 #' @param ... further graphical parameters for the plot.
 #'
 #' @details   This function tracks the convergence of \code{m} EM chains which start
@@ -512,7 +514,8 @@ gethull <- function(st,tol,rots) {
 #' @seealso Other imputation diagnostics are
 #' \code{\link{compare.density}}, \code{\link{disperse}}, and
 #' \code{\link{tscsPlot}}
-disperse <- function(output, m = 5, dims = 1, p2s = 0, frontend = FALSE,...) {
+disperse <- function(output, m = 5, dims = 1, p2s = 0, frontend = FALSE, ...,
+                     xlim = NULL, ylim = NULL) {
 
   if (!("amelia" %in% class(output)))
     stop("The 'output' is not Amelia output.")
@@ -595,12 +598,13 @@ disperse <- function(output, m = 5, dims = 1, p2s = 0, frontend = FALSE,...) {
   if (dims == 1) {
     addedroom <- (max(reduced.imps) - min(reduced.imps)) * 0.1
     x <- seq(iters[1])
+    if (is.null(xlim)) xlim <- c(0, max(iters))
+    if (is.null(ylim)) ylim <- range(c(reduced.imps - addedroom, reduced.imps))
     y <- reduced.imps[1, 1:iters[1]]
     patt <- seq(1, length(x) - 1)
     plot(x, y, col = 1, main = "Overdispersed Start Values",
          xlab = "Number of Iterations", ylab = "Largest Principle Component",
-         xlim = c(0, max(iters)),
-         ylim = range(c(reduced.imps - addedroom, reduced.imps)), type = "n")
+         xlim = xlim, ylim = ylim, type = "n")
     segments(x[patt], y[patt], x[patt + 1], y[patt + 1], col = cols[1])
     for (i in 2:length(iters)) {
       x <- seq(iters[i])
@@ -615,10 +619,12 @@ disperse <- function(output, m = 5, dims = 1, p2s = 0, frontend = FALSE,...) {
   } else {
     xrange <- c((min(reduced.imps[1,])), (max(reduced.imps[1,])))
     yrange <- c((min(reduced.imps[2,])), (max(reduced.imps[2,])))
+    if (is.null(xlim)) xlim <- xrange
+    if (is.null(ylim)) ylim <- yrange
     plot(reduced.imps[1,1:iters[1]], reduced.imps[2,1:iters[1]], type = "n",
          main = "Overdispersed Starting Values",
          xlab = "First Principle Component", ylab = "Second Principle Component",
-         col=cols[1], xlim = xrange, ylim = yrange)
+         col=cols[1], xlim = xlim, ylim = ylim)
     for (i in 2:length(iters)) {
       x <- reduced.imps[1, (sum(iters[1:(i-1)])+1):(sum(iters[1:i]))]
       y <- reduced.imps[2, (sum(iters[1:(i-1)])+1):(sum(iters[1:i]))]
