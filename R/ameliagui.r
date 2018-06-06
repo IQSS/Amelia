@@ -1,12 +1,12 @@
 #' Interactive GUI for Amelia
-#' 
+#'
 #' @name ameliagui
-#' 
-#' @description 
+#'
+#' @description
 #' Brings up the AmeliaView graphical interface, which allows users
-#' to load datasets, manage options and run Amelia from a traditional 
+#' to load datasets, manage options and run Amelia from a traditional
 #' windowed environment.
-#' 
+#'
 #' @usage AmeliaView()
 #' @keywords utilities
 
@@ -800,8 +800,8 @@ fillMainTree <- function() {
 
 
 #' Interactive GUI for Amelia
-#' 
-#' Brings up the AmeliaView graphical interface, which allows users to load datasets, 
+#'
+#' Brings up the AmeliaView graphical interface, which allows users to load datasets,
 #' manage options and run Amelia from a traditional windowed environment.
 #'
 #' @details
@@ -1520,7 +1520,7 @@ gui.pri.setup <- function() {
     varBox <- paste("add",nm,"var",sep=".")
     caseBox <- paste("add",nm,"case",sep=".")
     caseSelection <- as.numeric(tcltk::tcl(getAmelia(caseBox),"current"))
-    varSelection  <- as.numeric(tcltk::tcl(getAmelia(varBox),"current")) +1
+    varSelection  <- as.numeric(tcltk::tcl(getAmelia(varBox),"current")) + 1
 
     thiscase <- tcltk::tclvalue(tcltk::tkget(getAmelia(caseBox)))
     thisvar  <- tcltk::tclvalue(tcltk::tkget(getAmelia(varBox)))
@@ -1650,7 +1650,6 @@ gui.pri.setup <- function() {
       return(tcltk::tclVar("FALSE"))
   }
   setMissingVars <- function() {
-
     currentSelection <- as.numeric(tcltk::tcl(getAmelia("add.dist.case"), "current"))
     currentCase      <- missingCases[currentSelection]
     if (currentSelection==0)
@@ -1661,7 +1660,17 @@ gui.pri.setup <- function() {
     tcltk::tkconfigure(getAmelia("add.dist.var"),values = missVarNames)
     tcltk::tcl(getAmelia("add.dist.var"), "current", 0)
   }
-
+  setMissingRangeVars <- function() {
+    currentSelection <- as.numeric(tcltk::tcl(getAmelia("add.range.case"), "current"))
+    currentCase      <- missingCases[currentSelection]
+    if (currentSelection==0)
+      missVars <- anyMissing
+    else
+      missVars    <- is.na(getAmelia("amelia.data")[currentCase,])
+    missVarNames <- colnames(getAmelia("amelia.data"))[missVars]
+    tcltk::tkconfigure(getAmelia("add.range.var"),values = missVarNames)
+    tcltk::tcl(getAmelia("add.range.var"), "current", 0)
+  }
   resetEntries <- function() {
     tcltk::tcl("set", getAmelia("priorMin"),"")
     tcltk::tcl("set", getAmelia("priorMax"),"")
@@ -1820,12 +1829,12 @@ gui.pri.setup <- function() {
                                          state="readonly", width=15))
   putAmelia("add.range.var",tcltk::ttkcombobox(add.range.frame, values=vars,
                                         state="readonly", width=15))
-
+  tcltk::tkbind(getAmelia("add.range.case"), "<<ComboboxSelected>>", function(...) setMissingRangeVars())
   tcltk::tkgrid(tcltk::ttklabel(add.range.frame, text="Case:"), column=1, row=1, sticky = "e")
   tcltk::tkgrid(tcltk::ttklabel(add.range.frame, text="Variable:"), column=1, row=2, sticky = "e")
   tcltk::tcl(getAmelia("add.range.case"), "current", 0)
   tcltk::tcl(getAmelia("add.range.var"), "current", 0)
-  tcltk::tkconfigure(getAmelia("add.range.var"), postcommand=function(...) setMissingVars())
+  tcltk::tkconfigure(getAmelia("add.range.var"), postcommand=function(...) setMissingRangeVars())
   tcltk::tkgrid(getAmelia("add.range.case"), column=2, row=1, pady=3)
   tcltk::tkgrid(getAmelia("add.range.var"),  column=2, row=2, pady=3)
 
