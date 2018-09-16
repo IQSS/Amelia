@@ -4,3 +4,5 @@ amelia-setup.exe
 .git
 .travis.yml
 ^\.travis\.yml$
+^vignettes/\.auto$
+^vignettes/auto$

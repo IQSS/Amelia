@@ -1801,13 +1801,16 @@ dependent variable was tariff rates. We can replicate table 5.1 from their
 analysis with the original data simply by running
 
 <<results = hide>>=
-require(Zelig)
-z5 <- zls$new()
-z5$zelig(tariff ~ polity + pop + gdp.pc + year + country, data = freetrade)
+if (requireNamespace("Zelig", quietly = TRUE)) {
+  z5 <- Zelig::zls$new()
+  z5$zelig(tariff ~ polity + pop + gdp.pc + year + country, data = freetrade)
+} else {
+  z5 <- "Error: Zelig package not avaiable when vignette built"
+}
 @
 
 <<>>=
-z5
+z5 
 @
 
 Running the same model with imputed data is almost identical. Simply
@@ -1815,12 +1818,16 @@ replace the original data set with the  \code{amelia} output:
 
 
 <<>>=
-z5 <- zls$new()
-z5$zelig(tariff ~ polity + pop + gdp.pc + year + country, data = a.out)
-@ %$
+if (requireNamespace("Zelig", quietly = TRUE)) {
+  z5 <- Zelig::zls$new()
+  z5$zelig(tariff ~ polity + pop + gdp.pc + year + country, data = a.out)
+} else {
+  z5 <- "Error: Zelig package not avaiable when vignette built"
+}
+@ 
 
 <<>>=
-z5
+z5 
 @
 
 
@@ -1831,8 +1838,7 @@ loop over the number of imputations and run the analysis model on each
 imputed dataset and combine the results using the rules described in
 \citet{KinHonJos01} and \citet{Schafer97}. Furthermore, users can easily
 export their imputations using the \code{write.amelia} function as
-described in \ref{sec:saving} and use statistical packages other than {\sf
-  R} for the analysis model.
+described in \ref{sec:saving} and use statistical packages other than {\sf R} for the analysis model.
 
 \Amelia\ also has the ability combine quantities of interest from
 arbitrary models using the \code{mi.meld} function. This command takes
@@ -1841,8 +1847,8 @@ each of the imputed datasets. It then uses the standard rules for
 combining multiple imputations to create an overall estimated quantity.
 
 <<>>=
-b.out<-NULL
-se.out<-NULL
+b.out <- NULL
+se.out <- NULL
 for(i in 1:a.out$m) {
   ols.out <- lm(tariff ~ polity + pop + gdp.pc, data = a.out$imputations[[i]])
   b.out <- rbind(b.out, ols.out$coef)
@@ -1851,7 +1857,7 @@ for(i in 1:a.out$m) {
 
 combined.results <- mi.meld(q = b.out, se = se.out)
 combined.results
-@ %$
+@
 
 In addition to the resources available in {\sf R}, users can draw on
 Stata to implement their analysis models. As of version 11,

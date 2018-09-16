@@ -2,6 +2,7 @@ src/Amelia.so
 src/em.o
 # AUCTeX auto folder
 vignettes/auto/
+vignettes/.auto/
 *~
 \#*\#
 /.emacs.desktop
