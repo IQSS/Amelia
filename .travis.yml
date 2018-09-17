@@ -7,10 +7,3 @@ cache: packages
 r:
   - release
   - devel
-
-r_binary_packages:
-  - Rcpp
-  - RcppArmadillo
-  - MCMCpack
-  
-
