@@ -725,26 +725,25 @@ amelia.molist <- function(x, ...) {
 }
 
 #' @describeIn amelia Run core Amelia algorithm
-amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
-                           ts=NULL,cs=NULL,polytime=NULL,splinetime=NULL,intercs=FALSE,
-                           lags=NULL,leads=NULL,startvals=0,tolerance=0.0001,
-                           logs=NULL,sqrts=NULL,lgstc=NULL,noms=NULL,ords=NULL,
-                           incheck=TRUE,collect=FALSE,arglist=NULL,
-                           empri=NULL,priors=NULL,autopri=0.05,
-                           emburn=c(0,0),bounds=NULL,max.resample=100,
-                           overimp = NULL,boot.type = "ordinary",
+amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars = NULL,
+                           ts = NULL, cs = NULL, polytime = NULL,
+                           splinetime = NULL, intercs = FALSE, lags = NULL,
+                           leads = NULL, startvals = 0, tolerance = 0.0001,
+                           logs = NULL, sqrts = NULL, lgstc = NULL, noms = NULL,
+                           ords = NULL, incheck = TRUE, collect = FALSE,
+                           arglist = NULL, empri = NULL, priors = NULL,
+                           autopri = 0.05, emburn = c(0,0), bounds = NULL,
+                           max.resample = 100, overimp = NULL,
+                           boot.type = "ordinary",
                            parallel = c("no", "multicore", "snow"),
-                           ncpus = getOption("amelia.ncpus", 1L), cl = NULL, ...) {
+                           ncpus = getOption("amelia.ncpus", 1L), cl = NULL,
+                           ...) {
 
   ## parellel infrastructure modeled off of 'boot' package
   if (missing(parallel)) parallel <- getOption("amelia.parallel", "no")
   parallel <- match.arg(parallel)
   have_mc <- have_snow <- FALSE
   if (parallel != "no" && ncpus > 1L) {
-    ## We should drop this once we can force a dependency on 2.15.3 or 3.0.0
-    if ("tcltk" %in% names(getLoadedDLLs()) && Sys.info()['sysname'] == "Linux") {
-      stop("On Linux machines cannot have tcltk loaded and Amelia in parallel. Restart R to properly unload tcltk.")
-    }
     if (parallel == "multicore") have_mc <- .Platform$OS.type != "windows"
     else if (parallel == "snow") have_snow <- TRUE
     if (!have_mc && !have_snow) ncpus <- 1L
@@ -754,32 +753,33 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
   }
 
 
-  if (p2s==2) {
+  if (p2s == 2) {
     cat("\namelia starting\n")
     flush.console()
   }
   am.call <- match.call(expand.dots = TRUE)
   archv <- am.call
 
-  prepped<-amelia.prep(x=x,m=m,idvars=idvars,empri=empri,ts=ts,cs=cs,
-                       tolerance=tolerance,polytime=polytime,splinetime=splinetime,
-                       lags=lags,leads=leads,logs=logs,sqrts=sqrts,lgstc=lgstc,
-                       p2s=p2s,frontend=frontend,intercs=intercs,
-                       noms=noms,startvals=startvals,ords=ords,incheck=incheck,
-                       collect=collect,
-                       arglist=arglist,priors=priors,autopri=autopri,bounds=bounds,
-                       max.resample=max.resample,overimp=overimp,emburn=emburn,
-                       boot.type=boot.type)
+  prepped<-amelia.prep(x = x, m = m, idvars = idvars, empri = empri, ts = ts,
+                       cs = cs, tolerance = tolerance, polytime = polytime,
+                       splinetime = splinetime, lags = lags, leads = leads,
+                       logs = logs, sqrts = sqrts, lgstc = lgstc, p2s = p2s,
+                       frontend = frontend, intercs = intercs, noms = noms,
+                       startvals = startvals, ords = ords, incheck = incheck,
+                       collect = collect, arglist = arglist, priors = priors,
+                       autopri = autopri, bounds = bounds,
+                       max.resample = max.resample, overimp = overimp,
+                       emburn = emburn, boot.type = boot.type)
 
-  if (prepped$code!=1) {
-    cat("Amelia Error Code: ",prepped$code,"\n",prepped$message,"\n")
-    return(invisible(list(code=prepped$code,message=prepped$message)))
+  if (prepped$code != 1) {
+    cat("Amelia Error Code: ", prepped$code, "\n", prepped$message, "\n")
+    return(invisible(list(code = prepped$code, message = prepped$message)))
   }
 
 
-  do.amelia <- function(X,...) {
+  do.amelia <- function(X, ...) {
 
-    if (p2s==2) {
+    if (p2s == 2) {
       cat("running bootstrap\n")
     }
     k <- ncol(prepped$x)
@@ -807,7 +807,8 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
     class(impdata$imputations) <- c("mi","list")
 
     x.boot<-bootx(prepped$x,prepped$priors, boot.type)
-    x.stacked<-amstack(x.boot$x,colorder=FALSE,x.boot$priors)   # Don't reorder columns thetanew will not align with d.stacked$x
+    # Don't reorder columns thetanew will not align with d.stacked$x
+    x.stacked<-amstack(x.boot$x,colorder=FALSE,x.boot$priors)
 
     if (p2s) cat("-- Imputation", X, "--\n")
 
@@ -827,8 +828,9 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars=NULL,
     dimnames(impdata$covMatrices)[[2]] <- prepped$theta.names
     dimnames(impdata$mu)[[1]] <- prepped$theta.names
 
-    if
-    (any(eigen(thetanew$thetanew[2:nrow(thetanew$thetanew),2:ncol(thetanew$thetanew)], only.values=TRUE, symmetric=TRUE)$values < .Machine$double.eps)) {
+    evs <- eigen(thetanew$thetanew[-1, -1, drop = FALSE], only.values=TRUE,
+                 symmetric=TRUE)
+    if (any(evs$values < .Machine$double.eps)) {
       impdata$imputations[[1]] <- NA
       impdata$code <- 2
       impdata$arguments <- prepped$archv
