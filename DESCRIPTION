@@ -1,8 +1,8 @@
 Package: Amelia
-Version: 1.7.5
-Date: 2018-05-07
+Version: 1.7.6
+Date: 2019-11-24
 Title: A Program for Missing Data
-Author: James Honaker <jhonaker@iq.harvard.edu>,
+Author: James Honaker <james@hona.kr>,
         Gary King <king@harvard.edu>,
         Matthew Blackwell <mblackwell@gov.harvard.edu>
 Maintainer: Matthew Blackwell <mblackwell@gov.harvard.edu>
@@ -30,3 +30,4 @@ License: GPL (>= 2)
 URL: http://gking.harvard.edu/amelia
 Suggests: tcltk, Zelig
 RoxygenNote: 6.0.1
+LazyData: true
