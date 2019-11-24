@@ -7,7 +7,7 @@
 AmeliaView()
 }
 \description{
-Brings up the AmeliaView graphical interface, which allows users to load datasets, 
+Brings up the AmeliaView graphical interface, which allows users to load datasets,
 manage options and run Amelia from a traditional windowed environment.
 }
 \details{

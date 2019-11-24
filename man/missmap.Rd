@@ -4,13 +4,16 @@
 \alias{missmap}
 \title{Missingness Map}
 \usage{
-missmap(obj, legend = TRUE, col = c("indianred", "dodgerblue"), main,
-  y.cex = 0.8, x.cex = 0.8, y.labels, y.at, csvar = NULL, tsvar = NULL,
+missmap(obj, vars, legend = TRUE, col, main, y.cex = 0.8,
+  x.cex = 0.8, y.labels, y.at, csvar = NULL, tsvar = NULL,
   rank.order = TRUE, margins = c(5, 5), ...)
 }
 \arguments{
 \item{obj}{an object of class "amelia"; typically output from the
 function \code{amelia}, a matrix or a dataframe.}
+
+\item{vars}{a vector of column numbers or column names of the data
+to include in the plot. The default is to plot all variables.}
 
 \item{legend}{should a legend be drawn? (True or False)}
 

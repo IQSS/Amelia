@@ -4,8 +4,8 @@
 \alias{plot.amelia}
 \title{Summary plots for Amelia objects}
 \usage{
-\method{plot}{amelia}(x, which.vars, compare = TRUE, overimpute = FALSE,
-  ask = TRUE, ...)
+\method{plot}{amelia}(x, which.vars, compare = TRUE,
+  overimpute = FALSE, ask = TRUE, ...)
 }
 \arguments{
 \item{x}{an object of class "amelia"; typically output from the

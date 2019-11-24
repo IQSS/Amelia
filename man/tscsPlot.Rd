@@ -5,8 +5,8 @@
 \title{Plot observed and imputed time-series for a single cross-section}
 \usage{
 tscsPlot(output, var, cs, draws = 100, conf = 0.9, misscol = "red",
-  obscol = "black", xlab, ylab, main, pch, ylim, xlim, frontend = FALSE,
-  plotall = FALSE, nr, nc, pdfstub, ...)
+  obscol = "black", xlab, ylab, main, pch, ylim, xlim,
+  frontend = FALSE, plotall = FALSE, nr, nc, pdfstub, ...)
 }
 \arguments{
 \item{output}{output from the function \code{amelia}.}

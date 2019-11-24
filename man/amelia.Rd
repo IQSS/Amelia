@@ -19,9 +19,10 @@ amelia(x, ...)
   startvals = 0, tolerance = 1e-04, logs = NULL, sqrts = NULL,
   lgstc = NULL, noms = NULL, ords = NULL, incheck = TRUE,
   collect = FALSE, arglist = NULL, empri = NULL, priors = NULL,
-  autopri = 0.05, emburn = c(0, 0), bounds = NULL, max.resample = 100,
-  overimp = NULL, boot.type = "ordinary", parallel = c("no", "multicore",
-  "snow"), ncpus = getOption("amelia.ncpus", 1L), cl = NULL, ...)
+  autopri = 0.05, emburn = c(0, 0), bounds = NULL,
+  max.resample = 100, overimp = NULL, boot.type = "ordinary",
+  parallel = c("no", "multicore", "snow"),
+  ncpus = getOption("amelia.ncpus", 1L), cl = NULL, ...)
 }
 \arguments{
 \item{x}{either a matrix, data.frame, a object of class

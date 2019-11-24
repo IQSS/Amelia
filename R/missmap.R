@@ -6,6 +6,8 @@
 #'
 #' @param obj an object of class "amelia"; typically output from the
 #'        function \code{amelia}, a matrix or a dataframe.
+#' @param vars a vector of column numbers or column names of the data
+#'   to include in the plot. The default is to plot all variables. 
 #' @param legend should a legend be drawn? (True or False)
 #' @param col a vector of length two where the first element specifies
 #'        the color for missing cells and the second element specifies
@@ -46,11 +48,12 @@
 #'
 #' @seealso \code{\link{compare.density}}, \code{\link{overimpute}},
 #' \code{\link{tscsPlot}}, \code{\link{image}}, \code{\link{heatmap}}
-missmap <- function(obj, legend = TRUE, col = c("indianred", "dodgerblue"), main,
+missmap <- function(obj, vars, legend = TRUE, col, main,
                     y.cex = 0.8, x.cex = 0.8, y.labels, y.at, csvar = NULL,
                     tsvar = NULL, rank.order = TRUE, margins = c(5, 5), ...) {
 
-  if (class(obj) == "amelia") {
+
+  if (inherits(obj, "amelia")) {
     vnames <- colnames(obj$imputations[[1]])
     n <- nrow(obj$missMatrix)
     p <- ncol(obj$missMatrix)
@@ -63,10 +66,27 @@ missmap <- function(obj, legend = TRUE, col = c("indianred", "dodgerblue"), main
     p <- ncol(obj)
     percent.missing <- colMeans(is.na(obj))
     pmiss.all <- mean(is.na(obj))
-    r1 <- 1*is.na(obj)
+    r1 <- 1 * is.na(obj)
   }
 
+  if (missing(col)) col <- c("#eff3ff", "#2171b5")
+  if (!missing(vars))  {
+    if (is.character(vars)) {
+      vars <- match(vars, vnames)
+      if (any(is.na(vars))) {
+        stop("vars not found in the data")
+      }
+    }
+    if (any(!(vars %in% 1:p))) {
+      stop("vars outside range of the data")
+    }
+    p <- length(vars)
+    r1 <- r1[, vars]
+    percent.missing <- percent.missing[vars]
+    pmiss.all <- mean(r1)
+  }
 
+  
   if (!missing(y.labels) &&
       (missing(y.at) && (length(y.labels) != n))) {
     stop("y.at must accompany y.labels if there is less than onefor each row")
@@ -145,10 +165,9 @@ missmap <- function(obj, legend = TRUE, col = c("indianred", "dodgerblue"), main
       col.fix <- col[2]
     }
     image(x = 1:(p), y = 1:n, z = chess, axes = FALSE,
-          col = col.fix, xlab="", ylab="", main = main)
-
+          col = col.fix, xlab = "", ylab = "", main = main)
     axis(1, lwd = 0, labels = vnames, las = 2, at = 1:p, cex.axis = x.cex)
-    axis(2, lwd = 0, labels = y.labels, las =1, at = y.at, cex.axis = y.cex)
+    axis(2, lwd = 0, labels = y.labels, las = 1, at = y.at, cex.axis = y.cex)
 
 
     if (legend) {
@@ -156,7 +175,7 @@ missmap <- function(obj, legend = TRUE, col = c("indianred", "dodgerblue"), main
       po.lab <- paste("Observed (", 100-round(100 * pmiss.all), "%)", sep = "")
       par(mar = c(0, 0, 0, 0.3))
       plot(0,0, type = "n", axes=  FALSE, ann=FALSE)
-      legend("left", col = col, bty = "n", xjust = 0, border = NA,
+      legend("left", col = col, bty = "n", xjust = 0, border = "grey",
              legend = c(pm.lab, po.lab), fill = col, horiz = FALSE)
 
     }
@@ -170,7 +189,7 @@ missmap <- function(obj, legend = TRUE, col = c("indianred", "dodgerblue"), main
 
     cols <- rev(heat.colors(5))
 
-    image( z=t(tscsdata), axes
+    image(z = t(tscsdata), axes
           = FALSE, col = cols, main = main, ylab="", xlab="")
     axis(1, labels = unique(ts), at = seq(from = 0, to = 1, length =
                                    ncol(tscsdata)), tck = 0, lwd = 0, las

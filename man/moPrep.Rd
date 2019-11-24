@@ -6,8 +6,8 @@
 \alias{moPrep.default}
 \title{Prepare Multiple Overimputation Settings}
 \usage{
-moPrep(x, formula, subset, error.proportion, gold.standard = !missing(subset),
-  error.sd)
+moPrep(x, formula, subset, error.proportion,
+  gold.standard = !missing(subset), error.sd)
 
 \method{moPrep}{molist}(x, formula, subset, error.proportion,
   gold.standard = FALSE, error.sd)
