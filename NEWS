@@ -7,8 +7,9 @@
 == 1.7.6 (24 Nov 2019) ==
   * Added "x.las" and "gap.xaxis" arguments to missmap() to allow for more
   control over the axis.
-  * added xlim/ylim arguments to disperse()
-  * moved documentation to roxygen
+  * Added xlim/ylim arguments to disperse()
+  * Moved documentation to roxygen
+  * Fixed bug in compare.density() when only 1 missing value. 
   * Minor bug fixes
 
 == 1.7.5 (07 May 2018) ==

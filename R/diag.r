@@ -128,7 +128,7 @@ compare.density <- function(output, var, col = c("indianred", "dodgerblue"),
   vname <- varnames[var]                     # This will work for both data.frames AND matricies.
 
 
-  if (sum(is.na(vars)) > 0) {
+  if (sum(is.na(vars)) > 1) {
     oiDetect <- (sum(output$missMatrix[,var]) + sum(!is.na(vars))) > length(vars)
     if (missing(main)) {
       if (oiDetect) {
@@ -150,7 +150,7 @@ compare.density <- function(output, var, col = c("indianred", "dodgerblue"),
     compplot <- matplot(x = cbind(xmiss$x, xobs$x),
                         y = cbind(ratio * xmiss$y, xobs$y),
                         xlab = xlab, ylab = ylab, type = "l", lwd = lwd,
-                        lty = 1, main = main, col = col,...)
+                        lty = 1, main = main, col = col, ...)
     if (legend) {
       legend("topright", legend = c(leg.text, "Observed Values"),
              col = col, lty = c(1,1), bg = 'gray90', lwd = lwd)
@@ -166,13 +166,15 @@ compare.density <- function(output, var, col = c("indianred", "dodgerblue"),
       ylab <- "Relative Density"
     }
 
-    compplot <- plot(density(varimp, na.rm = TRUE), col = "blue",
+    compplot <- plot(density(varimp, na.rm = TRUE), col = col[2],
                      main = main,...)
-    col.none <- c("gray","blue")
+    if (sum(is.na(vars)) == 1) {
+      abline(v = varimp[output$missMatrix[, var]], col = col[1])
+    }
 
     if (legend) {
-      legend("topright", legend = c("Mean Imputations (None)","Observed Values"),
-             col = col.none, lty = c(1,1), bg = 'gray90')
+      legend("topright", legend = c("Mean Imputations","Observed Values"),
+             col = col, lty = c(1,1), bg = 'gray90')
     }
   }
 
