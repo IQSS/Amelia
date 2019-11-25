@@ -6,7 +6,8 @@
 \usage{
 missmap(obj, vars, legend = TRUE, col, main, y.cex = 0.8,
   x.cex = 0.8, y.labels, y.at, csvar = NULL, tsvar = NULL,
-  rank.order = TRUE, margins = c(5, 5), ...)
+  rank.order = TRUE, margins = c(5, 5), gap.xaxis = 1, x.las = 2,
+  ...)
 }
 \arguments{
 \item{obj}{an object of class "amelia"; typically output from the
@@ -47,6 +48,14 @@ simply the order of the variables in the data.}
 \item{margins}{a vector of length two that specifies the bottom and
 left margins of the plot. Useful for when variable names or
 row names are long.}
+
+\item{gap.xaxis}{value to pass to the \code{gap.axis} argument of
+the \code{axis} function that plots the x-axis. See
+\code{\link{axis}} for more details. Ignored on R versions less
+than 4.0.0.}
+
+\item{x.las}{value of the \code{las} argument to pass to the
+\code{\link{axis}} function creating the x-axis.}
 
 \item{...}{further graphical arguments.}
 }

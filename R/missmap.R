@@ -31,6 +31,12 @@
 #' @param margins a vector of length two that specifies the bottom and
 #'        left margins of the plot. Useful for when variable names or
 #'        row names are long.
+#' @param gap.xaxis value to pass to the \code{gap.axis} argument of
+#'   the \code{axis} function that plots the x-axis. See
+#'   \code{\link{axis}} for more details. Ignored on R versions less
+#'   than 4.0.0.
+#' @param x.las value of the \code{las} argument to pass to the
+#'   \code{\link{axis}} function creating the x-axis.
 #' @param ... further graphical arguments.
 #'
 #' @details \code{missmap} draws a map of the missingness in a dataset using the
@@ -50,7 +56,8 @@
 #' \code{\link{tscsPlot}}, \code{\link{image}}, \code{\link{heatmap}}
 missmap <- function(obj, vars, legend = TRUE, col, main,
                     y.cex = 0.8, x.cex = 0.8, y.labels, y.at, csvar = NULL,
-                    tsvar = NULL, rank.order = TRUE, margins = c(5, 5), ...) {
+                    tsvar = NULL, rank.order = TRUE, margins = c(5, 5),
+                    gap.xaxis = 1, x.las = 2, ...) {
 
 
   if (inherits(obj, "amelia")) {
@@ -86,7 +93,6 @@ missmap <- function(obj, vars, legend = TRUE, col, main,
     pmiss.all <- mean(r1)
   }
 
-  
   if (!missing(y.labels) &&
       (missing(y.at) && (length(y.labels) != n))) {
     stop("y.at must accompany y.labels if there is less than onefor each row")
@@ -98,9 +104,9 @@ missmap <- function(obj, vars, legend = TRUE, col, main,
   if (missing(y.labels)) {
     if (!is.null(csvar)) {
       if (class(obj) == "amelia") {
-        cs <- obj$imputations[[1]][,csvar]
+        cs <- obj$imputations[[1]][, csvar]
       } else {
-        cs <- obj[,csvar]
+        cs <- obj[, csvar]
       }
       y.labels <- cs
       if (is.factor(y.labels)) y.labels <- levels(y.labels)[unclass(y.labels)]
@@ -111,9 +117,9 @@ missmap <- function(obj, vars, legend = TRUE, col, main,
       if (!is.numeric(cs)) cs <- as.numeric(as.factor(cs))
       if (!is.null(tsvar)) {
         if (class(obj) == "amelia") {
-          ts <- as.numeric(obj$imputations[[1]][,tsvar])
+          ts <- as.numeric(obj$imputations[[1]][, tsvar])
         } else {
-          ts <- as.numeric(obj[,tsvar])
+          ts <- as.numeric(obj[, tsvar])
         }
         unit.period <- order(cs, ts)
       } else {
@@ -121,18 +127,18 @@ missmap <- function(obj, vars, legend = TRUE, col, main,
       }
 
       y.labels <- y.labels[unit.period]
-      r1 <- r1[unit.period,]
+      r1 <- r1[unit.period, ]
 
       brks <- c(TRUE,rep(FALSE, times = (n-1)))
       for (i in 2:n) {
-        brks[i] <- (cs[unit.period][i]!=cs[unit.period][i-1])
+        brks[i] <- (cs[unit.period][i] != cs[unit.period][i - 1])
       }
       y.at <- which(brks)
 
       y.labels <- y.labels[brks]
     } else {
       y.labels <- row.names(obj$imputations[[1]])
-      y.at <- seq(1, n, by=15)
+      y.at <- seq(1, n, by = 15)
       y.labels <- y.labels[y.at]
     }
   } else {
@@ -144,7 +150,7 @@ missmap <- function(obj, vars, legend = TRUE, col, main,
     chess <- t(!r1[n:1, missrank])
     vnames <- vnames[missrank]
   } else {
-    chess <- t(!r1[n:1,])
+    chess <- t(!r1[n:1, ])
   }
   y.at <- (n:1)[y.at]
 
@@ -155,7 +161,7 @@ missmap <- function(obj, vars, legend = TRUE, col, main,
   ## here we fork for data/tscs type plots. users cant set this yet.
   type <- "data"
   if (legend) {
-    graphics::layout(matrix(c(1,2), nrow = 1), widths = c(0.75, 0.25))
+    graphics::layout(matrix(c(1, 2), nrow = 1), widths = c(0.75, 0.25))
     par(mar = c(margins, 2, 0) + 0.1, mgp = c(3, 0.25, 0))
   }
   if (type == "data") {
@@ -166,46 +172,47 @@ missmap <- function(obj, vars, legend = TRUE, col, main,
     }
     image(x = 1:(p), y = 1:n, z = chess, axes = FALSE,
           col = col.fix, xlab = "", ylab = "", main = main)
-    axis(1, lwd = 0, labels = vnames, las = 2, at = 1:p, cex.axis = x.cex)
+    if (getRversion() >= "4.0.0") {
+      axis(1, lwd = 0, labels = vnames, las = x.las, at = 1:p, cex.axis = x.cex,
+           gap.axis = gap.xaxis)
+    } else {
+      axis(1, lwd = 0, labels = vnames, las = x.las, at = 1:p, cex.axis = x.cex)
+    }
     axis(2, lwd = 0, labels = y.labels, las = 1, at = y.at, cex.axis = y.cex)
 
 
     if (legend) {
       pm.lab <- paste("Missing (", round(100 * pmiss.all), "%)", sep = "")
-      po.lab <- paste("Observed (", 100-round(100 * pmiss.all), "%)", sep = "")
+      po.lab <- paste("Observed (", 100 - round(100 * pmiss.all), "%)",
+                      sep = "")
       par(mar = c(0, 0, 0, 0.3))
-      plot(0,0, type = "n", axes=  FALSE, ann=FALSE)
+      plot(0, 0, type = "n", axes = FALSE, ann = FALSE)
       legend("left", col = col, bty = "n", xjust = 0, border = "grey",
              legend = c(pm.lab, po.lab), fill = col, horiz = FALSE)
-
     }
   } else {
     tscsdata <- data.frame(cs.names, ts, rowMeans(r1))
     tscsdata <- reshape(tscsdata, idvar = "cs.names", timevar = "ts",
                         direction = "wide")
-    rownames(tscsdata) <- tscsdata[,1]
+    rownames(tscsdata) <- tscsdata[, 1]
     colnames(tscsdata) <- unique(ts)
-    tscsdata <- as.matrix(tscsdata[,-1])
+    tscsdata <- as.matrix(tscsdata[, -1])
 
     cols <- rev(heat.colors(5))
 
-    image(z = t(tscsdata), axes
-          = FALSE, col = cols, main = main, ylab="", xlab="")
-    axis(1, labels = unique(ts), at = seq(from = 0, to = 1, length =
-                                   ncol(tscsdata)), tck = 0, lwd = 0, las
-         = 2)
-    axis(2, labels = rownames(tscsdata), at = seq(from = 0, to = 1, length =
-                                           nrow(tscsdata)), tck = 0, lwd =
-         0, las = 1, cex.axis = .8)
+    image(z = t(tscsdata), axes = FALSE, col = cols, main = main,
+          ylab = "", xlab = "")
+    at.seq <- seq(from = 0, to = 1, length = ncol(tscsdata))
+    axis(1, labels = unique(ts), at = at.seq, tck = 0, lwd = 0, las = 2)
+    axis(2, labels = rownames(tscsdata), at = at.seq, tck = 0, lwd = 0,
+         las = 1, cex.axis = .8)
 
     if (legend) {
-      ## par(xpd = TRUE)
-      legend(x = 0.95, y = 1.01, col = cols, bty = "n",
-             xjust = 1, legend = c("0-0.2",
-                          "0.2-0.4","0.4-0.6","0.6-0.8","0.8-1"), fill =cols, horiz = TRUE)
+      leg.names <- c("0-0.2", "0.2-0.4", "0.4-0.6", "0.6-0.8", "0.8-1")
+      legend(x = 0.95, y = 1.01, col = cols, bty = "n", xjust = 1,
+             legend = leg.names, fill = cols, horiz = TRUE)
     }
   }
 
   invisible(NULL)
-
 }
