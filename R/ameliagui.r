@@ -1,27 +1,14 @@
-##  ameliagui.r
-##  a R-tcl/tk based frontend for Amelia (hopefully crossplatform)
-##  mb 23/01/06 - function to be included in amelia package.
-##  05/05/06 mb - catches unexpected amelia errors
-##  09/05/06 mb - cleaned up diags menu, added overimpute button
-##  22/06/06 mb - checks added to session loading.
-##  26/06/06 mb - session saving/loading now mirrors amelia output.
-##  26/07/06 mb - added stata 6/7/8 compatibility.
-##  27/07/06 mb - updated variable options screen.  fixed help links.  cosmetics.
-##  04/08/06 mb - sessions load properly for non-csv files.
-##  24/08/06 mb - added tolerance option on variables page.
-##  11/09/06 mb - actually passes nominals now, fixed char problems on summarize
-##  19/09/06 mb - changed function name to AmeliaView
-##  01/12/06 mb - fixed session loading for 2.4.0, can't compare non-numerics
-##  11/12/06 mb - rehauled priors
-##  04/06/08 mb - added a self-contained gui enviroment to store everything (AmeliaEnv())
-##              - added seed option to output
-##              - added RData save output option
-##              - added "hold in R memory" output option
-##              - sesssions are now saved as .RData files for compression
-## 17/07/08 mb - fixed frontend error bug (dumping output to screen
-## 22/07/08 mb - good coding update: T->TRUE/F->FALSE
-
-
+#' Interactive GUI for Amelia
+#'
+#' @name ameliagui
+#'
+#' @description
+#' Brings up the AmeliaView graphical interface, which allows users
+#' to load datasets, manage options and run Amelia from a traditional
+#' windowed environment.
+#'
+#' @usage AmeliaView()
+#' @keywords utilities
 
 main.close<-function() {
   qvalue<-tcltk::tkmessageBox(parent=getAmelia("gui"), message="Are you sure you want to exit Amelia?",
@@ -811,6 +798,15 @@ fillMainTree <- function() {
   return()
 }
 
+
+#' Interactive GUI for Amelia
+#'
+#' Brings up the AmeliaView graphical interface, which allows users to load datasets,
+#' manage options and run Amelia from a traditional windowed environment.
+#'
+#' @details
+#' Requires the tcltk package.
+#'
 AmeliaView<-function() {
 
   ##Preamble
@@ -1524,7 +1520,7 @@ gui.pri.setup <- function() {
     varBox <- paste("add",nm,"var",sep=".")
     caseBox <- paste("add",nm,"case",sep=".")
     caseSelection <- as.numeric(tcltk::tcl(getAmelia(caseBox),"current"))
-    varSelection  <- as.numeric(tcltk::tcl(getAmelia(varBox),"current")) +1
+    varSelection  <- as.numeric(tcltk::tcl(getAmelia(varBox),"current")) + 1
 
     thiscase <- tcltk::tclvalue(tcltk::tkget(getAmelia(caseBox)))
     thisvar  <- tcltk::tclvalue(tcltk::tkget(getAmelia(varBox)))
@@ -1654,7 +1650,6 @@ gui.pri.setup <- function() {
       return(tcltk::tclVar("FALSE"))
   }
   setMissingVars <- function() {
-
     currentSelection <- as.numeric(tcltk::tcl(getAmelia("add.dist.case"), "current"))
     currentCase      <- missingCases[currentSelection]
     if (currentSelection==0)
@@ -1665,7 +1660,17 @@ gui.pri.setup <- function() {
     tcltk::tkconfigure(getAmelia("add.dist.var"),values = missVarNames)
     tcltk::tcl(getAmelia("add.dist.var"), "current", 0)
   }
-
+  setMissingRangeVars <- function() {
+    currentSelection <- as.numeric(tcltk::tcl(getAmelia("add.range.case"), "current"))
+    currentCase      <- missingCases[currentSelection]
+    if (currentSelection==0)
+      missVars <- anyMissing
+    else
+      missVars    <- is.na(getAmelia("amelia.data")[currentCase,])
+    missVarNames <- colnames(getAmelia("amelia.data"))[missVars]
+    tcltk::tkconfigure(getAmelia("add.range.var"),values = missVarNames)
+    tcltk::tcl(getAmelia("add.range.var"), "current", 0)
+  }
   resetEntries <- function() {
     tcltk::tcl("set", getAmelia("priorMin"),"")
     tcltk::tcl("set", getAmelia("priorMax"),"")
@@ -1824,12 +1829,12 @@ gui.pri.setup <- function() {
                                          state="readonly", width=15))
   putAmelia("add.range.var",tcltk::ttkcombobox(add.range.frame, values=vars,
                                         state="readonly", width=15))
-
+  tcltk::tkbind(getAmelia("add.range.case"), "<<ComboboxSelected>>", function(...) setMissingRangeVars())
   tcltk::tkgrid(tcltk::ttklabel(add.range.frame, text="Case:"), column=1, row=1, sticky = "e")
   tcltk::tkgrid(tcltk::ttklabel(add.range.frame, text="Variable:"), column=1, row=2, sticky = "e")
   tcltk::tcl(getAmelia("add.range.case"), "current", 0)
   tcltk::tcl(getAmelia("add.range.var"), "current", 0)
-  tcltk::tkconfigure(getAmelia("add.range.var"), postcommand=function(...) setMissingVars())
+  tcltk::tkconfigure(getAmelia("add.range.var"), postcommand=function(...) setMissingRangeVars())
   tcltk::tkgrid(getAmelia("add.range.case"), column=2, row=1, pady=3)
   tcltk::tkgrid(getAmelia("add.range.var"),  column=2, row=2, pady=3)
 

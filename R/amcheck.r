@@ -938,6 +938,15 @@ amcheck <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
 
   }
 
+  if (is.data.frame(x)) {
+    is.posix <- function(x) inherits(x, c("POSIXt", "POSIXct", "POSIXlt"))
+    posix.check <- sapply(x, is.posix)
+    if (any(is.na(x[, posix.check]))) {
+      stop("NA in POSIXt variable: remove or convert to numeric")
+    }
+  }
+  
+  
   if (!is.null(emburn)) {
     if (length(emburn) != 2) {
       stop("emburn must be length 2")

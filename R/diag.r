@@ -24,9 +24,51 @@
 ##  02/21/12 jh - added mi.meld to combine multiply imputed quantities of interest and se's.
 ##  10/30/12 jh - tscsPlot: expanded to allow to cycle through sets of cross sectional units efficiently.
 
-compare.density <- function(output, var, col = c("red","black"), scaled = FALSE,
-                            lwd = 1, main, xlab, ylab, legend = TRUE,
-                            frontend = FALSE, ...) {
+
+#' Compare observed versus imputed densities
+#'
+#' Plots smoothed density plots of observed and imputed values from output
+#' from the \code{amelia} function.
+#'
+#' @param output output from the function \code{amelia}.
+#' @param var column number or variable name of the variable to plot.
+#' @param col a vector of length 2 containing the color to plot the (1)
+#'        imputed density and (2) the observed density.
+#' @param scaled a logical indicating if the two densities should be
+#'        scaled to reflect the difference in number of units in each.
+#' @param lwd the line width of the density plots.
+#' @param main main title of the plot. The default is to title the plot
+#'        using the variable name.
+#' @param xlab the label for the x-axis. The default is the name of the
+#'        variable.
+#' @param ylab the label for the y-axis. The default is "Relative Density."
+#' @param legend a logical value indicating if a legend should be
+#'        plotted.
+#' @param frontend a logical value used internally for the Amelia GUI.
+#' @param ... further graphical parameters for the plot.
+#'
+#' @details   This function first plots a density plot of the observed units for the
+#' variable \code{var} in \code{col[2]}. The the function plots a density plot of the mean
+#' or modal imputations for the missing units in \code{col[1]}. If a
+#' variable is marked "ordinal" or "nominal" with the \code{ords} or
+#' \code{noms} options in \code{amelia}, then the modal imputation will
+#' be used. If \code{legend} is \code{TRUE}, then a legend is plotted as well.
+#'
+#' @references
+#' Abayomi, K. and Gelman, A. and Levy, M. 2005 "Diagnostics for
+#' Multivariate Imputations," \emph{Applied Statistics}. 57,3: 273--291.
+#'
+#' @examples
+#' data(africa)
+#'
+#' @seealso For more information on how densities are computed,
+#' \code{\link{density}}; Other imputation diagnostics are
+#' \code{\link{overimpute}}, \code{\link{disperse}}, and
+#' \code{\link{tscsPlot}}.
+#'
+compare.density <- function(output, var, col = c("indianred", "dodgerblue"),
+                            scaled = FALSE, lwd = 1, main, xlab, ylab,
+                            legend = TRUE, frontend = FALSE, ...) {
 
   if (!("amelia" %in% class(output)))
     stop("The 'output' is not Amelia output.")
@@ -86,7 +128,7 @@ compare.density <- function(output, var, col = c("red","black"), scaled = FALSE,
   vname <- varnames[var]                     # This will work for both data.frames AND matricies.
 
 
-  if (sum(is.na(vars)) > 0) {
+  if (sum(is.na(vars)) > 1) {
     oiDetect <- (sum(output$missMatrix[,var]) + sum(!is.na(vars))) > length(vars)
     if (missing(main)) {
       if (oiDetect) {
@@ -108,7 +150,7 @@ compare.density <- function(output, var, col = c("red","black"), scaled = FALSE,
     compplot <- matplot(x = cbind(xmiss$x, xobs$x),
                         y = cbind(ratio * xmiss$y, xobs$y),
                         xlab = xlab, ylab = ylab, type = "l", lwd = lwd,
-                        lty = 1, main = main, col = col,...)
+                        lty = 1, main = main, col = col, ...)
     if (legend) {
       legend("topright", legend = c(leg.text, "Observed Values"),
              col = col, lty = c(1,1), bg = 'gray90', lwd = lwd)
@@ -124,13 +166,15 @@ compare.density <- function(output, var, col = c("red","black"), scaled = FALSE,
       ylab <- "Relative Density"
     }
 
-    compplot <- plot(density(varimp, na.rm = TRUE), col = "blue",
+    compplot <- plot(density(varimp, na.rm = TRUE), col = col[2],
                      main = main,...)
-    col.none <- c("gray","blue")
+    if (sum(is.na(vars)) == 1) {
+      abline(v = varimp[output$missMatrix[, var]], col = col[1])
+    }
 
     if (legend) {
-      legend("topright", legend = c("Mean Imputations (None)","Observed Values"),
-             col = col.none, lty = c(1,1), bg = 'gray90')
+      legend("topright", legend = c("Mean Imputations","Observed Values"),
+             col = col, lty = c(1,1), bg = 'gray90')
     }
   }
 
@@ -138,20 +182,65 @@ compare.density <- function(output, var, col = c("red","black"), scaled = FALSE,
 }
 
 
-##
-## overimpute - imputes observed values to check the imputation model
-##
-##  INPUTS:output         - output from amelia run (class "amelia")
-##         var            - column number or variable name to overimpute
-##         subset         - subset to overimpute and plot
-##         legend         - should we add a lengend to the plot? (TRUE/FALSE)
-##         xlab,ylab,main - graphical parameters
-##         frontend       - logical for printing to tcl/tk window
-##
-## mb 02/02/09 - changed calls to "amelia" class of output
-##             - added ability to pass xlab,main,legend, etc
-##
 
+#' Overimputation diagnostic plot
+#'
+#' Treats each observed value as missing and imputes from the imputation
+#' model from \code{amelia} output.
+#'
+#' @param output output from the function \code{amelia}.
+#' @param var column number or variable name of the variable to
+#'        overimpute.
+#' @param draws the number of draws per imputed dataset to generate
+#'   overimputations. Total number of simulations will \code{m *
+#'   draws} where \code{m} is the number of imputations.
+#' @param subset an optional vector specifying a subset of observations
+#'        to be used in the overimputation.
+#' @param legend a logical value indicating if a legend should be
+#'        plotted.
+#' @param xlab the label for the x-axis. The default is "Observed Values."
+#' @param ylab the label for the y-axis. The default is "Imputed Values."
+#' @param main main title of the plot. The default is to smartly title the plot
+#'        using the variable name.
+#' @param frontend a logical value used internally for the Amelia GUI.
+#' @param ... further graphical parameters for the plot.
+#'
+#' @details
+#' This function temporarily treats each observed value in
+#' \code{var} as missing and imputes that value based on the imputation
+#' model of \code{output}. The dots are the mean imputation and the
+#' vertical lines are the 90\% percent confidence intervals for
+#' imputations of each observed value. The diagonal line is the \eqn{y=x}
+#' line. If all of the imputations were perfect, then our points would
+#' all fall on the line. A good imputation model would have about 90\% of
+#' the confidence intervals containing the truth; that is, about 90\% of
+#' the vertical lines should cross the diagonal.
+#'
+#' The color of the vertical lines displays the fraction of missing
+#' observations in the pattern of missingness for that
+#' observation. The legend codes this information. Obviously, the
+#' imputations will be much tighter if there are more observed covariates
+#' to use to impute that observation.
+#'
+#' The \code{subset} argument evaluates in the environment of the
+#' data. That is, it can but is not required to refer to variables in the
+#' data frame as if it were attached.
+#'
+#' @return A list that contains (1) the row in the original data
+#'   (\code{row}), (2) the observed value of that observation
+#'   (\code{orig}), (2) the mean of the overimputations
+#'   (\code{mean.overimputed}), (3) the lower bound of the 95\%
+#'   confidence interval of the overimputations
+#'   (\code{lower.overimputed}), (4) the upper bound of the 95\%
+#'   confidence interval of the overimputations
+#'   (\code{upper.overimputed}), (5) the fraction of the variables
+#'   that were missing for that observation in the original data
+#'   (\code{prcntmiss}), and (6) a matrix of the raw overimputations,
+#'   with observations in rows and the different draws in columns (\code{overimps}).
+#'
+#' @seealso Other imputation diagnostics are
+#' \code{\link{compare.density}}, \code{\link{disperse}}, and
+#' \code{\link{tscsPlot}}.
 
 overimpute <- function(output, var, draws = 20, subset, legend = TRUE, xlab,
                        ylab, main, frontend = FALSE, ...) {
@@ -385,7 +474,50 @@ gethull <- function(st,tol,rots) {
 }
 
 
-disperse <- function(output, m = 5, dims = 1, p2s = 0, frontend=FALSE,...) {
+#' Overdispersed starting values diagnostic for multiple imputation
+#'
+#' A visual diagnostic of EM convergence from multiple overdispersed
+#' starting values for an output from \code{amelia}.
+#'
+#' @param output output from the function \code{amelia}.
+#' @param m the number of EM chains to run from overdispersed starting values.
+#' @param dims the number of principle components of the parameters to
+#'        display and assess convergence on (up to 2).
+#' @param p2s an integer that controls printing to screen. 0 (default)
+#'        indicates no printing, 1 indicates normal screen output and 2
+#'        indicates diagnostic output.
+#' @param frontend a logical value used internally for the Amelia GUI.
+#' @param xlim limits of the plot in the horizontal dimension.
+#' @param ylim limits of the plot in vertical dimension.
+#' @param ... further graphical parameters for the plot.
+#'
+#' @details   This function tracks the convergence of \code{m} EM chains which start
+#' from various overdispersed starting values. This plot should give some
+#' indication of the sensitivity of the EM algorithm to the choice of
+#' starting values in the imputation model in \code{output}. If all of
+#' the lines converge to the same point, then we can be confident that
+#' starting values are not affecting the EM algorithm.
+#'
+#' As the parameter space of the imputation model is of a
+#' high-dimension, this plot tracks how the first (and second if
+#'                                                 \code{dims} is 2) principle component(s) change over the iterations of
+#' the EM algorithm. Thus, the plot is a lower dimensional summary of the
+#' convergence and is subject to all the drawbacks inherent in said
+#' summaries.
+#'
+#' For \code{dims==1}, the function plots a horizontal line at the
+#' position where the first EM chain converges. Thus, we are checking
+#' that the other chains converge close to that horizontal line. For
+#' \code{dims==2}, the function draws a convex hull around the point of
+#' convergence for the first EM chain. The hull is scaled to be within
+#' the tolerance of the EM algorithm. Thus, we should check that the
+#' other chains end up in this hull.
+#'
+#' @seealso Other imputation diagnostics are
+#' \code{\link{compare.density}}, \code{\link{disperse}}, and
+#' \code{\link{tscsPlot}}
+disperse <- function(output, m = 5, dims = 1, p2s = 0, frontend = FALSE, ...,
+                     xlim = NULL, ylim = NULL) {
 
   if (!("amelia" %in% class(output)))
     stop("The 'output' is not Amelia output.")
@@ -468,12 +600,13 @@ disperse <- function(output, m = 5, dims = 1, p2s = 0, frontend=FALSE,...) {
   if (dims == 1) {
     addedroom <- (max(reduced.imps) - min(reduced.imps)) * 0.1
     x <- seq(iters[1])
+    if (is.null(xlim)) xlim <- c(0, max(iters))
+    if (is.null(ylim)) ylim <- range(c(reduced.imps - addedroom, reduced.imps))
     y <- reduced.imps[1, 1:iters[1]]
     patt <- seq(1, length(x) - 1)
     plot(x, y, col = 1, main = "Overdispersed Start Values",
          xlab = "Number of Iterations", ylab = "Largest Principle Component",
-         xlim = c(0, max(iters)),
-         ylim = range(c(reduced.imps - addedroom, reduced.imps)), type = "n")
+         xlim = xlim, ylim = ylim, type = "n")
     segments(x[patt], y[patt], x[patt + 1], y[patt + 1], col = cols[1])
     for (i in 2:length(iters)) {
       x <- seq(iters[i])
@@ -488,10 +621,12 @@ disperse <- function(output, m = 5, dims = 1, p2s = 0, frontend=FALSE,...) {
   } else {
     xrange <- c((min(reduced.imps[1,])), (max(reduced.imps[1,])))
     yrange <- c((min(reduced.imps[2,])), (max(reduced.imps[2,])))
+    if (is.null(xlim)) xlim <- xrange
+    if (is.null(ylim)) ylim <- yrange
     plot(reduced.imps[1,1:iters[1]], reduced.imps[2,1:iters[1]], type = "n",
          main = "Overdispersed Starting Values",
          xlab = "First Principle Component", ylab = "Second Principle Component",
-         col=cols[1], xlim = xrange, ylim = yrange)
+         col=cols[1], xlim = xlim, ylim = ylim)
     for (i in 2:length(iters)) {
       x <- reduced.imps[1, (sum(iters[1:(i-1)])+1):(sum(iters[1:i]))]
       y <- reduced.imps[2, (sum(iters[1:(i-1)])+1):(sum(iters[1:i]))]
@@ -651,6 +786,51 @@ sigalert <- function(data, disperse.list, output, notorious = 5){
   return(NULL)
 }
 
+
+#' Plot observed and imputed time-series for a single cross-section
+#'
+#' Plots a time series for a given variable in a given cross-section and
+#' provides confidence intervals for the imputed values.
+#'
+#' @param output output from the function \code{amelia}.
+#' @param var the column number or variable name of the variable to plot.
+#' @param cs the name (or level) of the cross-sectional unit to plot.
+#'           Maybe a vector of names which will panel a window of plots
+#' @param draws the number of imputations on which to base the confidence
+#'        intervals.
+#' @param conf the confidence level of the confidence intervals to plot
+#'        for the imputated values.
+#' @param misscol the color of the imputed values and their confidence
+#'        intervals.
+#' @param obscol the color of the points for observed units.
+#' @param xlab x axis label
+#' @param ylab y axis label
+#' @param main overall plot title
+#' @param pch point shapes for the plot.
+#' @param ylim y limits (y1, y2) of the plot.
+#' @param xlim x limits (x1, x2) of the plot.
+#' @param frontend a logical value for use with the \code{AmeliaView} GUI.
+#' @param plotall a logical value that provides a shortcut for ploting all unique values of the level.
+#'        A shortcut for the \code{cs} argument, a TRUE value overwrites any
+#'        \code{cs} argument.
+#' @param nr the number of rows of plots to use when ploting multiple cross-sectional
+#'        units.  The default value will try to minimize this value to create a roughly
+#'        square representation, up to a value of four.  If all plots do not fit on the
+#'        window, a new window will be started.
+#' @param nc the number of columns of plots to use.  See \code{nr}
+#' @param pdfstub a stub string used to write pdf copies of each window created by the
+#'        plot.  The default is not to write pdf output, but any string value will turn
+#'        on pdf output to the local working directory.  If the stub is \code{mystub},
+#'        then plots will be saved as \code{mystub1.pdf}, \code{mystub2.pdf}, etc.
+#' @param ... further graphical parameters for the plot.
+#'
+#' @details
+#'   The \code{cs} argument should be a value from the variable set to the
+#'  \code{cs} argument in the \code{amelia} function for this output. This
+#'  function will not work if the \code{ts} and \code{cs} arguments were
+#'  not set in the \code{amelia} function. If an observation has been
+#'  overimputed, \code{tscsPlot} will plot both an observed and an imputed
+#'  value.
 
 tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
                      misscol = "red", obscol = "black", xlab, ylab, main,
@@ -835,23 +1015,43 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
 
 }
 
-##
-## mi.meld
-##
-## combines estimated quantities of interest and their standard errors
-##   from multiply imputed datasets
-## Default expects the q's (and their se's) to have all parameters be columns
-##   in a matrix, and the results from each imputed dataset to be a new
-##   row.
-##
-##  INPUTS: q  - matrix of quantities of interest (default m by k, thus each row
-##          represents k parameters from one of m different datasets)
-##          se - matrix of standard errors (default m by k)
-##          byrow - logical.  TRUE: matrix is m-by-k.  FALSE: matrix is k-by-m.
-##  2/21/12 jH
-##
 
-
+#' Combine Multiple Results From Multiply Imputed Datasets
+#'
+#' Combine sets of estimates (and their standard errors) generated from
+#' different multiply imputed datasets into one set of results.
+#'
+#' @param q A matrix or data frame of (k) quantities of interest (eg.
+#'        coefficients, parameters, means) from (m) multiply imputed datasets.
+#'        Default is to assume the matrix is m-by-k (see \code{byrow}), thus each
+#'        row represents a set of results from one dataset, and each column
+#'        represents the different values of a particular quantity of interest
+#'        across the imputed datasets.
+#' @param se A matrix or data frame of standard errors that correspond to each of the
+#'        elements of the quantities of interest in \code{q}.  Should be the same
+#'        dimensions as \code{q}.
+#' @param byrow logical.  If \code{TRUE}, \code{q} and \code{se} are treated as
+#'        though each row represents the set of results from one dataset
+#'        (thus m-by-k).  If \code{FALSE}, each column represents results from one
+#'        dataset (thus k-by-m).
+#'
+#' @details Uses Rubin's rules for combining a set of results from multiply imputed
+#' datasets to reflect the average result, with standard errors that both average
+#' uncertainty across models and account for disagreement in the estimated values
+#' across the models.
+#'
+#' @return
+#'   \item{q.mi}{Average value of each quantity of interest across the m models}
+#'   \item{se.mi}{Standard errors of each quantity of interest}
+#'
+#' @references
+#' Rubin, D. (1987). \emph{Multiple Imputation for Nonresponse in Surveys}.
+#' New York: Wiley.
+#'
+#' Honaker, J., King, G., Honaker, J. Joseph, A. Scheve K. (2001). Analyzing
+#' Incomplete Political Science Data: An Alternative Algorithm for Multiple
+#' Imputation \emph{American Political Science Review}, \bold{95(1)}, 49--69. (p53)
+#'
 mi.meld<-function(q, se, byrow = TRUE) {
 
   if (!byrow) {

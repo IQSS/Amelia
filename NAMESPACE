@@ -10,7 +10,9 @@ export(amelia,
        missmap,
        moPrep,
        transform.amelia,
-       mi.meld)
+       mi.meld,
+       amelia.molist,
+       amelia.default)
 
 import(foreign)
 import(utils)

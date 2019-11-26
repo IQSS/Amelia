@@ -244,7 +244,7 @@ while ( ( (cvalue > 0) | (count < emburn(0)) )  & ( (count < emburn(1)) | (embur
     }
   }
   iterHist.shed_row(0);
-  
+
   if (p2s > 0) Rcpp::Rcout << std::endl;
   List z;
   if (allthetas(0) == 1) {
@@ -361,7 +361,7 @@ SEXP ameliaImpute(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas,
   
   //int nparam = arma::accu(arma::find(arma::trimatu(thetaold)));
   
-  arma::uvec upperpos = arma::find(arma::trimatu(arma::abs(arma::randu<arma::mat>(k+1,k+1))));
+  //arma::uvec upperpos = arma::find(arma::trimatu(arma::abs(arma::randu<arma::mat>(k+1,k+1))));
   arma::mat xplay = arma::zeros<arma::mat>(AMn,k);
   arma::mat imputations(2,k);
   arma::mat theta(k+1, k+1);
