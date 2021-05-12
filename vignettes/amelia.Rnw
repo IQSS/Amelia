@@ -2,6 +2,10 @@
 
 \usepackage[T1]{fontenc}
 
+\usepackage[pdftex, bookmarksopen=true, bookmarksnumbered=true,
+pdfstartview=FitH, breaklinks=true, urlbordercolor={0 1 0},
+citebordercolor={0 0 1}]{hyperref}
+
 \usepackage{Rd}
 \usepackage{Sweave}
 \usepackage{upquote}
@@ -51,9 +55,6 @@
 %\VignettePackage{Amelia}
 
 \usepackage{color}
-\usepackage[pdftex, bookmarksopen=true, bookmarksnumbered=true,
-pdfstartview=FitH, breaklinks=true, urlbordercolor={0 1 0},
-citebordercolor={0 0 1}]{hyperref}
 
 \newcommand{\obs}{{\text{obs}}}
 \newcommand{\mis}{{\text{mis}}}
