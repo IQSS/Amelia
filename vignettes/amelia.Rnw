@@ -84,7 +84,6 @@ ameliaVersion <- packageVersion("Amelia")
 \date{Version \Sexpr{ameliaVersion}\\ \today}
 \maketitle
 
-\tableofcontents
 \newpage
 
 
