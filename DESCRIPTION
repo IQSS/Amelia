@@ -28,7 +28,13 @@ Description: A tool that "multiply imputes" missing data in a single cross-secti
   does not require users to know R.
 License: GPL (>= 2)
 URL: http://gking.harvard.edu/amelia
-Suggests: tcltk, Zelig
+Suggests:
+  tcltk,
+  Zelig,
+  rmarkdown,
+  knitr
+VignetteBuilder:
+  knitr
 RoxygenNote: 6.1.0
 Encoding: UTF-8
 LazyData: true

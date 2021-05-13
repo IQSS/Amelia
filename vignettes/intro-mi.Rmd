@@ -1,0 +1,106 @@
+---
+title: "Introduction to Multiple Imputation"
+date: "`r Sys.Date()`"
+link-citations: yes
+bibliography: amelia.bib
+output:
+  rmarkdown::html_vignette:
+    keep_md: true
+vignette: >
+  %\VignetteIndexEntry{Introduction to Multiple Imputation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r loadpkg, echo = FALSE, include = FALSE}
+knitr::opts_chunk$set(fig.width = 5, fig.height = 4, fig.align = "center")
+
+```
+
+## Introduction {#sec:intro}
+
+Missing data is a ubiquitous problem in social science data. Respondents do not answer every question, countries do not collect statistics every year, archives are incomplete, subjects drop out of panels. Most statistical analysis methods, however, assume the absence of missing data, and are only able to include observations for which every variable is measured. Amelia allows users to impute ("fill in" or rectangularize) incomplete data sets so that analyses which require complete observations can appropriately use all the information present in a dataset with missingness, and avoid the biases, inefficiencies, and incorrect uncertainty estimates that can result from dropping all partially observed observations from the analysis.
+
+Amelia performs *multiple imputation*, a general-purpose approach to data with missing values. Multiple imputation has been shown to reduce bias and increase efficiency compared to listwise deletion. Furthermore, ad-hoc methods of imputation, such as mean imputation, can lead to serious biases in variances and covariances. Unfortunately, creating multiple imputations can be a burdensome process due to the technical nature of algorithms involved. \Amelia\ provides users with a simple way to create and implement an imputation model, generate imputed datasets, and check its fit using diagnostics.
+
+The Amelia program goes several significant steps beyond the capabilities of the first version of Amelia [@HonJosKin98]. For one, the bootstrap-based EMB algorithm included in Amelia can impute many more variables, with many more observations, in much less time. The great simplicity and power of the EMB algorithm made it possible to write Amelia so that it virtually never crashes --- which to our knowledge makes it unique among all existing multiple imputation software --- and is much faster than the alternatives too. Amelia also has features to make valid and much more accurate imputations for cross-sectional, time-series, and time-series-cross-section data, and allows the incorporation of observation and data-matrix-cell level prior information. In addition to all of this, Amelia provides many diagnostic functions that help users check the validity of their imputation model. This software implements the ideas developed in @HonKin10.
+
+## What Amelia Does {#sec:what}
+
+Multiple imputation involves imputing $m$ values for each missing cell in your data matrix and creating $m$ "completed" data sets. Across these completed data sets, the observed values are the same, but the missing values are filled in with a distribution of imputations that reflect the uncertainty about the missing data. After imputation with Amelia's EMB algorithm, you can apply whatever statistical method you would have used if there had been no missing values to each of the $m$ data sets, and use a simple procedure, described below, to combine the results[^combine]. Under normal circumstances, you only need to impute once and can then analyze the $m$ imputed data sets as many times and for as many purposes as you wish. The advantage of Amelia is that it combines the comparative speed and ease-of-use of our algorithm with the power of multiple imputation, to let you focus on your substantive research questions rather than spending time developing complex application-specific models for nonresponse in each new data set. Unless the rate of missingness is very high, $m = 5$ (the program default) is probably adequate.
+
+[^combine]: You can combine the results automatically by doing your data analyses within [Zelig for R](https://zeligproject.org), or within [Clarify for Stata](https://gking.harvard.edu/clarify).
+
+### Assumptions
+
+The imputation model in Amelia assumes that the complete data (that is, both observed and unobserved) are multivariate normal. If we denote the $(n \times k)$ dataset as $D$ (with observed part $D^{obs}$ and unobserved part $D^{mis}$), then this assumption is 
+
+\begin{equation} 
+D \sim \mathcal{N}_k(\mu, \Sigma), 
+\end{equation} 
+
+
+which states that $D$ has a multivariate normal distribution with mean vector $\mu$ and covariance matrix $\Sigma$. The multivariate normal distribution is often a crude approximation to the true distribution of the data, yet there is evidence that this model works as well as other, more complicated models even in the face of categorical or mixed data [see @Schafer97, @SchOls98]. Furthermore, transformations of many types of variables can often make this normality assumption more plausible (see \@ref(sec:trans) for more information on how to implement this in Amelia).
+
+
+
+The essential problem of imputation is that we only observe $D^{obs}$, not the entirety of $D$. In order to gain traction, we need to make the usual assumption in multiple imputation that the data are *missing at random* (MAR). This assumption means that the pattern of missingness only depends on the observed data $D^{obs}$, not the unobserved data $D^{mis}$. Let $M$ to be the missingness matrix, with cells $m_{ij} = 1$ if $d_{ij} \in D^{mis}$ and $m_{ij} = 0$ otherwise. Put simply, $M$ is a matrix that indicates whether or not a cell is missing in the data. With this, we can define the MAR assumption as
+
+
+\[
+ p(M|D) = p(M|D^{obs}).
+\]
+
+Note that MAR includes the case when missing values are created randomly by, say, coin flips, but it also includes many more sophisticated missingness models. When missingness is not dependent on the data at all, we say that the data are *missing completely at random* (MCAR). Amelia requires both the multivariate normality and the MAR assumption (or the simpler special case of MCAR). Note that the MAR assumption can be made more plausible by including additional variables in the dataset $D$ in the imputation dataset than just those eventually envisioned to be used in the analysis model.
+
+### Algorithm
+
+In multiple imputation, we are concerned with the complete-data parameters, $\theta = (\mu, \Sigma)$. When writing down a model of the data, it is clear that our observed data is actually $D^{obs}$ and $M$, the missingness matrix. Thus, the likelihood of our observed data is $p(D^{obs}, M|\theta)$. Using the MAR assumption\footnote{There is an additional assumption hidden here that $M$ does not depend on the complete-data parameters.}, we can break this up,
+
+\begin{align}
+  p(D^{obs},M|\theta) = p(M|D^{obs})p(D^{obs}|\theta).
+\end{align}
+
+As we only care about inference on the complete data parameters, we can
+write the likelihood as
+
+\begin{align}
+  L(\theta|D^{obs}) &\propto p(D^{obs}|\theta),
+\end{align}
+
+which we can rewrite using the law of iterated expectations as
+
+\begin{align}
+  p(D^{obs}|\theta) &= \int p(D|\theta) dD^{mis}.
+\end{align}
+
+With this likelihood and a flat prior on $\theta$, we can see that the
+posterior is
+
+\begin{equation}
+  p(\theta | D^{obs}) \propto p(D^{obs}|\theta) = \int p(D|\theta)
+  dD^{mis}.
+\end{equation}
+
+The main computational difficulty in the analysis of incomplete data is taking draws from this posterior. The EM algorithm [@DemLaiRub77] is a simple computational approach to finding the mode of the posterior. Our EMB algorithm combines the classic EM algorithm with a bootstrap approach to take draws from this posterior. For each draw, we bootstrap the data to simulate estimation uncertainty and then run the EM algorithm to find the mode of the posterior for the bootstrapped data, which gives us fundamental uncertainty too [see @HonKin10 for details of the EMB algorithm].
+
+Once we have draws of the posterior of the complete-data parameters, we make imputations by drawing values of $D^{mis}$ from its distribution conditional on $D^{obs}$ and the draws of $\theta$, which is a linear regression with parameters that can be calculated directly from $\theta$.
+
+### Analysis
+
+In order to combine the results across $m$ data sets, first decide on the quantity of interest to compute, such as a univariate mean, regression coefficient, predicted probability, or first difference. Then, the easiest way is to draw $1/m$ simulations of $q$ from each of the $m$ data sets, combine them into one set of $m$ simulations, and then to use the standard simulation-based methods of interpretation common for single data sets @KinTomWit00.
+
+Alternatively, you can combine directly and use as the multiple imputation estimate of this parameter, $\bar{q}$, the average of the $m$ separate estimates, $q_j$ $(j=1,\dots,m)$:
+
+\begin{equation}
+  \bar{q}=\frac{1}{m}\sum^{m}_{j=1}q_j.
+\end{equation}
+
+The variance of the point estimate is the average of the estimated variances from *within* each completed data set, plus the sample variance in the point estimates *across* the data sets (multiplied by a factor that corrects for the bias because $m<\infty$). Let $SE(q_j)^2$ denote the estimated variance (squared standard error) of $q_j$ from the data set $j$, and $S^{2}_{q}=\Sigma^{m}_{j=1}(q_j-\bar{q})^2/(m-1)$ be the sample variance across the $m$ point estimates. The standard error of the multiple imputation point estimate is the square root of
+
+\begin{equation}
+SE(q)^2=\frac{1}{m}\sum^{m}_{j=1}SE(q_j)^2+S^2_q(1+1/m).
+\end{equation}
+
+
+## References 

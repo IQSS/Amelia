@@ -5,3 +5,6 @@ amelia-setup.exe
 ^vignettes/\.auto$
 ^vignettes/auto$
 ^\.github$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
