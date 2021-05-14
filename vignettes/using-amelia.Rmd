@@ -23,18 +23,18 @@ set.seed(12345)
 
 We now demonstrate how to use Amelia using data from @MilKub05 which studies the effect of democracy on trade policy. For the purposes of this user's guide, we will use a subset restricted to nine developing countries in Asia from 1980 to 1999[^freetrade]. This dataset includes 9 variables:
 
-| Variable  | Description   |
-|:--|:--|
-| `year`  | year  |
-| `country`   | country  |
-| `tariff`  |  average tariff rates |
-| `polity`  | Polity IV Score[^polity] |
-| `pop`  | total population  |
-| `gdp.pc`  | gross domestic product per capita  |
-| `intresmi`  |  gross international reserves  |
-|  `signed` |  dummy variable if signed an IMF agreement that year |
-| `fivop`  |  measure of financial openness |
-| `usheg` | measure of US hegemony[^hegemony] |
+| Variable   | Description                                         |
+|:-----------|:----------------------------------------------------|
+| `year`     | year                                                |
+| `country`  | country                                             |
+| `tariff`   | average tariff rates                                |
+| `polity`   | Polity IV Score[^polity]                            |
+| `pop`      | total population                                    |
+| `gdp.pc`   | gross domestic product per capita                   |
+| `intresmi` | gross international reserves                        |
+| `signed`   | dummy variable if signed an IMF agreement that year |
+| `fivop`    | measure of financial openness                       |
+| `usheg`    | measure of US hegemony[^hegemony]                   |
 
  These variables correspond to the variables used in the analysis model of @MilKub05 in table 2.
 
@@ -47,8 +47,8 @@ We now demonstrate how to use Amelia using data from @MilKub05 which studies the
 
 We first load the Amelia and the data:
 
-```{r load_data}
-require(Amelia)
+```{r load_data, results = "hide"}
+library(Amelia)
 data(freetrade)
 ```
 
@@ -96,13 +96,17 @@ hist(a.out$imputations[[3]]$tariff, col = "grey", border = "white")
 
 If you need to save your imputed datasets, one direct method is to save the output list from `amelia`,
 
-    > save(a.out, file = "imputations.RData")
+```{r save, eval = FALSE}
+save(a.out, file = "imputations.RData")
+```
 
-As in the previous example, the ith imputed datasets can be retrieved from this list as `a.out\$imputations[[i]]`.
+As in the previous example, the ith imputed datasets can be retrieved from this list as `a.out$imputations[[i]]`.
 
-In addition, you can save each of the imputed datasets to its own file using the `write.amelia` command,
+In addition, you can save each of the imputed datasets to its own file using the `write.amelia()` command,
 
-    > write.amelia(obj = a.out, file.stem = "outdata")
+```{r write_amelia, eval = FALSE}
+write.amelia(obj = a.out, file.stem = "outdata")
+```
 
 This will create one comma-separated value file for each imputed dataset in the following manner:
 
@@ -114,22 +118,25 @@ This will create one comma-separated value file for each imputed dataset in the 
 
 The `write.amelia` function can also save files in tab-delimited and Stata (`.dta`) file formats. For instance, to save Stata files, simply change the `format` argument to `"dta"`,
 
-    > write.amelia(obj = a.out, file.stem = "outdata", format = "dta")
 
-Additionally, `write.amelia` can create a "stacked" version of the imputed dataset which stacks each imputed dataset on top of one another. This can be done by setting the \code{separate} argument to `FALSE`. The resulting matrix is of size $(N \cdot m) \times p$ if the original dataset is excluded (`orig.data = FALSE`) and of size $(N \cdot (m+1))\times p$ if it is included (`orig.data = TRUE`). The stacked dataset will include a variable (set with `impvar`) that indicates to which imputed dataset the observation belongs.
+```{r write_dta, eval = FALSE}
+write.amelia(obj = a.out, file.stem = "outdata", format = "dta")
+```
 
-## Combining multiple `amelia` runs
+Additionally, `write.amelia()` can create a "stacked" version of the imputed dataset which stacks each imputed dataset on top of one another. This can be done by setting the \code{separate} argument to `FALSE`. The resulting matrix is of size $(N \cdot m) \times p$ if the original dataset is excluded (`orig.data = FALSE`) and of size $(N \cdot (m+1))\times p$ if it is included (`orig.data = TRUE`). The stacked dataset will include a variable (set with `impvar`) that indicates to which imputed dataset the observation belongs.
+
+## Combining multiple calls to `amelia()`
 
 The EMB algorithm is what computer scientists call *embarrassingly parallel*, meaning that it is simple to separate each imputation into parallel processes. With Amelia it is simple to run subsets of the imputations on different machines and then combine them after the imputation for use in analysis model. This allows for a huge increase in the speed of the algorithm.
 
-Output lists from different Amelia runs can be combined together into a new list. For instance, suppose that we wanted to add another ten imputed datasets to our earlier call to `amelia`. First, run the function to get these additional imputations,
+Output lists from different Amelia runs can be combined together into a new list. For instance, suppose that we wanted to add another ten imputed datasets to our earlier call to `amelia()`. First, run the function to get these additional imputations,
 
 ```{r more_amelia}
 a.out.more <- amelia(freetrade, m = 10, ts = "year", cs = "country", p2s = 0)
 a.out.more
 ```
 
-then combine this output with our original output using the `ameliabind` function,
+then combine this output with our original output using the `ameliabind()` function,
 
 ```{r ameliabind}
 a.out.more <- ameliabind(a.out, a.out.more)
@@ -138,11 +145,15 @@ a.out.more
 
 This function binds the two outputs into the same output so that you can pass the combined imputations easily to analysis models and diagnostics. Note that `a.out.more` now has a total of 15 imputations.
 
-A simple way to execute a parallel processing scheme with Amelia would be to run `amelia` with `m` set to 1 on $m$ different machines or processors, save each output using the `save` function, load them all on the same R session using `load` command and then combine them using `ameliabind`. In order to do this, however, make sure to name each of the outputs a different name so that they do not overwrite each other when loading into the same R session. Also, some parallel environments will dump all generated files into a common directory, where they may overwrite each other. If it is convenient in a parallel environment to run a large number of `amelia` calls from a single piece of code, one useful way to avoid overwriting is to create the `file.stem` with a random suffix. For example:
+A simple way to execute a parallel processing scheme with Amelia would be to run `amelia()` with `m` set to 1 on $m$ different machines or processors, save each output using the `save()` function, load them all on the same R session using `load()` command and then combine them using `ameliabind()`. In order to do this, however, make sure to name each of the outputs a different name so that they do not overwrite each other when loading into the same R session. Also, some parallel environments will dump all generated files into a common directory, where they may overwrite each other. If it is convenient in a parallel environment to run a large number of `amelia()` calls from a single piece of code, one useful way to avoid overwriting is to create the `file.stem` with a random suffix. For example:
 
-    > b<-round(runif(1,min=1111,max=9999))
-    > random.name<-paste("am",b,sep="")
-    > amelia <- write.amelia(obj=a.out, file.stem = random.name)
+```{r rand_stem, eval = FALSE}
+b <- round(runif(1, min = 1111, max = 9999))
+random.name <- paste("am", b, sep = "")
+amelia <- write.amelia(obj = a.out, file.stem = random.name)
+```
+
+
 
 
 ### Screen output
@@ -162,28 +173,28 @@ several parameters can often take a significant fraction of the total
 number of iterations to converge.  Setting `p2s` to 2 will also
 generate information on how EM algorithm is behaving, such as a `!`
 when the current estimated complete data covariance matrix is not
-invertible and a `*`} when the likelihood has not monotonically
+invertible and a `*` when the likelihood has not monotonically
 increased in that step. Having many of these two symbols in the screen
 output is an indication of a problematic imputation
 model. Problems of non-invertible matrices often mean that current
   guess for the covariance matrix is singular. This is a sign that there
   may be two highly correlated variables in the model. One way to resolve
-  is to use a ridge prior (see \@ref(sec:prior)).
+  is to use a ridge prior (see \@ref(sec_prior)).
 
 An example of the output when `p2s` is 2 would be
 
 ```{r p2s}
-amelia(freetrade, m = 1, ts = "year", cs = "country", p2s = 2)
+a.out.p2s <- amelia(freetrade, m = 1, ts = "year", cs = "country", p2s = 2)
 ```
 
 
 ## Parallel Imputation {#sec:parallel}
 
-Each imputation in the above EMB algorithm is completely independent of any other imputation, a property called embarrassingly parallel. This type of approach can take advantage of the multiple-core infrastructure of modern CPUs. Each core in a multi-core processor can execute independent operations in parallel. Amelia can utilize this parallel processing internally via the `parallel` and the `ncpus` arguments. The `parallel` argument sets the parallel processing backend, either with `"multicore"` or `"snow"` (or `"no"` for no parallel processing). The `"multicore"` backend is not available on Windows systems, but tends to be quicker at parallel processing. On a Windows system, the `"snow"` backend provides parallel processing through a cluster of worker processes across the CPUs. You can set the default for this argument using the `"amelia.parallel"` option. This allows you to run Amelia in parallel as the default for an entire R session without setting arguments in the `amelia` call.
+Each imputation in the above EMB algorithm is completely independent of any other imputation, a property called embarrassingly parallel. This type of approach can take advantage of the multiple-core infrastructure of modern CPUs. Each core in a multi-core processor can execute independent operations in parallel. Amelia can utilize this parallel processing internally via the `parallel` and the `ncpus` arguments. The `parallel` argument sets the parallel processing backend, either with `"multicore"` or `"snow"` (or `"no"` for no parallel processing). The `"multicore"` backend is not available on Windows systems, but tends to be quicker at parallel processing. On a Windows system, the `"snow"` backend provides parallel processing through a cluster of worker processes across the CPUs. You can set the default for this argument using the `"amelia.parallel"` option. This allows you to run Amelia in parallel as the default for an entire R session without setting arguments in the `amelia()` call.
 
-For each of the parallel backends, Amelia requires a number of CPUs to use in parallel. This can be set using the `ncpus` argument. It can be higher than the number of physical cores in the system if hyperthreading or other technologies are available. You can use the `parallel::detectCores` function to determine how many cores are available on your machine. The default for this argument can be set using the `"amelia.ncpus"` option.
+For each of the parallel backends, Amelia requires a number of CPUs to use in parallel. This can be set using the `ncpus` argument. It can be higher than the number of physical cores in the system if hyperthreading or other technologies are available. You can use the `parallel::detectCores()` function to determine how many cores are available on your machine. The default for this argument can be set using the `"amelia.ncpus"` option.
 
-On Unix-alike systems (such as macOS and Linux distributions), the `"multicore"` backend automatically sets up and stops the parallel workers by forking the process. On Windows, the `"snow"` backend requires more attention. Amelia will attempt to create a parallel cluster of worker processes (since Windows systems cannot fork a process) and will stop this cluster after the imputations are complete. Alternatively, Amelia also has a `cl` argument, which accepts a predefined cluster made using the `parallel::makePSOCKcluster`. For more information about parallel processing in R, see the documentation for the `parallel` package that ships along with R or the CRAN Task View on [Parallel Computing with R](https://cran.r-project.org/web/views/HighPerformanceComputing.html)
+On Unix-alike systems (such as macOS and Linux distributions), the `"multicore"` backend automatically sets up and stops the parallel workers by forking the process. On Windows, the `"snow"` backend requires more attention. Amelia will attempt to create a parallel cluster of worker processes (since Windows systems cannot fork a process) and will stop this cluster after the imputations are complete. Alternatively, Amelia also has a `cl` argument, which accepts a predefined cluster made using the `parallel::makePSOCKcluster()`. For more information about parallel processing in R, see the documentation for the `parallel` package that ships along with R or the CRAN Task View on [Parallel Computing with R](https://cran.r-project.org/web/views/HighPerformanceComputing.html)
 
 
 ## Improving Imputations via Transformations {#sec:trans}
@@ -191,7 +202,7 @@ On Unix-alike systems (such as macOS and Linux distributions), the `"multicore"`
 
 Social science data commonly includes variables that fail to fit to a multivariate normal distribution. Indeed, numerous models have been introduced specifically to deal with the problems they present. As it turns out, much evidence in the literature [discussed in @KinHonJos01] indicates that the multivariate normal model used in Amelia usually works well for the imputation stage even when discrete or non-normal variables are included and when the analysis stage involves these limited dependent variable models. Nevertheless, Amelia includes some limited capacity to deal directly with ordinal and nominal variables and to modify variables that require other transformations. In general nominal and log transform variables should be declared to Amelia, whereas ordinal (including dichotomous) variables often need not be, as described below. (For harder cases, see [@Schafer97], for specialized MCMC-based imputation models for discrete variables.)
 
-Although these transformations are taken internally on these variables to better fit the data to the multivariate normal assumptions of the imputation model, all the imputations that are created will be returned in the original untransformed form of the data. If the user has already performed transformations on their data (such as by taking a log or square root prior to feeding the data to `amelia`) these do not need to be declared, as that would result in the transformation occurring *doubly* in the imputation model. The fully imputed data sets that are returned will always be in the form of the original data that is passed to the `amelia` routine.
+Although these transformations are taken internally on these variables to better fit the data to the multivariate normal assumptions of the imputation model, all the imputations that are created will be returned in the original untransformed form of the data. If the user has already performed transformations on their data (such as by taking a log or square root prior to feeding the data to `amelia()`) these do not need to be declared, as that would result in the transformation occurring *doubly* in the imputation model. The fully imputed data sets that are returned will always be in the form of the original data that is passed to the `amelia()` routine.
 
 
 ### Ordinal {#sec:ord}
@@ -241,7 +252,7 @@ table(a.out2$imputations[[3]]$signed)
 
 Note that Amelia can only fit imputations into categories that exist in the original data. Thus, if there was a third category of signed, say 2, that corresponded to a different kind of IMF agreement, but it never occurred in the original data, Amelia could not match imputations to it.
 
-Since Amelia properly treats a $p$-category multinomial variable as $p-1$ variables, one should understand the number of parameters that are quickly accumulating if many multinomial variables are being used. If the square of the number of real and constructed variables is large relative to the number of observations, it is useful to use a ridge prior as in section \@ref(sec:prior).
+Since Amelia properly treats a $p$-category multinomial variable as $p-1$ variables, one should understand the number of parameters that are quickly accumulating if many multinomial variables are being used. If the square of the number of real and constructed variables is large relative to the number of observations, it is useful to use a ridge prior as in section \@ref(sec_prior).
 
 
 ### Natural log {#sec:log}
@@ -296,7 +307,7 @@ And thus if we include enough higher order terms of time then the pattern betwee
 
 We can implement this with the `ts` and `polytime` arguments. If we thought that a second-order polynomial would help predict we could run
 
-```{r polytime}
+```{r polytime, results = "hide"}
 a.out2 <- amelia(freetrade, ts = "year", cs = "country", polytime = 2)
 ```
 
@@ -306,8 +317,8 @@ If cross-sectional units are specified these polynomials can be interacted with 
 
 In order to impute with trends specific to each cross-sectional unit, we can set `intercs` to `TRUE`:
 
-```{r intercs}
-a.out.time <- amelia(freetrade, ts = "year", cs = "country", polytime = 2,
+```{r intercs, results = "hide"}
+a.out.time <- amelia(freetrade, ts = "year", cs = "country", polytime = 1,
                  intercs = TRUE, p2s = 2)
 ```
 
@@ -342,36 +353,19 @@ a.out2 <- amelia(freetrade, ts = "year", cs = "country", lags = "tariff",
 
 Amelia has a number of methods of setting priors within the imputation model. Two of these are commonly used and discussed below, ridge priors and observational priors.
 
-### Ridge priors for high missingness, Small samples, or large correlations {#sec:prior}
+### Ridge priors for high missingness, Small samples, or large correlations {#sec_prior}
 
-When the data to be analyzed contain a high degree of missingness or very strong correlations among the variables, or when the number of observations is only slightly greater than the number of parameters $p(p+3)/2$ (where $p$ is the number of variables), results from your analysis model will be more dependent on the choice of imputation model. This suggests more testing in these cases of alternative specifications under Amelia. This can happen when using the polynomials of time interacted with the cross section are included in the imputation model. In our running example, we used a polynomial of degree 2 and there are 9 countries. This adds $3 \times 9 - 1= 17$ more variables to the imputation model (One of the constant fixed effects will be dropped so the model will be identified). When these are added, the EM algorithm can become unstable, as indicated by the vastly differing chain lengths for each imputation:
-
-```{r}
-a.out.time
-```
-
+When the data to be analyzed contain a high degree of missingness or very strong correlations among the variables, or when the number of observations is only slightly greater than the number of parameters $p(p+3)/2$ (where $p$ is the number of variables), results from your analysis model will be more dependent on the choice of imputation model. This suggests more testing in these cases of alternative specifications under Amelia. This can happen when using the polynomials of time interacted with the cross section are included in the imputation model. For example, in our data, if we used a polynomial of degree 2 with unit-specific trends and there are 9 countries, it would add $3 \times 9 - 1= 17$ more variables to the imputation model (dropping one of the fixed effects for identification). When these are added, the EM algorithm can become unstable. You can detect this by inspecting the screen output under `p2s = 2` or by observing that the number iterations per imputation are very divergent. 
 
 In these circumstances, we recommend adding a ridge prior which will help with numerical stability by shrinking the covariances among the variables toward zero without changing the means or variances. This can be done by including the `empri` argument. Including this prior as a positive number is roughly equivalent to adding `empri` artificial observations to the data set with the same means and variances as the existing data but with zero covariances. Thus, increasing the `empri` setting results in more shrinkage of the covariances, thus putting more a priori structure on the estimation problem: like many Bayesian methods, it reduces variance in return for an increase in bias that one hopes does not overwhelm the advantages in efficiency. In general, we suggest keeping the value on this prior relatively small and increase it only when necessary. A recommendation of 0.5 to 1 percent of the number of observations, $n$, is a reasonable starting value, and often useful in large datasets to add some numerical stability. For example, in a dataset of two thousand observations, this would translate to a prior value of 10 or 20 respectively. A prior of up to 5 percent is moderate in most applications and 10 percent is reasonable upper bound.
 
 For our data, it is easy to code up a 1 percent ridge prior:
 
 ```{r empri}
-a.out.time2 <- amelia(freetrade, ts = "year", cs = "country", polytime = 2,
+a.out.time2 <- amelia(freetrade, ts = "year", cs = "country", polytime = 1,
                  intercs = TRUE, p2s = 0, empri = .01 * nrow(freetrade))
 a.out.time2
 ```
-
-
-This new imputation model is much more stable and, as shown by using `tscsPlot()`, produces about the same imputations as the original model:
-
-```{r tcomp2}
-tscsPlot(a.out.time, cs = "Malaysia", main = "Malaysia (no ridge prior)",
-         var = "tariff", ylim = c(-10, 60))
-
-tscsPlot(a.out.time2, cs = "Malaysia", main = "Malaysia (with ridge prior)",
-         var = "tariff", ylim = c(-10, 60))
-```
-
 
 ### Observation-level priors {#sec:obspri}
 
@@ -386,13 +380,16 @@ To input priors you must build a priors matrix with either four or five columns.
 For instance, suppose that we had some expert prior information about tariff rates in Thailand. We know from the data that Thailand is missing tariff rates in many years,
 
 ```{r thailand}
-freetrade[freetrade$country == "Thailand", c("year","country","tariff")]
+freetrade[freetrade$country == "Thailand", c("year", "country", "tariff")]
 ```
 
 Suppose that we had expert information that tariff rates were roughly 40% in Thailand between 1986 and 1988 with about a 6% margin of error. This corresponds to a standard deviation of about 3. In order to include this information, we must form the priors matrix:
 
 ```{r build_prior}
-pr <- matrix(c(158,159,160,3,3,3,40,40,40,3,3,3), nrow=3, ncol=4)
+pr <- matrix(
+  c(158, 159, 160, 3, 3, 3, 40, 40, 40, 3, 3, 3),
+  nrow = 3, ncol = 4
+)
 pr
 ```
 
@@ -406,7 +403,10 @@ a.out.pr <- amelia(freetrade, ts = "year", cs = "country", priors = pr)
 In the five column matrix, the last three columns describe a confidence range of the data. The columns are a lower bound, an upper bound, and a confidence level between 0 and 1, exclusive. Whichever format you choose, it must be consistent across the entire matrix. We could get roughly the same prior as above by utilizing this method. Our margin of error implies that we would want imputations between 34 and 46, so our matrix would be
 
 ```{r build_prior2}
-pr.2 <- matrix(c(158,159,160,3,3,3,34,34,34,46,46,46,.95,.95,.95), nrow=3, ncol=5)
+pr.2 <- matrix(
+  c(158, 159, 160, 3, 3, 3, 34, 34, 34, 46, 46, 46, 0.95, 0.95, 0.95),
+  nrow = 3, ncol = 5
+)
 pr.2
 ```
 
@@ -415,7 +415,9 @@ These priors indicate that we are 95% confident that these missing values are in
 If a prior has the value 0 in the first column, this prior will be applied to all missing values in this variable, except for explicitly set priors. Thus, we could set a prior for the entire `tariff` variable of 20, but still keep the above specific priors with the following code:
 
 ```{r build_prior3}
-pr.3 <- matrix(c(158,159,160,0,3,3,3,3,40,40,40,20,3,3,3,5), nrow=4, ncol=4)
+pr.3 <- matrix(
+  c(158, 159, 160, 0, 3, 3 , 3, 3, 40, 40, 40, 20, 3, 3, 3, 5),
+  nrow = 4, ncol = 4)
 pr.3
 ```
 
@@ -444,12 +446,152 @@ a.out.bds <- amelia(freetrade, ts = "year", cs = "country", bounds = bds,
 The difference in results between the bounded and unbounded model are not obvious from the output, but inspection of the imputed tariff rates for Malaysia shows that there has been a drastic restriction of the imputations to the desired range:
 
 ```{r bounds_plot}
-tscsPlot(a.out, cs = "Malaysia", main = "No logical bounds", var =
-         "tariff", ylim = c(-10,60))
+tscsPlot(a.out, cs = "Malaysia", main = "No logical bounds", var = "tariff",
+         ylim = c(-10, 60))
 
-tscsPlot(a.out.bds, cs = "Malaysia", main = "Bounded between 30 and 40", var =
-         "tariff", ylim = c(-10,60))
+tscsPlot(a.out.bds, cs = "Malaysia", main = "Bounded between 30 and 40",
+         var = "tariff", ylim = c(-10, 60))
 ```
 
 
 Again, analysts should be extremely cautious when using these bounds as they can seriously affect the inferences from the imputation model, as shown in this example. Even when logical bounds exist, we recommend simply imputing variables normally, as the violation of the logical bounds represents part of the true uncertainty of imputation.
+
+## Post-imputations Transformations {#sec_postimptrans}
+
+In many cases, it is useful to create transformations of the imputed variables for use in further analysis. For instance, one may want to create an interaction between two variables or perform a log-transformation on the imputed data. To do this, Amelia includes a `transform()` function for `amelia()` output that adds or overwrites variables in each of the imputed datasets. For instance, if we wanted to create a log-transformation of the `gdp.pc` variable, we could use the following command:
+
+```{r amelia_transform}
+a.out <- transform(a.out, lgdp = log(gdp.pc))
+head(a.out$imputations[[1]][,c("country", "year","gdp.pc", "lgdp")])
+```
+
+To create an interaction between two variables, we could simply use:
+
+```{r interaction}
+a.out <- transform(a.out, pol_gdp = polity * gdp.pc)
+```
+
+Each transformation is recorded and the `summary()` command prints out each transformation that has been performed:
+
+```{r sum_trans}
+summary(a.out)
+```
+
+Note the updated output is almost exactly the same as the fresh `amelia()` output. You can pass the transformed output back to `amelia()` and it will add imputations and update these imputations with the transformations you have performed. 
+
+## Analysis Models {#sec_analysis}
+
+Imputation is most often a data processing step as opposed to a final model in of itself. To this end, it is easy to pass output from `amelia()` to other functions. The easiest and most integrated way to run an analysis model is to pass the output to functions from the `Zelig` package. For example, in @MilKub05, the dependent variable was tariff rates. We can replicate table 5.1 from their analysis with the original data simply by running
+
+
+```{r zelig_run_lwd, echo = FALSE}
+if (requireNamespace("Zelig", quietly = TRUE)) {
+  z5 <- Zelig::zls$new()
+  z5$zelig(tariff ~ polity + pop + gdp.pc + year + country, data = freetrade)
+} else {
+  z5 <- "Error: Zelig package not avaiable when vignette built"
+}
+```
+
+```{r eval = 3}
+z5 <- Zelig::zls$new()
+z5$zelig(tariff ~ polity + pop + gdp.pc + year + country, data = freetrade)
+z5
+```
+
+Running the same model with imputed data is almost identical. Simply replace the original data set with the `amelia()` output:
+
+
+```{r zelig_run_imp, echo = FALSE}
+if (requireNamespace("Zelig", quietly = TRUE)) {
+  z5_imp <- Zelig::zls$new()
+  z5_imp$zelig(tariff ~ polity + pop + gdp.pc + year + country, data = freetrade)
+} else {
+  z5_imp <- "Error: Zelig package not avaiable when vignette built"
+}
+```
+
+```{r eval = 3}
+z5_imp <- Zelig::zls$new()
+z5_imp$zelig(tariff ~ polity + pop + gdp.pc + year + country, data = a.out)
+z5_imp
+```
+
+
+Zelig is one way to run analysis models on imputed data, but certainly not the only way. The `imputations` list in the `amelia()` output contains each of the imputed datasets. Thus, users could simply program a loop over the number of imputations and run the analysis model on each imputed dataset and combine the results using the rules described in @KinHonJos01 and @Schafer97. Furthermore, users can easily export their imputations using the `write.amelia()` function as described in \@ref(sec_saving) and use statistical packages other than R for the analysis model.
+
+Amelia also has the ability combine quantities of interest from arbitrary models using the `mi.meld()` function. This command takes in a matrix with columns for the quantity and its standard error in each of the imputed datasets. It then uses the standard rules for combining multiple imputations to create an overall estimated quantity.
+
+```{r mi_meld}
+b.out <- NULL
+se.out <- NULL
+for(i in seq_len(a.out$m)) {
+  ols.out <- lm(tariff ~ polity + pop + gdp.pc, data = a.out$imputations[[i]])
+  b.out <- rbind(b.out, ols.out$coef)
+  se.out <- rbind(se.out, coef(summary(ols.out))[, 2])
+}
+
+combined.results <- mi.meld(q = b.out, se = se.out)
+combined.results
+```
+
+In addition to the resources available in R, users can draw on
+Stata to implement their analysis models. As of version 11,
+  Stata has built-in handling of multiply imputed datasets. In order
+to utilize this functionality, simply export the "stacked"
+imputations using the `write.amelia()` function:
+
+```{r write_dta_stacked, eval = FALSE}
+write.amelia(a.out, separate = FALSE, file.stem = "outdata", format = "dta")
+```
+
+Once this stacked dataset is open in Stata, you must tell Stata that
+it is an imputed dataset using the \code{mi import flong} command:
+
+```{stata eval = FALSE}
+mi import flong, m(imp) id(year country) imp(tariff-usheg)
+```
+
+The command takes a few options: `m` designates the imputation
+variable (set with `impvar` in `write.amelia()`), `id`
+ sets the identifying varibles, and `imp` sets the variables that
+ were imputed (or included in the imputation). The `tariff-usheg`
+ indicates that Stata should treat the range of variables between
+ `tariff` and `usheg` as imputed. Once we have set the
+ dataset as imputed, we can use the built-in `mi` commands to
+ analyze the data:
+
+```{stata eval = FALSE}
+mi estimate: reg tariff polity pop gdp_pc
+```
+
+
+```
+Multiple-imputation estimates                     Imputations     =          5
+Linear regression                                 Number of obs   =        171
+                                                  Average RVI     =     1.4114
+                                                  Complete DF     =        167
+DF adjustment:   Small sample                     DF:     min     =      10.36
+                                                          avg     =      18.81
+                                                          max     =      37.62
+Model F test:       Equal FMI                     F(   2,   10.4) =      15.50
+Within VCE type:          OLS                     Prob > F        =     0.0008
+
+------------------------------------------------------------------------------
+      tariff |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      polity |  -.2058115   .3911049    -0.53   0.610    -1.072968    .6613452
+         pop |   3.21e-08   8.72e-09     3.68   0.004     1.27e-08    5.14e-08
+      gdp_pc |  -.0027561    .000644    -4.28   0.000    -.0040602   -.0014519
+       _cons |   32.70461   2.660091    12.29   0.000     27.08917    38.32005
+------------------------------------------------------------------------------
+```
+
+
+## The `amelia` class {#sec_out}
+
+The output from the `amelia()` function is an instance of the S3 class `amelia`. Instances of the `amelia` class contain much more than simply the imputed datasets. The `mu` object of the class contains the posterior draws of the means of the complete data. The `covMatrices` contains the posterior draws of the covariance matrices of the complete data. Note that these correspond to the variables as they are sent to the EM algorithm. Namely, they refer to the variables after being transformed, centered and scaled.
+
+The `iterHist` object is a list of `m` 3-column matrices. Each row of the matrices corresponds to an iteration of the EM algorithm. The first column indicates how many parameters had yet to converge at that iteration. The second column indicates if the EM algorithm made a step that decreased the number of converged parameters. The third column indicates whether the covariance matrix at this iteration was singular. Clearly, the last two columns are meant to indicate when the EM algorithm enters a problematic part of the parameter space.
+
+## References

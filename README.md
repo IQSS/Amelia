@@ -22,9 +22,10 @@ install.packages("Amelia")
 ```
 
 ### Installing unstable developer version:
+
 ```R
 require(devtools)
-install_github("IQSS/Amelia", ref = "develop")
+devtools::install_github("IQSS/Amelia")
 ```
 
 [Amelia II]: http://gking.harvard.edu/amelia
