@@ -1,8 +1,12 @@
 # Amelia II
 
-[![Travis-CI Build Status](https://travis-ci.org/IQSS/Amelia.svg?branch=master)](https://travis-ci.org/IQSS/Amelia)
-[![CRAN
+
+ <!-- badges: start -->
+  [![R build status](https://github.com/IQSS/Amelia/workflows/R-CMD-check/badge.svg)](https://github.com/IQSS/Amelia/actions)
+  [![CRAN
 version](http://www.r-pkg.org/badges/version/Amelia)](https://cran.r-project.org/package=Amelia)
+
+  <!-- badges: end -->
 
 
 [Amelia II][] is an R package for the multiple imputation of multivariate incomplete data. It uses an algorithm that combines bootstrapping and the EM algorithm to take draws from the posterior of the missing data. The Amelia package includes normalizing transformations, cell-level priors, and methods for handling time-series cross-sectional data. 

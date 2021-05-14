@@ -184,7 +184,7 @@ while ( ( (cvalue > 0) | (count < emburn(0)) )  & ( (count < emburn(1)) | (embur
 
     }
     
-    hmcv += arma::trans(xplay) * xplay;
+    hmcv += xplay.t() * xplay;
     music += arma::trans(arma::sum(xplay));
     if (empri > 0) {
       simple = (music * arma::trans(music))/AMn;
@@ -196,7 +196,8 @@ while ( ( (cvalue > 0) | (count < emburn(0)) )  & ( (count < emburn(1)) | (embur
     thetanew(arma::span(1,k), 0) = music;
     thetanew(arma::span(1,k), arma::span(1,k)) = hmcv;
     thetanew = thetanew/AMn;
-
+    thetanew = symmatu(thetanew);
+    
     sweeppos.zeros();
     sweeppos(0) = 1;
     sweep(thetanew, sweeppos);
@@ -305,9 +306,10 @@ void sweep(arma::mat& g, arma::vec m) {
       Rcpp::Rcout << "Caught an unknown exception\n";
     }
     g(k,kcompl) = g(k,k) * g(k,kcompl);
-    g(kcompl, kcompl) = g(kcompl, kcompl) - (g(kcompl, k)* g(k,kcompl));
+    g(kcompl, kcompl) = g(kcompl, kcompl) - (g(kcompl, k) * g(k,kcompl));
     g(kcompl,k) = arma::trans(g(k,kcompl));
     g(k,k) = -g(k,k);
+    g = symmatu(g);
   }
 
 }
@@ -390,12 +392,12 @@ SEXP ameliaImpute(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas,
       theta = thetaold;
       sweeppos.zeros();
       sweeppos(arma::span(1,k)) = arma::trans(obsmat.row(ss));
-      
+
       sweep(theta, sweeppos);
 
       mispos = arma::find(mismat.row(ss));
       Ci.zeros(k, k);
-      Ci(mispos, mispos) = chol(theta(mispos+1, mispos + 1));       
+      Ci(mispos, mispos) = chol(theta(mispos+1, mispos + 1));
       junk = Rcpp::rnorm((isp - is + 1)* k, 0, 1);
       junk.reshape(isp - is +1, k);
       junk = junk * Ci;

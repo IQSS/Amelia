@@ -428,36 +428,41 @@ return(list(x=x,index=index,idvars=idvars,blanks=blanks,priors=priors,bounds=bou
 ##            a negative integer (-i): a dummy used for the nominal var in
 ##                                     the ith column of x.orig
 
-unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,splinetime,intercs,noms,index,ords){
+unsubset <- function(x.orig, x.imp, blanks, idvars, ts, cs, polytime,
+                     splinetime, intercs, noms, index, ords) {
 
   ## create
   if (is.data.frame(x.orig)) {
-    oldidvars<-idvars[-match(cs,idvars)]
-    x.orig<-frame.to.matrix(x.orig,oldidvars)
+    oldidvars <- idvars[-match(c(cs, noms), idvars)]
+    x.orig <- frame.to.matrix(x.orig, oldidvars)
   }
-  AMr1.orig<-is.na(x.orig)
+  AMr1.orig <- is.na(x.orig)
 
   ## since we're going to use the blanks in noms/ords
   ## we need these changed here.
-  if (identical(blanks,NULL)) {blanks<- -(1:nrow(x.orig))}
-  if (identical(idvars,NULL)) {idvars<- -(1:ncol(x.orig))}
+  if (identical(blanks, NULL)) {blanks <- -(1:nrow(x.orig))}
+  if (identical(idvars, NULL)) {idvars <- -(1:ncol(x.orig))}
 
   ## noms are idvars, so we'll fill them in manually
   ## (mb 2 Apr 09 -- fixed handling of "blanks")
   if (!is.null(noms)) {
     for (i in noms) {
-      y<-runif(nrow(x.imp))
-      dums<-x.imp[,which(index==-i)]
-      p<-dums*(dums>0)*(dums<1) + ((dums-1) >=0)
-      psub<-rowSums(as.matrix(p))
-      psub<-(psub <= 1) + (psub)*(psub > 1)
-      p<-p/psub
-      pzero<-1-rowSums(as.matrix(p))
-      p<-cbind(pzero,p)
-      cump<-p%*%ifelse(upper.tri(matrix(0,nrow=ncol(p),ncol=ncol(p)),diag=TRUE),1,0)
-      yy<-(y<cump)*(y>cbind(matrix(0,nrow(cump),1),cump[,1:(ncol(cump)-1)]))
-      renom<-(yy%*%unique(na.omit(x.orig[,i])))
-      x.orig[-blanks,i]<-renom
+      y <- runif(nrow(x.imp))
+      dums <- x.imp[, which(index == -i)]
+      p <- dums * (dums > 0) * (dums < 1) + ((dums - 1) >= 0)
+      psub <- rowSums(as.matrix(p))
+      psub <- (psub <= 1) + (psub) * (psub > 1)
+      p <- p / psub
+      pzero <- 1 - rowSums(as.matrix(p))
+      p <- cbind(pzero, p)
+      pk <- ncol(p)
+      utri.mat <- matrix(0, nrow = pk, ncol = pk)
+      utri.mat <- utri.mat + upper.tri(utri.mat, diag = TRUE)
+      cump <- p %*% utri.mat
+      cump.shift <- cbind(matrix(0, nrow(cump), 1), cump[, 1:(ncol(cump) - 1)])
+      yy <- (y < cump) * (y > cump.shift)
+      renom <- (yy %*% unique(na.omit(x.orig[, i])))
+      x.orig[-blanks, i] <- renom
     }
   }
 
@@ -468,17 +473,17 @@ unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,splinetime,intercs,
 
     # find where the ordinals are in the
     impords <- match(ords,index)
-    x <- x.imp[,impords] * AMr1.orig[-blanks,ords]
+    x <- x.imp[, impords] * AMr1.orig[-blanks, ords]
 
 ############ revision #####################
-    minmaxords<-matrix(0,length(ords),2)
-    for(jj in 1:length(ords)){
-      tempords<-x.orig[AMr1.orig[,ords[jj]]==0 ,ords[jj]]
-      minmaxords[jj,1]<-min(tempords)
-      minmaxords[jj,2]<-max(tempords)
+    minmaxords <- matrix(0, length(ords), 2)
+    for(jj in 1:length(ords)) {
+      tempords <- x.orig[AMr1.orig[, ords[jj]] == 0 , ords[jj]]
+      minmaxords[jj,1] <- min(tempords)
+      minmaxords[jj,2] <- max(tempords)
     }
-    minord<-minmaxords[,1]
-    maxord<-minmaxords[,2]
+    minord <- minmaxords[,1]
+    maxord <- minmaxords[,2]
 
 ############ replaces #####################
 #   minord <- apply(ifelse(AMr1.orig[,ords]==1,NA,x.orig[,ords]),2,min,na.rm=T)
@@ -486,20 +491,20 @@ unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,splinetime,intercs,
 
     ordrange <- maxord - minord
 
-    p <- t((t(x)-minord)/ordrange) * AMr1.orig[-blanks,ords]
-    p <- p*(p>0)*(p<1) + ((p-1)>=0)
-    newimp <- matrix(0,nrow(x.imp),length(ords))
+    p <- t((t(x) - minord) / ordrange) * AMr1.orig[-blanks, ords]
+    p <- p * (p > 0) * (p < 1) + ((p - 1) >= 0)
+    newimp <- matrix(0, nrow(x.imp), length(ords))
     for (k in 1:length(ords)) {
-      reordnl <- rbinom(nrow(x.imp),ordrange[k],p[,k])
-      newimp[,k] <- reordnl + minord[k] * AMr1.orig[-blanks,ords[k]]
+      reordnl <- rbinom(nrow(x.imp), ordrange[k], p[, k])
+      newimp[, k] <- reordnl + minord[k] * AMr1.orig[-blanks, ords[k]]
     }
 
 ############# revision #############################
 
     ## replace the imputations with the ordinal values
     for(jj in 1:length(ords)){
-      x.imp[,impords[jj]] <- round(x.imp[,impords[jj]])
-      x.imp[AMr1.orig[-blanks,ords[jj]]==1, impords[jj]]<-newimp[AMr1.orig[-blanks,ords[jj]]==1,jj]
+      x.imp[, impords[jj]] <- round(x.imp[, impords[jj]])
+      x.imp[AMr1.orig[-blanks, ords[jj]] == 1, impords[jj]] <- newimp[AMr1.orig[-blanks, ords[jj]] == 1, jj]
     }                                        # MAYBE CAN REMOVE LOOP
 
 ############# replaces #############################
@@ -507,10 +512,10 @@ unsubset<-function(x.orig,x.imp,blanks,idvars,ts,cs,polytime,splinetime,intercs,
 
   }
   ## now we'll fill the imputations back into the original.
-  if (!identical(c(blanks,idvars),c(NULL,NULL))){
-    x.orig[-blanks,-idvars]<-x.imp[,1:ncol(x.orig[,-idvars, drop=FALSE])]
+  if (!identical(c(blanks, idvars), c(NULL, NULL))) {
+    x.orig[-blanks, -idvars] <- x.imp[, 1:ncol(x.orig[, -idvars, drop = FALSE])]
   } else {
-    x.orig <- x.imp[,1:ncol(x.orig)]
+    x.orig <- x.imp[, 1:ncol(x.orig)]
   }
 
   return(x.orig)

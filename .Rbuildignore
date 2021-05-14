@@ -2,7 +2,6 @@ amelia-setup.exe
 ^.*\.Rproj$
 ^\.Rproj\.user$
 .git
-.travis.yml
-^\.travis\.yml$
 ^vignettes/\.auto$
 ^vignettes/auto$
+^\.github$
