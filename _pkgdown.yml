@@ -2,7 +2,7 @@ title: Amelia
 url: https://iqss.github.io/Amelia
 template:
   params:
-    bootswatch: cosmo
+    bootswatch: flatly
 
 
 home:
@@ -24,3 +24,4 @@ articles:
   - intro-mi
   - using-amelia
   - diagnostics
+  - ameliaview
