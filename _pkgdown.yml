@@ -3,3 +3,24 @@ url: https://iqss.github.io/Amelia
 template:
   params:
     bootswatch: cosmo
+
+
+home:
+  strip_header: true
+
+authors:
+  Matthew Blackwell:
+    href: https://www.mattblackwell.org
+  James Honaker:
+    href: https://hona.kr
+  Gary King:
+    href: https://gking.harvard.edu
+
+
+articles:
+- title: Getting Started
+  navbar: ~
+  contents:
+  - intro-mi
+  - using-amelia
+  - diagnostics

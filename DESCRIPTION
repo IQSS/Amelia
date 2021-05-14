@@ -3,10 +3,10 @@ Version: 1.7.6.9000
 Date: 2019-11-24
 Title: A Program for Missing Data
 Authors@R: c(
-    person("Matthew", "Blackwell", email = "mblackwell@gov.harvard.edu",
-           role = c("aut", "cre"), comment = c(ORCID = "0000-0002-3689-9527")),
     person("James", "Honaker", email = "james@hona.kr", role = c("aut")),
-    person("Gary", "King", email = "king@harvard.edu", role = c("aut"))
+    person("Gary", "King", email = "king@harvard.edu", role = c("aut")),
+    person("Matthew", "Blackwell", email = "mblackwell@gov.harvard.edu",
+           role = c("aut", "cre"), comment = c(ORCID = "0000-0002-3689-9527"))
     )
 Depends:
     R (>= 3.0.2),
