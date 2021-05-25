@@ -1,6 +1,7 @@
 src/Amelia.so
 src/em.o
 src/init.o
+.Rhistory
 
 # AUCTeX auto folder
 vignettes/auto/
