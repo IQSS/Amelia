@@ -39,7 +39,7 @@ Description: A tool that "multiply imputes" missing data in a single cross-secti
   works from the R command line or via a graphical user interface that
   does not require users to know R.
 License: GPL (>= 2)
-URL: http://gking.harvard.edu/amelia
+URL: https://gking.harvard.edu/amelia
 Suggests:
   tcltk,
   Zelig,

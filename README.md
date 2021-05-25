@@ -51,5 +51,5 @@ Amelia::AmeliaView()
 
 
 
-[Amelia II]: http://gking.harvard.edu/amelia
+[Amelia II]: https://gking.harvard.edu/amelia
 [R]: https://cran.r-project.org

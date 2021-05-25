@@ -39,7 +39,7 @@ We now demonstrate how to use Amelia using data from @MilKub05 which studies the
  These variables correspond to the variables used in the analysis model of @MilKub05 in table 2.
 
 [^freetrade]: We have artificially addedsome missingness to these data for presentational purposes. You can access the original data at
-  [http://www.princeton.edu/~hmilner/Research.htm]().
+  [https://scholar.princeton.edu/hvmilner/data](https://scholar.princeton.edu/hvmilner/data).
 
 [^polity]: The Polity score is a number between -10 and 10 indicating how democratic a country is. A fully autocratic country would be a -10 while a fully democratic country would be 1 10.
 
@@ -194,7 +194,7 @@ Each imputation in the above EMB algorithm is completely independent of any othe
 
 For each of the parallel backends, Amelia requires a number of CPUs to use in parallel. This can be set using the `ncpus` argument. It can be higher than the number of physical cores in the system if hyperthreading or other technologies are available. You can use the `parallel::detectCores()` function to determine how many cores are available on your machine. The default for this argument can be set using the `"amelia.ncpus"` option.
 
-On Unix-alike systems (such as macOS and Linux distributions), the `"multicore"` backend automatically sets up and stops the parallel workers by forking the process. On Windows, the `"snow"` backend requires more attention. Amelia will attempt to create a parallel cluster of worker processes (since Windows systems cannot fork a process) and will stop this cluster after the imputations are complete. Alternatively, Amelia also has a `cl` argument, which accepts a predefined cluster made using the `parallel::makePSOCKcluster()`. For more information about parallel processing in R, see the documentation for the `parallel` package that ships along with R or the CRAN Task View on [Parallel Computing with R](https://cran.r-project.org/web/views/HighPerformanceComputing.html)
+On Unix-alike systems (such as macOS and Linux distributions), the `"multicore"` backend automatically sets up and stops the parallel workers by forking the process. On Windows, the `"snow"` backend requires more attention. Amelia will attempt to create a parallel cluster of worker processes (since Windows systems cannot fork a process) and will stop this cluster after the imputations are complete. Alternatively, Amelia also has a `cl` argument, which accepts a predefined cluster made using the `parallel::makePSOCKcluster()`. For more information about parallel processing in R, see the documentation for the `parallel` package that ships along with R or the CRAN Task View on [Parallel Computing with R](https://cran.r-project.org/view=HighPerformanceComputing)
 
 
 ## Improving Imputations via Transformations {#sec:trans}

@@ -12,5 +12,5 @@
 
 \usage{africa}
 \format{A data frame with 7 variables and 120 observations.}
-\source{Africa Research Program \url{http://scholar.harvard.edu/rbates/data}}
+\source{Africa Research Program \url{https://scholar.harvard.edu/rbates/data}}
 \keyword{datasets}
