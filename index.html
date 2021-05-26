@@ -103,7 +103,7 @@
 <div id="overview" class="section level2">
 <h2 class="hasAnchor">
 <a href="#overview" class="anchor"></a>Overview</h2>
-<p><a href="http://gking.harvard.edu/amelia">Amelia II</a> is an R package for the multiple imputation of multivariate incomplete data. It uses an algorithm that combines bootstrapping and the EM algorithm to take draws from the posterior of the missing data. The Amelia package includes normalizing transformations, cell-level priors, and methods for handling time-series cross-sectional data.</p>
+<p><a href="https://gking.harvard.edu/amelia">Amelia II</a> is an R package for the multiple imputation of multivariate incomplete data. It uses an algorithm that combines bootstrapping and the EM algorithm to take draws from the posterior of the missing data. The Amelia package includes normalizing transformations, cell-level priors, and methods for handling time-series cross-sectional data.</p>
 </div>
 <div id="how-to-install" class="section level2">
 <h2 class="hasAnchor">
@@ -121,7 +121,7 @@
 <a href="#getting-started-with-amelia" class="anchor"></a>Getting started with Amelia</h2>
 <p>The main function in the Amelia package is <code><a href="reference/amelia.html">amelia()</a></code> which will perform multiple imputation on a data frame. It allows for easy setting of time-series and unit variables via the <code>ts</code> and <code>cs</code> arguments.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://gking.harvard.edu/amelia">Amelia</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://gking.harvard.edu/amelia">Amelia</a></span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">africa</span><span class="op">)</span>
 
 <span class="va">a.out</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/amelia.html">amelia</a></span><span class="op">(</span><span class="va">africa</span>, m <span class="op">=</span> <span class="fl">5</span>, ts <span class="op">=</span> <span class="st">"year"</span>, cs <span class="op">=</span> <span class="st">"country"</span><span class="op">)</span></code></pre></div>

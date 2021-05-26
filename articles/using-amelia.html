@@ -83,7 +83,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Using Amelia</h1>
             
-            <h4 class="date">2021-05-14</h4>
+            <h4 class="date">2021-05-26</h4>
       
       
       <div class="hidden name"><code>using-amelia.Rmd</code></div>
@@ -149,7 +149,7 @@
 <p>These variables correspond to the variables used in the analysis model of <span class="citation">Milner and Kubota (<a href="#ref-MilKub05" role="doc-biblioref">2005</a>)</span> in table 2.</p>
 <p>We first load the Amelia and the data:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://gking.harvard.edu/amelia">Amelia</a></span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://gking.harvard.edu/amelia">Amelia</a></span><span class="op">)</span></code></pre></div>
 <pre><code>## Loading required package: Rcpp</code></pre>
 <pre><code>## ## 
 ## ## Amelia II: Multiple Imputation
@@ -372,7 +372,7 @@ outdata5.csv</code></pre>
 <a href="#sec:parallel" class="anchor"></a>Parallel Imputation</h2>
 <p>Each imputation in the above EMB algorithm is completely independent of any other imputation, a property called embarrassingly parallel. This type of approach can take advantage of the multiple-core infrastructure of modern CPUs. Each core in a multi-core processor can execute independent operations in parallel. Amelia can utilize this parallel processing internally via the <code>parallel</code> and the <code>ncpus</code> arguments. The <code>parallel</code> argument sets the parallel processing backend, either with <code>"multicore"</code> or <code>"snow"</code> (or <code>"no"</code> for no parallel processing). The <code>"multicore"</code> backend is not available on Windows systems, but tends to be quicker at parallel processing. On a Windows system, the <code>"snow"</code> backend provides parallel processing through a cluster of worker processes across the CPUs. You can set the default for this argument using the <code>"amelia.parallel"</code> option. This allows you to run Amelia in parallel as the default for an entire R session without setting arguments in the <code><a href="../reference/amelia.html">amelia()</a></code> call.</p>
 <p>For each of the parallel backends, Amelia requires a number of CPUs to use in parallel. This can be set using the <code>ncpus</code> argument. It can be higher than the number of physical cores in the system if hyperthreading or other technologies are available. You can use the <code><a href="https://rdrr.io/r/parallel/detectCores.html">parallel::detectCores()</a></code> function to determine how many cores are available on your machine. The default for this argument can be set using the <code>"amelia.ncpus"</code> option.</p>
-<p>On Unix-alike systems (such as macOS and Linux distributions), the <code>"multicore"</code> backend automatically sets up and stops the parallel workers by forking the process. On Windows, the <code>"snow"</code> backend requires more attention. Amelia will attempt to create a parallel cluster of worker processes (since Windows systems cannot fork a process) and will stop this cluster after the imputations are complete. Alternatively, Amelia also has a <code>cl</code> argument, which accepts a predefined cluster made using the <code><a href="https://rdrr.io/r/parallel/makeCluster.html">parallel::makePSOCKcluster()</a></code>. For more information about parallel processing in R, see the documentation for the <code>parallel</code> package that ships along with R or the CRAN Task View on <a href="https://cran.r-project.org/web/views/HighPerformanceComputing.html">Parallel Computing with R</a></p>
+<p>On Unix-alike systems (such as macOS and Linux distributions), the <code>"multicore"</code> backend automatically sets up and stops the parallel workers by forking the process. On Windows, the <code>"snow"</code> backend requires more attention. Amelia will attempt to create a parallel cluster of worker processes (since Windows systems cannot fork a process) and will stop this cluster after the imputations are complete. Alternatively, Amelia also has a <code>cl</code> argument, which accepts a predefined cluster made using the <code><a href="https://rdrr.io/r/parallel/makeCluster.html">parallel::makePSOCKcluster()</a></code>. For more information about parallel processing in R, see the documentation for the <code>parallel</code> package that ships along with R or the CRAN Task View on <a href="https://cran.r-project.org/view=HighPerformanceComputing">Parallel Computing with R</a></p>
 </div>
 <div id="sec:trans" class="section level2">
 <h2 class="hasAnchor">
@@ -951,7 +951,7 @@ Within VCE type:          OLS                     Prob &gt; F        =     0.000
 <div class="footnotes">
 <hr>
 <ol>
-<li id="fn1"><p>We have artificially addedsome missingness to these data for presentational purposes. You can access the original data at <a href="">http://www.princeton.edu/~hmilner/Research.htm</a>.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn1"><p>We have artificially addedsome missingness to these data for presentational purposes. You can access the original data at <a href="https://scholar.princeton.edu/hvmilner/data">https://scholar.princeton.edu/hvmilner/data</a>.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 <li id="fn2"><p>The Polity score is a number between -10 and 10 indicating how democratic a country is. A fully autocratic country would be a -10 while a fully democratic country would be 1 10.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
 <li id="fn3"><p>This measure of US hegemony is the US imports and exports as a percent of the world total imports and exports.<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
 <li id="fn4"><p>Dichotomous (two category) variables are a special case of nominal variables. For these variables, the nominal and ordinal methods of transformation in Amelia agree.<a href="#fnref4" class="footnote-back">↩︎</a></p></li>
