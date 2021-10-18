@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Amelia</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.8.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.8.0.9000</span>
       </span>
     </div>
 
@@ -83,7 +83,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Using Amelia</h1>
             
-            <h4 class="date">2021-05-26</h4>
+            <h4 class="date">2021-10-18</h4>
       
       
       <div class="hidden name"><code>using-amelia.Rmd</code></div>
@@ -153,7 +153,7 @@
 <pre><code>## Loading required package: Rcpp</code></pre>
 <pre><code>## ## 
 ## ## Amelia II: Multiple Imputation
-## ## (Version 1.8.0, built: 2021-05-26)
+## ## (Version 1.8.0.9000, built: 2021-05-26)
 ## ## Copyright (C) 2005-2021 James Honaker, Gary King and Matthew Blackwell
 ## ## Refer to http://gking.harvard.edu/amelia/ for more information
 ## ##</code></pre>
@@ -791,10 +791,14 @@ outdata5.csv</code></pre>
 <a href="#sec_analysis" class="anchor"></a>Analysis Models</h2>
 <p>Imputation is most often a data processing step as opposed to a final model in of itself. To this end, it is easy to pass output from <code><a href="../reference/amelia.html">amelia()</a></code> to other functions. The easiest and most integrated way to run an analysis model is to pass the output to functions from the <code>Zelig</code> package. For example, in <span class="citation">Milner and Kubota (<a href="#ref-MilKub05" role="doc-biblioref">2005</a>)</span>, the dependent variable was tariff rates. We can replicate table 5.1 from their analysis with the original data simply by running</p>
 <pre><code>## Warning: `tbl_df()` was deprecated in dplyr 1.0.0.
-## Please use `tibble::as_tibble()` instead.</code></pre>
+## Please use `tibble::as_tibble()` instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.</code></pre>
 <pre><code>## Warning: `group_by_()` was deprecated in dplyr 0.7.0.
 ## Please use `group_by()` instead.
-## See vignette('programming') for more help</code></pre>
+## See vignette('programming') for more help
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.</code></pre>
 <div class="sourceCode" id="cb71"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## z5 &lt;- Zelig::zls$new()</span>
 <span class="co">## z5$zelig(tariff ~ polity + pop + gdp.pc + year + country, data = freetrade)</span>
