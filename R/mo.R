@@ -68,15 +68,17 @@
 #'  m.out <- moPrep(africa, trade ~ trade, error.sd = 1)
 #'  a.out <- amelia(m.out, ts = "year", cs = "country")
 #'
-moPrep <- function(x, formula, subset, error.proportion, gold.standard=!missing(subset), error.sd) {
+moPrep <- function(x, formula, subset, error.proportion,
+                   gold.standard = !missing(subset), error.sd) {
   UseMethod("moPrep",x)
 }
 
 #' @describeIn moPrep Alter existing moPrep output
-moPrep.molist <- function(x, formula, subset, error.proportion, gold.standard=FALSE, error.sd) {
+moPrep.molist <- function(x, formula, subset, error.proportion,
+                          gold.standard = FALSE, error.sd) {
   m <- match.call()
   m$x <- x$data
-  m[[1]] <- as.name("moPrep.default")
+  m[[1]] <- as.name("moPrep")
   res <- eval(m, sys.frame(sys.parent()))
 
   x$priors <- rbind(x$priors, res$priors)
