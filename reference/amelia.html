@@ -324,7 +324,7 @@ maximum EM chain length. These are ignored if they are less than 1.</p></td>
       <th>bounds</th>
       <td><p>a three column matrix to hold logical bounds on the
 imputations. Each row of the matrix should be of the form
-<code><a href='https://rdrr.io/r/base/c.html'>c(column.number, lower.bound,upper.bound)</a></code> See Details below.</p></td>
+<code>c(column.number, lower.bound,upper.bound)</code> See Details below.</p></td>
     </tr>
     <tr>
       <th>max.resample</th>
@@ -336,7 +336,7 @@ set to the bounds.</p></td>
     <tr>
       <th>overimp</th>
       <td><p>a two-column matrix describing which cells are to be
-overimputed. Each row of the matrix should be a <code><a href='https://rdrr.io/r/base/c.html'>c(row,column)</a></code> pair.
+overimputed. Each row of the matrix should be a <code>c(row,column)</code> pair.
 Each of these cells will be treated as missing and
 replaced with draws from the imputation model.</p></td>
     </tr>
@@ -500,59 +500,62 @@ plots, <code><a href='tscsPlot.html'>tscsPlot</a></code>. Also: <code><a href='p
 <p>Matt Blackwell</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>africa</span><span class='op'>)</span>
-<span class='va'>a.out</span> <span class='op'>&lt;-</span> <span class='fu'>amelia</span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>africa</span>, cs <span class='op'>=</span> <span class='st'>"country"</span>, ts <span class='op'>=</span> <span class='st'>"year"</span>, logs <span class='op'>=</span> <span class='st'>"gdp_pc"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; -- Imputation 1 --
-#&gt; 
-#&gt;   1  2  3
-#&gt; 
-#&gt; -- Imputation 2 --
-#&gt; 
-#&gt;   1  2  3
-#&gt; 
-#&gt; -- Imputation 3 --
-#&gt; 
-#&gt;   1  2  3
-#&gt; 
-#&gt; -- Imputation 4 --
-#&gt; 
-#&gt;   1  2
-#&gt; 
-#&gt; -- Imputation 5 --
-#&gt; 
-#&gt;   1  2
-#&gt; </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>a.out</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 
-#&gt; Amelia output with 5 imputed datasets.
-#&gt; Return code:  1 
-#&gt; Message:  Normal EM convergence. 
-#&gt; 
-#&gt; Chain Lengths:
-#&gt; --------------
-#&gt; Imputation 1:  3
-#&gt; Imputation 2:  3
-#&gt; Imputation 3:  3
-#&gt; Imputation 4:  2
-#&gt; Imputation 5:  2
-#&gt; 
-#&gt; Rows after Listwise Deletion:  115 
-#&gt; Rows after Imputation:  120 
-#&gt; Patterns of missingness in the data:  3 
-#&gt; 
-#&gt; Fraction Missing for original variables: 
-#&gt; -----------------------------------------
-#&gt; 
-#&gt;            Fraction Missing
-#&gt; year             0.00000000
-#&gt; country          0.00000000
-#&gt; gdp_pc           0.01666667
-#&gt; infl             0.00000000
-#&gt; trade            0.04166667
-#&gt; civlib           0.00000000
-#&gt; population       0.00000000
-#&gt; </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>a.out</span><span class='op'>)</span>
-</div><div class='img'><img src='amelia-1.png' alt='' width='700' height='433' /></div><div class='input'>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>africa</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>a.out</span> <span class='op'>&lt;-</span> <span class='fu'>amelia</span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>africa</span>, cs <span class='op'>=</span> <span class='st'>"country"</span>, ts <span class='op'>=</span> <span class='st'>"year"</span>, logs <span class='op'>=</span> <span class='st'>"gdp_pc"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> -- Imputation 1 --</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   1  2  3</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> -- Imputation 2 --</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   1  2  3</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> -- Imputation 3 --</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   1  2  3</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> -- Imputation 4 --</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   1  2</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> -- Imputation 5 --</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   1  2</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>a.out</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Amelia output with 5 imputed datasets.</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Return code:  1 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Message:  Normal EM convergence. </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Chain Lengths:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> --------------</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Imputation 1:  3</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Imputation 2:  3</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Imputation 3:  3</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Imputation 4:  2</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Imputation 5:  2</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Rows after Listwise Deletion:  115 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Rows after Imputation:  120 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Patterns of missingness in the data:  3 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Fraction Missing for original variables: </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> -----------------------------------------</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>            Fraction Missing</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> year             0.00000000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> country          0.00000000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> gdp_pc           0.01666667</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> infl             0.00000000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> trade            0.04166667</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> civlib           0.00000000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> population       0.00000000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>a.out</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='amelia-1.png' alt='' width='700' height='433' /></span>
+<span class='r-in'></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

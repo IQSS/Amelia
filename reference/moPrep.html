@@ -191,9 +191,9 @@ the measurement error.</p></td>
   objects:</p><ul>
 <li><p>priors a four-column matrix of the multiple overimputation priors
    associated with the data. Each row of the matrix is
-  <code><a href='https://rdrr.io/r/base/c.html'>c(row,column, prior.mean, prior.sd)</a></code></p></li>
+  <code>c(row,column, prior.mean, prior.sd)</code></p></li>
 <li><p>overimp a two-column matrix of cells to be overimputed. Each
-   row of the matrix is of the form <code><a href='https://rdrr.io/r/base/c.html'>c(row, column)</a></code>, which
+   row of the matrix is of the form <code>c(row, column)</code>, which
    indicate the row and column of the cell to be overimputed.</p></li>
 <li><p>data the object name of the matrix or data.frame to which
    priors refer.</p></li>
@@ -233,57 +233,60 @@ the measurement error.</p></td>
     <div class='dont-index'><p><code><a href='amelia.html'>amelia</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'> <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>africa</span><span class='op'>)</span>
- <span class='va'>m.out</span> <span class='op'>&lt;-</span> <span class='fu'>moPrep</span><span class='op'>(</span><span class='va'>africa</span>, <span class='va'>trade</span> <span class='op'>~</span> <span class='va'>trade</span>, error.proportion <span class='op'>=</span> <span class='fl'>0.1</span><span class='op'>)</span>
- <span class='va'>a.out</span> <span class='op'>&lt;-</span> <span class='fu'><a href='amelia.html'>amelia</a></span><span class='op'>(</span><span class='va'>m.out</span>, ts <span class='op'>=</span> <span class='st'>"year"</span>, cs <span class='op'>=</span> <span class='st'>"country"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; -- Imputation 1 --
-#&gt; 
-#&gt;   1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
-#&gt;  21 22 23 24
-#&gt; 
-#&gt; -- Imputation 2 --
-#&gt; 
-#&gt;   1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
-#&gt;  21 22 23 24 25 26 27 28 29 30 31 32 33
-#&gt; 
-#&gt; -- Imputation 3 --
-#&gt; 
-#&gt;   1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
-#&gt;  21 22 23 24 25 26
-#&gt; 
-#&gt; -- Imputation 4 --
-#&gt; 
-#&gt;   1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
-#&gt;  21 22 23 24 25 26 27
-#&gt; 
-#&gt; -- Imputation 5 --
-#&gt; 
-#&gt;   1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
-#&gt;  21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37
-#&gt; </div><div class='input'> <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>a.out</span><span class='op'>)</span>
-</div><div class='img'><img src='moPrep-1.png' alt='' width='700' height='433' /></div><div class='input'> <span class='va'>m.out</span> <span class='op'>&lt;-</span> <span class='fu'>moPrep</span><span class='op'>(</span><span class='va'>africa</span>, <span class='va'>trade</span> <span class='op'>~</span> <span class='va'>trade</span>, error.sd <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
- <span class='va'>a.out</span> <span class='op'>&lt;-</span> <span class='fu'><a href='amelia.html'>amelia</a></span><span class='op'>(</span><span class='va'>m.out</span>, ts <span class='op'>=</span> <span class='st'>"year"</span>, cs <span class='op'>=</span> <span class='st'>"country"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; -- Imputation 1 --
-#&gt; 
-#&gt;   1  2  3  4  5
-#&gt; 
-#&gt; -- Imputation 2 --
-#&gt; 
-#&gt;   1  2  3  4  5
-#&gt; 
-#&gt; -- Imputation 3 --
-#&gt; 
-#&gt;   1  2  3  4  5
-#&gt; 
-#&gt; -- Imputation 4 --
-#&gt; 
-#&gt;   1  2  3  4
-#&gt; 
-#&gt; -- Imputation 5 --
-#&gt; 
-#&gt;   1  2  3  4  5
-#&gt; </div><div class='input'>
-</div></pre>
+    <pre class="examples"><span class='r-in'> <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>africa</span><span class='op'>)</span></span>
+<span class='r-in'> <span class='va'>m.out</span> <span class='op'>&lt;-</span> <span class='fu'>moPrep</span><span class='op'>(</span><span class='va'>africa</span>, <span class='va'>trade</span> <span class='op'>~</span> <span class='va'>trade</span>, error.proportion <span class='op'>=</span> <span class='fl'>0.1</span><span class='op'>)</span></span>
+<span class='r-in'> <span class='va'>a.out</span> <span class='op'>&lt;-</span> <span class='fu'><a href='amelia.html'>amelia</a></span><span class='op'>(</span><span class='va'>m.out</span>, ts <span class='op'>=</span> <span class='st'>"year"</span>, cs <span class='op'>=</span> <span class='st'>"country"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> -- Imputation 1 --</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  21 22 23 24</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> -- Imputation 2 --</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  21 22 23 24 25 26 27 28 29 30 31 32 33</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> -- Imputation 3 --</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  21 22 23 24 25 26</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> -- Imputation 4 --</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  21 22 23 24 25 26 27</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> -- Imputation 5 --</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'> <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>a.out</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='moPrep-1.png' alt='' width='700' height='433' /></span>
+<span class='r-in'> <span class='va'>m.out</span> <span class='op'>&lt;-</span> <span class='fu'>moPrep</span><span class='op'>(</span><span class='va'>africa</span>, <span class='va'>trade</span> <span class='op'>~</span> <span class='va'>trade</span>, error.sd <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span></span>
+<span class='r-in'> <span class='va'>a.out</span> <span class='op'>&lt;-</span> <span class='fu'><a href='amelia.html'>amelia</a></span><span class='op'>(</span><span class='va'>m.out</span>, ts <span class='op'>=</span> <span class='st'>"year"</span>, cs <span class='op'>=</span> <span class='st'>"country"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> -- Imputation 1 --</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   1  2  3  4  5</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> -- Imputation 2 --</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   1  2  3  4  5</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> -- Imputation 3 --</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   1  2  3  4  5</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> -- Imputation 4 --</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   1  2  3  4</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> -- Imputation 5 --</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   1  2  3  4  5</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
