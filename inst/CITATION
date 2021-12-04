@@ -10,7 +10,7 @@ bibentry(
   volume       = "45",
   number       = "7",
   pages        = "1--47",
-  url          = "https://www.jstatsoft.org/v45/i07/",
+  doi          = "10.18637/jss.v045.i07",
 
   textVersion  =
   paste("James Honaker, Gary King, Matthew Blackwell (2011).",
