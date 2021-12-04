@@ -667,7 +667,7 @@ remove.imputations <- function(obj) {
 #' Honaker, J., King, G., Blackwell, M. (2011).
 #' Amelia II: A Program for Missing Data.
 #' \emph{Journal of Statistical Software}, \bold{45(7)}, 1--47.
-#' URL http://www.jstatsoft.org/v45/i07/.
+#' \doi{10.18637/jss.v045.i07}
 #'
 #' @seealso For imputation diagnostics, \code{\link{missmap}},
 #' \code{\link{compare.density}},
