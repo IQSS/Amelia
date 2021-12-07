@@ -35,6 +35,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -47,18 +49,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">Amelia</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.8.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8.0.9000</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
@@ -96,39 +92,39 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="amelia-ii" class="section level1">
+<div class="section level1">
 
 
 <p><!-- badges: end --></p>
-<div id="overview" class="section level2">
-<h2 class="hasAnchor">
-<a href="#overview" class="anchor"></a>Overview</h2>
-<p><a href="https://gking.harvard.edu/amelia">Amelia II</a> is an R package for the multiple imputation of multivariate incomplete data. It uses an algorithm that combines bootstrapping and the EM algorithm to take draws from the posterior of the missing data. The Amelia package includes normalizing transformations, cell-level priors, and methods for handling time-series cross-sectional data.</p>
+<div class="section level2">
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+</h2>
+<p><a href="https://gking.harvard.edu/amelia" class="external-link">Amelia II</a> is an R package for the multiple imputation of multivariate incomplete data. It uses an algorithm that combines bootstrapping and the EM algorithm to take draws from the posterior of the missing data. The Amelia package includes normalizing transformations, cell-level priors, and methods for handling time-series cross-sectional data.</p>
 </div>
-<div id="how-to-install" class="section level2">
-<h2 class="hasAnchor">
-<a href="#how-to-install" class="anchor"></a>How to install</h2>
-<p>To install the latest version of Amelia, which requires <a href="https://cran.r-project.org">R</a> version 2.14.0 or higher, simply use the standard R installation tools:</p>
+<div class="section level2">
+<h2 id="how-to-install">How to install<a class="anchor" aria-label="anchor" href="#how-to-install"></a>
+</h2>
+<p>To install the latest version of Amelia, which requires <a href="https://cran.r-project.org" class="external-link">R</a> version 2.14.0 or higher, simply use the standard R installation tools:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"Amelia"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"Amelia"</span><span class="op">)</span></code></pre></div>
 <p>If you would to use the current development release of Amelia (which may be unstable), run the following:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/">devtools</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"IQSS/Amelia"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="getting-started-with-amelia" class="section level2">
-<h2 class="hasAnchor">
-<a href="#getting-started-with-amelia" class="anchor"></a>Getting started with Amelia</h2>
+<div class="section level2">
+<h2 id="getting-started-with-amelia">Getting started with Amelia<a class="anchor" aria-label="anchor" href="#getting-started-with-amelia"></a>
+</h2>
 <p>The main function in the Amelia package is <code><a href="reference/amelia.html">amelia()</a></code> which will perform multiple imputation on a data frame. It allows for easy setting of time-series and unit variables via the <code>ts</code> and <code>cs</code> arguments.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://gking.harvard.edu/amelia">Amelia</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">africa</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gking.harvard.edu/amelia" class="external-link">Amelia</a></span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">africa</span><span class="op">)</span>
 
 <span class="va">a.out</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/amelia.html">amelia</a></span><span class="op">(</span><span class="va">africa</span>, m <span class="op">=</span> <span class="fl">5</span>, ts <span class="op">=</span> <span class="st">"year"</span>, cs <span class="op">=</span> <span class="st">"country"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="ameliaview-gui" class="section level2">
-<h2 class="hasAnchor">
-<a href="#ameliaview-gui" class="anchor"></a>AmeliaView GUI</h2>
+<div class="section level2">
+<h2 id="ameliaview-gui">AmeliaView GUI<a class="anchor" aria-label="anchor" href="#ameliaview-gui"></a>
+</h2>
 <p>Once installed, you can access most of the Amelia functionality through an interactive GUI by running the following command:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">Amelia</span><span class="fu">::</span><span class="fu"><a href="reference/AmeliaView.html">AmeliaView</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
@@ -138,53 +134,59 @@
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=Amelia">https://​cloud.r-project.org/​package=Amelia</a>
-</li>
+<li><a href="https://cloud.r-project.org/package=Amelia" class="external-link">View on CRAN</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li>GPL (&gt;= 2)</li>
 </ul>
 </div>
+
+
 <div class="citation">
-<h2>Citation</h2>
+<h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li><a href="authors.html">Citing Amelia</a></li>
-</ul>
-</div>
-<div class="developers">
-<h2>Developers</h2>
-<ul class="list-unstyled">
-<li>
-<a href="https://hona.kr">James Honaker</a> <br><small class="roles"> Author </small>  </li>
-<li>
-<a href="https://gking.harvard.edu">Gary King</a> <br><small class="roles"> Author </small>  </li>
-<li>
-<a href="https://www.mattblackwell.org">Matthew Blackwell</a> <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-3689-9527" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li><a href="authors.html#citation">Citing Amelia</a></li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="developers">
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/IQSS/Amelia/actions"><img src="https://github.com/IQSS/Amelia/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
-<li><a href="https://cran.r-project.org/package=Amelia"><img src="http://www.r-pkg.org/badges/version/Amelia" alt="CRAN version"></a></li>
+<li>
+<a href="https://hona.kr" class="external-link">James Honaker</a> <br><small class="roles"> Author </small>  </li>
+<li>
+<a href="https://gking.harvard.edu" class="external-link">Gary King</a> <br><small class="roles"> Author </small>  </li>
+<li>
+<a href="https://www.mattblackwell.org" class="external-link">Matthew Blackwell</a> <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-3689-9527" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 </ul>
 </div>
+
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/IQSS/Amelia/actions" class="external-link"><img src="https://github.com/IQSS/Amelia/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
+<li><a href="https://cran.r-project.org/package=Amelia" class="external-link"><img src="http://www.r-pkg.org/badges/version/Amelia" alt="CRAN version"></a></li>
+</ul>
 </div>
+
+  </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by <a href="https://hona.kr">James Honaker</a>, <a href="https://gking.harvard.edu">Gary King</a>, <a href="https://www.mattblackwell.org">Matthew Blackwell</a>.</p>
+  <p></p>
+<p>Developed by <a href="https://hona.kr" class="external-link">James Honaker</a>, <a href="https://gking.harvard.edu" class="external-link">Gary King</a>, <a href="https://www.mattblackwell.org" class="external-link">Matthew Blackwell</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -192,6 +194,8 @@
 
   
 
+
+  
 
   </body>
 </html>

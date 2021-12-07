@@ -1,12 +1,12 @@
 pandoc: 2.7.3
-pkgdown: 1.6.1
+pkgdown: 2.0.1
 pkgdown_sha: ~
 articles:
   ameliaview: ameliaview.html
   diagnostics: diagnostics.html
   intro-mi: intro-mi.html
   using-amelia: using-amelia.html
-last_built: 2021-12-04T02:23Z
+last_built: 2021-12-07T20:11Z
 urls:
   reference: https://iqss.github.io/Amelia/reference
   article: https://iqss.github.io/Amelia/articles

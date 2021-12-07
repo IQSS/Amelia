@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Amelia</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.8.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8.0.9000</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
@@ -83,7 +79,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Introduction to Multiple Imputation</h1>
             
-            <h4 class="date">2021-12-04</h4>
+            <h4 data-toc-skip class="date">2021-12-07</h4>
       
       
       <div class="hidden name"><code>intro-mi.Rmd</code></div>
@@ -92,20 +88,20 @@
 
     
     
-<div id="sec:intro" class="section level2">
-<h2 class="hasAnchor">
-<a href="#sec:intro" class="anchor"></a>Introduction</h2>
+<div class="section level2">
+<h2 id="sec:intro">Introduction<a class="anchor" aria-label="anchor" href="#sec:intro"></a>
+</h2>
 <p>Missing data is a ubiquitous problem in social science data. Respondents do not answer every question, countries do not collect statistics every year, archives are incomplete, subjects drop out of panels. Most statistical analysis methods, however, assume the absence of missing data, and are only able to include observations for which every variable is measured. Amelia allows users to impute (“fill in” or rectangularize) incomplete data sets so that analyses which require complete observations can appropriately use all the information present in a dataset with missingness, and avoid the biases, inefficiencies, and incorrect uncertainty estimates that can result from dropping all partially observed observations from the analysis.</p>
 <p>Amelia performs <em>multiple imputation</em>, a general-purpose approach to data with missing values. Multiple imputation has been shown to reduce bias and increase efficiency compared to listwise deletion. Furthermore, ad-hoc methods of imputation, such as mean imputation, can lead to serious biases in variances and covariances. Unfortunately, creating multiple imputations can be a burdensome process due to the technical nature of algorithms involved.  provides users with a simple way to create and implement an imputation model, generate imputed datasets, and check its fit using diagnostics.</p>
 <p>The Amelia program goes several significant steps beyond the capabilities of the first version of Amelia <span class="citation">(Honaker et al., <a href="#ref-HonJosKin98" role="doc-biblioref">n.d.</a>)</span>. For one, the bootstrap-based EMB algorithm included in Amelia can impute many more variables, with many more observations, in much less time. The great simplicity and power of the EMB algorithm made it possible to write Amelia so that it virtually never crashes — which to our knowledge makes it unique among all existing multiple imputation software — and is much faster than the alternatives too. Amelia also has features to make valid and much more accurate imputations for cross-sectional, time-series, and time-series-cross-section data, and allows the incorporation of observation and data-matrix-cell level prior information. In addition to all of this, Amelia provides many diagnostic functions that help users check the validity of their imputation model. This software implements the ideas developed in <span class="citation">Honaker and King (<a href="#ref-HonKin10" role="doc-biblioref">2010</a>)</span>.</p>
 </div>
-<div id="sec:what" class="section level2">
-<h2 class="hasAnchor">
-<a href="#sec:what" class="anchor"></a>What Amelia Does</h2>
+<div class="section level2">
+<h2 id="sec:what">What Amelia Does<a class="anchor" aria-label="anchor" href="#sec:what"></a>
+</h2>
 <p>Multiple imputation involves imputing <span class="math inline">\(m\)</span> values for each missing cell in your data matrix and creating <span class="math inline">\(m\)</span> “completed” data sets. Across these completed data sets, the observed values are the same, but the missing values are filled in with a distribution of imputations that reflect the uncertainty about the missing data. After imputation with Amelia’s EMB algorithm, you can apply whatever statistical method you would have used if there had been no missing values to each of the <span class="math inline">\(m\)</span> data sets, and use a simple procedure, described below, to combine the results<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. Under normal circumstances, you only need to impute once and can then analyze the <span class="math inline">\(m\)</span> imputed data sets as many times and for as many purposes as you wish. The advantage of Amelia is that it combines the comparative speed and ease-of-use of our algorithm with the power of multiple imputation, to let you focus on your substantive research questions rather than spending time developing complex application-specific models for nonresponse in each new data set. Unless the rate of missingness is very high, <span class="math inline">\(m = 5\)</span> (the program default) is probably adequate.</p>
-<div id="assumptions" class="section level3">
-<h3 class="hasAnchor">
-<a href="#assumptions" class="anchor"></a>Assumptions</h3>
+<div class="section level3">
+<h3 id="assumptions">Assumptions<a class="anchor" aria-label="anchor" href="#assumptions"></a>
+</h3>
 <p>The imputation model in Amelia assumes that the complete data (that is, both observed and unobserved) are multivariate normal. If we denote the <span class="math inline">\((n \times k)\)</span> dataset as <span class="math inline">\(D\)</span> (with observed part <span class="math inline">\(D^{obs}\)</span> and unobserved part <span class="math inline">\(D^{mis}\)</span>), then this assumption is</p>
 <p><span class="math display">\[\begin{equation} 
 D \sim \mathcal{N}_k(\mu, \Sigma), 
@@ -117,9 +113,9 @@ D \sim \mathcal{N}_k(\mu, \Sigma),
 \]</span></p>
 <p>Note that MAR includes the case when missing values are created randomly by, say, coin flips, but it also includes many more sophisticated missingness models. When missingness is not dependent on the data at all, we say that the data are <em>missing completely at random</em> (MCAR). Amelia requires both the multivariate normality and the MAR assumption (or the simpler special case of MCAR). Note that the MAR assumption can be made more plausible by including additional variables in the dataset <span class="math inline">\(D\)</span> in the imputation dataset than just those eventually envisioned to be used in the analysis model.</p>
 </div>
-<div id="algorithm" class="section level3">
-<h3 class="hasAnchor">
-<a href="#algorithm" class="anchor"></a>Algorithm</h3>
+<div class="section level3">
+<h3 id="algorithm">Algorithm<a class="anchor" aria-label="anchor" href="#algorithm"></a>
+</h3>
 <p>In multiple imputation, we are concerned with the complete-data parameters, <span class="math inline">\(\theta = (\mu, \Sigma)\)</span>. When writing down a model of the data, it is clear that our observed data is actually <span class="math inline">\(D^{obs}\)</span> and <span class="math inline">\(M\)</span>, the missingness matrix. Thus, the likelihood of our observed data is <span class="math inline">\(p(D^{obs}, M|\theta)\)</span>. Using the MAR assumption, we can break this up,</p>
 <p><span class="math display">\[\begin{align}
   p(D^{obs},M|\theta) = p(M|D^{obs})p(D^{obs}|\theta).
@@ -140,9 +136,9 @@ D \sim \mathcal{N}_k(\mu, \Sigma),
 <p>The main computational difficulty in the analysis of incomplete data is taking draws from this posterior. The EM algorithm <span class="citation">(Dempster, Laird, and Rubin <a href="#ref-DemLaiRub77" role="doc-biblioref">1977</a>)</span> is a simple computational approach to finding the mode of the posterior. Our EMB algorithm combines the classic EM algorithm with a bootstrap approach to take draws from this posterior. For each draw, we bootstrap the data to simulate estimation uncertainty and then run the EM algorithm to find the mode of the posterior for the bootstrapped data, which gives us fundamental uncertainty too <span class="citation">(see Honaker and King <a href="#ref-HonKin10" role="doc-biblioref">2010</a> for details of the EMB algorithm)</span>.</p>
 <p>Once we have draws of the posterior of the complete-data parameters, we make imputations by drawing values of <span class="math inline">\(D^{mis}\)</span> from its distribution conditional on <span class="math inline">\(D^{obs}\)</span> and the draws of <span class="math inline">\(\theta\)</span>, which is a linear regression with parameters that can be calculated directly from <span class="math inline">\(\theta\)</span>.</p>
 </div>
-<div id="analysis" class="section level3">
-<h3 class="hasAnchor">
-<a href="#analysis" class="anchor"></a>Analysis</h3>
+<div class="section level3">
+<h3 id="analysis">Analysis<a class="anchor" aria-label="anchor" href="#analysis"></a>
+</h3>
 <p>In order to combine the results across <span class="math inline">\(m\)</span> data sets, first decide on the quantity of interest to compute, such as a univariate mean, regression coefficient, predicted probability, or first difference. Then, the easiest way is to draw <span class="math inline">\(1/m\)</span> simulations of <span class="math inline">\(q\)</span> from each of the <span class="math inline">\(m\)</span> data sets, combine them into one set of <span class="math inline">\(m\)</span> simulations, and then to use the standard simulation-based methods of interpretation common for single data sets <span class="citation">King, Tomz, and Wittenberg (<a href="#ref-KinTomWit00" role="doc-biblioref">2000</a>)</span>.</p>
 <p>Alternatively, you can combine directly and use as the multiple imputation estimate of this parameter, <span class="math inline">\(\bar{q}\)</span>, the average of the <span class="math inline">\(m\)</span> separate estimates, <span class="math inline">\(q_j\)</span> <span class="math inline">\((j=1,\dots,m)\)</span>:</p>
 <p><span class="math display">\[\begin{equation}
@@ -154,9 +150,9 @@ SE(q)^2=\frac{1}{m}\sum^{m}_{j=1}SE(q_j)^2+S^2_q(1+1/m).
 \end{equation}\]</span></p>
 </div>
 </div>
-<div id="references" class="section level2 unnumbered">
-<h2 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h2>
+<div class="section level2 unnumbered">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
 <div id="refs" class="references">
 <div id="ref-DemLaiRub77">
 <p>Dempster, Arthur P., N. M. Laird, and D. B. Rubin. 1977. “Maximum Likelihood Estimation from Incomplete Data via the Em Algorithm.” <em>Journal of the Royal Statistical Society B</em> 39: 1–38.</p>
@@ -181,7 +177,7 @@ SE(q)^2=\frac{1}{m}\sum^{m}_{j=1}SE(q_j)^2+S^2_q(1+1/m).
 <div class="footnotes">
 <hr>
 <ol>
-<li id="fn1"><p>You can combine the results automatically by doing your data analyses within <a href="https://zeligproject.org">Zelig for R</a>, or within <a href="https://gking.harvard.edu/clarify">Clarify for Stata</a>.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn1"><p>You can combine the results automatically by doing your data analyses within <a href="https://zeligproject.org" class="external-link">Zelig for R</a>, or within <a href="https://gking.harvard.edu/clarify" class="external-link">Clarify for Stata</a>.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
   </div>
@@ -197,11 +193,13 @@ SE(q)^2=\frac{1}{m}\sum^{m}_{j=1}SE(q_j)^2+S^2_q(1+1/m).
 
 
       <footer><div class="copyright">
-  <p>Developed by <a href="https://hona.kr">James Honaker</a>, <a href="https://gking.harvard.edu">Gary King</a>, <a href="https://www.mattblackwell.org">Matthew Blackwell</a>.</p>
+  <p></p>
+<p>Developed by <a href="https://hona.kr" class="external-link">James Honaker</a>, <a href="https://gking.harvard.edu" class="external-link">Gary King</a>, <a href="https://www.mattblackwell.org" class="external-link">Matthew Blackwell</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -209,6 +207,8 @@ SE(q)^2=\frac{1}{m}\sum^{m}_{j=1}SE(q_j)^2+S^2_q(1+1/m).
 
   
 
+
+  
 
   </body>
 </html>

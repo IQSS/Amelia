@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Amelia</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.8.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8.0.9000</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
@@ -83,7 +79,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>AmeliaView GUI Guide</h1>
             
-            <h4 class="date">2021-12-04</h4>
+            <h4 data-toc-skip class="date">2021-12-07</h4>
       
       
       <div class="hidden name"><code>ameliaview.Rmd</code></div>
@@ -93,30 +89,30 @@
     
     
 <p>Below is a guide to the AmeliaView menus with references back to the users’s guide. The same principles from the user’s guide apply to AmeliaView. The only difference is how you interact with the program. Whether you use the GUI or the command line versions, the same underlying code is being called, and so you can read the command line-oriented discussion above even if you intend to use the GUI.</p>
-<div id="loading-ameliaview" class="section level2">
-<h2 class="hasAnchor">
-<a href="#loading-ameliaview" class="anchor"></a>Loading AmeliaView</h2>
+<div class="section level2">
+<h2 id="loading-ameliaview">Loading AmeliaView<a class="anchor" aria-label="anchor" href="#loading-ameliaview"></a>
+</h2>
 <p>The easiest way to load AmeliaView is to open an R session and type the following two commands:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://gking.harvard.edu/amelia">Amelia</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gking.harvard.edu/amelia" class="external-link">Amelia</a></span><span class="op">)</span>
 <span class="fu"><a href="../reference/AmeliaView.html">AmeliaView</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>This will bring up the AmeliaView window on any platform.</p>
 <div class="figure">
 <img src="assets/splash.png" alt=""><p class="caption">AmeliaView welcome screen</p>
 </div>
 </div>
-<div id="loading-data-into-ameliaview" class="section level2">
-<h2 class="hasAnchor">
-<a href="#loading-data-into-ameliaview" class="anchor"></a>Loading data into AmeliaView</h2>
+<div class="section level2">
+<h2 id="loading-data-into-ameliaview">Loading data into AmeliaView<a class="anchor" aria-label="anchor" href="#loading-data-into-ameliaview"></a>
+</h2>
 <p>AmeliaView loads with a welcome screen that has buttons which can load a data in many of the common formats. Each of these will bring up a window for choosing your dataset. Note that these buttons are only a subset of the possible ways to load data in AmeliaView. Under the File menu (shown below), you will find more options, including the datasets included in the package (<code>africa</code> and <code>freetrade</code>). You will also find import commands for Comma-Separated Values (.CSV), Tab-Delimited Text (.TXT), Stata v.5-10 (.DTA), SPSS (.DAT), and SAS Transport (.XPORT). Note that when using a CSV file, Amelia assumes that your file has a header (that is, a row at the top of the data indicating the variable names).</p>
 <div class="figure">
 <img src="assets/import.png" alt=""><p class="caption">AmeliaView File and import menu.</p>
 </div>
 <p>You can also load data from an RData file. If the RData file contains more than one <code>data.frame</code>, a pop-up window will ask to you find the dataset you would like to load. In the file menu, you can also change the underlying working directory. This is where AmeliaView will look for data by default and where it will save imputed datasets.</p>
 </div>
-<div id="variable-dashboard" class="section level2">
-<h2 class="hasAnchor">
-<a href="#variable-dashboard" class="anchor"></a>Variable Dashboard</h2>
+<div class="section level2">
+<h2 id="variable-dashboard">Variable Dashboard<a class="anchor" aria-label="anchor" href="#variable-dashboard"></a>
+</h2>
 <div class="figure">
 <img src="assets/main.png" alt=""><p class="caption">Main variable dashboard in AmeliaView</p>
 </div>
@@ -148,9 +144,9 @@
 <strong>Add or Edit Bounds</strong> - Opens a dialog box to set logical bounds for the selected variable.</li>
 </ol>
 </div>
-<div id="amelia-options" class="section level2">
-<h2 class="hasAnchor">
-<a href="#amelia-options" class="anchor"></a>Amelia Options</h2>
+<div class="section level2">
+<h2 id="amelia-options">Amelia Options<a class="anchor" aria-label="anchor" href="#amelia-options"></a>
+</h2>
 <div class="figure">
 <img src="assets/options.png" alt=""><p class="caption">Options menu</p>
 </div>
@@ -171,9 +167,9 @@
 <li>
 <strong>Output File Type</strong> - Sets the format of imputed data. If you would like to not save any output data sets (if you wanted, for instance, to simply look at diagnostics), set this option to “(no save).” Currently, you can save the output data as: Comma Separated Values (.CSV), Tab Delimited Text (.TXT), Stata (.DTA), R save object (.RData), or to hold it in R memory. This last option will only work if you have called AmeliaView from an R session and want to return to the R command line to work with the output. Its name in R workspace will be the file prefix. The stacked version of the Stata output will work with their built-in <code>mi</code> tools.</li>
 </ol>
-<div id="numerical-options" class="section level3">
-<h3 class="hasAnchor">
-<a href="#numerical-options" class="anchor"></a>Numerical options</h3>
+<div class="section level3">
+<h3 id="numerical-options">Numerical options<a class="anchor" aria-label="anchor" href="#numerical-options"></a>
+</h3>
 <div class="figure">
 <img src="assets/numopts.png" alt=""><p class="caption">Numerical options menu</p>
 </div>
@@ -184,9 +180,9 @@
 <li><p><strong>Maximum Resample for Bounds</strong> - Amelia fits logical bounds by rejecting any draws that do not fall within the bounds. This value sets the number of times Amelia should attempt to resample to fit the bounds before setting the imputation to the bound.</p></li>
 </ol>
 </div>
-<div id="add-distributional-prior" class="section level3">
-<h3 class="hasAnchor">
-<a href="#add-distributional-prior" class="anchor"></a>Add Distributional Prior</h3>
+<div class="section level3">
+<h3 id="add-distributional-prior">Add Distributional Prior<a class="anchor" aria-label="anchor" href="#add-distributional-prior"></a>
+</h3>
 <div class="figure">
 <img src="assets/distpri.png" alt=""><p class="caption">Detail for Add Distributional Prior dialog</p>
 </div>
@@ -201,9 +197,9 @@
 <strong>Standard Deviation</strong> - The standard deviation of the prior. The textbox will only accept positive non-zero values.</li>
 </ol>
 </div>
-<div id="add-range-prior" class="section level3">
-<h3 class="hasAnchor">
-<a href="#add-range-prior" class="anchor"></a>Add Range Prior</h3>
+<div class="section level3">
+<h3 id="add-range-prior">Add Range Prior<a class="anchor" aria-label="anchor" href="#add-range-prior"></a>
+</h3>
 <div class="figure">
 <img src="assets/rangepri.png" alt=""><p class="caption">Detail for Add Range Prior dialog</p>
 </div>
@@ -221,17 +217,17 @@
 </ol>
 </div>
 </div>
-<div id="imputing-and-checking-diagnostics" class="section level2">
-<h2 class="hasAnchor">
-<a href="#imputing-and-checking-diagnostics" class="anchor"></a>Imputing and checking diagnostics</h2>
+<div class="section level2">
+<h2 id="imputing-and-checking-diagnostics">Imputing and checking diagnostics<a class="anchor" aria-label="anchor" href="#imputing-and-checking-diagnostics"></a>
+</h2>
 <div class="figure">
 <img src="assets/output-log.png" alt=""><p class="caption">Output log showing Amelia output for a successful imputation.</p>
 </div>
 <p>Once you have set all the relevant options, you can impute your data by clicking the “Impute!” button in the toolbar. In the bottom right corner of the window, you will see a progress bar that indicates the progress of the imputations. For large datasets this could take some time. Once the imputations are complete, you should see a “Successful Imputation!” message appear where the progress bar was. You can click on this message to open the folder containing the imputed datasets.</p>
 <p>If there was an error during the imputation, the output log will pop-up and give you the error message along with some information about how to fix the problem. Once you have fixed the problem, simply click “Impute!” again. Even if there was no error, you may want to view the output log to see how Ameliaran. To do so, simply click the “Show Output Log” button. The log also shows the call to the <code><a href="../reference/amelia.html">amelia()</a></code> function in R. You can use this code snippet to run the same imputation from the R command line. You will have to replace the <code>x</code> argument in the <code><a href="../reference/amelia.html">amelia()</a></code> call to the name of you dataset in the R session.</p>
-<div id="diagnostics-dialog" class="section level3">
-<h3 class="hasAnchor">
-<a href="#diagnostics-dialog" class="anchor"></a>Diagnostics Dialog</h3>
+<div class="section level3">
+<h3 id="diagnostics-dialog">Diagnostics Dialog<a class="anchor" aria-label="anchor" href="#diagnostics-dialog"></a>
+</h3>
 <div class="figure">
 <img src="assets/diag.png" alt=""><p class="caption">Detail for the Diagnostics dialog</p>
 </div>
@@ -250,9 +246,9 @@
 </ol>
 </div>
 </div>
-<div id="sessions" class="section level2">
-<h2 class="hasAnchor">
-<a href="#sessions" class="anchor"></a>Sessions</h2>
+<div class="section level2">
+<h2 id="sessions">Sessions<a class="anchor" aria-label="anchor" href="#sessions"></a>
+</h2>
 <p>It is often useful to save a session of AmeliaView to save time if you have impute the same data again. Using the <strong>Save Session</strong> button will do just that, saving all of the current settings (including the original and any imputed data) to an RData file. You can then reload your session, on the same computer or any other, simply by clicking the <strong>Load Session</strong> button and finding the relevant RData file. All of the settings will be restored, including any completed imputations. Thus, if you save the session after imputing, you can always load up those imputations and view their diagnostics using the sessions feature of AmeliaView.</p>
 </div>
   </div>
@@ -268,11 +264,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by <a href="https://hona.kr">James Honaker</a>, <a href="https://gking.harvard.edu">Gary King</a>, <a href="https://www.mattblackwell.org">Matthew Blackwell</a>.</p>
+  <p></p>
+<p>Developed by <a href="https://hona.kr" class="external-link">James Honaker</a>, <a href="https://gking.harvard.edu" class="external-link">Gary King</a>, <a href="https://www.mattblackwell.org" class="external-link">Matthew Blackwell</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -280,6 +278,8 @@
 
   
 
+
+  
 
   </body>
 </html>

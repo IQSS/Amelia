@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://iqss.github.io/Amelia/404.html</loc>
+  </url>
+  <url>
+    <loc>https://iqss.github.io/Amelia/articles/ameliaview.html</loc>
+  </url>
+  <url>
+    <loc>https://iqss.github.io/Amelia/articles/diagnostics.html</loc>
+  </url>
+  <url>
+    <loc>https://iqss.github.io/Amelia/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://iqss.github.io/Amelia/articles/intro-mi.html</loc>
+  </url>
+  <url>
+    <loc>https://iqss.github.io/Amelia/articles/using-amelia.html</loc>
+  </url>
+  <url>
+    <loc>https://iqss.github.io/Amelia/authors.html</loc>
+  </url>
+  <url>
     <loc>https://iqss.github.io/Amelia/index.html</loc>
   </url>
   <url>
@@ -34,6 +55,9 @@
     <loc>https://iqss.github.io/Amelia/reference/freetrade.html</loc>
   </url>
   <url>
+    <loc>https://iqss.github.io/Amelia/reference/index.html</loc>
+  </url>
+  <url>
     <loc>https://iqss.github.io/Amelia/reference/mi.meld.html</loc>
   </url>
   <url>
@@ -59,17 +83,5 @@
   </url>
   <url>
     <loc>https://iqss.github.io/Amelia/reference/write.amelia.html</loc>
-  </url>
-  <url>
-    <loc>https://iqss.github.io/Amelia/articles/ameliaview.html</loc>
-  </url>
-  <url>
-    <loc>https://iqss.github.io/Amelia/articles/diagnostics.html</loc>
-  </url>
-  <url>
-    <loc>https://iqss.github.io/Amelia/articles/intro-mi.html</loc>
-  </url>
-  <url>
-    <loc>https://iqss.github.io/Amelia/articles/using-amelia.html</loc>
   </url>
 </urlset>
