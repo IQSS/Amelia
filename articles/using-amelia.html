@@ -43,7 +43,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -79,7 +79,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Using Amelia</h1>
             
-            <h4 data-toc-skip class="date">2021-12-07</h4>
+            <h4 data-toc-skip class="date">2022-04-12</h4>
       
       
       <div class="hidden name"><code>using-amelia.Rmd</code></div>
@@ -150,7 +150,7 @@
 <pre><code><span class="co">## ## </span>
 <span class="co">## ## Amelia II: Multiple Imputation</span>
 <span class="co">## ## (Version 1.8.0.9000, built: 2021-05-26)</span>
-<span class="co">## ## Copyright (C) 2005-2021 James Honaker, Gary King and Matthew Blackwell</span>
+<span class="co">## ## Copyright (C) 2005-2022 James Honaker, Gary King and Matthew Blackwell</span>
 <span class="co">## ## Refer to http://gking.harvard.edu/amelia/ for more information</span>
 <span class="co">## ##</span></code></pre>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -785,101 +785,20 @@
 <h2 id="sec_analysis">Analysis Models<a class="anchor" aria-label="anchor" href="#sec_analysis"></a>
 </h2>
 <p>Imputation is most often a data processing step as opposed to a final model in of itself. To this end, it is easy to pass output from <code><a href="../reference/amelia.html">amelia()</a></code> to other functions. The easiest and most integrated way to run an analysis model is to pass the output to functions from the <code>Zelig</code> package. For example, in <span class="citation">Milner and Kubota (<a href="#ref-MilKub05" role="doc-biblioref">2005</a>)</span>, the dependent variable was tariff rates. We can replicate table 5.1 from their analysis with the original data simply by running</p>
-<pre><code><span class="co">## Warning: `tbl_df()` was deprecated in dplyr 1.0.0.</span>
-<span class="co">## Please use `tibble::as_tibble()` instead.</span>
-<span class="co">## <span style="color: #555555;">This warning is displayed once every 8 hours.</span></span>
-<span class="co">## <span style="color: #555555;">Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.</span></span></code></pre>
-<pre><code><span class="co">## Warning: `group_by_()` was deprecated in dplyr 0.7.0.</span>
-<span class="co">## Please use `group_by()` instead.</span>
-<span class="co">## See vignette('programming') for more help</span>
-<span class="co">## <span style="color: #555555;">This warning is displayed once every 8 hours.</span></span>
-<span class="co">## <span style="color: #555555;">Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.</span></span></code></pre>
-<div class="sourceCode" id="cb71"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb69"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## z5 &lt;- Zelig::zls$new()</span>
 <span class="co">## z5$zelig(tariff ~ polity + pop + gdp.pc + year + country, data = freetrade)</span>
 <span class="va">z5</span></code></pre></div>
-<pre><code><span class="co">## Model: </span>
-<span class="co">## </span>
-<span class="co">## Call:</span>
-<span class="co">## z5$zelig(formula = tariff ~ polity + pop + gdp.pc + year + country, </span>
-<span class="co">##     data = freetrade)</span>
-<span class="co">## </span>
-<span class="co">## Residuals:</span>
-<span class="co">##     Min      1Q  Median      3Q     Max </span>
-<span class="co">## -30.764  -3.259   0.087   2.598  18.310 </span>
-<span class="co">## </span>
-<span class="co">## Coefficients:</span>
-<span class="co">##                     Estimate Std. Error t value Pr(&gt;|t|)</span>
-<span class="co">## (Intercept)         1.97e+03   4.02e+02    4.91  3.6e-06</span>
-<span class="co">## polity             -1.37e-01   1.82e-01   -0.75     0.45</span>
-<span class="co">## pop                -2.02e-07   2.54e-08   -7.95  3.2e-12</span>
-<span class="co">## gdp.pc              6.10e-04   7.44e-04    0.82     0.41</span>
-<span class="co">## year               -8.71e-01   2.08e-01   -4.18  6.4e-05</span>
-<span class="co">## countryIndonesia   -1.82e+02   1.86e+01   -9.82  3.0e-16</span>
-<span class="co">## countryKorea       -2.20e+02   2.08e+01  -10.61  &lt; 2e-16</span>
-<span class="co">## countryMalaysia    -2.25e+02   2.17e+01  -10.34  &lt; 2e-16</span>
-<span class="co">## countryNepal       -2.16e+02   2.25e+01   -9.63  7.7e-16</span>
-<span class="co">## countryPakistan    -1.55e+02   1.98e+01   -7.84  5.6e-12</span>
-<span class="co">## countryPhilippines -2.04e+02   2.09e+01   -9.77  3.7e-16</span>
-<span class="co">## countrySriLanka    -2.09e+02   2.21e+01   -9.46  1.8e-15</span>
-<span class="co">## countryThailand    -1.96e+02   2.10e+01   -9.36  3.0e-15</span>
-<span class="co">## </span>
-<span class="co">## Residual standard error: 6.22 on 98 degrees of freedom</span>
-<span class="co">##   (60 observations deleted due to missingness)</span>
-<span class="co">## Multiple R-squared:  0.925,  Adjusted R-squared:  0.915 </span>
-<span class="co">## F-statistic:  100 on 12 and 98 DF,  p-value: &lt;2e-16</span>
-<span class="co">## </span>
-<span class="co">## Statistical Warning: The GIM test suggests this model is misspecified</span>
-<span class="co">##  (based on comparisons between classical and robust SE's; see http://j.mp/GIMtest).</span>
-<span class="co">##  We suggest you run diagnostics to ascertain the cause, respecify the model</span>
-<span class="co">##  and run it again.</span>
-<span class="co">## </span>
-<span class="co">## Next step: Use 'setx' method</span></code></pre>
+<pre><code><span class="co">## [1] "Error: Zelig package not avaiable when vignette built"</span></code></pre>
 <p>Running the same model with imputed data is almost identical. Simply replace the original data set with the <code><a href="../reference/amelia.html">amelia()</a></code> output:</p>
-<div class="sourceCode" id="cb73"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb71"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## z5_imp &lt;- Zelig::zls$new()</span>
 <span class="co">## z5_imp$zelig(tariff ~ polity + pop + gdp.pc + year + country, data = a.out)</span>
 <span class="va">z5_imp</span></code></pre></div>
-<pre><code><span class="co">## Model: </span>
-<span class="co">## </span>
-<span class="co">## Call:</span>
-<span class="co">## z5_imp$zelig(formula = tariff ~ polity + pop + gdp.pc + year + </span>
-<span class="co">##     country, data = freetrade)</span>
-<span class="co">## </span>
-<span class="co">## Residuals:</span>
-<span class="co">##     Min      1Q  Median      3Q     Max </span>
-<span class="co">## -30.764  -3.259   0.087   2.598  18.310 </span>
-<span class="co">## </span>
-<span class="co">## Coefficients:</span>
-<span class="co">##                     Estimate Std. Error t value Pr(&gt;|t|)</span>
-<span class="co">## (Intercept)         1.97e+03   4.02e+02    4.91  3.6e-06</span>
-<span class="co">## polity             -1.37e-01   1.82e-01   -0.75     0.45</span>
-<span class="co">## pop                -2.02e-07   2.54e-08   -7.95  3.2e-12</span>
-<span class="co">## gdp.pc              6.10e-04   7.44e-04    0.82     0.41</span>
-<span class="co">## year               -8.71e-01   2.08e-01   -4.18  6.4e-05</span>
-<span class="co">## countryIndonesia   -1.82e+02   1.86e+01   -9.82  3.0e-16</span>
-<span class="co">## countryKorea       -2.20e+02   2.08e+01  -10.61  &lt; 2e-16</span>
-<span class="co">## countryMalaysia    -2.25e+02   2.17e+01  -10.34  &lt; 2e-16</span>
-<span class="co">## countryNepal       -2.16e+02   2.25e+01   -9.63  7.7e-16</span>
-<span class="co">## countryPakistan    -1.55e+02   1.98e+01   -7.84  5.6e-12</span>
-<span class="co">## countryPhilippines -2.04e+02   2.09e+01   -9.77  3.7e-16</span>
-<span class="co">## countrySriLanka    -2.09e+02   2.21e+01   -9.46  1.8e-15</span>
-<span class="co">## countryThailand    -1.96e+02   2.10e+01   -9.36  3.0e-15</span>
-<span class="co">## </span>
-<span class="co">## Residual standard error: 6.22 on 98 degrees of freedom</span>
-<span class="co">##   (60 observations deleted due to missingness)</span>
-<span class="co">## Multiple R-squared:  0.925,  Adjusted R-squared:  0.915 </span>
-<span class="co">## F-statistic:  100 on 12 and 98 DF,  p-value: &lt;2e-16</span>
-<span class="co">## </span>
-<span class="co">## Statistical Warning: The GIM test suggests this model is misspecified</span>
-<span class="co">##  (based on comparisons between classical and robust SE's; see http://j.mp/GIMtest).</span>
-<span class="co">##  We suggest you run diagnostics to ascertain the cause, respecify the model</span>
-<span class="co">##  and run it again.</span>
-<span class="co">## </span>
-<span class="co">## Next step: Use 'setx' method</span></code></pre>
+<pre><code><span class="co">## [1] "Error: Zelig package not avaiable when vignette built"</span></code></pre>
 <p>Zelig is one way to run analysis models on imputed data, but certainly not the only way. The <code>imputations</code> list in the <code><a href="../reference/amelia.html">amelia()</a></code> output contains each of the imputed datasets. Thus, users could simply program a loop over the number of imputations and run the analysis model on each imputed dataset and combine the results using the rules described in <span class="citation">King et al. (<a href="#ref-KinHonJos01" role="doc-biblioref">2001</a>)</span> and <span class="citation">Schafer (<a href="#ref-Schafer97" role="doc-biblioref">1997</a>)</span>. Furthermore, users can easily export their imputations using the <code><a href="../reference/write.amelia.html">write.amelia()</a></code> function as described in @ref(sec_saving) and use statistical packages other than R for the analysis model.</p>
 <p>Amelia also has the ability combine quantities of interest from arbitrary models using the <code><a href="../reference/mi.meld.html">mi.meld()</a></code> function. This command takes in a matrix with columns for the quantity and its standard error in each of the imputed datasets. It then uses the standard rules for combining multiple imputations to create an overall estimated quantity.</p>
-<div class="sourceCode" id="cb75"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb73"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">b.out</span> <span class="op">&lt;-</span> <span class="cn">NULL</span>
 <span class="va">se.out</span> <span class="op">&lt;-</span> <span class="cn">NULL</span>
 <span class="kw">for</span><span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">a.out</span><span class="op">$</span><span class="va">m</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
@@ -898,12 +817,12 @@
 <span class="co">##      (Intercept) polity       pop    gdp.pc</span>
 <span class="co">## [1,]       2.509 0.3105 7.131e-09 0.0005945</span></code></pre>
 <p>In addition to the resources available in R, users can draw on Stata to implement their analysis models. As of version 11, Stata has built-in handling of multiply imputed datasets. In order to utilize this functionality, simply export the “stacked” imputations using the <code><a href="../reference/write.amelia.html">write.amelia()</a></code> function:</p>
-<div class="sourceCode" id="cb77"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb75"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/write.amelia.html">write.amelia</a></span><span class="op">(</span><span class="va">a.out</span>, separate <span class="op">=</span> <span class="cn">FALSE</span>, file.stem <span class="op">=</span> <span class="st">"outdata"</span>, format <span class="op">=</span> <span class="st">"dta"</span><span class="op">)</span></code></pre></div>
 <p>Once this stacked dataset is open in Stata, you must tell Stata that it is an imputed dataset using the  command:</p>
-<div class="sourceCode" id="cb78"><pre class="sourceCode stata"><code class="sourceCode stata"><span id="cb78-1"><a href="#cb78-1"></a><span class="fu">mi</span> import flong, <span class="fu">m</span>(imp) id(<span class="fu">year</span> country) imp(tariff-usheg)</span></code></pre></div>
+<div class="sourceCode" id="cb76"><pre class="sourceCode stata"><code class="sourceCode stata"><span id="cb76-1"><a href="#cb76-1"></a><span class="fu">mi</span> import flong, <span class="fu">m</span>(imp) id(<span class="fu">year</span> country) imp(tariff-usheg)</span></code></pre></div>
 <p>The command takes a few options: <code>m</code> designates the imputation variable (set with <code>impvar</code> in <code><a href="../reference/write.amelia.html">write.amelia()</a></code>), <code>id</code> sets the identifying varibles, and <code>imp</code> sets the variables that were imputed (or included in the imputation). The <code>tariff-usheg</code> indicates that Stata should treat the range of variables between <code>tariff</code> and <code>usheg</code> as imputed. Once we have set the dataset as imputed, we can use the built-in <code>mi</code> commands to analyze the data:</p>
-<div class="sourceCode" id="cb79"><pre class="sourceCode stata"><code class="sourceCode stata"><span id="cb79-1"><a href="#cb79-1"></a><span class="fu">mi</span> estimate: <span class="kw">reg</span> tariff polity pop gdp_pc</span></code></pre></div>
+<div class="sourceCode" id="cb77"><pre class="sourceCode stata"><code class="sourceCode stata"><span id="cb77-1"><a href="#cb77-1"></a><span class="fu">mi</span> estimate: <span class="kw">reg</span> tariff polity pop gdp_pc</span></code></pre></div>
 <pre><code>Multiple-imputation estimates                     Imputations     =          5
 Linear regression                                 Number of obs   =        171
                                                   Average RVI     =     1.4114
@@ -975,7 +894,7 @@ Within VCE type:          OLS                     Prob &gt; F        =     0.000
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
