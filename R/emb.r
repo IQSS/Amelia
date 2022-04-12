@@ -97,9 +97,10 @@ bootx<-function(x,priors=NULL, boot.type="np"){
   return(list(x=xboot,priors=priors))
 }
 
+
 ## Put imputations into the original data format
 ## Converts integer values back to factors or characters
-impfill<-function(x.orig, x.imp, noms, ords, priors, overimp) {
+impfill <- function(x.orig, x.imp, noms, ords, priors, overimp) {
   if (!is.null(priors)) {
     is.na(x.orig)[priors[,c(1,2)]] <- TRUE
   }
@@ -111,37 +112,47 @@ impfill<-function(x.orig, x.imp, noms, ords, priors, overimp) {
   AMr1.orig <- is.na(x.orig)
   orig.fact <- sapply(x.orig, is.factor)
   orig.char <- sapply(x.orig, is.character)
-  x.imp <- as.data.frame(x.imp[,1:ncol(x.orig)])
+  x.imp <- as.data.frame(x.imp[, 1:ncol(x.orig)])
   for (i in 1:ncol(x.orig)) {
-    if (is.logical(x.orig[,i]) & sum(!is.na(x.orig[,i])) > 0) {
-      x.imp[,i]<-as.logical(x.imp[,i]>0.5)
+    if (is.logical(x.orig[[i]]) & sum(!is.na(x.orig[[i]])) > 0) {
+      x.imp[,i] <- as.logical(x.imp[,i]>0.5)
+    }
+    
+    ## imputations will be numeric and tibbles 
+    if (is.integer(x.orig[[i]]) & sum(is.na(x.orig[[i]])) > 0) {
+      x.orig[, i] <- as.numeric(x.orig[[i]])
     }
   }
 
-  possibleFactors <- unique(c(noms,ords))
+  possibleFactors <- unique(c(noms, ords))
 
   if (!is.null(possibleFactors)) {
     if (ncol(x.orig) > length(possibleFactors)) {
-      AMr1.orig <- is.na(x.orig[,-possibleFactors])
-      x.orig[,-possibleFactors][AMr1.orig] <- x.imp[,-possibleFactors][AMr1.orig]
+      
+      num.cells <- which(is.na(x.orig) & !(col(x.orig) %in% possibleFactors), arr.ind = TRUE)
+      for (j in seq_len(nrow(num.cells))) {
+        j_row <- num.cells[j, 1]
+        j_col <- num.cells[j, 2]
+        x.orig[j_row, j_col] <- x.imp[j_row, j_col]
+      }
     }
     for (i in possibleFactors) {
       if (orig.fact[i])
-        x.orig[is.na(x.orig[,i]),i]<- levels(x.orig[,i])[x.imp[is.na(x.orig[,i]),i]]
+        x.orig[is.na(x.orig[, i]), i] <- levels(x.orig[[i]])[x.imp[is.na(x.orig[[i]]), i]]
       else if (orig.char[i])
-        x.orig[,i]<-levels(factor(x.orig[,i]))[x.imp[,i]]
+        x.orig[, i] <- levels(factor(x.orig[[i]]))[x.imp[, i]]
       else
-        x.orig[is.na(x.orig[,i]),i] <- x.imp[is.na(x.orig[,i]),i]
+        x.orig[is.na(x.orig[[i]]), i] <- x.imp[is.na(x.orig[[i]]), i]
     }
   } else {
     x.orig[AMr1.orig] <- x.imp[AMr1.orig]
   }
   new.char <- sapply(x.orig, is.character)
-  char.match <- orig.char!=new.char
-  if (sum(char.match)!=0)
-    for (i in 1:length(char.match))
+  char.match <- orig.char != new.char
+  if (sum(char.match) != 0)
+    for (i in seq_along(char.match))
       if (char.match[i])
-        x.orig[,i]<-as.numeric(x.orig[,i])
+        x.orig[, i] <- as.numeric(x.orig[[i]])
 
   return(x.orig)
 }
