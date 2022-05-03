@@ -4,8 +4,16 @@
 \alias{disperse}
 \title{Overdispersed starting values diagnostic for multiple imputation}
 \usage{
-disperse(output, m = 5, dims = 1, p2s = 0, frontend = FALSE, ...,
-  xlim = NULL, ylim = NULL)
+disperse(
+  output,
+  m = 5,
+  dims = 1,
+  p2s = 0,
+  frontend = FALSE,
+  ...,
+  xlim = NULL,
+  ylim = NULL
+)
 }
 \arguments{
 \item{output}{output from the function \code{amelia}.}

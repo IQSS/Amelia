@@ -4,8 +4,16 @@
 \alias{write.amelia}
 \title{Write Amelia imputations to file}
 \usage{
-write.amelia(obj, separate = TRUE, file.stem, extension = NULL,
-  format = "csv", impvar = "imp", orig.data = TRUE, ...)
+write.amelia(
+  obj,
+  separate = TRUE,
+  file.stem,
+  extension = NULL,
+  format = "csv",
+  impvar = "imp",
+  orig.data = TRUE,
+  ...
+)
 }
 \arguments{
 \item{obj}{an object of class "amelia"; typically output from the

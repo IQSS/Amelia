@@ -6,14 +6,25 @@
 \alias{moPrep.default}
 \title{Prepare Multiple Overimputation Settings}
 \usage{
-moPrep(x, formula, subset, error.proportion,
-  gold.standard = !missing(subset), error.sd)
+moPrep(
+  x,
+  formula,
+  subset,
+  error.proportion,
+  gold.standard = !missing(subset),
+  error.sd
+)
 
-\method{moPrep}{molist}(x, formula, subset, error.proportion,
-  gold.standard = FALSE, error.sd)
+\method{moPrep}{molist}(x, formula, subset, error.proportion, gold.standard = FALSE, error.sd)
 
-\method{moPrep}{default}(x, formula, subset, error.proportion,
-  gold.standard = !missing(subset), error.sd)
+\method{moPrep}{default}(
+  x,
+  formula,
+  subset,
+  error.proportion,
+  gold.standard = !missing(subset),
+  error.sd
+)
 }
 \arguments{
 \item{x}{either a matrix, data.frame, or a object of class "molist"

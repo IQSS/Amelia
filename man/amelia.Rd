@@ -13,16 +13,42 @@ amelia(x, ...)
 
 \method{amelia}{molist}(x, ...)
 
-\method{amelia}{default}(x, m = 5, p2s = 1, frontend = FALSE,
-  idvars = NULL, ts = NULL, cs = NULL, polytime = NULL,
-  splinetime = NULL, intercs = FALSE, lags = NULL, leads = NULL,
-  startvals = 0, tolerance = 1e-04, logs = NULL, sqrts = NULL,
-  lgstc = NULL, noms = NULL, ords = NULL, incheck = TRUE,
-  collect = FALSE, arglist = NULL, empri = NULL, priors = NULL,
-  autopri = 0.05, emburn = c(0, 0), bounds = NULL,
-  max.resample = 100, overimp = NULL, boot.type = "ordinary",
+\method{amelia}{default}(
+  x,
+  m = 5,
+  p2s = 1,
+  frontend = FALSE,
+  idvars = NULL,
+  ts = NULL,
+  cs = NULL,
+  polytime = NULL,
+  splinetime = NULL,
+  intercs = FALSE,
+  lags = NULL,
+  leads = NULL,
+  startvals = 0,
+  tolerance = 1e-04,
+  logs = NULL,
+  sqrts = NULL,
+  lgstc = NULL,
+  noms = NULL,
+  ords = NULL,
+  incheck = TRUE,
+  collect = FALSE,
+  arglist = NULL,
+  empri = NULL,
+  priors = NULL,
+  autopri = 0.05,
+  emburn = c(0, 0),
+  bounds = NULL,
+  max.resample = 100,
+  overimp = NULL,
+  boot.type = "ordinary",
   parallel = c("no", "multicore", "snow"),
-  ncpus = getOption("amelia.ncpus", 1L), cl = NULL, ...)
+  ncpus = getOption("amelia.ncpus", 1L),
+  cl = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{either a matrix, data.frame, a object of class
@@ -304,7 +330,7 @@ plot(a.out)
 Honaker, J., King, G., Blackwell, M. (2011).
 Amelia II: A Program for Missing Data.
 \emph{Journal of Statistical Software}, \bold{45(7)}, 1--47.
-URL http://www.jstatsoft.org/v45/i07/.
+\doi{10.18637/jss.v045.i07}
 }
 \seealso{
 For imputation diagnostics, \code{\link{missmap}},

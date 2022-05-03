@@ -12,7 +12,9 @@ export(amelia,
        transform.amelia,
        mi.meld,
        amelia.molist,
-       amelia.default)
+       amelia.default,
+       with.amelia,
+       mi.combine)
 
 import(foreign)
 import(utils)
@@ -28,6 +30,7 @@ S3method(amelia, molist)
 S3method(moPrep, molist)
 S3method(moPrep, default)
 S3method(transform, amelia)
+S3method(with, amelia)
 
 useDynLib(Amelia)
 

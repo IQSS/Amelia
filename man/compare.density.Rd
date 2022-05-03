@@ -4,9 +4,19 @@
 \alias{compare.density}
 \title{Compare observed versus imputed densities}
 \usage{
-compare.density(output, var, col = c("indianred", "dodgerblue"),
-  scaled = FALSE, lwd = 1, main, xlab, ylab, legend = TRUE,
-  frontend = FALSE, ...)
+compare.density(
+  output,
+  var,
+  col = c("indianred", "dodgerblue"),
+  scaled = FALSE,
+  lwd = 1,
+  main,
+  xlab,
+  ylab,
+  legend = TRUE,
+  frontend = FALSE,
+  ...
+)
 }
 \arguments{
 \item{output}{output from the function \code{amelia}.}

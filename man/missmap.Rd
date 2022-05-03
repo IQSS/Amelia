@@ -4,10 +4,24 @@
 \alias{missmap}
 \title{Missingness Map}
 \usage{
-missmap(obj, vars, legend = TRUE, col, main, y.cex = 0.8,
-  x.cex = 0.8, y.labels, y.at, csvar = NULL, tsvar = NULL,
-  rank.order = TRUE, margins = c(5, 5), gap.xaxis = 1, x.las = 2,
-  ...)
+missmap(
+  obj,
+  vars,
+  legend = TRUE,
+  col,
+  main,
+  y.cex = 0.8,
+  x.cex = 0.8,
+  y.labels,
+  y.at,
+  csvar = NULL,
+  tsvar = NULL,
+  rank.order = TRUE,
+  margins = c(5, 5),
+  gap.xaxis = 1,
+  x.las = 2,
+  ...
+)
 }
 \arguments{
 \item{obj}{an object of class "amelia"; typically output from the

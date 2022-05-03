@@ -4,8 +4,18 @@
 \alias{overimpute}
 \title{Overimputation diagnostic plot}
 \usage{
-overimpute(output, var, draws = 20, subset, legend = TRUE, xlab, ylab,
-  main, frontend = FALSE, ...)
+overimpute(
+  output,
+  var,
+  draws = 20,
+  subset,
+  legend = TRUE,
+  xlab,
+  ylab,
+  main,
+  frontend = FALSE,
+  ...
+)
 }
 \arguments{
 \item{output}{output from the function \code{amelia}.}
