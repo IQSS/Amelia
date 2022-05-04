@@ -17,7 +17,26 @@ est.matrix <- function(x, name) {
 ##' @param conf.level The confidence level to use for the confidence
 ##' interval  if \code{conf.level = TRUE}. Defaults to 0.95, which
 ##' corresponds to a 95 percent confidence interval.
-##' @return 
+##' @return Returns a \code{tibble} that contains:
+##' \describe{
+##' \item{term}{Name of the coefficient or parameter.}
+##' \item{estimate}{Estimate of the parameter, averagine across imputations.}
+##' \item{std.error}{Standard error of the estimate, accounting for
+##' imputation uncertainty.}
+##' \item{statistic}{Value of the t-statistic for the estimated
+##' parameter.}
+##' \item{p.value}{p-value associated with the test of a null
+##' hypothesis that the true coefficient is zero. Uses the
+##' t-distribution with an imputation-adjusted degrees of freedom.}
+##' \item{df}{Imputation-adjusted degrees of freedom for each
+##' parameter.}
+##' \item{r}{Relative increase in variance due to nonresponse.}
+##' \item{miss.info}{Estimated fraction of missing information.}
+##' \item{conf.low}{Lower bound of the estimated confidence interval.
+##' Only present if \code{conf.int = TRUE}.}
+##' \item{conf.high}{Upper bound of the estimated confidence interval.
+##' Only present if \code{conf.int = TRUE}.}
+##' }
 ##' @author Matt Blackwell
 ##' @export
 mi.combine <- function(x, conf.int = FALSE, conf.level = 0.95) {
@@ -48,13 +67,13 @@ mi.combine <- function(x, conf.int = FALSE, conf.level = 0.95) {
   miss.info <- (r + 2 / (df + 3)) / (r + 1)
 
   out$statistic <- out$estimate / out$std.error
-  out$p.value <- 2 * pt(out$statistic, df = df, lower.tail = FALSE)
+  out$p.value <- 2 * stats::pt(out$statistic, df = df, lower.tail = FALSE)
 
   out$df <- df
   out$r <- r
   out$miss.info <- miss.info
   if (conf.int) {
-    t.c <- qt(1 - (1 - conf.level) / 2, df = df, lower.tail = FALSE)
+    t.c <- stats::qt(1 - (1 - conf.level) / 2, df = df, lower.tail = FALSE)
     out$conf.low <- out$estimate - t.c * out$std.error
     out$conf.high <- out$estimate + t.c * out$std.error
   }

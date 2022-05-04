@@ -28,17 +28,17 @@
 ## 22/07/08 mb - good coding update: T->TRUE/F->FALSE
 ## 27/03/10 jh added spline basis functions, changed "polynomials" matrix to instance of "timebasis"
 
-nametonumber<-function(x,ts,cs,idvars,noms,ords,logs,sqrts,lgstc,lags,leads)
-{
+nametonumber <- function(x, ts, cs, idvars, noms, ords, logs, sqrts, lgstc,
+                         lags, leads) {
 
-  listconvert<-function(opt) {
-    junk.seq<-1:ncol(x)
-    junk.names<-dimnames(x)[[2]]
+  listconvert <- function(opt) {
+    junk.seq <- 1:ncol(x)
+    junk.names <- dimnames(x)[[2]]
     for (i in 1:length(opt)) {
-      mat<-opt[i]==junk.names
+      mat <- opt[i] == junk.names
       if (sum(mat) == 0)
         return(NA)
-      opt[i]<-junk.seq[mat]
+      opt[i] <- junk.seq[mat]
     }
 
     return(as.numeric(opt))
@@ -47,33 +47,33 @@ nametonumber<-function(x,ts,cs,idvars,noms,ords,logs,sqrts,lgstc,lags,leads)
   code<-0
   mess<-paste("One of the variable names in the options list does not match a variable name in the data.")
 
-  if (class(ts)=="character")
-    ts<-listconvert(ts)
-  if (class(cs)=="character")
-    cs<-listconvert(cs)
-  if (class(idvars)=="character")
-    idvars<-listconvert(idvars)
-  if (class(noms)=="character")
-    noms<-listconvert(noms)
-  if (class(ords)=="character")
-    ords<-listconvert(ords)
-  if (class(logs)=="character")
-    logs<-listconvert(logs)
-  if (class(sqrts)=="character")
-    sqrts<-listconvert(sqrts)
-  if (class(lgstc)=="character")
-    lgstc<-listconvert(lgstc)
-  if (class(lags)=="character")
-    lags<-listconvert(lags)
-  if (class(leads)=="character")
-    leads<-listconvert(leads)
+  if (inherits(ts, "character"))
+    ts <- listconvert(ts)
+  if (inherits(cs, "character"))
+    cs <- listconvert(cs)
+  if (inherits(idvars, "character"))
+    idvars <- listconvert(idvars)
+  if (inherits(noms, "character"))
+    noms <- listconvert(noms)
+  if (inherits(ords, "character"))
+    ords <- listconvert(ords)
+  if (inherits(logs, "character"))
+    logs <- listconvert(logs)
+  if (inherits(sqrts, "character"))
+    sqrts <- listconvert(sqrts)
+  if (inherits(lgstc, "character"))
+    lgstc <- listconvert(lgstc)
+  if (inherits(lags, "character"))
+    lags <- listconvert(lags)
+  if (inherits(leads, "character"))
+    leads <- listconvert(leads)
 
-  output<-list(code=code,ts=ts,cs=cs,idvars=idvars,noms=noms,
-               ords=ords,logs=logs,sqrts=sqrts,lgstc=lgstc,
-               lags=lags,leads=leads,mess=mess)
+  output <- list(code = code, ts = ts, cs = cs, idvars = idvars, noms = noms,
+               ords = ords, logs = logs, sqrts = sqrts, lgstc = lgstc, 
+               lags = lags, leads = leads, mess = mess)
 
   if (any(is.na(output)))
-      output$code<-1
+      output$code <- 1
 
   return(output)
 }

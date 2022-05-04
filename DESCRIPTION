@@ -17,7 +17,8 @@ Imports:
     grDevices,
     graphics,
     methods,
-    stats
+    stats,
+    rlang
 LinkingTo:
     Rcpp (>= 0.11),
     RcppArmadillo
@@ -42,7 +43,7 @@ License: GPL (>= 2)
 URL: https://gking.harvard.edu/amelia
 Suggests:
   tcltk,
-  Zelig,
+  broom,
   rmarkdown,
   knitr
 VignetteBuilder:

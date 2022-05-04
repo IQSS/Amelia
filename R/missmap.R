@@ -103,7 +103,7 @@ missmap <- function(obj, vars, legend = TRUE, col, main,
 
   if (missing(y.labels)) {
     if (!is.null(csvar)) {
-      if (class(obj) == "amelia") {
+      if (inherits(obj, "amelia")) {
         cs <- obj$imputations[[1]][, csvar]
       } else {
         cs <- obj[, csvar]
@@ -116,7 +116,7 @@ missmap <- function(obj, vars, legend = TRUE, col, main,
 
       if (!is.numeric(cs)) cs <- as.numeric(as.factor(cs))
       if (!is.null(tsvar)) {
-        if (class(obj) == "amelia") {
+        if (inherits(obj, "amelia")) {
           ts <- as.numeric(obj$imputations[[1]][, tsvar])
         } else {
           ts <- as.numeric(obj[, tsvar])

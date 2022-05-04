@@ -77,11 +77,11 @@ compare.density <- function(output, var, col = c("indianred", "dodgerblue"),
   data <- remove.imputations(output)
 
   ## Checks on if the variable makes sense to plot.
-  if (class(var) == "character")
+  if (inherits(var, "character"))
     if (!(var %in% names(data)))
       stop("The variable name (var) doesn't correspond to a column in the data.")
     else
-      var <- match(var,names(data))
+      var <- match(var, names(data))
   if (any(var > ncol(data), var < 0, (var %% 1) != 0))
     stop("The 'var' option points to a non-existant column.")
   if (var %in% output$arguments$idvar)
