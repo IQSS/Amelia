@@ -380,7 +380,7 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
   }
 
   AMr1 <- is.na(x)
-  blanks <- rowSums(AMr1)==ncol(x)  
+  blanks <- which(rowSums(AMr1)==ncol(x))
   if (length(blanks)) {
     x <- x[-blanks, ]
     if (!is.null(priors)) {
