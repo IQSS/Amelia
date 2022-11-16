@@ -23,6 +23,16 @@ data set of \code{data}.
 Evaluate an R expression in the environments constructed from the
 imputed data sets of a call to \code{amelia} function.
 }
+\examples{
+data(africa)
+a.out <- amelia(x = africa, cs = "country", ts = "year", logs =
+"gdp_pc")
+
+imp.mods <- with(a.out, lm(gdp_pc ~ infl + trade))
+
+mi.combine(imp.mods, conf.int = TRUE)
+
+}
 \author{
 Matt Blackwell
 }

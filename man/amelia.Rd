@@ -312,13 +312,13 @@ or the options.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{amelia}: Run additional imputations for Amelia output
+\item \code{amelia(amelia)}: Run additional imputations for Amelia output
 
-\item \code{molist}: Perform multiple overimputation from moPrep
+\item \code{amelia(molist)}: Perform multiple overimputation from moPrep
 
-\item \code{default}: Run core Amelia algorithm
+\item \code{amelia(default)}: Run core Amelia algorithm
+
 }}
-
 \examples{
 data(africa)
 a.out <- amelia(x = africa, cs = "country", ts = "year", logs = "gdp_pc")

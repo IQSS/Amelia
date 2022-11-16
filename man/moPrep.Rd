@@ -93,11 +93,11 @@ This function generates priors for multiple overimputation of data
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{molist}: Alter existing moPrep output
+\item \code{moPrep(molist)}: Alter existing moPrep output
 
-\item \code{default}: Default call to moPrep
+\item \code{moPrep(default)}: Default call to moPrep
+
 }}
-
 \examples{
  data(africa)
  m.out <- moPrep(africa, trade ~ trade, error.proportion = 0.1)

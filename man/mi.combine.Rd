@@ -44,6 +44,16 @@ Only present if \code{conf.int = TRUE}.}
 Combine results from statistical models run on multiply imputed
 data sets using the so-called Rubin rules.
 }
+\examples{
+data(africa)
+a.out <- amelia(x = africa, cs = "country", ts = "year", logs =
+"gdp_pc")
+
+imp.mods <- with(a.out, lm(gdp_pc ~ infl + trade))
+
+mi.combine(imp.mods, conf.int = TRUE)
+
+}
 \author{
 Matt Blackwell
 }
