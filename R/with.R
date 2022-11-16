@@ -11,6 +11,16 @@
 ##' contains the output of the expression as evaluated in each imputed
 ##' data set of \code{data}. 
 ##' @author Matt Blackwell
+##'
+##' @examples 
+##' data(africa)
+##' a.out <- amelia(x = africa, cs = "country", ts = "year", logs =
+##' "gdp_pc")
+##'
+##' imp.mods <- with(a.out, lm(gdp_pc ~ infl + trade))
+##'
+##' mi.combine(imp.mods, conf.int = TRUE)
+##' 
 ##' @export 
 with.amelia <- function(data, expr, ...) {
   expr <- rlang::enquo(expr)

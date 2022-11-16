@@ -380,11 +380,9 @@ amsubset<-function(x,idvars,p2s,ts,cs,priors=NULL,
   }
 
   AMr1 <- is.na(x)
-  flag <- rowSums(AMr1)==ncol(x)
-
-  if (max(flag) == 1){
-    blanks <- which(flag)
-    x <- x[!flag,]
+  blanks <- rowSums(AMr1)==ncol(x)  
+  if (length(blanks)) {
+    x <- x[-blanks, ]
     if (!is.null(priors)) {
       priors <- priors[!(priors[,1] %in% blanks),]
       if (length(blanks) == 1) {
