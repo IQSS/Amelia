@@ -86,7 +86,7 @@ SEXP emcore(SEXP xs, SEXP AMr1s, SEXP os, SEXP ms, SEXP ivec, SEXP thetas, SEXP 
 
   if (p2s > 0) Rcpp::Rcout << std::endl;
   //Rcpp::Rcout << "Starting loop. "  << std::endl;
-while ( ( (cvalue > 0) | (count < emburn(0)) )  & ( (count < emburn(1)) | (emburn(1) < 1))) {
+while ( ( (cvalue > 0) || (count < emburn(0)) )  && ( (count < emburn(1)) || (emburn(1) < 1))) {
     count++;
     hmcv.zeros(k,k);
     music.zeros(k);
