@@ -74,7 +74,7 @@
 
       
 
-      </header><script src="using-amelia_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Using Amelia</h1>
@@ -91,7 +91,10 @@
 <div class="section level2">
 <h2 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a>
 </h2>
-<p>We now demonstrate how to use Amelia using data from <span class="citation">Milner and Kubota (<a href="#ref-MilKub05" role="doc-biblioref">2005</a>)</span> which studies the effect of democracy on trade policy. For the purposes of this user’s guide, we will use a subset restricted to nine developing countries in Asia from 1980 to 1999<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. This dataset includes 9 variables:</p>
+<p>We now demonstrate how to use Amelia using data from <span class="citation">Milner and Kubota (<a href="#ref-MilKub05" role="doc-biblioref">2005</a>)</span> which studies the effect of
+democracy on trade policy. For the purposes of this user’s guide, we
+will use a subset restricted to nine developing countries in Asia from
+1980 to 1999<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. This dataset includes 9 variables:</p>
 <table class="table">
 <thead><tr class="header">
 <th align="left">Variable</th>
@@ -129,7 +132,8 @@
 </tr>
 <tr class="even">
 <td align="left"><code>signed</code></td>
-<td align="left">dummy variable if signed an IMF agreement that year</td>
+<td align="left">dummy variable if signed an IMF agreement that
+year</td>
 </tr>
 <tr class="odd">
 <td align="left"><code>fivop</code></td>
@@ -142,7 +146,9 @@
 </tr>
 </tbody>
 </table>
-<p>These variables correspond to the variables used in the analysis model of <span class="citation">Milner and Kubota (<a href="#ref-MilKub05" role="doc-biblioref">2005</a>)</span> in table 2.</p>
+<p>These variables correspond to the variables used in the analysis
+model of <span class="citation">Milner and Kubota (<a href="#ref-MilKub05" role="doc-biblioref">2005</a>)</span> in table
+2.</p>
 <p>We first load the Amelia and the data:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gking.harvard.edu/amelia" class="external-link">Amelia</a></span><span class="op">)</span></span></code></pre></div>
@@ -155,7 +161,8 @@
 <span><span class="co">## ##</span></span></code></pre>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">freetrade</span><span class="op">)</span></span></code></pre></div>
-<p>We can check the summary statistics of the data to see that there is missingness on many of the variables:</p>
+<p>We can check the summary statistics of the data to see that there is
+missingness on many of the variables:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">freetrade</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##       year        country              tariff          polity    </span></span>
@@ -182,7 +189,10 @@
 <span><span class="co">##  3rd Qu.:13.2   3rd Qu.:0.289  </span></span>
 <span><span class="co">##  Max.   :13.2   Max.   :0.308  </span></span>
 <span><span class="co">##  NA's   :18</span></span></code></pre>
-<p>In the presence of missing data, most statistical packages use <em>listwise deletion</em>, which removes any row that contains a missing value from the analysis. Using the base model of <span class="citation">Milner and Kubota (<a href="#ref-MilKub05" role="doc-biblioref">2005</a>)</span> Table 2, we run a simple linear model in R, which uses listwise deletion:</p>
+<p>In the presence of missing data, most statistical packages use
+<em>listwise deletion</em>, which removes any row that contains a
+missing value from the analysis. Using the base model of <span class="citation">Milner and Kubota (<a href="#ref-MilKub05" role="doc-biblioref">2005</a>)</span> Table 2, we run a simple linear
+model in R, which uses listwise deletion:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">tariff</span> <span class="op">~</span> <span class="va">polity</span> <span class="op">+</span> <span class="va">pop</span> <span class="op">+</span> <span class="va">gdp.pc</span> <span class="op">+</span> <span class="va">year</span> <span class="op">+</span> <span class="va">country</span>,</span>
 <span>          data <span class="op">=</span> <span class="va">freetrade</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -215,13 +225,34 @@
 <span><span class="co">##   (60 observations deleted due to missingness)</span></span>
 <span><span class="co">## Multiple R-squared:  0.925,  Adjusted R-squared:  0.915 </span></span>
 <span><span class="co">## F-statistic:  100 on 12 and 98 DF,  p-value: &lt;2e-16</span></span></code></pre>
-<p>Note that 60 of the 171 original observations are deleted due to missingness. These observations, however, are partially observed, and contain valuable information about the relationships between those variables which are present in the partially completed observations. Multiple imputation will help us retrieve that information and make better, more efficient, inferences.</p>
+<p>Note that 60 of the 171 original observations are deleted due to
+missingness. These observations, however, are partially observed, and
+contain valuable information about the relationships between those
+variables which are present in the partially completed observations.
+Multiple imputation will help us retrieve that information and make
+better, more efficient, inferences.</p>
 </div>
 <div class="section level2">
 <h2 id="multiple-imputation">Multiple Imputation<a class="anchor" aria-label="anchor" href="#multiple-imputation"></a>
 </h2>
-<p>When performing multiple imputation, the first step is to identify the variables to include in the imputation model. It is crucial to include at least as much information as will be used in the analysis model. That is, any variable that will be in the analysis model should also be in the imputation model. This includes any transformations or interactions of variables that will appear in the analysis model.</p>
-<p>In fact, it is often useful to add more information to the imputation model than will be present when the analysis is run. Since imputation is predictive, any variables that would increase predictive power should be included in the model, even if including them in the analysis model would produce bias in estimating a causal effect (such as for post-treatment variables) or collinearity would preclude determining which variable had a relationship with the dependent variable (such as including multiple alternate measures of GDP). In our case, we include all the variables in <code>freetrade</code> in the imputation model, even though our analysis model focuses on <code>polity</code>, <code>pop</code> and <code>gdp.pc</code>. We’re not incorporating time or spatial data yet, but we do below.</p>
+<p>When performing multiple imputation, the first step is to identify
+the variables to include in the imputation model. It is crucial to
+include at least as much information as will be used in the analysis
+model. That is, any variable that will be in the analysis model should
+also be in the imputation model. This includes any transformations or
+interactions of variables that will appear in the analysis model.</p>
+<p>In fact, it is often useful to add more information to the imputation
+model than will be present when the analysis is run. Since imputation is
+predictive, any variables that would increase predictive power should be
+included in the model, even if including them in the analysis model
+would produce bias in estimating a causal effect (such as for
+post-treatment variables) or collinearity would preclude determining
+which variable had a relationship with the dependent variable (such as
+including multiple alternate measures of GDP). In our case, we include
+all the variables in <code>freetrade</code> in the imputation model,
+even though our analysis model focuses on <code>polity</code>,
+<code>pop</code> and <code>gdp.pc</code>. We’re not incorporating time
+or spatial data yet, but we do below.</p>
 <p>To create multiple imputations in Amelia, we can simply run</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">a.out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/amelia.html">amelia</a></span><span class="op">(</span><span class="va">freetrade</span>, m <span class="op">=</span> <span class="fl">5</span>, ts <span class="op">=</span> <span class="st">"year"</span>, cs <span class="op">=</span> <span class="st">"country"</span><span class="op">)</span></span></code></pre></div>
@@ -258,38 +289,70 @@
 <span><span class="co">## Imputation 3:  16</span></span>
 <span><span class="co">## Imputation 4:  15</span></span>
 <span><span class="co">## Imputation 5:  18</span></span></code></pre>
-<p>Note that our example dataset is deliberately small both in variables and in cross-sectional elements. Typical datasets may often have hundreds or possibly a couple thousand steps to the EM algorithm. Long chains should remind the analyst to consider whether transformations of the variables would more closely fit the multivariate normal assumptions of the model (correct but omitted transformations will shorten the number of steps and improve the fit of the imputations), but do not necessarily denote problems with the imputation model.</p>
-<p>The output gives some information about how the algorithm ran. Each of the imputed datasets is now in the list <code>a.out$imputations</code>. Thus, we could plot a histogram of the <code>tariff</code> variable from the 3rd imputation,</p>
+<p>Note that our example dataset is deliberately small both in variables
+and in cross-sectional elements. Typical datasets may often have
+hundreds or possibly a couple thousand steps to the EM algorithm. Long
+chains should remind the analyst to consider whether transformations of
+the variables would more closely fit the multivariate normal assumptions
+of the model (correct but omitted transformations will shorten the
+number of steps and improve the fit of the imputations), but do not
+necessarily denote problems with the imputation model.</p>
+<p>The output gives some information about how the algorithm ran. Each
+of the imputed datasets is now in the list
+<code>a.out$imputations</code>. Thus, we could plot a histogram of the
+<code>tariff</code> variable from the 3rd imputation,</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">a.out</span><span class="op">$</span><span class="va">imputations</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">tariff</span>, col <span class="op">=</span> <span class="st">"grey"</span>, border <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="using-amelia_files/figure-html/unnamed-chunk-1-1.png" width="480" style="display: block; margin: auto;"></p>
 <div class="section level3">
 <h3 id="saving-imputed-datasets">Saving imputed datasets<a class="anchor" aria-label="anchor" href="#saving-imputed-datasets"></a>
 </h3>
-<p>If you need to save your imputed datasets, one direct method is to save the output list from <code>amelia</code>,</p>
+<p>If you need to save your imputed datasets, one direct method is to
+save the output list from <code>amelia</code>,</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/save.html" class="external-link">save</a></span><span class="op">(</span><span class="va">a.out</span>, file <span class="op">=</span> <span class="st">"imputations.RData"</span><span class="op">)</span></span></code></pre></div>
-<p>As in the previous example, the ith imputed datasets can be retrieved from this list as <code>a.out$imputations[[i]]</code>.</p>
-<p>In addition, you can save each of the imputed datasets to its own file using the <code><a href="../reference/write.amelia.html">write.amelia()</a></code> command,</p>
+<p>As in the previous example, the ith imputed datasets can be retrieved
+from this list as <code>a.out$imputations[[i]]</code>.</p>
+<p>In addition, you can save each of the imputed datasets to its own
+file using the <code><a href="../reference/write.amelia.html">write.amelia()</a></code> command,</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/write.amelia.html">write.amelia</a></span><span class="op">(</span>obj <span class="op">=</span> <span class="va">a.out</span>, file.stem <span class="op">=</span> <span class="st">"outdata"</span><span class="op">)</span></span></code></pre></div>
-<p>This will create one comma-separated value file for each imputed dataset in the following manner:</p>
+<p>This will create one comma-separated value file for each imputed
+dataset in the following manner:</p>
 <pre><code><span><span class="va">outdata1.csv</span></span>
 <span><span class="va">outdata2.csv</span></span>
 <span><span class="va">outdata3.csv</span></span>
 <span><span class="va">outdata4.csv</span></span>
 <span><span class="va">outdata5.csv</span></span></code></pre>
-<p>The <code>write.amelia</code> function can also save files in tab-delimited and Stata (<code>.dta</code>) file formats. For instance, to save Stata files, simply change the <code>format</code> argument to <code>"dta"</code>,</p>
+<p>The <code>write.amelia</code> function can also save files in
+tab-delimited and Stata (<code>.dta</code>) file formats. For instance,
+to save Stata files, simply change the <code>format</code> argument to
+<code>"dta"</code>,</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/write.amelia.html">write.amelia</a></span><span class="op">(</span>obj <span class="op">=</span> <span class="va">a.out</span>, file.stem <span class="op">=</span> <span class="st">"outdata"</span>, format <span class="op">=</span> <span class="st">"dta"</span><span class="op">)</span></span></code></pre></div>
-<p>Additionally, <code><a href="../reference/write.amelia.html">write.amelia()</a></code> can create a “stacked” version of the imputed dataset which stacks each imputed dataset on top of one another. This can be done by setting the  argument to <code>FALSE</code>. The resulting matrix is of size <span class="math inline">\((N \cdot m) \times p\)</span> if the original dataset is excluded (<code>orig.data = FALSE</code>) and of size <span class="math inline">\((N \cdot (m+1))\times p\)</span> if it is included (<code>orig.data = TRUE</code>). The stacked dataset will include a variable (set with <code>impvar</code>) that indicates to which imputed dataset the observation belongs.</p>
+<p>Additionally, <code><a href="../reference/write.amelia.html">write.amelia()</a></code> can create a “stacked”
+version of the imputed dataset which stacks each imputed dataset on top
+of one another. This can be done by setting the argument to
+<code>FALSE</code>. The resulting matrix is of size <span class="math inline">\((N \cdot m) \times p\)</span> if the original
+dataset is excluded (<code>orig.data = FALSE</code>) and of size <span class="math inline">\((N \cdot (m+1))\times p\)</span> if it is included
+(<code>orig.data = TRUE</code>). The stacked dataset will include a
+variable (set with <code>impvar</code>) that indicates to which imputed
+dataset the observation belongs.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="combining-multiple-calls-to-amelia">Combining multiple calls to <code>amelia()</code><a class="anchor" aria-label="anchor" href="#combining-multiple-calls-to-amelia"></a>
 </h2>
-<p>The EMB algorithm is what computer scientists call <em>embarrassingly parallel</em>, meaning that it is simple to separate each imputation into parallel processes. With Amelia it is simple to run subsets of the imputations on different machines and then combine them after the imputation for use in analysis model. This allows for a huge increase in the speed of the algorithm.</p>
-<p>Output lists from different Amelia runs can be combined together into a new list. For instance, suppose that we wanted to add another ten imputed datasets to our earlier call to <code><a href="../reference/amelia.html">amelia()</a></code>. First, run the function to get these additional imputations,</p>
+<p>The EMB algorithm is what computer scientists call <em>embarrassingly
+parallel</em>, meaning that it is simple to separate each imputation
+into parallel processes. With Amelia it is simple to run subsets of the
+imputations on different machines and then combine them after the
+imputation for use in analysis model. This allows for a huge increase in
+the speed of the algorithm.</p>
+<p>Output lists from different Amelia runs can be combined together into
+a new list. For instance, suppose that we wanted to add another ten
+imputed datasets to our earlier call to <code><a href="../reference/amelia.html">amelia()</a></code>. First,
+run the function to get these additional imputations,</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">a.out.more</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/amelia.html">amelia</a></span><span class="op">(</span><span class="va">freetrade</span>, m <span class="op">=</span> <span class="fl">10</span>, ts <span class="op">=</span> <span class="st">"year"</span>, cs <span class="op">=</span> <span class="st">"country"</span>, p2s <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span><span class="va">a.out.more</span></span></code></pre></div>
@@ -310,7 +373,8 @@
 <span><span class="co">## Imputation 8:  14</span></span>
 <span><span class="co">## Imputation 9:  20</span></span>
 <span><span class="co">## Imputation 10:  9</span></span></code></pre>
-<p>then combine this output with our original output using the <code><a href="../reference/ameliabind.html">ameliabind()</a></code> function,</p>
+<p>then combine this output with our original output using the
+<code><a href="../reference/ameliabind.html">ameliabind()</a></code> function,</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">a.out.more</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ameliabind.html">ameliabind</a></span><span class="op">(</span><span class="va">a.out</span>, <span class="va">a.out.more</span><span class="op">)</span></span>
 <span><span class="va">a.out.more</span></span></code></pre></div>
@@ -336,8 +400,24 @@
 <span><span class="co">## Imputation 13:  14</span></span>
 <span><span class="co">## Imputation 14:  20</span></span>
 <span><span class="co">## Imputation 15:  9</span></span></code></pre>
-<p>This function binds the two outputs into the same output so that you can pass the combined imputations easily to analysis models and diagnostics. Note that <code>a.out.more</code> now has a total of 15 imputations.</p>
-<p>A simple way to execute a parallel processing scheme with Amelia would be to run <code><a href="../reference/amelia.html">amelia()</a></code> with <code>m</code> set to 1 on <span class="math inline">\(m\)</span> different machines or processors, save each output using the <code><a href="https://rdrr.io/r/base/save.html" class="external-link">save()</a></code> function, load them all on the same R session using <code><a href="https://rdrr.io/r/base/load.html" class="external-link">load()</a></code> command and then combine them using <code><a href="../reference/ameliabind.html">ameliabind()</a></code>. In order to do this, however, make sure to name each of the outputs a different name so that they do not overwrite each other when loading into the same R session. Also, some parallel environments will dump all generated files into a common directory, where they may overwrite each other. If it is convenient in a parallel environment to run a large number of <code><a href="../reference/amelia.html">amelia()</a></code> calls from a single piece of code, one useful way to avoid overwriting is to create the <code>file.stem</code> with a random suffix. For example:</p>
+<p>This function binds the two outputs into the same output so that you
+can pass the combined imputations easily to analysis models and
+diagnostics. Note that <code>a.out.more</code> now has a total of 15
+imputations.</p>
+<p>A simple way to execute a parallel processing scheme with Amelia
+would be to run <code><a href="../reference/amelia.html">amelia()</a></code> with <code>m</code> set to 1 on
+<span class="math inline">\(m\)</span> different machines or processors,
+save each output using the <code><a href="https://rdrr.io/r/base/save.html" class="external-link">save()</a></code> function, load them all
+on the same R session using <code><a href="https://rdrr.io/r/base/load.html" class="external-link">load()</a></code> command and then combine
+them using <code><a href="../reference/ameliabind.html">ameliabind()</a></code>. In order to do this, however, make
+sure to name each of the outputs a different name so that they do not
+overwrite each other when loading into the same R session. Also, some
+parallel environments will dump all generated files into a common
+directory, where they may overwrite each other. If it is convenient in a
+parallel environment to run a large number of <code><a href="../reference/amelia.html">amelia()</a></code>
+calls from a single piece of code, one useful way to avoid overwriting
+is to create the <code>file.stem</code> with a random suffix. For
+example:</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">1</span>, min <span class="op">=</span> <span class="fl">1111</span>, max <span class="op">=</span> <span class="fl">9999</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">random.name</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"am"</span>, <span class="va">b</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
@@ -345,7 +425,28 @@
 <div class="section level3">
 <h3 id="screen-output">Screen output<a class="anchor" aria-label="anchor" href="#screen-output"></a>
 </h3>
-<p>Screen output can be adjusted with the “print to screen” argument, <code>p2s</code>. At a value of 0, no screen printing will occur. This may be useful in large jobs or simulations where a very large number of imputation models may be required. The default value of 1, lists each bootstrap, and displays the number of iterations required to reach convergence in that bootstrapped dataset. The value of 2 gives more thorough screen output, including, at each iteration, the number of parameters that have significantly changed since the last iteration. This may be useful when the EM chain length is very long, as it can provide an intuition for many parameters still need to converge in the EM chain, and a sense of the time remaining. However, it is worth noting that the last several parameters can often take a significant fraction of the total number of iterations to converge. Setting <code>p2s</code> to 2 will also generate information on how EM algorithm is behaving, such as a <code>!</code> when the current estimated complete data covariance matrix is not invertible and a <code>*</code> when the likelihood has not monotonically increased in that step. Having many of these two symbols in the screen output is an indication of a problematic imputation model. Problems of non-invertible matrices often mean that current guess for the covariance matrix is singular. This is a sign that there may be two highly correlated variables in the model. One way to resolve is to use a ridge prior (see @ref(sec_prior)).</p>
+<p>Screen output can be adjusted with the “print to screen” argument,
+<code>p2s</code>. At a value of 0, no screen printing will occur. This
+may be useful in large jobs or simulations where a very large number of
+imputation models may be required. The default value of 1, lists each
+bootstrap, and displays the number of iterations required to reach
+convergence in that bootstrapped dataset. The value of 2 gives more
+thorough screen output, including, at each iteration, the number of
+parameters that have significantly changed since the last iteration.
+This may be useful when the EM chain length is very long, as it can
+provide an intuition for many parameters still need to converge in the
+EM chain, and a sense of the time remaining. However, it is worth noting
+that the last several parameters can often take a significant fraction
+of the total number of iterations to converge. Setting <code>p2s</code>
+to 2 will also generate information on how EM algorithm is behaving,
+such as a <code>!</code> when the current estimated complete data
+covariance matrix is not invertible and a <code>*</code> when the
+likelihood has not monotonically increased in that step. Having many of
+these two symbols in the screen output is an indication of a problematic
+imputation model. Problems of non-invertible matrices often mean that
+current guess for the covariance matrix is singular. This is a sign that
+there may be two highly correlated variables in the model. One way to
+resolve is to use a ridge prior (see @ref(sec_prior)).</p>
 <p>An example of the output when <code>p2s</code> is 2 would be</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">a.out.p2s</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/amelia.html">amelia</a></span><span class="op">(</span><span class="va">freetrade</span>, m <span class="op">=</span> <span class="fl">1</span>, ts <span class="op">=</span> <span class="st">"year"</span>, cs <span class="op">=</span> <span class="st">"country"</span>, p2s <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
@@ -365,20 +466,95 @@
 <div class="section level2">
 <h2 id="sec:parallel">Parallel Imputation<a class="anchor" aria-label="anchor" href="#sec:parallel"></a>
 </h2>
-<p>Each imputation in the above EMB algorithm is completely independent of any other imputation, a property called embarrassingly parallel. This type of approach can take advantage of the multiple-core infrastructure of modern CPUs. Each core in a multi-core processor can execute independent operations in parallel. Amelia can utilize this parallel processing internally via the <code>parallel</code> and the <code>ncpus</code> arguments. The <code>parallel</code> argument sets the parallel processing backend, either with <code>"multicore"</code> or <code>"snow"</code> (or <code>"no"</code> for no parallel processing). The <code>"multicore"</code> backend is not available on Windows systems, but tends to be quicker at parallel processing. On a Windows system, the <code>"snow"</code> backend provides parallel processing through a cluster of worker processes across the CPUs. You can set the default for this argument using the <code>"amelia.parallel"</code> option. This allows you to run Amelia in parallel as the default for an entire R session without setting arguments in the <code><a href="../reference/amelia.html">amelia()</a></code> call.</p>
-<p>For each of the parallel backends, Amelia requires a number of CPUs to use in parallel. This can be set using the <code>ncpus</code> argument. It can be higher than the number of physical cores in the system if hyperthreading or other technologies are available. You can use the <code><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">parallel::detectCores()</a></code> function to determine how many cores are available on your machine. The default for this argument can be set using the <code>"amelia.ncpus"</code> option.</p>
-<p>On Unix-alike systems (such as macOS and Linux distributions), the <code>"multicore"</code> backend automatically sets up and stops the parallel workers by forking the process. On Windows, the <code>"snow"</code> backend requires more attention. Amelia will attempt to create a parallel cluster of worker processes (since Windows systems cannot fork a process) and will stop this cluster after the imputations are complete. Alternatively, Amelia also has a <code>cl</code> argument, which accepts a predefined cluster made using the <code><a href="https://rdrr.io/r/parallel/makeCluster.html" class="external-link">parallel::makePSOCKcluster()</a></code>. For more information about parallel processing in R, see the documentation for the <code>parallel</code> package that ships along with R or the CRAN Task View on <a href="https://cran.r-project.org/view=HighPerformanceComputing" class="external-link">Parallel Computing with R</a></p>
+<p>Each imputation in the above EMB algorithm is completely independent
+of any other imputation, a property called embarrassingly parallel. This
+type of approach can take advantage of the multiple-core infrastructure
+of modern CPUs. Each core in a multi-core processor can execute
+independent operations in parallel. Amelia can utilize this parallel
+processing internally via the <code>parallel</code> and the
+<code>ncpus</code> arguments. The <code>parallel</code> argument sets
+the parallel processing backend, either with <code>"multicore"</code> or
+<code>"snow"</code> (or <code>"no"</code> for no parallel processing).
+The <code>"multicore"</code> backend is not available on Windows
+systems, but tends to be quicker at parallel processing. On a Windows
+system, the <code>"snow"</code> backend provides parallel processing
+through a cluster of worker processes across the CPUs. You can set the
+default for this argument using the <code>"amelia.parallel"</code>
+option. This allows you to run Amelia in parallel as the default for an
+entire R session without setting arguments in the <code><a href="../reference/amelia.html">amelia()</a></code>
+call.</p>
+<p>For each of the parallel backends, Amelia requires a number of CPUs
+to use in parallel. This can be set using the <code>ncpus</code>
+argument. It can be higher than the number of physical cores in the
+system if hyperthreading or other technologies are available. You can
+use the <code><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">parallel::detectCores()</a></code> function to determine how
+many cores are available on your machine. The default for this argument
+can be set using the <code>"amelia.ncpus"</code> option.</p>
+<p>On Unix-alike systems (such as macOS and Linux distributions), the
+<code>"multicore"</code> backend automatically sets up and stops the
+parallel workers by forking the process. On Windows, the
+<code>"snow"</code> backend requires more attention. Amelia will attempt
+to create a parallel cluster of worker processes (since Windows systems
+cannot fork a process) and will stop this cluster after the imputations
+are complete. Alternatively, Amelia also has a <code>cl</code> argument,
+which accepts a predefined cluster made using the
+<code><a href="https://rdrr.io/r/parallel/makeCluster.html" class="external-link">parallel::makePSOCKcluster()</a></code>. For more information about
+parallel processing in R, see the documentation for the
+<code>parallel</code> package that ships along with R or the CRAN Task
+View on <a href="https://cran.r-project.org/view=HighPerformanceComputing" class="external-link">Parallel
+Computing with R</a></p>
 </div>
 <div class="section level2">
 <h2 id="sec:trans">Improving Imputations via Transformations<a class="anchor" aria-label="anchor" href="#sec:trans"></a>
 </h2>
-<p>Social science data commonly includes variables that fail to fit to a multivariate normal distribution. Indeed, numerous models have been introduced specifically to deal with the problems they present. As it turns out, much evidence in the literature <span class="citation">(discussed in King et al. <a href="#ref-KinHonJos01" role="doc-biblioref">2001</a>)</span> indicates that the multivariate normal model used in Amelia usually works well for the imputation stage even when discrete or non-normal variables are included and when the analysis stage involves these limited dependent variable models. Nevertheless, Amelia includes some limited capacity to deal directly with ordinal and nominal variables and to modify variables that require other transformations. In general nominal and log transform variables should be declared to Amelia, whereas ordinal (including dichotomous) variables often need not be, as described below. (For harder cases, see <span class="citation">(Schafer <a href="#ref-Schafer97" role="doc-biblioref">1997</a>)</span>, for specialized MCMC-based imputation models for discrete variables.)</p>
-<p>Although these transformations are taken internally on these variables to better fit the data to the multivariate normal assumptions of the imputation model, all the imputations that are created will be returned in the original untransformed form of the data. If the user has already performed transformations on their data (such as by taking a log or square root prior to feeding the data to <code><a href="../reference/amelia.html">amelia()</a></code>) these do not need to be declared, as that would result in the transformation occurring <em>doubly</em> in the imputation model. The fully imputed data sets that are returned will always be in the form of the original data that is passed to the <code><a href="../reference/amelia.html">amelia()</a></code> routine.</p>
+<p>Social science data commonly includes variables that fail to fit to a
+multivariate normal distribution. Indeed, numerous models have been
+introduced specifically to deal with the problems they present. As it
+turns out, much evidence in the literature <span class="citation">(discussed in <a href="#ref-KinHonJos01" role="doc-biblioref">King et al. 2001</a>)</span> indicates that the
+multivariate normal model used in Amelia usually works well for the
+imputation stage even when discrete or non-normal variables are included
+and when the analysis stage involves these limited dependent variable
+models. Nevertheless, Amelia includes some limited capacity to deal
+directly with ordinal and nominal variables and to modify variables that
+require other transformations. In general nominal and log transform
+variables should be declared to Amelia, whereas ordinal (including
+dichotomous) variables often need not be, as described below. (For
+harder cases, see <span class="citation">(<a href="#ref-Schafer97" role="doc-biblioref">Schafer 1997</a>)</span>, for specialized
+MCMC-based imputation models for discrete variables.)</p>
+<p>Although these transformations are taken internally on these
+variables to better fit the data to the multivariate normal assumptions
+of the imputation model, all the imputations that are created will be
+returned in the original untransformed form of the data. If the user has
+already performed transformations on their data (such as by taking a log
+or square root prior to feeding the data to <code><a href="../reference/amelia.html">amelia()</a></code>) these
+do not need to be declared, as that would result in the transformation
+occurring <em>doubly</em> in the imputation model. The fully imputed
+data sets that are returned will always be in the form of the original
+data that is passed to the <code><a href="../reference/amelia.html">amelia()</a></code> routine.</p>
 <div class="section level3">
 <h3 id="sec:ord">Ordinal<a class="anchor" aria-label="anchor" href="#sec:ord"></a>
 </h3>
-<p>In much statistical research, researchers treat independent ordinal (including dichotomous) variables as if they were really continuous. If the analysis model to be employed is of this type, then nothing extra is required of the of the imputation model. Users are advised to allow Amelia to impute non-integer values for any missing data, and to use these non-integer values in their analysis. Sometimes this makes sense, and sometimes this defies intuition. One particular imputation of 2.35 for a missing value on a seven point scale carries the intuition that the respondent is between a 2 and a 3 and most probably would have responded 2 had the data been observed. This is easier to accept than an imputation of 0.79 for a dichotomous variable where a zero represents a male and a one represents a female respondent. However, in both cases the non-integer imputations carry more information about the underlying distribution than would be carried if we were to force the imputations to be integers. Thus whenever the analysis model permits, missing ordinal observations should be allowed to take on continuously valued imputations.</p>
-<p>In the <code>freetrade</code> data, one such ordinal variable is <code>polity</code> which ranges from -10 (full autocracy) to 10 (full democracy). If we tabulate this variable from one of the imputed datasets,</p>
+<p>In much statistical research, researchers treat independent ordinal
+(including dichotomous) variables as if they were really continuous. If
+the analysis model to be employed is of this type, then nothing extra is
+required of the of the imputation model. Users are advised to allow
+Amelia to impute non-integer values for any missing data, and to use
+these non-integer values in their analysis. Sometimes this makes sense,
+and sometimes this defies intuition. One particular imputation of 2.35
+for a missing value on a seven point scale carries the intuition that
+the respondent is between a 2 and a 3 and most probably would have
+responded 2 had the data been observed. This is easier to accept than an
+imputation of 0.79 for a dichotomous variable where a zero represents a
+male and a one represents a female respondent. However, in both cases
+the non-integer imputations carry more information about the underlying
+distribution than would be carried if we were to force the imputations
+to be integers. Thus whenever the analysis model permits, missing
+ordinal observations should be allowed to take on continuously valued
+imputations.</p>
+<p>In the <code>freetrade</code> data, one such ordinal variable is
+<code>polity</code> which ranges from -10 (full autocracy) to 10 (full
+democracy). If we tabulate this variable from one of the imputed
+datasets,</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">a.out</span><span class="op">$</span><span class="va">imputations</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">polity</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
@@ -392,9 +568,20 @@
 <span><span class="co">##               13                5               36               13 </span></span>
 <span><span class="co">## 9.78025479283451 </span></span>
 <span><span class="co">##                1</span></span></code></pre>
-<p>we can see that there is one imputation between -4 and -3 and one imputation between 6 and 7. Again, the interpretation of these values is rather straightforward even if they are not strictly in the coding of the original Polity data.</p>
-<p>Often, however, analysis models require some variables to be strictly ordinal, as for example, when the dependent variable will be modeled in a logistical or Poisson regression. Imputations for variables set as ordinal are created by taking the continuously valued imputation and using an appropriately scaled version of this as the probability of success in a binomial distribution. The draw from this binomial distribution is then translated back into one of the ordinal categories.</p>
-<p>For our data we can simply add <code>polity</code> to the <code>ords</code> argument:</p>
+<p>we can see that there is one imputation between -4 and -3 and one
+imputation between 6 and 7. Again, the interpretation of these values is
+rather straightforward even if they are not strictly in the coding of
+the original Polity data.</p>
+<p>Often, however, analysis models require some variables to be strictly
+ordinal, as for example, when the dependent variable will be modeled in
+a logistical or Poisson regression. Imputations for variables set as
+ordinal are created by taking the continuously valued imputation and
+using an appropriately scaled version of this as the probability of
+success in a binomial distribution. The draw from this binomial
+distribution is then translated back into one of the ordinal
+categories.</p>
+<p>For our data we can simply add <code>polity</code> to the
+<code>ords</code> argument:</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">a.out1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/amelia.html">amelia</a></span><span class="op">(</span><span class="va">freetrade</span>, m <span class="op">=</span> <span class="fl">5</span>, ts <span class="op">=</span> <span class="st">"year"</span>, cs <span class="op">=</span> <span class="st">"country"</span>, ords <span class="op">=</span></span>
 <span>                 <span class="st">"polity"</span>, p2s <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
@@ -402,12 +589,19 @@
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## -8 -7 -6 -5 -4 -2 -1  2  3  4  5  6  7  8  9 </span></span>
 <span><span class="co">##  1 22  4  8  3  9  1  7  7 15 26 13  5 36 14</span></span></code></pre>
-<p>Now, we can see that all of the imputations fall into one of the original polity categories.</p>
+<p>Now, we can see that all of the imputations fall into one of the
+original polity categories.</p>
 </div>
 <div class="section level3">
 <h3 id="sec:nom">Nominal<a class="anchor" aria-label="anchor" href="#sec:nom"></a>
 </h3>
-<p>Nominal variables<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a> must be treated quite differently than ordinal variables. Any multinomial variables in the data set (such as religion coded 1 for Catholic, 2 for Jewish, and 3 for Protestant) must be specified to Amelia. In our  dataset, we have <code>signed</code> which is 1 if a country signed an IMF agreement in that year and 0 if it did not. Of course, our first imputation did not limit the imputations to these two categories</p>
+<p>Nominal variables<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a> must be treated quite differently than
+ordinal variables. Any multinomial variables in the data set (such as
+religion coded 1 for Catholic, 2 for Jewish, and 3 for Protestant) must
+be specified to Amelia. In our dataset, we have <code>signed</code>
+which is 1 if a country signed an IMF agreement in that year and 0 if it
+did not. Of course, our first imputation did not limit the imputations
+to these two categories</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">a.out1</span><span class="op">$</span><span class="va">imputations</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">signed</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
@@ -415,8 +609,19 @@
 <span><span class="co">##                  1                  1                142                  1 </span></span>
 <span><span class="co">##                  1 </span></span>
 <span><span class="co">##                 26</span></span></code></pre>
-<p>In order to fix this for a <span class="math inline">\(p\)</span>-category multinomial variable, Amelia will determine <span class="math inline">\(p\)</span> (as long as your data contain at least one value in each category), and substitute $ p-1$ binary variables to specify each possible category. These new <span class="math inline">\(p-1\)</span> variables will be treated as the other variables in the multivariate normal imputation method chosen, and receive continuous imputations. These continuously valued imputations will then be appropriately scaled into probabilities for each of the <span class="math inline">\(p\)</span> possible categories, and one of these categories will be drawn, where upon the original <span class="math inline">\(p\)</span>-category multinomial variable will be reconstructed and returned to the user. Thus all imputations will be appropriately multinomial.</p>
-<p>For our data we can simply add <code>signed</code> to the <code>noms</code> argument:</p>
+<p>In order to fix this for a <span class="math inline">\(p\)</span>-category multinomial variable, Amelia
+will determine <span class="math inline">\(p\)</span> (as long as your
+data contain at least one value in each category), and substitute $ p-1$
+binary variables to specify each possible category. These new <span class="math inline">\(p-1\)</span> variables will be treated as the
+other variables in the multivariate normal imputation method chosen, and
+receive continuous imputations. These continuously valued imputations
+will then be appropriately scaled into probabilities for each of the
+<span class="math inline">\(p\)</span> possible categories, and one of
+these categories will be drawn, where upon the original <span class="math inline">\(p\)</span>-category multinomial variable will be
+reconstructed and returned to the user. Thus all imputations will be
+appropriately multinomial.</p>
+<p>For our data we can simply add <code>signed</code> to the
+<code>noms</code> argument:</p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">a.out2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/amelia.html">amelia</a></span><span class="op">(</span><span class="va">freetrade</span>, m <span class="op">=</span> <span class="fl">5</span>, ts <span class="op">=</span> <span class="st">"year"</span>, cs <span class="op">=</span> <span class="st">"country"</span>,</span>
 <span>                 noms <span class="op">=</span> <span class="st">"signed"</span>, p2s <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
@@ -424,14 +629,31 @@
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">##   0   1 </span></span>
 <span><span class="co">## 143  28</span></span></code></pre>
-<p>Note that Amelia can only fit imputations into categories that exist in the original data. Thus, if there was a third category of signed, say 2, that corresponded to a different kind of IMF agreement, but it never occurred in the original data, Amelia could not match imputations to it.</p>
-<p>Since Amelia properly treats a <span class="math inline">\(p\)</span>-category multinomial variable as <span class="math inline">\(p-1\)</span> variables, one should understand the number of parameters that are quickly accumulating if many multinomial variables are being used. If the square of the number of real and constructed variables is large relative to the number of observations, it is useful to use a ridge prior as in section @ref(sec_prior).</p>
+<p>Note that Amelia can only fit imputations into categories that exist
+in the original data. Thus, if there was a third category of signed, say
+2, that corresponded to a different kind of IMF agreement, but it never
+occurred in the original data, Amelia could not match imputations to
+it.</p>
+<p>Since Amelia properly treats a <span class="math inline">\(p\)</span>-category multinomial variable as <span class="math inline">\(p-1\)</span> variables, one should understand the
+number of parameters that are quickly accumulating if many multinomial
+variables are being used. If the square of the number of real and
+constructed variables is large relative to the number of observations,
+it is useful to use a ridge prior as in section @ref(sec_prior).</p>
 </div>
 <div class="section level3">
 <h3 id="sec:log">Natural log<a class="anchor" aria-label="anchor" href="#sec:log"></a>
 </h3>
-<p>If one of your variables is heavily skewed or has outliers that may alter the imputation in an unwanted way, you can use a natural logarithm transformation of that variable in order to normalize its distribution. This transformed distribution helps Amelia to avoid imputing values that depend too heavily on outlying data points. Log transformations are common in expenditure and economic variables where we have strong beliefs that the marginal relationship between two variables decreases as we move across the range.</p>
-<p>For instance, we can show the <code>tariff</code> variable clearly has positive (or, right) skew while its natural log transformation has a roughly normal distribution.</p>
+<p>If one of your variables is heavily skewed or has outliers that may
+alter the imputation in an unwanted way, you can use a natural logarithm
+transformation of that variable in order to normalize its distribution.
+This transformed distribution helps Amelia to avoid imputing values that
+depend too heavily on outlying data points. Log transformations are
+common in expenditure and economic variables where we have strong
+beliefs that the marginal relationship between two variables decreases
+as we move across the range.</p>
+<p>For instance, we can show the <code>tariff</code> variable clearly
+has positive (or, right) skew while its natural log transformation has a
+roughly normal distribution.</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">freetrade</span><span class="op">$</span><span class="va">tariff</span>, col<span class="op">=</span><span class="st">"grey"</span>, border<span class="op">=</span><span class="st">"white"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="using-amelia_files/figure-html/tarrif_hist-1.png" width="480" style="display: block; margin: auto;"></p>
@@ -442,19 +664,36 @@
 <div class="section level3">
 <h3 id="sec:sqrt">Square root<a class="anchor" aria-label="anchor" href="#sec:sqrt"></a>
 </h3>
-<p>Event count data is often heavily skewed and has nonlinear relationships with other variables. One common transformation to tailor the linear model to count data is to take the square roots of the counts. This is a transformation that can be set as an option in Amelia.</p>
+<p>Event count data is often heavily skewed and has nonlinear
+relationships with other variables. One common transformation to tailor
+the linear model to count data is to take the square roots of the
+counts. This is a transformation that can be set as an option in
+Amelia.</p>
 </div>
 <div class="section level3">
 <h3 id="sec:lgstc">Logistic<a class="anchor" aria-label="anchor" href="#sec:lgstc"></a>
 </h3>
-<p>Proportional data is sharply bounded between 0 and 1. A logistic transformation is one possible option in Amelia to make the distribution symmetric and relatively unbounded.</p>
+<p>Proportional data is sharply bounded between 0 and 1. A logistic
+transformation is one possible option in Amelia to make the distribution
+symmetric and relatively unbounded.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="sec:idvars">Identification Variables<a class="anchor" aria-label="anchor" href="#sec:idvars"></a>
 </h2>
-<p>Datasets often contain identification variables, such as country names, respondent numbers, or other identification numbers, codes or abbreviations. Sometimes these are text and sometimes these are numeric. Often it is not appropriate to include these variables in the imputation model, but it is useful to have them remain in the imputed datasets (However, there are models that would include the ID variables in the imputation model, such as fixed effects model for data with repeated observations of the same countries). Identification variables which are not to be included in the imputation model can be identified with the argument <code>idvars</code>. These variables will not be used in the imputation model, but will be kept in the imputed datasets.</p>
-<p>If the <code>year</code> and <code>country</code> contained no information except labels, we could omit them from the imputation:</p>
+<p>Datasets often contain identification variables, such as country
+names, respondent numbers, or other identification numbers, codes or
+abbreviations. Sometimes these are text and sometimes these are numeric.
+Often it is not appropriate to include these variables in the imputation
+model, but it is useful to have them remain in the imputed datasets
+(However, there are models that would include the ID variables in the
+imputation model, such as fixed effects model for data with repeated
+observations of the same countries). Identification variables which are
+not to be included in the imputation model can be identified with the
+argument <code>idvars</code>. These variables will not be used in the
+imputation model, but will be kept in the imputed datasets.</p>
+<p>If the <code>year</code> and <code>country</code> contained no
+information except labels, we could omit them from the imputation:</p>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/amelia.html">amelia</a></span><span class="op">(</span><span class="va">freetrade</span>, idvars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"year"</span>, <span class="st">"country"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## -- Imputation 1 --</span></span>
@@ -488,7 +727,11 @@
 <span><span class="co">## Imputation 3:  14</span></span>
 <span><span class="co">## Imputation 4:  17</span></span>
 <span><span class="co">## Imputation 5:  15</span></span></code></pre>
-<p>Note that Amelia will return with an error if your dataset contains a factor or character variable that is not marked as a nominal or identification variable. Thus, if we were to omit the factor <code>country</code> from the <code>cs</code> or <code>idvars</code> arguments, we would receive an error:</p>
+<p>Note that Amelia will return with an error if your dataset contains a
+factor or character variable that is not marked as a nominal or
+identification variable. Thus, if we were to omit the factor
+<code>country</code> from the <code>cs</code> or <code>idvars</code>
+arguments, we would receive an error:</p>
 <div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">a.out2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/amelia.html">amelia</a></span><span class="op">(</span><span class="va">freetrade</span>, idvars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"year"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Amelia Error Code:  38 </span></span>
@@ -498,27 +741,66 @@
 <span><span class="co">## from the imputation model or as an ordinal or nominal</span></span>
 <span><span class="co">## variable to be imputed.  Please set it as either and</span></span>
 <span><span class="co">## try again.</span></span></code></pre>
-<p>In order to conserve memory, it is wise to remove unnecessary variables from a data set before loading it into Amelia. The only variables you should include in your data when running Amelia are variables you will use in the analysis stage and those variables that will help in the imputation model. While it may be tempting to simply mark unneeded variables as IDs, it only serves to waste memory and slow down the imputation procedure.</p>
+<p>In order to conserve memory, it is wise to remove unnecessary
+variables from a data set before loading it into Amelia. The only
+variables you should include in your data when running Amelia are
+variables you will use in the analysis stage and those variables that
+will help in the imputation model. While it may be tempting to simply
+mark unneeded variables as IDs, it only serves to waste memory and slow
+down the imputation procedure.</p>
 </div>
 <div class="section level2">
 <h2 id="sec:tscs">Time Series, or Time Series Cross Sectional Data<a class="anchor" aria-label="anchor" href="#sec:tscs"></a>
 </h2>
-<p>Many variables that are recorded over time within a cross-sectional unit are observed to vary smoothly over time. In such cases, knowing the observed values of observations close in time to any missing value may enormously aid the imputation of that value. However, the exact pattern may vary over time within any cross-section. There may be periods of growth, stability, or decline; in each of which the observed values would be used in a different fashion to impute missing values. Also, these patterns may vary enormously across different cross-sections, or may exist in some and not others. Amelia can build a general model of patterns within variables across time by creating a sequence of polynomials of the time index. If, for example, tariffs vary smoothly over time, then we make the modeling assumption that there exists some polynomial that describes the economy in cross-sectional unit <span class="math inline">\(i\)</span> at time <span class="math inline">\(t\)</span> as:</p>
+<p>Many variables that are recorded over time within a cross-sectional
+unit are observed to vary smoothly over time. In such cases, knowing the
+observed values of observations close in time to any missing value may
+enormously aid the imputation of that value. However, the exact pattern
+may vary over time within any cross-section. There may be periods of
+growth, stability, or decline; in each of which the observed values
+would be used in a different fashion to impute missing values. Also,
+these patterns may vary enormously across different cross-sections, or
+may exist in some and not others. Amelia can build a general model of
+patterns within variables across time by creating a sequence of
+polynomials of the time index. If, for example, tariffs vary smoothly
+over time, then we make the modeling assumption that there exists some
+polynomial that describes the economy in cross-sectional unit <span class="math inline">\(i\)</span> at time <span class="math inline">\(t\)</span> as:</p>
 <p><span class="math display">\[
-\textrm{tariff}_{ti} = \beta_0 + \beta_1 t + \beta_1 t^2 + \beta_1 t^3 \ldots
+\textrm{tariff}_{ti} = \beta_0 + \beta_1 t + \beta_1 t^2 + \beta_1 t^3
+\ldots
 \]</span></p>
-<p>And thus if we include enough higher order terms of time then the pattern between observed values of the tariff rate can be estimated. Amelia will create polynomials of time up to the user defined <span class="math inline">\(k\)</span>-th order, (<span class="math inline">\(k\leq3\)</span>).</p>
-<p>We can implement this with the <code>ts</code> and <code>polytime</code> arguments. If we thought that a second-order polynomial would help predict we could run</p>
+<p>And thus if we include enough higher order terms of time then the
+pattern between observed values of the tariff rate can be estimated.
+Amelia will create polynomials of time up to the user defined <span class="math inline">\(k\)</span>-th order, (<span class="math inline">\(k\leq3\)</span>).</p>
+<p>We can implement this with the <code>ts</code> and
+<code>polytime</code> arguments. If we thought that a second-order
+polynomial would help predict we could run</p>
 <div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">a.out2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/amelia.html">amelia</a></span><span class="op">(</span><span class="va">freetrade</span>, ts <span class="op">=</span> <span class="st">"year"</span>, cs <span class="op">=</span> <span class="st">"country"</span>, polytime <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p>With this input, Amelia will add covariates to the model that correspond to time and its polynomials. These covariates will help better predict the missing values.</p>
-<p>If cross-sectional units are specified these polynomials can be interacted with the cross-section unit to allow the patterns over time to vary between cross-sectional units. Unless you strongly believe all units have the same patterns over time in all variables (including the same constant term), this is a reasonable setting. When <span class="math inline">\(k\)</span> is set to 0, this interaction simply results in a model of <em>fixed effects</em> where every unit has a uniquely estimated constant term. Amelia does not smooth the observed data, and only uses this functional form, or one you choose, with all the other variables in the analysis and the uncertainty of the prediction, to impute the missing values.</p>
-<p>In order to impute with trends specific to each cross-sectional unit, we can set <code>intercs</code> to <code>TRUE</code>:</p>
+<p>With this input, Amelia will add covariates to the model that
+correspond to time and its polynomials. These covariates will help
+better predict the missing values.</p>
+<p>If cross-sectional units are specified these polynomials can be
+interacted with the cross-section unit to allow the patterns over time
+to vary between cross-sectional units. Unless you strongly believe all
+units have the same patterns over time in all variables (including the
+same constant term), this is a reasonable setting. When <span class="math inline">\(k\)</span> is set to 0, this interaction simply
+results in a model of <em>fixed effects</em> where every unit has a
+uniquely estimated constant term. Amelia does not smooth the observed
+data, and only uses this functional form, or one you choose, with all
+the other variables in the analysis and the uncertainty of the
+prediction, to impute the missing values.</p>
+<p>In order to impute with trends specific to each cross-sectional unit,
+we can set <code>intercs</code> to <code>TRUE</code>:</p>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">a.out.time</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/amelia.html">amelia</a></span><span class="op">(</span><span class="va">freetrade</span>, ts <span class="op">=</span> <span class="st">"year"</span>, cs <span class="op">=</span> <span class="st">"country"</span>, polytime <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>                 intercs <span class="op">=</span> <span class="cn">TRUE</span>, p2s <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p>Note that attempting to use <code>polytime</code> without the <code>ts</code> argument, or <code>intercs</code> without the <code>cs</code> argument will result in an error.</p>
-<p>Using the <code><a href="../reference/tscsPlot.html">tscsPlot()</a></code> function (discussed below), we can see that we have a much better prediction about the missing values when incorporating time than when we omit it:</p>
+<p>Note that attempting to use <code>polytime</code> without the
+<code>ts</code> argument, or <code>intercs</code> without the
+<code>cs</code> argument will result in an error.</p>
+<p>Using the <code><a href="../reference/tscsPlot.html">tscsPlot()</a></code> function (discussed below), we can
+see that we have a much better prediction about the missing values when
+incorporating time than when we omit it:</p>
 <div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/tscsPlot.html">tscsPlot</a></span><span class="op">(</span><span class="va">a.out</span>, cs <span class="op">=</span> <span class="st">"Malaysia"</span>, main <span class="op">=</span> <span class="st">"Malaysia (no time settings)"</span>,</span>
 <span>         var <span class="op">=</span> <span class="st">"tariff"</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">10</span>, <span class="fl">60</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -530,8 +812,19 @@
 <div class="section level3">
 <h3 id="sec:lags">Lags and leads<a class="anchor" aria-label="anchor" href="#sec:lags"></a>
 </h3>
-<p>An alternative way of handling time-series information is to include lags and leads of certain variables into the imputation model. <em>Lags</em> are variables that take the value of another variable in the previous time period while <em>leads</em> take the value of another variable in the next time period. Many analysis models use lagged variables to deal with issues of endogeneity, thus using leads may seems strange. It is important to remember, however, that imputation models are predictive, not causal. Thus, since both past and future values of a variable are likely correlated with the present value, both lags and leads should improve the model.</p>
-<p>If we wanted to include lags and leads of tariffs, for instance, we would simply pass this to the <code>lags</code> and <code>leads</code> arguments:</p>
+<p>An alternative way of handling time-series information is to include
+lags and leads of certain variables into the imputation model.
+<em>Lags</em> are variables that take the value of another variable in
+the previous time period while <em>leads</em> take the value of another
+variable in the next time period. Many analysis models use lagged
+variables to deal with issues of endogeneity, thus using leads may seems
+strange. It is important to remember, however, that imputation models
+are predictive, not causal. Thus, since both past and future values of a
+variable are likely correlated with the present value, both lags and
+leads should improve the model.</p>
+<p>If we wanted to include lags and leads of tariffs, for instance, we
+would simply pass this to the <code>lags</code> and <code>leads</code>
+arguments:</p>
 <div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">a.out2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/amelia.html">amelia</a></span><span class="op">(</span><span class="va">freetrade</span>, ts <span class="op">=</span> <span class="st">"year"</span>, cs <span class="op">=</span> <span class="st">"country"</span>, lags <span class="op">=</span> <span class="st">"tariff"</span>,</span>
 <span>                 leads <span class="op">=</span> <span class="st">"tariff"</span><span class="op">)</span></span></code></pre></div>
@@ -562,12 +855,48 @@
 <div class="section level2">
 <h2 id="including-prior-information">Including Prior Information<a class="anchor" aria-label="anchor" href="#including-prior-information"></a>
 </h2>
-<p>Amelia has a number of methods of setting priors within the imputation model. Two of these are commonly used and discussed below, ridge priors and observational priors.</p>
+<p>Amelia has a number of methods of setting priors within the
+imputation model. Two of these are commonly used and discussed below,
+ridge priors and observational priors.</p>
 <div class="section level3">
-<h3 id="sec_prior">Ridge priors for high missingness, Small samples, or large correlations<a class="anchor" aria-label="anchor" href="#sec_prior"></a>
+<h3 id="sec_prior">Ridge priors for high missingness, Small samples, or large
+correlations<a class="anchor" aria-label="anchor" href="#sec_prior"></a>
 </h3>
-<p>When the data to be analyzed contain a high degree of missingness or very strong correlations among the variables, or when the number of observations is only slightly greater than the number of parameters <span class="math inline">\(p(p+3)/2\)</span> (where <span class="math inline">\(p\)</span> is the number of variables), results from your analysis model will be more dependent on the choice of imputation model. This suggests more testing in these cases of alternative specifications under Amelia. This can happen when using the polynomials of time interacted with the cross section are included in the imputation model. For example, in our data, if we used a polynomial of degree 2 with unit-specific trends and there are 9 countries, it would add <span class="math inline">\(3 \times 9 - 1= 17\)</span> more variables to the imputation model (dropping one of the fixed effects for identification). When these are added, the EM algorithm can become unstable. You can detect this by inspecting the screen output under <code>p2s = 2</code> or by observing that the number iterations per imputation are very divergent.</p>
-<p>In these circumstances, we recommend adding a ridge prior which will help with numerical stability by shrinking the covariances among the variables toward zero without changing the means or variances. This can be done by including the <code>empri</code> argument. Including this prior as a positive number is roughly equivalent to adding <code>empri</code> artificial observations to the data set with the same means and variances as the existing data but with zero covariances. Thus, increasing the <code>empri</code> setting results in more shrinkage of the covariances, thus putting more a priori structure on the estimation problem: like many Bayesian methods, it reduces variance in return for an increase in bias that one hopes does not overwhelm the advantages in efficiency. In general, we suggest keeping the value on this prior relatively small and increase it only when necessary. A recommendation of 0.5 to 1 percent of the number of observations, <span class="math inline">\(n\)</span>, is a reasonable starting value, and often useful in large datasets to add some numerical stability. For example, in a dataset of two thousand observations, this would translate to a prior value of 10 or 20 respectively. A prior of up to 5 percent is moderate in most applications and 10 percent is reasonable upper bound.</p>
+<p>When the data to be analyzed contain a high degree of missingness or
+very strong correlations among the variables, or when the number of
+observations is only slightly greater than the number of parameters
+<span class="math inline">\(p(p+3)/2\)</span> (where <span class="math inline">\(p\)</span> is the number of variables), results
+from your analysis model will be more dependent on the choice of
+imputation model. This suggests more testing in these cases of
+alternative specifications under Amelia. This can happen when using the
+polynomials of time interacted with the cross section are included in
+the imputation model. For example, in our data, if we used a polynomial
+of degree 2 with unit-specific trends and there are 9 countries, it
+would add <span class="math inline">\(3 \times 9 - 1= 17\)</span> more
+variables to the imputation model (dropping one of the fixed effects for
+identification). When these are added, the EM algorithm can become
+unstable. You can detect this by inspecting the screen output under
+<code>p2s = 2</code> or by observing that the number iterations per
+imputation are very divergent.</p>
+<p>In these circumstances, we recommend adding a ridge prior which will
+help with numerical stability by shrinking the covariances among the
+variables toward zero without changing the means or variances. This can
+be done by including the <code>empri</code> argument. Including this
+prior as a positive number is roughly equivalent to adding
+<code>empri</code> artificial observations to the data set with the same
+means and variances as the existing data but with zero covariances.
+Thus, increasing the <code>empri</code> setting results in more
+shrinkage of the covariances, thus putting more a priori structure on
+the estimation problem: like many Bayesian methods, it reduces variance
+in return for an increase in bias that one hopes does not overwhelm the
+advantages in efficiency. In general, we suggest keeping the value on
+this prior relatively small and increase it only when necessary. A
+recommendation of 0.5 to 1 percent of the number of observations, <span class="math inline">\(n\)</span>, is a reasonable starting value, and
+often useful in large datasets to add some numerical stability. For
+example, in a dataset of two thousand observations, this would translate
+to a prior value of 10 or 20 respectively. A prior of up to 5 percent is
+moderate in most applications and 10 percent is reasonable upper
+bound.</p>
 <p>For our data, it is easy to code up a 1 percent ridge prior:</p>
 <div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">a.out.time2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/amelia.html">amelia</a></span><span class="op">(</span><span class="va">freetrade</span>, ts <span class="op">=</span> <span class="st">"year"</span>, cs <span class="op">=</span> <span class="st">"country"</span>, polytime <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -589,11 +918,37 @@
 <div class="section level3">
 <h3 id="sec:obspri">Observation-level priors<a class="anchor" aria-label="anchor" href="#sec:obspri"></a>
 </h3>
-<p>Researchers often have additional prior information about missing data values based on previous research, academic consensus, or personal experience. Amelia can incorporate this information to produce vastly improved imputations. The Amelia algorithm allows users to include informative Bayesian priors about individual missing data cells instead of the more general model parameters, many of which have little direct meaning.</p>
-<p>The incorporation of priors follows basic Bayesian analysis where the imputation turns out to be a weighted average of the model-based imputation and the prior mean, where the weights are functions of the relative strength of the data and prior: when the model predicts very well, the imputation will down-weight the prior, and vice versa <span class="citation">(Honaker and King <a href="#ref-HonKin10" role="doc-biblioref">2010</a>)</span>.</p>
-<p>The priors about individual observations should describe the analyst’s belief about the distribution of the missing data cell. This can either take the form of a mean and a standard deviation or a confidence interval. For instance, we might know that 1986 tariff rates in Thailand around 40%, but we have some uncertainty as to the exact value. Our prior belief about the distribution of the missing data cell, then, centers on 40 with a standard deviation that reflects the amount of uncertainty we have about our prior belief.</p>
-<p>To input priors you must build a priors matrix with either four or five columns. Each row of the matrix represents a prior on either one observation or one variable. In any row, the entry in the first column is the row of the observation and the entry is the second column is the column of the observation. In the four column priors matrix the third and fourth columns are the mean and standard deviation of the prior distribution of the missing value.</p>
-<p>For instance, suppose that we had some expert prior information about tariff rates in Thailand. We know from the data that Thailand is missing tariff rates in many years,</p>
+<p>Researchers often have additional prior information about missing
+data values based on previous research, academic consensus, or personal
+experience. Amelia can incorporate this information to produce vastly
+improved imputations. The Amelia algorithm allows users to include
+informative Bayesian priors about individual missing data cells instead
+of the more general model parameters, many of which have little direct
+meaning.</p>
+<p>The incorporation of priors follows basic Bayesian analysis where the
+imputation turns out to be a weighted average of the model-based
+imputation and the prior mean, where the weights are functions of the
+relative strength of the data and prior: when the model predicts very
+well, the imputation will down-weight the prior, and vice versa <span class="citation">(<a href="#ref-HonKin10" role="doc-biblioref">Honaker
+and King 2010</a>)</span>.</p>
+<p>The priors about individual observations should describe the
+analyst’s belief about the distribution of the missing data cell. This
+can either take the form of a mean and a standard deviation or a
+confidence interval. For instance, we might know that 1986 tariff rates
+in Thailand around 40%, but we have some uncertainty as to the exact
+value. Our prior belief about the distribution of the missing data cell,
+then, centers on 40 with a standard deviation that reflects the amount
+of uncertainty we have about our prior belief.</p>
+<p>To input priors you must build a priors matrix with either four or
+five columns. Each row of the matrix represents a prior on either one
+observation or one variable. In any row, the entry in the first column
+is the row of the observation and the entry is the second column is the
+column of the observation. In the four column priors matrix the third
+and fourth columns are the mean and standard deviation of the prior
+distribution of the missing value.</p>
+<p>For instance, suppose that we had some expert prior information about
+tariff rates in Thailand. We know from the data that Thailand is missing
+tariff rates in many years,</p>
 <div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">freetrade</span><span class="op">[</span><span class="va">freetrade</span><span class="op">$</span><span class="va">country</span> <span class="op">==</span> <span class="st">"Thailand"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"year"</span>, <span class="st">"country"</span>, <span class="st">"tariff"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">##     year  country tariff</span></span>
@@ -616,7 +971,10 @@
 <span><span class="co">## 169 1997 Thailand     NA</span></span>
 <span><span class="co">## 170 1998 Thailand   20.1</span></span>
 <span><span class="co">## 171 1999 Thailand   17.1</span></span></code></pre>
-<p>Suppose that we had expert information that tariff rates were roughly 40% in Thailand between 1986 and 1988 with about a 6% margin of error. This corresponds to a standard deviation of about 3. In order to include this information, we must form the priors matrix:</p>
+<p>Suppose that we had expert information that tariff rates were roughly
+40% in Thailand between 1986 and 1988 with about a 6% margin of error.
+This corresponds to a standard deviation of about 3. In order to include
+this information, we must form the priors matrix:</p>
 <div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">158</span>, <span class="fl">159</span>, <span class="fl">160</span>, <span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">40</span>, <span class="fl">40</span>, <span class="fl">40</span>, <span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span>,</span>
@@ -627,7 +985,11 @@
 <span><span class="co">## [1,]  158    3   40    3</span></span>
 <span><span class="co">## [2,]  159    3   40    3</span></span>
 <span><span class="co">## [3,]  160    3   40    3</span></span></code></pre>
-<p>The first column of this matrix corresponds to the row numbers of Thailand in these three years, the second column refers to the column number of <code>tariff</code> in the data and the last two columns refer to the actual prior. Once we have this matrix, we can pass it to <code><a href="../reference/amelia.html">amelia()</a></code>,</p>
+<p>The first column of this matrix corresponds to the row numbers of
+Thailand in these three years, the second column refers to the column
+number of <code>tariff</code> in the data and the last two columns refer
+to the actual prior. Once we have this matrix, we can pass it to
+<code><a href="../reference/amelia.html">amelia()</a></code>,</p>
 <div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">a.out.pr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/amelia.html">amelia</a></span><span class="op">(</span><span class="va">freetrade</span>, ts <span class="op">=</span> <span class="st">"year"</span>, cs <span class="op">=</span> <span class="st">"country"</span>, priors <span class="op">=</span> <span class="va">pr</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## -- Imputation 1 --</span></span>
@@ -649,7 +1011,13 @@
 <span><span class="co">## -- Imputation 5 --</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">##   1  2  3  4  5  6  7  8  9 10 11 12 13 14</span></span></code></pre>
-<p>In the five column matrix, the last three columns describe a confidence range of the data. The columns are a lower bound, an upper bound, and a confidence level between 0 and 1, exclusive. Whichever format you choose, it must be consistent across the entire matrix. We could get roughly the same prior as above by utilizing this method. Our margin of error implies that we would want imputations between 34 and 46, so our matrix would be</p>
+<p>In the five column matrix, the last three columns describe a
+confidence range of the data. The columns are a lower bound, an upper
+bound, and a confidence level between 0 and 1, exclusive. Whichever
+format you choose, it must be consistent across the entire matrix. We
+could get roughly the same prior as above by utilizing this method. Our
+margin of error implies that we would want imputations between 34 and
+46, so our matrix would be</p>
 <div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pr.2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">158</span>, <span class="fl">159</span>, <span class="fl">160</span>, <span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">34</span>, <span class="fl">34</span>, <span class="fl">34</span>, <span class="fl">46</span>, <span class="fl">46</span>, <span class="fl">46</span>, <span class="fl">0.95</span>, <span class="fl">0.95</span>, <span class="fl">0.95</span><span class="op">)</span>,</span>
@@ -660,8 +1028,13 @@
 <span><span class="co">## [1,]  158    3   34   46 0.95</span></span>
 <span><span class="co">## [2,]  159    3   34   46 0.95</span></span>
 <span><span class="co">## [3,]  160    3   34   46 0.95</span></span></code></pre>
-<p>These priors indicate that we are 95% confident that these missing values are in the range 34 to 46.</p>
-<p>If a prior has the value 0 in the first column, this prior will be applied to all missing values in this variable, except for explicitly set priors. Thus, we could set a prior for the entire <code>tariff</code> variable of 20, but still keep the above specific priors with the following code:</p>
+<p>These priors indicate that we are 95% confident that these missing
+values are in the range 34 to 46.</p>
+<p>If a prior has the value 0 in the first column, this prior will be
+applied to all missing values in this variable, except for explicitly
+set priors. Thus, we could set a prior for the entire
+<code>tariff</code> variable of 20, but still keep the above specific
+priors with the following code:</p>
 <div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pr.3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">158</span>, <span class="fl">159</span>, <span class="fl">160</span>, <span class="fl">0</span>, <span class="fl">3</span>, <span class="fl">3</span> , <span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">40</span>, <span class="fl">40</span>, <span class="fl">40</span>, <span class="fl">20</span>, <span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">5</span><span class="op">)</span>,</span>
@@ -676,15 +1049,50 @@
 <div class="section level3">
 <h3 id="logical-bounds">Logical bounds<a class="anchor" aria-label="anchor" href="#logical-bounds"></a>
 </h3>
-<p>In some cases, variables in the social sciences have known logical bounds. Proportions must be between 0 and 1 and duration data must be greater than 0, for instance. Many of these logical bounds can be handled by using the correct transformation for that type of variable (see @ref(sec:trans) for more details on the transformations handled by Amelia). In the occasional case that imputations must satisfy certain logical bounds not handled by these transformations, Amelia can take draws from a truncated normal distribution in order to achieve imputations that satisfy the bounds. Note, however, that this procedure imposes extremely strong restrictions on the imputations and can lead to lower variances than the imputation model implies. The mean value across all the imputed values of a missing cell is the best guess from the imputation model of that missing value. The variance of the distribution across imputed datasets correctly reflects the uncertainty in that imputation. It is often the mean imputed value that should conform to the any known bounds, even if individual imputations are drawn beyond those bounds. The mean imputed value can be checked with the diagnostics presented in the next section. In general, building a more predictive imputation model will lead to better imputations than imposing bounds.</p>
-<p>Amelia implements these bounds by rejection sampling. When drawing the imputations from their posterior, we repeatedly resample until we have a draw that satisfies all of the logical constraints. You can set an upper limit on the number of times to resample with the <code>max.resample</code> arguments. Thus, if after <code>max.resample</code> draws, the imputations are still outside the bounds, Amelia will set the imputation at the edge of the bounds. Thus, if the bounds were 0 and 100 and all of the draws were negative, Amelia would simply impute 0.</p>
-<p>As an extreme example, suppose that we know, for certain that tariff rates had to fall between 30 and 40. This, obviously, is not true, but we can generate imputations from this model. In order to specify these bounds, we need to generate a matrix of bounds to pass to the <code>bounds</code> argument. This matrix will have 3 columns: the first is the column for the bounded variable, the second is the lower bound and the third is the upper bound. Thus, to implement our bound on tariff rates (the 3rd column of the dataset), we would create the matrix,</p>
+<p>In some cases, variables in the social sciences have known logical
+bounds. Proportions must be between 0 and 1 and duration data must be
+greater than 0, for instance. Many of these logical bounds can be
+handled by using the correct transformation for that type of variable
+(see @ref(sec:trans) for more details on the transformations handled by
+Amelia). In the occasional case that imputations must satisfy certain
+logical bounds not handled by these transformations, Amelia can take
+draws from a truncated normal distribution in order to achieve
+imputations that satisfy the bounds. Note, however, that this procedure
+imposes extremely strong restrictions on the imputations and can lead to
+lower variances than the imputation model implies. The mean value across
+all the imputed values of a missing cell is the best guess from the
+imputation model of that missing value. The variance of the distribution
+across imputed datasets correctly reflects the uncertainty in that
+imputation. It is often the mean imputed value that should conform to
+the any known bounds, even if individual imputations are drawn beyond
+those bounds. The mean imputed value can be checked with the diagnostics
+presented in the next section. In general, building a more predictive
+imputation model will lead to better imputations than imposing
+bounds.</p>
+<p>Amelia implements these bounds by rejection sampling. When drawing
+the imputations from their posterior, we repeatedly resample until we
+have a draw that satisfies all of the logical constraints. You can set
+an upper limit on the number of times to resample with the
+<code>max.resample</code> arguments. Thus, if after
+<code>max.resample</code> draws, the imputations are still outside the
+bounds, Amelia will set the imputation at the edge of the bounds. Thus,
+if the bounds were 0 and 100 and all of the draws were negative, Amelia
+would simply impute 0.</p>
+<p>As an extreme example, suppose that we know, for certain that tariff
+rates had to fall between 30 and 40. This, obviously, is not true, but
+we can generate imputations from this model. In order to specify these
+bounds, we need to generate a matrix of bounds to pass to the
+<code>bounds</code> argument. This matrix will have 3 columns: the first
+is the column for the bounded variable, the second is the lower bound
+and the third is the upper bound. Thus, to implement our bound on tariff
+rates (the 3rd column of the dataset), we would create the matrix,</p>
 <div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">30</span>, <span class="fl">40</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">1</span>, ncol <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="va">bds</span></span></code></pre></div>
 <pre><code><span><span class="co">##      [,1] [,2] [,3]</span></span>
 <span><span class="co">## [1,]    3   30   40</span></span></code></pre>
-<p>which we can pass to the <code>bounds</code> argument to <code><a href="../reference/amelia.html">amelia()</a></code>:</p>
+<p>which we can pass to the <code>bounds</code> argument to
+<code><a href="../reference/amelia.html">amelia()</a></code>:</p>
 <div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">a.out.bds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/amelia.html">amelia</a></span><span class="op">(</span><span class="va">freetrade</span>, ts <span class="op">=</span> <span class="st">"year"</span>, cs <span class="op">=</span> <span class="st">"country"</span>, bounds <span class="op">=</span> <span class="va">bds</span>,</span>
 <span>                    max.resample <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></code></pre></div>
@@ -707,7 +1115,10 @@
 <span><span class="co">## -- Imputation 5 --</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">##   1  2  3  4  5  6  7  8  9 10</span></span></code></pre>
-<p>The difference in results between the bounded and unbounded model are not obvious from the output, but inspection of the imputed tariff rates for Malaysia shows that there has been a drastic restriction of the imputations to the desired range:</p>
+<p>The difference in results between the bounded and unbounded model are
+not obvious from the output, but inspection of the imputed tariff rates
+for Malaysia shows that there has been a drastic restriction of the
+imputations to the desired range:</p>
 <div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/tscsPlot.html">tscsPlot</a></span><span class="op">(</span><span class="va">a.out</span>, cs <span class="op">=</span> <span class="st">"Malaysia"</span>, main <span class="op">=</span> <span class="st">"No logical bounds"</span>, var <span class="op">=</span> <span class="st">"tariff"</span>,</span>
 <span>         ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">10</span>, <span class="fl">60</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -716,13 +1127,24 @@
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/tscsPlot.html">tscsPlot</a></span><span class="op">(</span><span class="va">a.out.bds</span>, cs <span class="op">=</span> <span class="st">"Malaysia"</span>, main <span class="op">=</span> <span class="st">"Bounded between 30 and 40"</span>,</span>
 <span>         var <span class="op">=</span> <span class="st">"tariff"</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">10</span>, <span class="fl">60</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="using-amelia_files/figure-html/bounds_plot-2.png" width="480" style="display: block; margin: auto;"></p>
-<p>Again, analysts should be extremely cautious when using these bounds as they can seriously affect the inferences from the imputation model, as shown in this example. Even when logical bounds exist, we recommend simply imputing variables normally, as the violation of the logical bounds represents part of the true uncertainty of imputation.</p>
+<p>Again, analysts should be extremely cautious when using these bounds
+as they can seriously affect the inferences from the imputation model,
+as shown in this example. Even when logical bounds exist, we recommend
+simply imputing variables normally, as the violation of the logical
+bounds represents part of the true uncertainty of imputation.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="sec_postimptrans">Post-imputations Transformations<a class="anchor" aria-label="anchor" href="#sec_postimptrans"></a>
 </h2>
-<p>In many cases, it is useful to create transformations of the imputed variables for use in further analysis. For instance, one may want to create an interaction between two variables or perform a log-transformation on the imputed data. To do this, Amelia includes a <code><a href="https://rdrr.io/r/base/transform.html" class="external-link">transform()</a></code> function for <code><a href="../reference/amelia.html">amelia()</a></code> output that adds or overwrites variables in each of the imputed datasets. For instance, if we wanted to create a log-transformation of the <code>gdp.pc</code> variable, we could use the following command:</p>
+<p>In many cases, it is useful to create transformations of the imputed
+variables for use in further analysis. For instance, one may want to
+create an interaction between two variables or perform a
+log-transformation on the imputed data. To do this, Amelia includes a
+<code><a href="https://rdrr.io/r/base/transform.html" class="external-link">transform()</a></code> function for <code><a href="../reference/amelia.html">amelia()</a></code> output that
+adds or overwrites variables in each of the imputed datasets. For
+instance, if we wanted to create a log-transformation of the
+<code>gdp.pc</code> variable, we could use the following command:</p>
 <div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">a.out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/transform.html" class="external-link">transform</a></span><span class="op">(</span><span class="va">a.out</span>, lgdp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">gdp.pc</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">a.out</span><span class="op">$</span><span class="va">imputations</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>, <span class="st">"year"</span>,<span class="st">"gdp.pc"</span>, <span class="st">"lgdp"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
@@ -733,10 +1155,12 @@
 <span><span class="co">## 4 SriLanka 1984  508.2 6.231</span></span>
 <span><span class="co">## 5 SriLanka 1985  525.6 6.264</span></span>
 <span><span class="co">## 6 SriLanka 1986  538.9 6.290</span></span></code></pre>
-<p>To create an interaction between two variables, we could simply use:</p>
+<p>To create an interaction between two variables, we could simply
+use:</p>
 <div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">a.out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/transform.html" class="external-link">transform</a></span><span class="op">(</span><span class="va">a.out</span>, pol_gdp <span class="op">=</span> <span class="va">polity</span> <span class="op">*</span> <span class="va">gdp.pc</span><span class="op">)</span></span></code></pre></div>
-<p>Each transformation is recorded and the <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> command prints out each transformation that has been performed:</p>
+<p>Each transformation is recorded and the <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>
+command prints out each transformation that has been performed:</p>
 <div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">a.out</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
@@ -779,12 +1203,22 @@
 <span><span class="co">##           Transformations</span></span>
 <span><span class="co">## lgdp =        log(gdp.pc)</span></span>
 <span><span class="co">## pol_gdp = polity * gdp.pc</span></span></code></pre>
-<p>Note the updated output is almost exactly the same as the fresh <code><a href="../reference/amelia.html">amelia()</a></code> output. You can pass the transformed output back to <code><a href="../reference/amelia.html">amelia()</a></code> and it will add imputations and update these imputations with the transformations you have performed.</p>
+<p>Note the updated output is almost exactly the same as the fresh
+<code><a href="../reference/amelia.html">amelia()</a></code> output. You can pass the transformed output back
+to <code><a href="../reference/amelia.html">amelia()</a></code> and it will add imputations and update these
+imputations with the transformations you have performed.</p>
 </div>
 <div class="section level2">
 <h2 id="sec_analysis">Analysis Models<a class="anchor" aria-label="anchor" href="#sec_analysis"></a>
 </h2>
-<p>Imputation is most often a data processing step as opposed to a final model in of itself. To this end, it is easy to pass output from <code><a href="../reference/amelia.html">amelia()</a></code> to other functions. The easiest and most integrated way to run an analysis model is to use the <code><a href="https://rdrr.io/r/base/with.html" class="external-link">with()</a></code> and <code><a href="../reference/mi.combine.html">mi.combine()</a></code> functions. For example, in <span class="citation">Milner and Kubota (<a href="#ref-MilKub05" role="doc-biblioref">2005</a>)</span>, the dependent variable was tariff rates. We can replicate table 5.1 from their analysis with the original data simply by running</p>
+<p>Imputation is most often a data processing step as opposed to a final
+model in of itself. To this end, it is easy to pass output from
+<code><a href="../reference/amelia.html">amelia()</a></code> to other functions. The easiest and most
+integrated way to run an analysis model is to use the
+<code><a href="https://rdrr.io/r/base/with.html" class="external-link">with()</a></code> and <code><a href="../reference/mi.combine.html">mi.combine()</a></code> functions. For
+example, in <span class="citation">Milner and Kubota (<a href="#ref-MilKub05" role="doc-biblioref">2005</a>)</span>, the
+dependent variable was tariff rates. We can replicate table 5.1 from
+their analysis with the original data simply by running</p>
 <div class="sourceCode" id="cb69"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">orig.model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">tariff</span> <span class="op">~</span> <span class="va">polity</span> <span class="op">+</span> <span class="va">pop</span> <span class="op">+</span> <span class="va">gdp.pc</span> <span class="op">+</span> <span class="va">year</span> <span class="op">+</span> <span class="va">country</span>, data <span class="op">=</span> <span class="va">freetrade</span><span class="op">)</span></span>
 <span><span class="va">orig.model</span></span></code></pre></div>
@@ -802,7 +1236,9 @@
 <span><span class="co">##          -2.16e+02           -1.55e+02           -2.04e+02           -2.09e+02  </span></span>
 <span><span class="co">##    countryThailand  </span></span>
 <span><span class="co">##          -1.96e+02</span></span></code></pre>
-<p>Running the same model with imputed data is almost identical. We can run the <code>lm</code> within each imputed data set by using the <code><a href="https://rdrr.io/r/base/with.html" class="external-link">with()</a></code> function:</p>
+<p>Running the same model with imputed data is almost identical. We can
+run the <code>lm</code> within each imputed data set by using the
+<code><a href="https://rdrr.io/r/base/with.html" class="external-link">with()</a></code> function:</p>
 <div class="sourceCode" id="cb71"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">imp.models</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span></span>
 <span>  <span class="va">a.out</span>,</span>
@@ -839,7 +1275,10 @@
 <span><span class="co">##          -1.54e+02           -1.08e+02           -1.51e+02           -1.55e+02  </span></span>
 <span><span class="co">##    countryThailand  </span></span>
 <span><span class="co">##          -1.49e+02</span></span></code></pre>
-<p>The result here is simply a list of output of <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> applied to each imputed data set. We can combine the imputed estimates using the rules described in <span class="citation">King et al. (<a href="#ref-KinHonJos01" role="doc-biblioref">2001</a>)</span> and <span class="citation">Schafer (<a href="#ref-Schafer97" role="doc-biblioref">1997</a>)</span> with the <code><a href="../reference/mi.combine.html">mi.combine()</a></code> function:</p>
+<p>The result here is simply a list of output of <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>
+applied to each imputed data set. We can combine the imputed estimates
+using the rules described in <span class="citation">King et al. (<a href="#ref-KinHonJos01" role="doc-biblioref">2001</a>)</span> and <span class="citation">Schafer (<a href="#ref-Schafer97" role="doc-biblioref">1997</a>)</span> with the <code><a href="../reference/mi.combine.html">mi.combine()</a></code>
+function:</p>
 <div class="sourceCode" id="cb73"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mi.combine.html">mi.combine</a></span><span class="op">(</span><span class="va">imp.models</span>, conf.int <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">out</span></span></code></pre></div>
@@ -861,14 +1300,33 @@
 <span><span class="co">## <span style="color: #BCBCBC;">13</span> count… -<span style="color: #BB0000;">1.08</span><span style="color: #949494;">e</span>+2 4.57<span style="color: #949494;">e</span>+1  -<span style="color: #BB0000;">2.36</span>  1.96<span style="color: #949494;">e</span>+0  9.74 1.79    0.697 -<span style="color: #BB0000;">5.66</span><span style="color: #949494;">e</span>+0 -<span style="color: #BB0000;">2.10</span><span style="color: #949494;">e</span>+2</span></span>
 <span><span class="co">## <span style="color: #949494;"># … with abbreviated variable names ¹​std.error, ²​statistic, ³​miss.info,</span></span></span>
 <span><span class="co">## <span style="color: #949494;">#   ⁴​conf.high</span></span></span></code></pre>
-<p>The combination of the results depends on the <a href="https://broom.tidymodels.org" class="external-link">broom</a> package and results can be combined if a <code>tidy()</code> method exists for the estimation function passed to <code><a href="https://rdrr.io/r/base/with.html" class="external-link">with()</a></code>. Other packages such as <a href="https://zeligproject.org" class="external-link">Zelig</a> can also combine imputed data sets across a number of statistical models. Furthermore, users can easily export their imputations using the <code><a href="../reference/write.amelia.html">write.amelia()</a></code> function as described in @ref(sec_saving) and use statistical packages other than R for the analysis model.</p>
-<p>In addition to the resources available in R, users can draw on Stata to implement their analysis models. As of version 11, Stata has built-in handling of multiply imputed datasets. In order to utilize this functionality, simply export the “stacked” imputations using the <code><a href="../reference/write.amelia.html">write.amelia()</a></code> function:</p>
+<p>The combination of the results depends on the <a href="https://broom.tidymodels.org" class="external-link">broom</a> package and results can be
+combined if a <code>tidy()</code> method exists for the estimation
+function passed to <code><a href="https://rdrr.io/r/base/with.html" class="external-link">with()</a></code>. Other packages such as <a href="https://zeligproject.org" class="external-link">Zelig</a> can also combine imputed data
+sets across a number of statistical models. Furthermore, users can
+easily export their imputations using the <code><a href="../reference/write.amelia.html">write.amelia()</a></code>
+function as described in @ref(sec_saving) and use statistical packages
+other than R for the analysis model.</p>
+<p>In addition to the resources available in R, users can draw on Stata
+to implement their analysis models. As of version 11, Stata has built-in
+handling of multiply imputed datasets. In order to utilize this
+functionality, simply export the “stacked” imputations using the
+<code><a href="../reference/write.amelia.html">write.amelia()</a></code> function:</p>
 <div class="sourceCode" id="cb75"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/write.amelia.html">write.amelia</a></span><span class="op">(</span><span class="va">a.out</span>, separate <span class="op">=</span> <span class="cn">FALSE</span>, file.stem <span class="op">=</span> <span class="st">"outdata"</span>, format <span class="op">=</span> <span class="st">"dta"</span><span class="op">)</span></span></code></pre></div>
-<p>Once this stacked dataset is open in Stata, you must tell Stata that it is an imputed dataset using the  command:</p>
-<div class="sourceCode" id="cb76"><pre class="sourceCode stata"><code class="sourceCode stata"><span id="cb76-1"><a href="#cb76-1"></a><span class="fu">mi</span> import flong, <span class="fu">m</span>(imp) id(<span class="fu">year</span> country) imp(tariff-usheg)</span></code></pre></div>
-<p>The command takes a few options: <code>m</code> designates the imputation variable (set with <code>impvar</code> in <code><a href="../reference/write.amelia.html">write.amelia()</a></code>), <code>id</code> sets the identifying varibles, and <code>imp</code> sets the variables that were imputed (or included in the imputation). The <code>tariff-usheg</code> indicates that Stata should treat the range of variables between <code>tariff</code> and <code>usheg</code> as imputed. Once we have set the dataset as imputed, we can use the built-in <code>mi</code> commands to analyze the data:</p>
-<div class="sourceCode" id="cb77"><pre class="sourceCode stata"><code class="sourceCode stata"><span id="cb77-1"><a href="#cb77-1"></a><span class="fu">mi</span> estimate: <span class="kw">reg</span> tariff polity pop gdp_pc</span></code></pre></div>
+<p>Once this stacked dataset is open in Stata, you must tell Stata that
+it is an imputed dataset using the command:</p>
+<div class="sourceCode" id="cb76"><pre class="sourceCode stata"><code class="sourceCode stata"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mi</span> import flong, <span class="fu">m</span>(imp) id(<span class="fu">year</span> country) imp(tariff-usheg)</span></code></pre></div>
+<p>The command takes a few options: <code>m</code> designates the
+imputation variable (set with <code>impvar</code> in
+<code><a href="../reference/write.amelia.html">write.amelia()</a></code>), <code>id</code> sets the identifying
+varibles, and <code>imp</code> sets the variables that were imputed (or
+included in the imputation). The <code>tariff-usheg</code> indicates
+that Stata should treat the range of variables between
+<code>tariff</code> and <code>usheg</code> as imputed. Once we have set
+the dataset as imputed, we can use the built-in <code>mi</code> commands
+to analyze the data:</p>
+<div class="sourceCode" id="cb77"><pre class="sourceCode stata"><code class="sourceCode stata"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mi</span> estimate: <span class="kw">reg</span> tariff polity pop gdp_pc</span></code></pre></div>
 <pre><code>Multiple-imputation estimates                     Imputations     =          5
 Linear regression                                 Number of obs   =        171
                                                   Average RVI     =     1.4114
@@ -891,34 +1349,65 @@ Within VCE type:          OLS                     Prob &gt; F        =     0.000
 <div class="section level2">
 <h2 id="sec_out">The <code>amelia</code> class<a class="anchor" aria-label="anchor" href="#sec_out"></a>
 </h2>
-<p>The output from the <code><a href="../reference/amelia.html">amelia()</a></code> function is an instance of the S3 class <code>amelia</code>. Instances of the <code>amelia</code> class contain much more than simply the imputed datasets. The <code>mu</code> object of the class contains the posterior draws of the means of the complete data. The <code>covMatrices</code> contains the posterior draws of the covariance matrices of the complete data. Note that these correspond to the variables as they are sent to the EM algorithm. Namely, they refer to the variables after being transformed, centered and scaled.</p>
-<p>The <code>iterHist</code> object is a list of <code>m</code> 3-column matrices. Each row of the matrices corresponds to an iteration of the EM algorithm. The first column indicates how many parameters had yet to converge at that iteration. The second column indicates if the EM algorithm made a step that decreased the number of converged parameters. The third column indicates whether the covariance matrix at this iteration was singular. Clearly, the last two columns are meant to indicate when the EM algorithm enters a problematic part of the parameter space.</p>
+<p>The output from the <code><a href="../reference/amelia.html">amelia()</a></code> function is an instance of
+the S3 class <code>amelia</code>. Instances of the <code>amelia</code>
+class contain much more than simply the imputed datasets. The
+<code>mu</code> object of the class contains the posterior draws of the
+means of the complete data. The <code>covMatrices</code> contains the
+posterior draws of the covariance matrices of the complete data. Note
+that these correspond to the variables as they are sent to the EM
+algorithm. Namely, they refer to the variables after being transformed,
+centered and scaled.</p>
+<p>The <code>iterHist</code> object is a list of <code>m</code> 3-column
+matrices. Each row of the matrices corresponds to an iteration of the EM
+algorithm. The first column indicates how many parameters had yet to
+converge at that iteration. The second column indicates if the EM
+algorithm made a step that decreased the number of converged parameters.
+The third column indicates whether the covariance matrix at this
+iteration was singular. Clearly, the last two columns are meant to
+indicate when the EM algorithm enters a problematic part of the
+parameter space.</p>
 </div>
 <div class="section level2 unnumbered">
-<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references">
-<div id="ref-HonKin10">
-<p>Honaker, James, and Gary King. 2010. “What to Do About Missing Values in Time Series Cross-Section Data.” <em>American Journal of Political Science</em> 54 (2): 561–81.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-HonKin10" class="csl-entry">
+Honaker, James, and Gary King. 2010. <span>“What to Do about Missing
+Values in Time Series Cross-Section Data.”</span> <em>American Journal
+of Political Science</em> 54 (2): 561–81.
 </div>
-<div id="ref-KinHonJos01">
-<p>King, Gary, James Honaker, Anne Joseph, and Kenneth Scheve. 2001. “Analyzing Incomplete Political Science Data: An Alternative Algorithm for Multiple Imputation.” <em>American Political Science Review</em> 95 (1): 49–69.</p>
+<div id="ref-KinHonJos01" class="csl-entry">
+King, Gary, James Honaker, Anne Joseph, and Kenneth Scheve. 2001.
+<span>“Analyzing Incomplete Political Science Data: An Alternative
+Algorithm for Multiple Imputation.”</span> <em>American Political
+Science Review</em> 95 (1): 49–69.
 </div>
-<div id="ref-MilKub05">
-<p>Milner, Helen, and Keiko Kubota. 2005. “Why the move to free trade? Democracy and trade policy in the developing countries.” <em>International Organization</em> 59 (1): 107–43.</p>
+<div id="ref-MilKub05" class="csl-entry">
+Milner, Helen, and Keiko Kubota. 2005. <span>“<span class="nocase">Why
+the move to free trade? Democracy and trade policy in the developing
+countries</span>.”</span> <em>International Organization</em> 59 (1):
+107–43.
 </div>
-<div id="ref-Schafer97">
-<p>Schafer, Joseph L. 1997. <em>Analysis of Incomplete Multivariate Data</em>. London: Chapman &amp; Hall.</p>
+<div id="ref-Schafer97" class="csl-entry">
+Schafer, Joseph L. 1997. <em>Analysis of Incomplete Multivariate
+Data</em>. London: Chapman &amp; Hall.
 </div>
 </div>
 </div>
-<div class="footnotes">
+<div class="footnotes footnotes-end-of-document">
 <hr>
 <ol>
-<li id="fn1"><p>We have artificially addedsome missingness to these data for presentational purposes. You can access the original data at <a href="https://scholar.princeton.edu/hvmilner/data" class="external-link">https://scholar.princeton.edu/hvmilner/data</a>.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
-<li id="fn2"><p>The Polity score is a number between -10 and 10 indicating how democratic a country is. A fully autocratic country would be a -10 while a fully democratic country would be 1 10.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
-<li id="fn3"><p>This measure of US hegemony is the US imports and exports as a percent of the world total imports and exports.<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
-<li id="fn4"><p>Dichotomous (two category) variables are a special case of nominal variables. For these variables, the nominal and ordinal methods of transformation in Amelia agree.<a href="#fnref4" class="footnote-back">↩︎</a></p></li>
+<li id="fn1"><p>We have artificially addedsome missingness to these data
+for presentational purposes. You can access the original data at <a href="https://scholar.princeton.edu/hvmilner/data" class="external-link">https://scholar.princeton.edu/hvmilner/data</a>.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>The Polity score is a number between -10 and 10
+indicating how democratic a country is. A fully autocratic country would
+be a -10 while a fully democratic country would be 1 10.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p>This measure of US hegemony is the US imports and
+exports as a percent of the world total imports and exports.<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+<li id="fn4"><p>Dichotomous (two category) variables are a special case
+of nominal variables. For these variables, the nominal and ordinal
+methods of transformation in Amelia agree.<a href="#fnref4" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
   </div>
