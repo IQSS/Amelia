@@ -65,81 +65,118 @@ provides confidence intervals for the imputed values.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">tscsPlot</span><span class="op">(</span>
-  <span class="va">output</span>,
-  <span class="va">var</span>,
-  <span class="va">cs</span>,
-  draws <span class="op">=</span> <span class="fl">100</span>,
-  conf <span class="op">=</span> <span class="fl">0.9</span>,
-  misscol <span class="op">=</span> <span class="st">"red"</span>,
-  obscol <span class="op">=</span> <span class="st">"black"</span>,
-  <span class="va">xlab</span>,
-  <span class="va">ylab</span>,
-  <span class="va">main</span>,
-  <span class="va">pch</span>,
-  <span class="va">ylim</span>,
-  <span class="va">xlim</span>,
-  frontend <span class="op">=</span> <span class="cn">FALSE</span>,
-  plotall <span class="op">=</span> <span class="cn">FALSE</span>,
-  <span class="va">nr</span>,
-  <span class="va">nc</span>,
-  <span class="va">pdfstub</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">tscsPlot</span><span class="op">(</span></span>
+<span>  <span class="va">output</span>,</span>
+<span>  <span class="va">var</span>,</span>
+<span>  <span class="va">cs</span>,</span>
+<span>  draws <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  conf <span class="op">=</span> <span class="fl">0.9</span>,</span>
+<span>  misscol <span class="op">=</span> <span class="st">"red"</span>,</span>
+<span>  obscol <span class="op">=</span> <span class="st">"black"</span>,</span>
+<span>  <span class="va">xlab</span>,</span>
+<span>  <span class="va">ylab</span>,</span>
+<span>  <span class="va">main</span>,</span>
+<span>  <span class="va">pch</span>,</span>
+<span>  <span class="va">ylim</span>,</span>
+<span>  <span class="va">xlim</span>,</span>
+<span>  frontend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  plotall <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">nr</span>,</span>
+<span>  <span class="va">nc</span>,</span>
+<span>  <span class="va">pdfstub</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>output</dt>
 <dd><p>output from the function <code>amelia</code>.</p></dd>
+
+
 <dt>var</dt>
 <dd><p>the column number or variable name of the variable to plot.</p></dd>
+
+
 <dt>cs</dt>
 <dd><p>the name (or level) of the cross-sectional unit to plot.
 Maybe a vector of names which will panel a window of plots</p></dd>
+
+
 <dt>draws</dt>
 <dd><p>the number of imputations on which to base the confidence
 intervals.</p></dd>
+
+
 <dt>conf</dt>
 <dd><p>the confidence level of the confidence intervals to plot
 for the imputated values.</p></dd>
+
+
 <dt>misscol</dt>
 <dd><p>the color of the imputed values and their confidence
 intervals.</p></dd>
+
+
 <dt>obscol</dt>
 <dd><p>the color of the points for observed units.</p></dd>
+
+
 <dt>xlab</dt>
 <dd><p>x axis label</p></dd>
+
+
 <dt>ylab</dt>
 <dd><p>y axis label</p></dd>
+
+
 <dt>main</dt>
 <dd><p>overall plot title</p></dd>
+
+
 <dt>pch</dt>
 <dd><p>point shapes for the plot.</p></dd>
+
+
 <dt>ylim</dt>
 <dd><p>y limits (y1, y2) of the plot.</p></dd>
+
+
 <dt>xlim</dt>
 <dd><p>x limits (x1, x2) of the plot.</p></dd>
+
+
 <dt>frontend</dt>
 <dd><p>a logical value for use with the <code>AmeliaView</code> GUI.</p></dd>
+
+
 <dt>plotall</dt>
 <dd><p>a logical value that provides a shortcut for ploting all unique values of the level.
 A shortcut for the <code>cs</code> argument, a TRUE value overwrites any
 <code>cs</code> argument.</p></dd>
+
+
 <dt>nr</dt>
 <dd><p>the number of rows of plots to use when ploting multiple cross-sectional
 units.  The default value will try to minimize this value to create a roughly
 square representation, up to a value of four.  If all plots do not fit on the
 window, a new window will be started.</p></dd>
+
+
 <dt>nc</dt>
 <dd><p>the number of columns of plots to use.  See <code>nr</code></p></dd>
+
+
 <dt>pdfstub</dt>
 <dd><p>a stub string used to write pdf copies of each window created by the
 plot.  The default is not to write pdf output, but any string value will turn
 on pdf output to the local working directory.  If the stub is <code>mystub</code>,
 then plots will be saved as <code>mystub1.pdf</code>, <code>mystub2.pdf</code>, etc.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>further graphical parameters for the plot.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -163,7 +200,7 @@ then plots will be saved as <code>mystub1.pdf</code>, <code>mystub2.pdf</code>, 
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

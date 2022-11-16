@@ -63,16 +63,16 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">write.amelia</span><span class="op">(</span>
-  <span class="va">obj</span>,
-  separate <span class="op">=</span> <span class="cn">TRUE</span>,
-  <span class="va">file.stem</span>,
-  extension <span class="op">=</span> <span class="cn">NULL</span>,
-  format <span class="op">=</span> <span class="st">"csv"</span>,
-  impvar <span class="op">=</span> <span class="st">"imp"</span>,
-  orig.data <span class="op">=</span> <span class="cn">TRUE</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">write.amelia</span><span class="op">(</span></span>
+<span>  <span class="va">obj</span>,</span>
+<span>  separate <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">file.stem</span>,</span>
+<span>  extension <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  format <span class="op">=</span> <span class="st">"csv"</span>,</span>
+<span>  impvar <span class="op">=</span> <span class="st">"imp"</span>,</span>
+<span>  orig.data <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -80,30 +80,45 @@
     <dl><dt>obj</dt>
 <dd><p>an object of class "amelia"; typically output from the
 function <code>amelia</code></p></dd>
+
+
 <dt>separate</dt>
 <dd><p>logical variable. If <code>TRUE</code> (default), the
 imputed datasets will be written to separate files, whose names come
 from the <code>file.stem</code> and <code>extension</code> arguments. If <code>FALSE</code>,
 the imputations are stacked and written as a single file.</p></dd>
+
+
 <dt>file.stem</dt>
 <dd><p>the leading part of the filename to save to
 output The imputation number and <code>extension</code> will be added to
 complete the filename. This can include a directory path.</p></dd>
+
+
 <dt>extension</dt>
 <dd><p>the extension of the filename. This is simply what
 follows <code>file.stem</code> and the imputation number.</p></dd>
+
+
 <dt>format</dt>
 <dd><p>one of the following output formats: <code>csv</code>,
 <code>dta</code> or <code>table</code>. See details.</p></dd>
+
+
 <dt>impvar</dt>
 <dd><p>the name of imputation number variable written to the
 stacked dataset when <code>separate</code> is <code>FALSE</code>.</p></dd>
+
+
 <dt>orig.data</dt>
 <dd><p>logical variable indicating whether the original,
 unimputed dataset should be included in the stacked dataset when
 <code>separate</code> is <code>FALSE</code>.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>further arguments for the <code>write</code> functions.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -114,10 +129,11 @@ these functions from <code>write.amelia</code>.</p>
 <p>When <code>separate</code> is <code>TRUE</code>, each imputed dataset is written
 to its own file. If you were to set <code>file.stem</code> to
 <code>"outdata"</code> and the <code>extension</code> to <code>".csv"</code> , then the
-resulting filename of the written files will be</p><div class="sourceCode"><pre><code><span class="va">outdata1.csv</span>
-  <span class="va">outdata2.csv</span>
-  <span class="va">outdata3.csv</span>
-  <span class="va">...</span></code></pre></div><p>and so on.</p>
+resulting filename of the written files will be</p><div class="sourceCode"><pre><code><span></span>
+<span>  <span class="va">outdata1.csv</span></span>
+<span>  <span class="va">outdata2.csv</span></span>
+<span>  <span class="va">outdata3.csv</span></span>
+<span>  <span class="va">...</span></span></code></pre></div><p>and so on.</p>
 <p>When <code>separate</code> is <code>FALSE</code>, the function adds a variable
 called <code>impvar</code> to each dataset which indicates the imputed
 dataset to which the row belongs. Then, each of the datasets are
@@ -142,7 +158,7 @@ stack, with its imputation number set to 0.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

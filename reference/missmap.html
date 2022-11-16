@@ -65,24 +65,24 @@ the dataset passed to <code>amelia</code>.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">missmap</span><span class="op">(</span>
-  <span class="va">obj</span>,
-  <span class="va">vars</span>,
-  legend <span class="op">=</span> <span class="cn">TRUE</span>,
-  <span class="va">col</span>,
-  <span class="va">main</span>,
-  y.cex <span class="op">=</span> <span class="fl">0.8</span>,
-  x.cex <span class="op">=</span> <span class="fl">0.8</span>,
-  <span class="va">y.labels</span>,
-  <span class="va">y.at</span>,
-  csvar <span class="op">=</span> <span class="cn">NULL</span>,
-  tsvar <span class="op">=</span> <span class="cn">NULL</span>,
-  rank.order <span class="op">=</span> <span class="cn">TRUE</span>,
-  margins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">5</span><span class="op">)</span>,
-  gap.xaxis <span class="op">=</span> <span class="fl">1</span>,
-  x.las <span class="op">=</span> <span class="fl">2</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">missmap</span><span class="op">(</span></span>
+<span>  <span class="va">obj</span>,</span>
+<span>  <span class="va">vars</span>,</span>
+<span>  legend <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">col</span>,</span>
+<span>  <span class="va">main</span>,</span>
+<span>  y.cex <span class="op">=</span> <span class="fl">0.8</span>,</span>
+<span>  x.cex <span class="op">=</span> <span class="fl">0.8</span>,</span>
+<span>  <span class="va">y.labels</span>,</span>
+<span>  <span class="va">y.at</span>,</span>
+<span>  csvar <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tsvar <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  rank.order <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  margins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">5</span><span class="op">)</span>,</span>
+<span>  gap.xaxis <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  x.las <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -90,52 +90,83 @@ the dataset passed to <code>amelia</code>.</p>
     <dl><dt>obj</dt>
 <dd><p>an object of class "amelia"; typically output from the
 function <code>amelia</code>, a matrix or a dataframe.</p></dd>
+
+
 <dt>vars</dt>
 <dd><p>a vector of column numbers or column names of the data
 to include in the plot. The default is to plot all variables.</p></dd>
+
+
 <dt>legend</dt>
 <dd><p>should a legend be drawn? (True or False)</p></dd>
+
+
 <dt>col</dt>
 <dd><p>a vector of length two where the first element specifies
 the color for missing cells and the second element specifies</p></dd>
+
+
 <dt>main</dt>
 <dd><p>main title of the plot. Defaults to "Missingness Map".</p></dd>
+
+
 <dt>y.cex</dt>
 <dd><p>expansion for the variables names on the x-axis.</p></dd>
+
+
 <dt>x.cex</dt>
 <dd><p>expansion for the unit names on the y-axis.</p></dd>
+
+
 <dt>y.labels</dt>
 <dd><p>a vector of row labels to print on the y-axis</p></dd>
+
+
 <dt>y.at</dt>
 <dd><p>a vector of the same length as <code>y.labels</code> with row
 nmumbers associated with the labels.</p></dd>
+
+
 <dt>csvar</dt>
 <dd><p>column number or name of the variable corresponding to
 the unit indicator. Only used when the <code>obj</code> is not of class
 <code>amelia</code>.</p></dd>
+
+
 <dt>tsvar</dt>
 <dd><p>column number or name of the variable corresponding to
 the time indicator. Only used when the <code>obj</code> is not of class
 <code>amelia</code>.</p></dd>
+
+
 <dt>rank.order</dt>
 <dd><p>a logical value. If <code>TRUE</code>, the default, then
 the order of the variables along the the x-axis is sorted by the
 percent missing (from highest to lowest). If <code>FALSE</code>, it is
 simply the order of the variables in the data.</p></dd>
+
+
 <dt>margins</dt>
 <dd><p>a vector of length two that specifies the bottom and
 left margins of the plot. Useful for when variable names or
 row names are long.</p></dd>
+
+
 <dt>gap.xaxis</dt>
 <dd><p>value to pass to the <code>gap.axis</code> argument of
 the <code>axis</code> function that plots the x-axis. See
 <code><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis</a></code> for more details. Ignored on R versions less
 than 4.0.0.</p></dd>
+
+
 <dt>x.las</dt>
 <dd><p>value of the <code>las</code> argument to pass to the
 <code><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis</a></code> function creating the x-axis.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>further graphical arguments.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -169,7 +200,7 @@ the plotting region.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

@@ -65,52 +65,73 @@ model from <code>amelia</code> output.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">overimpute</span><span class="op">(</span>
-  <span class="va">output</span>,
-  <span class="va">var</span>,
-  draws <span class="op">=</span> <span class="fl">20</span>,
-  <span class="va">subset</span>,
-  legend <span class="op">=</span> <span class="cn">TRUE</span>,
-  <span class="va">xlab</span>,
-  <span class="va">ylab</span>,
-  <span class="va">main</span>,
-  frontend <span class="op">=</span> <span class="cn">FALSE</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">overimpute</span><span class="op">(</span></span>
+<span>  <span class="va">output</span>,</span>
+<span>  <span class="va">var</span>,</span>
+<span>  draws <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  <span class="va">subset</span>,</span>
+<span>  legend <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">xlab</span>,</span>
+<span>  <span class="va">ylab</span>,</span>
+<span>  <span class="va">main</span>,</span>
+<span>  frontend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>output</dt>
 <dd><p>output from the function <code>amelia</code>.</p></dd>
+
+
 <dt>var</dt>
 <dd><p>column number or variable name of the variable to
 overimpute.</p></dd>
+
+
 <dt>draws</dt>
 <dd><p>the number of draws per imputed dataset to generate
 overimputations. Total number of simulations will <code>m *
 draws</code> where <code>m</code> is the number of imputations.</p></dd>
+
+
 <dt>subset</dt>
 <dd><p>an optional vector specifying a subset of observations
 to be used in the overimputation.</p></dd>
+
+
 <dt>legend</dt>
 <dd><p>a logical value indicating if a legend should be
 plotted.</p></dd>
+
+
 <dt>xlab</dt>
 <dd><p>the label for the x-axis. The default is "Observed Values."</p></dd>
+
+
 <dt>ylab</dt>
 <dd><p>the label for the y-axis. The default is "Imputed Values."</p></dd>
+
+
 <dt>main</dt>
 <dd><p>main title of the plot. The default is to smartly title the plot
 using the variable name.</p></dd>
+
+
 <dt>frontend</dt>
 <dd><p>a logical value used internally for the Amelia GUI.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>further graphical parameters for the plot.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list that contains (1) the row in the original data
+    
+
+<p>A list that contains (1) the row in the original data
   (<code>row</code>), (2) the observed value of that observation
   (<code>orig</code>), (2) the mean of the overimputations
   (<code>mean.overimputed</code>), (3) the lower bound of the 95%
@@ -161,7 +182,7 @@ data frame as if it were attached.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

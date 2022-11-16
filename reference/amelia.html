@@ -65,51 +65,51 @@ imputed datasets.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">amelia</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="co"># S3 method for amelia</span>
-<span class="fu">amelia</span><span class="op">(</span><span class="va">x</span>, m <span class="op">=</span> <span class="fl">5</span>, p2s <span class="op">=</span> <span class="fl">1</span>, frontend <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="co"># S3 method for molist</span>
-<span class="fu">amelia</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="co"># S3 method for default</span>
-<span class="fu">amelia</span><span class="op">(</span>
-  <span class="va">x</span>,
-  m <span class="op">=</span> <span class="fl">5</span>,
-  p2s <span class="op">=</span> <span class="fl">1</span>,
-  frontend <span class="op">=</span> <span class="cn">FALSE</span>,
-  idvars <span class="op">=</span> <span class="cn">NULL</span>,
-  ts <span class="op">=</span> <span class="cn">NULL</span>,
-  cs <span class="op">=</span> <span class="cn">NULL</span>,
-  polytime <span class="op">=</span> <span class="cn">NULL</span>,
-  splinetime <span class="op">=</span> <span class="cn">NULL</span>,
-  intercs <span class="op">=</span> <span class="cn">FALSE</span>,
-  lags <span class="op">=</span> <span class="cn">NULL</span>,
-  leads <span class="op">=</span> <span class="cn">NULL</span>,
-  startvals <span class="op">=</span> <span class="fl">0</span>,
-  tolerance <span class="op">=</span> <span class="fl">1e-04</span>,
-  logs <span class="op">=</span> <span class="cn">NULL</span>,
-  sqrts <span class="op">=</span> <span class="cn">NULL</span>,
-  lgstc <span class="op">=</span> <span class="cn">NULL</span>,
-  noms <span class="op">=</span> <span class="cn">NULL</span>,
-  ords <span class="op">=</span> <span class="cn">NULL</span>,
-  incheck <span class="op">=</span> <span class="cn">TRUE</span>,
-  collect <span class="op">=</span> <span class="cn">FALSE</span>,
-  arglist <span class="op">=</span> <span class="cn">NULL</span>,
-  empri <span class="op">=</span> <span class="cn">NULL</span>,
-  priors <span class="op">=</span> <span class="cn">NULL</span>,
-  autopri <span class="op">=</span> <span class="fl">0.05</span>,
-  emburn <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>,
-  bounds <span class="op">=</span> <span class="cn">NULL</span>,
-  max.resample <span class="op">=</span> <span class="fl">100</span>,
-  overimp <span class="op">=</span> <span class="cn">NULL</span>,
-  boot.type <span class="op">=</span> <span class="st">"ordinary"</span>,
-  parallel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"no"</span>, <span class="st">"multicore"</span>, <span class="st">"snow"</span><span class="op">)</span>,
-  ncpus <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"amelia.ncpus"</span>, <span class="fl">1L</span><span class="op">)</span>,
-  cl <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">amelia</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for amelia</span></span>
+<span><span class="fu">amelia</span><span class="op">(</span><span class="va">x</span>, m <span class="op">=</span> <span class="fl">5</span>, p2s <span class="op">=</span> <span class="fl">1</span>, frontend <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for molist</span></span>
+<span><span class="fu">amelia</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for default</span></span>
+<span><span class="fu">amelia</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  m <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  p2s <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  frontend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  idvars <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ts <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cs <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  polytime <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  splinetime <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  intercs <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  lags <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  leads <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  startvals <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  tolerance <span class="op">=</span> <span class="fl">1e-04</span>,</span>
+<span>  logs <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  sqrts <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  lgstc <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  noms <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ords <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  incheck <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  collect <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  arglist <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  empri <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  priors <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  autopri <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  emburn <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>,</span>
+<span>  bounds <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  max.resample <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  overimp <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  boot.type <span class="op">=</span> <span class="st">"ordinary"</span>,</span>
+<span>  parallel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"no"</span>, <span class="st">"multicore"</span>, <span class="st">"snow"</span><span class="op">)</span>,</span>
+<span>  ncpus <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"amelia.ncpus"</span>, <span class="fl">1L</span><span class="op">)</span>,</span>
+<span>  cl <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -120,25 +120,41 @@ imputed datasets.</p>
 default S3 method. The third a convenient way to perform more imputations
 with the same parameters. The fourth will impute based on the settings from
 <code>moPrep</code> and any additional arguments.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>further arguments to be passed.</p></dd>
+
+
 <dt>m</dt>
 <dd><p>the number of imputed datasets to create.</p></dd>
+
+
 <dt>p2s</dt>
 <dd><p>an integer value taking either 0 for no screen output,
 1 for normal screen printing of iteration numbers, and 2 for detailed
 screen output.  See "Details" for specifics on output when p2s=2.</p></dd>
+
+
 <dt>frontend</dt>
 <dd><p>a logical value used internally for the GUI.</p></dd>
+
+
 <dt>idvars</dt>
 <dd><p>a vector of column numbers or column names that indicates
 identification variables.  These will be dropped from the analysis but
 copied into the imputed datasets.</p></dd>
+
+
 <dt>ts</dt>
 <dd><p>column number or variable name indicating the variable identifying time
 in time series data.</p></dd>
+
+
 <dt>cs</dt>
 <dd><p>column number or variable name indicating the cross section variable.</p></dd>
+
+
 <dt>polytime</dt>
 <dd><p>integer between 0 and 3 indicating what
 power of polynomial should be included in the imputation model
@@ -146,60 +162,90 @@ to account for the effects of time.  A setting of 0 would
 indicate constant levels, 1 would indicate linear time
 effects, 2 would indicate squared effects, and 3 would
 indicate cubic time effects.</p></dd>
+
+
 <dt>splinetime</dt>
 <dd><p>interger value of 0 or greater to control cubic
 smoothing splines of time. Values between 0 and 3 create a simple
 polynomial of time (identical to the polytime argument). Values <code>k</code> greater
 than 3 create a spline with an additional <code>k-3</code>
 knotpoints.</p></dd>
+
+
 <dt>intercs</dt>
 <dd><p>a logical variable indicating if the
 time effects of <code>polytime</code> should vary across the
 cross-section.</p></dd>
+
+
 <dt>lags</dt>
 <dd><p>a vector of numbers or names indicating columns in the data
 that should have their lags included in the imputation model.</p></dd>
+
+
 <dt>leads</dt>
 <dd><p>a vector of numbers or names indicating columns in the data
 that should have their leads (future values) included in the imputation
 model.</p></dd>
+
+
 <dt>startvals</dt>
 <dd><p>starting values, 0 for the parameter matrix from
 listwise deletion, 1 for an identity matrix.</p></dd>
+
+
 <dt>tolerance</dt>
 <dd><p>the convergence threshold for the EM algorithm.</p></dd>
+
+
 <dt>logs</dt>
 <dd><p>a vector of column numbers or column names that refer
 to variables that require log-linear transformation.</p></dd>
+
+
 <dt>sqrts</dt>
 <dd><p>a vector of numbers or names indicating columns in the data
 that should be transformed by a sqaure root function.  Data in this
 column cannot be less than zero.</p></dd>
+
+
 <dt>lgstc</dt>
 <dd><p>a vector of numbers or names indicating columns in the data
 that should be transformed by a logistic function for proportional data.
 Data in this column must be between 0 and 1.</p></dd>
+
+
 <dt>noms</dt>
 <dd><p>a vector of numbers or names indicating columns in the data
 that are nominal variables.</p></dd>
+
+
 <dt>ords</dt>
 <dd><p>a vector of numbers or names indicating columns in the
 data that should be treated as ordinal variables.</p></dd>
+
+
 <dt>incheck</dt>
 <dd><p>a logical indicating whether or not the inputs to the
 function should be checked before running <code>amelia</code>.  This should
 only be set to <code>FALSE</code> if you are extremely confident that your
 settings are non-problematic and you are trying to save computational
 time.</p></dd>
+
+
 <dt>collect</dt>
 <dd><p>a logical value indicating whether or
 not the garbage collection frequency should be increased during the
 imputation model.  Only set this to <code>TRUE</code> if you are experiencing memory
 issues as it can significantly slow down the imputation
 process</p></dd>
+
+
 <dt>arglist</dt>
 <dd><p>an object of class "ameliaArgs" from a previous run of
 Amelia. Including this object will use the arguments from that run.</p></dd>
+
+
 <dt>empri</dt>
 <dd><p>number indicating level of the empirical (or ridge) prior.
 This prior shrinks the covariances of the data, but keeps the means
@@ -208,87 +254,122 @@ large correlations among the variables.  Should be kept small,
 perhaps 0.5 to 1 percent of the rows of the data; a
 reasonable upper bound is around 10 percent of the rows of the
 data.</p></dd>
+
+
 <dt>priors</dt>
 <dd><p>a four or five column matrix containing the priors for
 either individual missing observations or variable-wide missing
 values.  See "Details" for more information.</p></dd>
+
+
 <dt>autopri</dt>
 <dd><p>allows the EM chain to increase the empirical prior if
 the path strays into an nonpositive definite covariance matrix, up
 to a maximum empirical prior of the value of this argument times
 <code>n</code>, the number of observations.  Must be between 0 and 1, and at
 zero this turns off this feature.</p></dd>
+
+
 <dt>emburn</dt>
 <dd><p>a numeric vector of length 2, where <code>emburn[1]</code> is
 a the minimum EM chain length and <code>emburn[2]</code> is the
 maximum EM chain length. These are ignored if they are less than 1.</p></dd>
+
+
 <dt>bounds</dt>
 <dd><p>a three column matrix to hold logical bounds on the
 imputations. Each row of the matrix should be of the form
 <code>c(column.number, lower.bound,upper.bound)</code> See Details below.</p></dd>
+
+
 <dt>max.resample</dt>
 <dd><p>an integer that specifies how many times Amelia
 should redraw the imputed values when trying to meet the logical
 constraints of <code>bounds</code>. After this value, imputed values are
 set to the bounds.</p></dd>
+
+
 <dt>overimp</dt>
 <dd><p>a two-column matrix describing which cells are to be
 overimputed. Each row of the matrix should be a <code>c(row,column)</code> pair.
 Each of these cells will be treated as missing and
 replaced with draws from the imputation model.</p></dd>
+
+
 <dt>boot.type</dt>
 <dd><p>choice of bootstrap, currently restricted to either
 <code>"ordinary"</code> for the usual non-parametric bootstrap and
 <code>"none"</code> for no bootstrap.</p></dd>
+
+
 <dt>parallel</dt>
 <dd><p>the type of parallel operation to be used (if any). If
 missing, the default is taken from the option
 <code>"amelia.parallel"</code> (and if that is not set, <code>"no"</code>).</p></dd>
+
+
 <dt>ncpus</dt>
 <dd><p>integer: the number of processes to be used in parallel
 operation: typically one would choose the number of available CPUs.</p></dd>
+
+
 <dt>cl</dt>
 <dd><p>an optional <span class="pkg">parallel</span> or <span class="pkg">snow</span> cluster for use if
 <code>parallel = "snow"</code>. If not supplied, a cluster on the local
 machine is created for the duration of the <code>amelia</code> call.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An instance of S3 class "amelia" with the following objects:</p>
+    
+
+<p>An instance of S3 class "amelia" with the following objects:</p>
 <dl><dt>imputations</dt>
 <dd><p>a list of length <code>m</code> with an imputed dataset in
   each entry. The class (matrix or data.frame) of these entries will
   match <code>x</code>.</p></dd>
+
 <dt>m</dt>
 <dd><p>an integer indicating the number of imputations run.</p></dd>
+
 <dt>missMatrix</dt>
 <dd><p>a matrix identical in size to the original dataset
   with 1 indicating a missing observation and a 0 indicating an observed
   observation.</p></dd>
+
 <dt>theta</dt>
 <dd><p>An array with dimensions \((p+1)\) by \((p+1)\) by \(m\)  (where
 \(p\) is the number of variables in the imputations model) holding
   the converged parameters for each of the <code>m</code> EM chains.</p></dd>
+
 <dt>mu</dt>
 <dd><p>A \(p\) by \(m\) matrix of of the posterior modes for the
   complete-data means in each of the EM chains.</p></dd>
+
 <dt>covMatrices</dt>
 <dd><p>An array with dimensions \((p)\) by \((p)\) by
   \(m\) where the first two dimensions hold the posterior modes of the
   covariance matrix of the complete data for each of the EM chains.</p></dd>
+
 <dt>code</dt>
 <dd><p>a integer indicating the exit code of the Amelia run.</p></dd>
+
 <dt>message</dt>
 <dd><p>an exit message for the Amelia run</p></dd>
+
 <dt>iterHist</dt>
 <dd><p>a list of iteration histories for each EM chain. See
   documentation for details.</p></dd>
+
 <dt>arguments</dt>
 <dd><p>a instance of the class "ameliaArgs" which holds the
   arguments used in the Amelia run.</p></dd>
+
 <dt>overvalues</dt>
 <dd><p>a vector of values removed for overimputation. Used to
   reformulate the original data from the imputations.</p></dd>
+
+
 </dl><p>Note that the <code>theta</code>, <code>mu</code> and <code>covMatrcies</code> objects
 refers to the data as seen by the EM algorithm and is thusly centered,
 scaled, stacked, tranformed and rearranged. See the manual for details
@@ -401,15 +482,15 @@ plots, <code><a href="tscsPlot.html">tscsPlot</a></code>. Also: <code><a href="p
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">africa</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">a.out</span> <span class="op">&lt;-</span> <span class="fu">amelia</span><span class="op">(</span>x <span class="op">=</span> <span class="va">africa</span>, cs <span class="op">=</span> <span class="st">"country"</span>, ts <span class="op">=</span> <span class="st">"year"</span>, logs <span class="op">=</span> <span class="st">"gdp_pc"</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">africa</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">a.out</span> <span class="op">&lt;-</span> <span class="fu">amelia</span><span class="op">(</span>x <span class="op">=</span> <span class="va">africa</span>, cs <span class="op">=</span> <span class="st">"country"</span>, ts <span class="op">=</span> <span class="st">"year"</span>, logs <span class="op">=</span> <span class="st">"gdp_pc"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -- Imputation 1 --</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   1  2  3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -- Imputation 2 --</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   1  2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1  2  3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -- Imputation 3 --</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -417,13 +498,13 @@ plots, <code><a href="tscsPlot.html">tscsPlot</a></code>. Also: <code><a href="p
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -- Imputation 4 --</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   1  2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1  2  3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -- Imputation 5 --</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   1  2  3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">a.out</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">a.out</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Amelia output with 5 imputed datasets.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Return code:  1 </span>
@@ -432,9 +513,9 @@ plots, <code><a href="tscsPlot.html">tscsPlot</a></code>. Also: <code><a href="p
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain Lengths:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> --------------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Imputation 1:  3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Imputation 2:  2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Imputation 2:  3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Imputation 3:  3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Imputation 4:  2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Imputation 4:  3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Imputation 5:  3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Rows after Listwise Deletion:  115 </span>
@@ -453,9 +534,9 @@ plots, <code><a href="tscsPlot.html">tscsPlot</a></code>. Also: <code><a href="p
 <span class="r-out co"><span class="r-pr">#&gt;</span> civlib           0.00000000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> population       0.00000000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">a.out</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">a.out</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="amelia-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -470,7 +551,7 @@ plots, <code><a href="tscsPlot.html">tscsPlot</a></code>. Also: <code><a href="p
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

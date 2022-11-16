@@ -106,28 +106,28 @@
 </h2>
 <p>To install the latest version of Amelia, which requires <a href="https://cran.r-project.org" class="external-link">R</a> version 2.14.0 or higher, simply use the standard R installation tools:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"Amelia"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"Amelia"</span><span class="op">)</span></span></code></pre></div>
 <p>If you would to use the current development release of Amelia (which may be unstable), run the following:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"IQSS/Amelia"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"IQSS/Amelia"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="getting-started-with-amelia">Getting started with Amelia<a class="anchor" aria-label="anchor" href="#getting-started-with-amelia"></a>
 </h2>
 <p>The main function in the Amelia package is <code><a href="reference/amelia.html">amelia()</a></code> which will perform multiple imputation on a data frame. It allows for easy setting of time-series and unit variables via the <code>ts</code> and <code>cs</code> arguments.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gking.harvard.edu/amelia" class="external-link">Amelia</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">africa</span><span class="op">)</span>
-
-<span class="va">a.out</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/amelia.html">amelia</a></span><span class="op">(</span><span class="va">africa</span>, m <span class="op">=</span> <span class="fl">5</span>, ts <span class="op">=</span> <span class="st">"year"</span>, cs <span class="op">=</span> <span class="st">"country"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gking.harvard.edu/amelia" class="external-link">Amelia</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">africa</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">a.out</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/amelia.html">amelia</a></span><span class="op">(</span><span class="va">africa</span>, m <span class="op">=</span> <span class="fl">5</span>, ts <span class="op">=</span> <span class="st">"year"</span>, cs <span class="op">=</span> <span class="st">"country"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="ameliaview-gui">AmeliaView GUI<a class="anchor" aria-label="anchor" href="#ameliaview-gui"></a>
 </h2>
 <p>Once installed, you can access most of the Amelia functionality through an interactive GUI by running the following command:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">Amelia</span><span class="fu">::</span><span class="fu"><a href="reference/AmeliaView.html">AmeliaView</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">Amelia</span><span class="fu">::</span><span class="fu"><a href="reference/AmeliaView.html">AmeliaView</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
   </div>
@@ -186,7 +186,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>
