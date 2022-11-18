@@ -18,7 +18,7 @@ data sets using the so-called Rubin rules."><!-- mathjax --><script src="https:/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Amelia</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8.1</span>
       </span>
     </div>
 
@@ -142,15 +142,15 @@ Only present if <code>conf.int = TRUE</code>.</p></dd>
 <span class="r-in"><span><span class="st">"gdp_pc"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -- Imputation 1 --</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   1  2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1  2  3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -- Imputation 2 --</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   1  2  3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1  2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -- Imputation 3 --</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   1  2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1  2  3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -- Imputation 4 --</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -167,9 +167,9 @@ Only present if <code>conf.int = TRUE</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 3 × 10</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   term   estim…¹ std.e…² stati…³  p.value     df       r miss.…⁴ conf.…⁵ conf.…⁶</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> (Inte…  -<span style="color: #BB0000;">0.983</span>   83.4  -<span style="color: #BB0000;">0.011</span><span style="color: #BB0000; text-decoration: underline;">8</span> 1.01<span style="color: #949494;">e</span>+ 0 1.14<span style="color: #949494;">e</span>5 5.97<span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span> 5.95<span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span>  163.    -<span style="color: #BB0000;">165.</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> infl    -<span style="color: #BB0000;">6.86</span>     1.66 -<span style="color: #BB0000;">4.12</span>   2.00<span style="color: #949494;">e</span>+ 0 9.22<span style="color: #949494;">e</span>6 6.59<span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span> 6.59<span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span>   -<span style="color: #BB0000;">3.60</span>   -<span style="color: #BB0000;">10.1</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> trade   18.5      1.24 14.9    3.08<span style="color: #949494;">e</span><span style="color: #BB0000;">-50</span> 4.19<span style="color: #949494;">e</span>4 9.86<span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span> 9.82<span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span>   20.9     16.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> (Inte…   -<span style="color: #BB0000;">3.64</span>   84.3  -<span style="color: #BB0000;">0.043</span><span style="color: #BB0000; text-decoration: underline;">1</span> 1.03<span style="color: #949494;">e</span>+ 0 7.13<span style="color: #949494;">e</span>3 2.43<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> 2.40<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span>  162.    -<span style="color: #BB0000;">169.</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> infl     -<span style="color: #BB0000;">6.91</span>    1.67 -<span style="color: #BB0000;">4.13</span>   2.00<span style="color: #949494;">e</span>+ 0 7.03<span style="color: #949494;">e</span>6 7.55<span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span> 7.55<span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span>   -<span style="color: #BB0000;">3.63</span>   -<span style="color: #BB0000;">10.2</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> trade    18.5     1.26 14.7    7.44<span style="color: #949494;">e</span><span style="color: #BB0000;">-47</span> 2.16<span style="color: #949494;">e</span>3 4.50<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> 4.39<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span>   21.0     16.1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with abbreviated variable names ¹​estimate, ²​std.error, ³​statistic,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   ⁴​miss.info, ⁵​conf.low, ⁶​conf.high</span></span>
 <span class="r-in"><span></span></span>
