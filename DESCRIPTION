@@ -41,6 +41,7 @@ Description: A tool that "multiply imputes" missing data in a single cross-secti
   does not require users to know R.
 License: GPL (>= 2)
 URL: https://gking.harvard.edu/amelia
+BugReports: https://github.com/IQSS/Amelia/issues
 Suggests:
   tcltk,
   broom,
