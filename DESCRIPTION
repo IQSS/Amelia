@@ -40,7 +40,7 @@ Description: A tool that "multiply imputes" missing data in a single cross-secti
   works from the R command line or via a graphical user interface that
   does not require users to know R.
 License: GPL (>= 2)
-URL: https://gking.harvard.edu/amelia
+URL: https://gking.harvard.edu/amelia, https://iqss.github.io/Amelia/
 BugReports: https://github.com/IQSS/Amelia/issues
 Suggests:
   tcltk,
