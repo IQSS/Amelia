@@ -158,20 +158,19 @@ Only present if <code>conf.int = TRUE</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -- Imputation 5 --</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   1  2  3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1  2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">imp.mods</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">a.out</span>, <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">gdp_pc</span> <span class="op">~</span> <span class="va">infl</span> <span class="op">+</span> <span class="va">trade</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">mi.combine</span><span class="op">(</span><span class="va">imp.mods</span>, conf.int <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 3 × 10</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   term  estim…¹ std.e…² statis…³  p.value     df       r miss.…⁴ conf.…⁵ conf.…⁶</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> (Int…  -<span style="color: #BB0000;">0.566</span>   83.5  -<span style="color: #BB0000;">0.006</span><span style="color: #BB0000; text-decoration: underline;">78</span> 1.01<span style="color: #949494;">e</span>+ 0 9.91<span style="color: #949494;">e</span>3 0.020<span style="text-decoration: underline;">5</span>  0.020<span style="text-decoration: underline;">3</span>   163.    -<span style="color: #BB0000;">164.</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> infl   -<span style="color: #BB0000;">6.90</span>     1.67 -<span style="color: #BB0000;">4.14</span>    2.00<span style="color: #949494;">e</span>+ 0 3.95<span style="color: #949494;">e</span>5 0.003<span style="text-decoration: underline;">19</span> 0.003<span style="text-decoration: underline;">19</span>   -<span style="color: #BB0000;">3.63</span>   -<span style="color: #BB0000;">10.2</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> trade  18.5      1.23 15.0     1.35<span style="color: #949494;">e</span><span style="color: #BB0000;">-50</span> 2.80<span style="color: #949494;">e</span>4 0.012<span style="text-decoration: underline;">1</span>  0.012<span style="text-decoration: underline;">0</span>    20.9     16.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with abbreviated variable names ¹​estimate, ²​std.error, ³​statistic,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   ⁴​miss.info, ⁵​conf.low, ⁶​conf.high</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   term   estimate std.error statistic  p.value     df       r miss.info conf.low</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> (Inte…    -<span style="color: #BB0000;">5.81</span>     84.6    -<span style="color: #BB0000;">0.068</span><span style="color: #BB0000; text-decoration: underline;">7</span> 1.05<span style="color: #949494;">e</span>+ 0 1.75<span style="color: #949494;">e</span>4 0.015<span style="text-decoration: underline;">4</span>    0.015<span style="text-decoration: underline;">2</span>    160.  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> infl      -<span style="color: #BB0000;">6.81</span>      1.68   -<span style="color: #BB0000;">4.06</span>   2.00<span style="color: #949494;">e</span>+ 0 6.08<span style="color: #949494;">e</span>5 0.002<span style="text-decoration: underline;">57</span>   0.002<span style="text-decoration: underline;">57</span>    -<span style="color: #BB0000;">3.52</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> trade     18.5       1.25   14.8    2.47<span style="color: #949494;">e</span><span style="color: #BB0000;">-49</span> 1.85<span style="color: #949494;">e</span>4 0.014<span style="text-decoration: underline;">9</span>    0.014<span style="text-decoration: underline;">8</span>     20.9 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 1 more variable: conf.high &lt;dbl&gt;</span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -187,7 +186,7 @@ Only present if <code>conf.int = TRUE</code>.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

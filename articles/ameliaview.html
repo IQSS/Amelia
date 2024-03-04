@@ -79,7 +79,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>AmeliaView GUI Guide</h1>
             
-            <h4 data-toc-skip class="date">2022-11-18</h4>
+            <h4 data-toc-skip class="date">2024-03-04</h4>
       
       
       <div class="hidden name"><code>ameliaview.Rmd</code></div>
@@ -103,8 +103,8 @@ the following two commands:</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gking.harvard.edu/amelia" class="external-link">Amelia</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/AmeliaView.html">AmeliaView</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>This will bring up the AmeliaView window on any platform.</p>
-<div class="figure">
-<img src="assets/splash.png" alt=""><p class="caption">AmeliaView welcome screen</p>
+<div class="float">
+<img src="assets/splash.png" alt="AmeliaView welcome screen"><div class="figcaption">AmeliaView welcome screen</div>
 </div>
 </div>
 <div class="section level2">
@@ -121,8 +121,8 @@ Comma-Separated Values (.CSV), Tab-Delimited Text (.TXT), Stata v.5-10
 (.DTA), SPSS (.DAT), and SAS Transport (.XPORT). Note that when using a
 CSV file, Amelia assumes that your file has a header (that is, a row at
 the top of the data indicating the variable names).</p>
-<div class="figure">
-<img src="assets/import.png" alt=""><p class="caption">AmeliaView File and import menu.</p>
+<div class="float">
+<img src="assets/import.png" alt="AmeliaView File and import menu."><div class="figcaption">AmeliaView File and import menu.</div>
 </div>
 <p>You can also load data from an RData file. If the RData file contains
 more than one <code>data.frame</code>, a pop-up window will ask to you
@@ -133,8 +133,8 @@ look for data by default and where it will save imputed datasets.</p>
 <div class="section level2">
 <h2 id="variable-dashboard">Variable Dashboard<a class="anchor" aria-label="anchor" href="#variable-dashboard"></a>
 </h2>
-<div class="figure">
-<img src="assets/main.png" alt=""><p class="caption">Main variable dashboard in AmeliaView</p>
+<div class="float">
+<img src="assets/main.png" alt="Main variable dashboard in AmeliaView"><div class="figcaption">Main variable dashboard in AmeliaView</div>
 </div>
 <p>Once a dataset is loaded, AmeliaView will show the variable
 dashboard. In this mode, you will see a table of variables, with the
@@ -142,9 +142,9 @@ current options for each of them shown, along with a few summary
 statistics. You can reorder this table by any of these columns by
 clicking on the column headings. This might be helpful to, say, order
 the variables by mean or amount of missingness.</p>
-<div class="figure">
-<img src="assets/context-menu.png" alt=""><p class="caption">Variable options via right-click menu on the variable
-dashboard</p>
+<div class="float">
+<img src="assets/context-menu.png" alt="Variable options via right-click menu on the variable dashboard"><div class="figcaption">Variable options via right-click menu on the
+variable dashboard</div>
 </div>
 <p>You can set options for individual variables by the right-click
 context menu or through the “Variables” menu. For instance, clicking
@@ -206,8 +206,8 @@ logical bounds for the selected variable.</li>
 <div class="section level2">
 <h2 id="amelia-options">Amelia Options<a class="anchor" aria-label="anchor" href="#amelia-options"></a>
 </h2>
-<div class="figure">
-<img src="assets/options.png" alt=""><p class="caption">Options menu</p>
+<div class="float">
+<img src="assets/options.png" alt="Options menu"><div class="figcaption">Options menu</div>
 </div>
 <p>The “Variable” menu and the variable dashboard are the place to set
 variable-level options, but global options are set in the “Options”
@@ -258,8 +258,8 @@ their built-in <code>mi</code> tools.</li>
 <div class="section level3">
 <h3 id="numerical-options">Numerical options<a class="anchor" aria-label="anchor" href="#numerical-options"></a>
 </h3>
-<div class="figure">
-<img src="assets/numopts.png" alt=""><p class="caption">Numerical options menu</p>
+<div class="float">
+<img src="assets/numopts.png" alt="Numerical options menu"><div class="figcaption">Numerical options menu</div>
 </div>
 <ol style="list-style-type: decimal">
 <li><p><strong>Seed</strong> - Sets the seed for the random number
@@ -284,8 +284,8 @@ bound.</p></li>
 <div class="section level3">
 <h3 id="add-distributional-prior">Add Distributional Prior<a class="anchor" aria-label="anchor" href="#add-distributional-prior"></a>
 </h3>
-<div class="figure">
-<img src="assets/distpri.png" alt=""><p class="caption">Detail for Add Distributional Prior dialog</p>
+<div class="float">
+<img src="assets/distpri.png" alt="Detail for Add Distributional Prior dialog"><div class="figcaption">Detail for Add Distributional Prior dialog</div>
 </div>
 <ol style="list-style-type: decimal">
 <li>
@@ -313,8 +313,8 @@ prior. The textbox will only accept positive non-zero values.</li>
 <div class="section level3">
 <h3 id="add-range-prior">Add Range Prior<a class="anchor" aria-label="anchor" href="#add-range-prior"></a>
 </h3>
-<div class="figure">
-<img src="assets/rangepri.png" alt=""><p class="caption">Detail for Add Range Prior dialog</p>
+<div class="float">
+<img src="assets/rangepri.png" alt="Detail for Add Range Prior dialog"><div class="figcaption">Detail for Add Range Prior dialog</div>
 </div>
 <ol style="list-style-type: decimal">
 <li>
@@ -346,9 +346,9 @@ into an appropriate distributional prior.</li>
 <div class="section level2">
 <h2 id="imputing-and-checking-diagnostics">Imputing and checking diagnostics<a class="anchor" aria-label="anchor" href="#imputing-and-checking-diagnostics"></a>
 </h2>
-<div class="figure">
-<img src="assets/output-log.png" alt=""><p class="caption">Output log showing Amelia output for a successful
-imputation.</p>
+<div class="float">
+<img src="assets/output-log.png" alt="Output log showing Amelia output for a successful imputation."><div class="figcaption">Output log showing Amelia output for a
+successful imputation.</div>
 </div>
 <p>Once you have set all the relevant options, you can impute your data
 by clicking the “Impute!” button in the toolbar. In the bottom right
@@ -370,8 +370,8 @@ the R session.</p>
 <div class="section level3">
 <h3 id="diagnostics-dialog">Diagnostics Dialog<a class="anchor" aria-label="anchor" href="#diagnostics-dialog"></a>
 </h3>
-<div class="figure">
-<img src="assets/diag.png" alt=""><p class="caption">Detail for the Diagnostics dialog</p>
+<div class="float">
+<img src="assets/diag.png" alt="Detail for the Diagnostics dialog"><div class="figcaption">Detail for the Diagnostics dialog</div>
 </div>
 <p>Upon the successful completion of an imputation, the diagnostics menu
 will become available. Here you can use all of the diagnostics available
@@ -439,7 +439,7 @@ using the sessions feature of AmeliaView.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

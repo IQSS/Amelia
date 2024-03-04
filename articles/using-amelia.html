@@ -79,7 +79,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Using Amelia</h1>
             
-            <h4 data-toc-skip class="date">2022-11-18</h4>
+            <h4 data-toc-skip class="date">2024-03-04</h4>
       
       
       <div class="hidden name"><code>using-amelia.Rmd</code></div>
@@ -91,7 +91,7 @@
 <div class="section level2">
 <h2 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a>
 </h2>
-<p>We now demonstrate how to use Amelia using data from <span class="citation">Milner and Kubota (<a href="#ref-MilKub05" role="doc-biblioref">2005</a>)</span> which studies the effect of
+<p>We now demonstrate how to use Amelia using data from <span class="citation">Milner and Kubota (<a href="#ref-MilKub05">2005</a>)</span> which studies the effect of
 democracy on trade policy. For the purposes of this user’s guide, we
 will use a subset restricted to nine developing countries in Asia from
 1980 to 1999<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. This dataset includes 9 variables:</p>
@@ -147,8 +147,7 @@ year</td>
 </tbody>
 </table>
 <p>These variables correspond to the variables used in the analysis
-model of <span class="citation">Milner and Kubota (<a href="#ref-MilKub05" role="doc-biblioref">2005</a>)</span> in table
-2.</p>
+model of <span class="citation">Milner and Kubota (<a href="#ref-MilKub05">2005</a>)</span> in table 2.</p>
 <p>We first load the Amelia and the data:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gking.harvard.edu/amelia" class="external-link">Amelia</a></span><span class="op">)</span></span></code></pre></div>
@@ -156,7 +155,7 @@ model of <span class="citation">Milner and Kubota (<a href="#ref-MilKub05" role=
 <pre><code><span><span class="co">## ## </span></span>
 <span><span class="co">## ## Amelia II: Multiple Imputation</span></span>
 <span><span class="co">## ## (Version 1.8.1, built: 2022-11-18)</span></span>
-<span><span class="co">## ## Copyright (C) 2005-2022 James Honaker, Gary King and Matthew Blackwell</span></span>
+<span><span class="co">## ## Copyright (C) 2005-2024 James Honaker, Gary King and Matthew Blackwell</span></span>
 <span><span class="co">## ## Refer to http://gking.harvard.edu/amelia/ for more information</span></span>
 <span><span class="co">## ##</span></span></code></pre>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -191,7 +190,7 @@ missingness on many of the variables:</p>
 <span><span class="co">##  NA's   :18</span></span></code></pre>
 <p>In the presence of missing data, most statistical packages use
 <em>listwise deletion</em>, which removes any row that contains a
-missing value from the analysis. Using the base model of <span class="citation">Milner and Kubota (<a href="#ref-MilKub05" role="doc-biblioref">2005</a>)</span> Table 2, we run a simple linear
+missing value from the analysis. Using the base model of <span class="citation">Milner and Kubota (<a href="#ref-MilKub05">2005</a>)</span> Table 2, we run a simple linear
 model in R, which uses listwise deletion:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">tariff</span> <span class="op">~</span> <span class="va">polity</span> <span class="op">+</span> <span class="va">pop</span> <span class="op">+</span> <span class="va">gdp.pc</span> <span class="op">+</span> <span class="va">year</span> <span class="op">+</span> <span class="va">country</span>,</span>
@@ -510,17 +509,17 @@ Computing with R</a></p>
 <p>Social science data commonly includes variables that fail to fit to a
 multivariate normal distribution. Indeed, numerous models have been
 introduced specifically to deal with the problems they present. As it
-turns out, much evidence in the literature <span class="citation">(discussed in <a href="#ref-KinHonJos01" role="doc-biblioref">King et al. 2001</a>)</span> indicates that the
-multivariate normal model used in Amelia usually works well for the
-imputation stage even when discrete or non-normal variables are included
-and when the analysis stage involves these limited dependent variable
-models. Nevertheless, Amelia includes some limited capacity to deal
-directly with ordinal and nominal variables and to modify variables that
-require other transformations. In general nominal and log transform
-variables should be declared to Amelia, whereas ordinal (including
-dichotomous) variables often need not be, as described below. (For
-harder cases, see <span class="citation">(<a href="#ref-Schafer97" role="doc-biblioref">Schafer 1997</a>)</span>, for specialized
-MCMC-based imputation models for discrete variables.)</p>
+turns out, much evidence in the literature <span class="citation">(discussed in <a href="#ref-KinHonJos01">King et al.
+2001</a>)</span> indicates that the multivariate normal model used in
+Amelia usually works well for the imputation stage even when discrete or
+non-normal variables are included and when the analysis stage involves
+these limited dependent variable models. Nevertheless, Amelia includes
+some limited capacity to deal directly with ordinal and nominal
+variables and to modify variables that require other transformations. In
+general nominal and log transform variables should be declared to
+Amelia, whereas ordinal (including dichotomous) variables often need not
+be, as described below. (For harder cases, see <span class="citation">(<a href="#ref-Schafer97">Schafer 1997</a>)</span>, for
+specialized MCMC-based imputation models for discrete variables.)</p>
 <p>Although these transformations are taken internally on these
 variables to better fit the data to the multivariate normal assumptions
 of the imputation model, all the imputations that are created will be
@@ -558,16 +557,16 @@ datasets,</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">a.out</span><span class="op">$</span><span class="va">imputations</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">polity</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
-<span><span class="co">##               -8 -7.4578371590967               -7               -6 </span></span>
-<span><span class="co">##                1                1               22                4 </span></span>
-<span><span class="co">##               -5               -4               -2               -1 </span></span>
-<span><span class="co">##                7                3                9                1 </span></span>
-<span><span class="co">##                2                3                4                5 </span></span>
-<span><span class="co">##                7                7               15               26 </span></span>
-<span><span class="co">##                6                7                8                9 </span></span>
-<span><span class="co">##               13                5               36               13 </span></span>
-<span><span class="co">## 9.78025479283451 </span></span>
-<span><span class="co">##                1</span></span></code></pre>
+<span><span class="co">##                -8 -7.45783715909671                -7                -6 </span></span>
+<span><span class="co">##                 1                 1                22                 4 </span></span>
+<span><span class="co">##                -5                -4                -2                -1 </span></span>
+<span><span class="co">##                 7                 3                 9                 1 </span></span>
+<span><span class="co">##                 2                 3                 4                 5 </span></span>
+<span><span class="co">##                 7                 7                15                26 </span></span>
+<span><span class="co">##                 6                 7                 8                 9 </span></span>
+<span><span class="co">##                13                 5                36                13 </span></span>
+<span><span class="co">##  9.78025479283451 </span></span>
+<span><span class="co">##                 1</span></span></code></pre>
 <p>we can see that there is one imputation between -4 and -3 and one
 imputation between 6 and 7. Again, the interpretation of these values is
 rather straightforward even if they are not strictly in the coding of
@@ -929,8 +928,8 @@ meaning.</p>
 imputation turns out to be a weighted average of the model-based
 imputation and the prior mean, where the weights are functions of the
 relative strength of the data and prior: when the model predicts very
-well, the imputation will down-weight the prior, and vice versa <span class="citation">(<a href="#ref-HonKin10" role="doc-biblioref">Honaker
-and King 2010</a>)</span>.</p>
+well, the imputation will down-weight the prior, and vice versa <span class="citation">(<a href="#ref-HonKin10">Honaker and King
+2010</a>)</span>.</p>
 <p>The priors about individual observations should describe the
 analyst’s belief about the distribution of the missing data cell. This
 can either take the form of a mean and a standard deviation or a
@@ -1216,9 +1215,9 @@ model in of itself. To this end, it is easy to pass output from
 <code><a href="../reference/amelia.html">amelia()</a></code> to other functions. The easiest and most
 integrated way to run an analysis model is to use the
 <code><a href="https://rdrr.io/r/base/with.html" class="external-link">with()</a></code> and <code><a href="../reference/mi.combine.html">mi.combine()</a></code> functions. For
-example, in <span class="citation">Milner and Kubota (<a href="#ref-MilKub05" role="doc-biblioref">2005</a>)</span>, the
-dependent variable was tariff rates. We can replicate table 5.1 from
-their analysis with the original data simply by running</p>
+example, in <span class="citation">Milner and Kubota (<a href="#ref-MilKub05">2005</a>)</span>, the dependent variable was tariff
+rates. We can replicate table 5.1 from their analysis with the original
+data simply by running</p>
 <div class="sourceCode" id="cb69"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">orig.model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">tariff</span> <span class="op">~</span> <span class="va">polity</span> <span class="op">+</span> <span class="va">pop</span> <span class="op">+</span> <span class="va">gdp.pc</span> <span class="op">+</span> <span class="va">year</span> <span class="op">+</span> <span class="va">country</span>, data <span class="op">=</span> <span class="va">freetrade</span><span class="op">)</span></span>
 <span><span class="va">orig.model</span></span></code></pre></div>
@@ -1277,29 +1276,28 @@ run the <code>lm</code> within each imputed data set by using the
 <span><span class="co">##          -1.49e+02</span></span></code></pre>
 <p>The result here is simply a list of output of <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>
 applied to each imputed data set. We can combine the imputed estimates
-using the rules described in <span class="citation">King et al. (<a href="#ref-KinHonJos01" role="doc-biblioref">2001</a>)</span> and <span class="citation">Schafer (<a href="#ref-Schafer97" role="doc-biblioref">1997</a>)</span> with the <code><a href="../reference/mi.combine.html">mi.combine()</a></code>
-function:</p>
+using the rules described in <span class="citation">King et al. (<a href="#ref-KinHonJos01">2001</a>)</span> and <span class="citation">Schafer (<a href="#ref-Schafer97">1997</a>)</span> with
+the <code><a href="../reference/mi.combine.html">mi.combine()</a></code> function:</p>
 <div class="sourceCode" id="cb73"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mi.combine.html">mi.combine</a></span><span class="op">(</span><span class="va">imp.models</span>, conf.int <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">out</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 13 × 10</span></span></span>
-<span><span class="co">##    term   estimate std.e…¹ stati…² p.value    df     r miss.…³ conf.low conf.h…⁴</span></span>
-<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> (Inte…  2.72<span style="color: #949494;">e</span>+3 6.33<span style="color: #949494;">e</span>+2   4.31  2.21<span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span> 25.2  0.662   0.441  4.03<span style="color: #949494;">e</span>+3  1.42<span style="color: #949494;">e</span>+3</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> polity  1.61<span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span> 3.29<span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span>   0.488 6.29<span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span> 36.9  0.491   0.363  8.28<span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span> -<span style="color: #BB0000;">5.07</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> pop    -<span style="color: #BB0000;">9.80</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-8</span> 5.30<span style="color: #949494;">e</span><span style="color: #BB0000;">-8</span>  -<span style="color: #BB0000;">1.85</span>  1.91<span style="color: #949494;">e</span>+0 12.0  1.37    0.634  1.74<span style="color: #949494;">e</span><span style="color: #BB0000;">-8</span> -<span style="color: #BB0000;">2.13</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-7</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> gdp.pc  2.20<span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span> 1.35<span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span>   0.163 8.71<span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span> 35.8  0.502   0.368  2.96<span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span> -<span style="color: #BB0000;">2.52</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> year   -<span style="color: #BB0000;">1.30</span><span style="color: #949494;">e</span>+0 3.33<span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span>  -<span style="color: #BB0000;">3.89</span>  2.00<span style="color: #949494;">e</span>+0 23.3  0.708   0.459 -<span style="color: #BB0000;">6.09</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span> -<span style="color: #BB0000;">1.99</span><span style="color: #949494;">e</span>+0</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> count… -<span style="color: #BB0000;">9.72</span><span style="color: #949494;">e</span>+1 3.97<span style="color: #949494;">e</span>+1  -<span style="color: #BB0000;">2.45</span>  1.97<span style="color: #949494;">e</span>+0 10.1  1.70    0.686 -<span style="color: #BB0000;">8.75</span><span style="color: #949494;">e</span>+0 -<span style="color: #BB0000;">1.86</span><span style="color: #949494;">e</span>+2</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> count… -<span style="color: #BB0000;">1.25</span><span style="color: #949494;">e</span>+2 4.82<span style="color: #949494;">e</span>+1  -<span style="color: #BB0000;">2.59</span>  1.97<span style="color: #949494;">e</span>+0  8.93 2.02    0.725 -<span style="color: #BB0000;">1.54</span><span style="color: #949494;">e</span>+1 -<span style="color: #BB0000;">2.34</span><span style="color: #949494;">e</span>+2</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> count… -<span style="color: #BB0000;">1.25</span><span style="color: #949494;">e</span>+2 4.73<span style="color: #949494;">e</span>+1  -<span style="color: #BB0000;">2.64</span>  1.97<span style="color: #949494;">e</span>+0  9.85 1.76    0.694 -<span style="color: #BB0000;">1.92</span><span style="color: #949494;">e</span>+1 -<span style="color: #BB0000;">2.30</span><span style="color: #949494;">e</span>+2</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> count… -<span style="color: #BB0000;">1.17</span><span style="color: #949494;">e</span>+2 4.67<span style="color: #949494;">e</span>+1  -<span style="color: #BB0000;">2.50</span>  1.97<span style="color: #949494;">e</span>+0 10.8  1.56    0.666 -<span style="color: #BB0000;">1.36</span><span style="color: #949494;">e</span>+1 -<span style="color: #BB0000;">2.20</span><span style="color: #949494;">e</span>+2</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> count… -<span style="color: #BB0000;">7.34</span><span style="color: #949494;">e</span>+1 4.27<span style="color: #949494;">e</span>+1  -<span style="color: #BB0000;">1.72</span>  1.88<span style="color: #949494;">e</span>+0 10.1  1.69    0.685  2.15<span style="color: #949494;">e</span>+1 -<span style="color: #BB0000;">1.68</span><span style="color: #949494;">e</span>+2</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">11</span> count… -<span style="color: #BB0000;">1.13</span><span style="color: #949494;">e</span>+2 4.52<span style="color: #949494;">e</span>+1  -<span style="color: #BB0000;">2.51</span>  1.97<span style="color: #949494;">e</span>+0 10.0  1.72    0.689 -<span style="color: #BB0000;">1.27</span><span style="color: #949494;">e</span>+1 -<span style="color: #BB0000;">2.14</span><span style="color: #949494;">e</span>+2</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">12</span> count… -<span style="color: #BB0000;">1.15</span><span style="color: #949494;">e</span>+2 4.75<span style="color: #949494;">e</span>+1  -<span style="color: #BB0000;">2.41</span>  1.96<span style="color: #949494;">e</span>+0 10.1  1.69    0.685 -<span style="color: #BB0000;">8.80</span><span style="color: #949494;">e</span>+0 -<span style="color: #BB0000;">2.20</span><span style="color: #949494;">e</span>+2</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">13</span> count… -<span style="color: #BB0000;">1.08</span><span style="color: #949494;">e</span>+2 4.57<span style="color: #949494;">e</span>+1  -<span style="color: #BB0000;">2.36</span>  1.96<span style="color: #949494;">e</span>+0  9.74 1.79    0.697 -<span style="color: #BB0000;">5.66</span><span style="color: #949494;">e</span>+0 -<span style="color: #BB0000;">2.10</span><span style="color: #949494;">e</span>+2</span></span>
-<span><span class="co">## <span style="color: #949494;"># … with abbreviated variable names ¹​std.error, ²​statistic, ³​miss.info,</span></span></span>
-<span><span class="co">## <span style="color: #949494;">#   ⁴​conf.high</span></span></span></code></pre>
+<span><span class="co">##    term      estimate std.error statistic p.value    df     r miss.info conf.low</span></span>
+<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> (Interce…  2.72<span style="color: #949494;">e</span>+3   6.33<span style="color: #949494;">e</span>+2     4.31  2.21<span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span> 25.2  0.662     0.441  4.03<span style="color: #949494;">e</span>+3</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> polity     1.61<span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span>   3.29<span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span>     0.488 6.29<span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span> 36.9  0.491     0.363  8.28<span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> pop       -<span style="color: #BB0000;">9.80</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-8</span>   5.30<span style="color: #949494;">e</span><span style="color: #BB0000;">-8</span>    -<span style="color: #BB0000;">1.85</span>  1.91<span style="color: #949494;">e</span>+0 12.0  1.37      0.634  1.74<span style="color: #949494;">e</span><span style="color: #BB0000;">-8</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> gdp.pc     2.20<span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span>   1.35<span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span>     0.163 8.71<span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span> 35.8  0.502     0.368  2.96<span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> year      -<span style="color: #BB0000;">1.30</span><span style="color: #949494;">e</span>+0   3.33<span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span>    -<span style="color: #BB0000;">3.89</span>  2.00<span style="color: #949494;">e</span>+0 23.3  0.708     0.459 -<span style="color: #BB0000;">6.09</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> countryI… -<span style="color: #BB0000;">9.72</span><span style="color: #949494;">e</span>+1   3.97<span style="color: #949494;">e</span>+1    -<span style="color: #BB0000;">2.45</span>  1.97<span style="color: #949494;">e</span>+0 10.1  1.70      0.686 -<span style="color: #BB0000;">8.75</span><span style="color: #949494;">e</span>+0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> countryK… -<span style="color: #BB0000;">1.25</span><span style="color: #949494;">e</span>+2   4.82<span style="color: #949494;">e</span>+1    -<span style="color: #BB0000;">2.59</span>  1.97<span style="color: #949494;">e</span>+0  8.93 2.02      0.725 -<span style="color: #BB0000;">1.54</span><span style="color: #949494;">e</span>+1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> countryM… -<span style="color: #BB0000;">1.25</span><span style="color: #949494;">e</span>+2   4.73<span style="color: #949494;">e</span>+1    -<span style="color: #BB0000;">2.64</span>  1.97<span style="color: #949494;">e</span>+0  9.85 1.76      0.694 -<span style="color: #BB0000;">1.92</span><span style="color: #949494;">e</span>+1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> countryN… -<span style="color: #BB0000;">1.17</span><span style="color: #949494;">e</span>+2   4.67<span style="color: #949494;">e</span>+1    -<span style="color: #BB0000;">2.50</span>  1.97<span style="color: #949494;">e</span>+0 10.8  1.56      0.666 -<span style="color: #BB0000;">1.36</span><span style="color: #949494;">e</span>+1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> countryP… -<span style="color: #BB0000;">7.34</span><span style="color: #949494;">e</span>+1   4.27<span style="color: #949494;">e</span>+1    -<span style="color: #BB0000;">1.72</span>  1.88<span style="color: #949494;">e</span>+0 10.1  1.69      0.685  2.15<span style="color: #949494;">e</span>+1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">11</span> countryP… -<span style="color: #BB0000;">1.13</span><span style="color: #949494;">e</span>+2   4.52<span style="color: #949494;">e</span>+1    -<span style="color: #BB0000;">2.51</span>  1.97<span style="color: #949494;">e</span>+0 10.0  1.72      0.689 -<span style="color: #BB0000;">1.27</span><span style="color: #949494;">e</span>+1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">12</span> countryS… -<span style="color: #BB0000;">1.15</span><span style="color: #949494;">e</span>+2   4.75<span style="color: #949494;">e</span>+1    -<span style="color: #BB0000;">2.41</span>  1.96<span style="color: #949494;">e</span>+0 10.1  1.69      0.685 -<span style="color: #BB0000;">8.80</span><span style="color: #949494;">e</span>+0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">13</span> countryT… -<span style="color: #BB0000;">1.08</span><span style="color: #949494;">e</span>+2   4.57<span style="color: #949494;">e</span>+1    -<span style="color: #BB0000;">2.36</span>  1.96<span style="color: #949494;">e</span>+0  9.74 1.79      0.697 -<span style="color: #BB0000;">5.66</span><span style="color: #949494;">e</span>+0</span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ 1 more variable: conf.high &lt;dbl&gt;</span></span></span></code></pre>
 <p>The combination of the results depends on the <a href="https://broom.tidymodels.org" class="external-link">broom</a> package and results can be
 combined if a <code>tidy()</code> method exists for the estimation
 function passed to <code><a href="https://rdrr.io/r/base/with.html" class="external-link">with()</a></code>. Other packages such as <a href="https://zeligproject.org" class="external-link">Zelig</a> can also combine imputed data
@@ -1316,7 +1314,7 @@ functionality, simply export the “stacked” imputations using the
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/write.amelia.html">write.amelia</a></span><span class="op">(</span><span class="va">a.out</span>, separate <span class="op">=</span> <span class="cn">FALSE</span>, file.stem <span class="op">=</span> <span class="st">"outdata"</span>, format <span class="op">=</span> <span class="st">"dta"</span><span class="op">)</span></span></code></pre></div>
 <p>Once this stacked dataset is open in Stata, you must tell Stata that
 it is an imputed dataset using the command:</p>
-<div class="sourceCode" id="cb76"><pre class="sourceCode stata"><code class="sourceCode stata"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mi</span> import flong, <span class="fu">m</span>(imp) id(<span class="fu">year</span> country) imp(tariff-usheg)</span></code></pre></div>
+<div class="sourceCode" id="cb76"><pre class="sourceCode stata"><code class="sourceCode stata"><span id="cb76-1"><a href="#cb76-1" tabindex="-1"></a><span class="fu">mi</span> import flong, <span class="fu">m</span>(imp) id(<span class="fu">year</span> country) imp(tariff-usheg)</span></code></pre></div>
 <p>The command takes a few options: <code>m</code> designates the
 imputation variable (set with <code>impvar</code> in
 <code><a href="../reference/write.amelia.html">write.amelia()</a></code>), <code>id</code> sets the identifying
@@ -1326,7 +1324,7 @@ that Stata should treat the range of variables between
 <code>tariff</code> and <code>usheg</code> as imputed. Once we have set
 the dataset as imputed, we can use the built-in <code>mi</code> commands
 to analyze the data:</p>
-<div class="sourceCode" id="cb77"><pre class="sourceCode stata"><code class="sourceCode stata"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mi</span> estimate: <span class="kw">reg</span> tariff polity pop gdp_pc</span></code></pre></div>
+<div class="sourceCode" id="cb77"><pre class="sourceCode stata"><code class="sourceCode stata"><span id="cb77-1"><a href="#cb77-1" tabindex="-1"></a><span class="fu">mi</span> estimate: <span class="kw">reg</span> tariff polity pop gdp_pc</span></code></pre></div>
 <pre><code>Multiple-imputation estimates                     Imputations     =          5
 Linear regression                                 Number of obs   =        171
                                                   Average RVI     =     1.4114
@@ -1371,7 +1369,7 @@ parameter space.</p>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-HonKin10" class="csl-entry">
 Honaker, James, and Gary King. 2010. <span>“What to Do about Missing
 Values in Time Series Cross-Section Data.”</span> <em>American Journal
@@ -1399,7 +1397,7 @@ Data</em>. London: Chapman &amp; Hall.
 <hr>
 <ol>
 <li id="fn1"><p>We have artificially addedsome missingness to these data
-for presentational purposes. You can access the original data at <a href="https://scholar.princeton.edu/hvmilner/data" class="external-link">https://scholar.princeton.edu/hvmilner/data</a>.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+for presentational purposes. You can access the original data at <a href="https://hvmilner.scholar.princeton.edu/data" class="external-link">https://hvmilner.scholar.princeton.edu/data</a>.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 <li id="fn2"><p>The Polity score is a number between -10 and 10
 indicating how democratic a country is. A fully autocratic country would
 be a -10 while a fully democratic country would be 1 10.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
@@ -1429,7 +1427,7 @@ methods of transformation in Amelia agree.<a href="#fnref4" class="footnote-back
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
