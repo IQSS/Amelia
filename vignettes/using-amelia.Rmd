@@ -39,7 +39,7 @@ We now demonstrate how to use Amelia using data from @MilKub05 which studies the
  These variables correspond to the variables used in the analysis model of @MilKub05 in table 2.
 
 [^freetrade]: We have artificially addedsome missingness to these data for presentational purposes. You can access the original data at
-  [https://scholar.princeton.edu/hvmilner/data](https://scholar.princeton.edu/hvmilner/data).
+  [https://hvmilner.scholar.princeton.edu/data](https://hvmilner.scholar.princeton.edu/data).
 
 [^polity]: The Polity score is a number between -10 and 10 indicating how democratic a country is. A fully autocratic country would be a -10 while a fully democratic country would be 1 10.
 

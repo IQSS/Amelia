@@ -1,5 +1,5 @@
-\name{amelia-package}
-\alias{amelia-package}
+\name{Amelia-package}
+\alias{Amelia-package}
 \docType{package}
 \title{Amelia II: A Program for Missing Data}
 \description{Uses a bootstrap+EM algorithm to impute missing values
