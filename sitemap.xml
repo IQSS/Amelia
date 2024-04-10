@@ -25,6 +25,9 @@
     <loc>https://iqss.github.io/Amelia/index.html</loc>
   </url>
   <url>
+    <loc>https://iqss.github.io/Amelia/reference/Amelia-package.html</loc>
+  </url>
+  <url>
     <loc>https://iqss.github.io/Amelia/reference/AmeliaView.html</loc>
   </url>
   <url>
@@ -32,9 +35,6 @@
   </url>
   <url>
     <loc>https://iqss.github.io/Amelia/reference/amelia.html</loc>
-  </url>
-  <url>
-    <loc>https://iqss.github.io/Amelia/reference/amelia.package.html</loc>
   </url>
   <url>
     <loc>https://iqss.github.io/Amelia/reference/ameliabind.html</loc>
