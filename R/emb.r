@@ -270,7 +270,7 @@ emarch<-function(x,p2s=TRUE,thetaold=NULL,startvals=0,tolerance=0.0001,priors=NU
 }
 
 ## Draw imputations for missing values from a given theta matrix
-amelia.impute<-function(x,thetareal,priors=NULL,bounds=NULL,max.resample=NULL){
+amelia_impute<-function(x,thetareal,priors=NULL,bounds=NULL,max.resample=NULL){
 
   indx<-indxs(x)                      # This needs x.NA
   if (!identical(priors,NULL)){
@@ -771,7 +771,7 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars = NULL,
   am.call <- match.call(expand.dots = TRUE)
   archv <- am.call
 
-  prepped<-amelia.prep(x = x, m = m, idvars = idvars, empri = empri, ts = ts,
+  prepped<-amelia_prep(x = x, m = m, idvars = idvars, empri = empri, ts = ts,
                        cs = cs, tolerance = tolerance, polytime = polytime,
                        splinetime = splinetime, lags = lags, leads = leads,
                        logs = logs, sqrts = sqrts, lgstc = lgstc, p2s = p2s,
@@ -852,7 +852,7 @@ amelia.default <- function(x, m = 5, p2s = 1, frontend = FALSE, idvars = NULL,
       return(impdata)
     }
 
-    ximp <- amelia.impute(prepped$x, thetanew$thetanew, priors = prepped$priors,
+    ximp <- amelia_impute(prepped$x, thetanew$thetanew, priors = prepped$priors,
                           bounds = prepped$bounds, max.resample)
     ximp <- amunstack(ximp, n.order = prepped$n.order,
                       p.order = prepped$p.order)

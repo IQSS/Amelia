@@ -1,4 +1,4 @@
-#' Interactive GUI for Amelia
+q#' Interactive GUI for Amelia
 #'
 #' @name ameliagui
 #'
@@ -457,7 +457,7 @@ load.session <- function() {
                            "Re-save imputed data sets to the working directory?", icon =
                            "question", default = "yes", type = "yesno")
     if (tcltk::tclvalue(resave) == "yes") {
-      amelia.save(getAmelia("ameliaObject"),
+      amelia_save(getAmelia("ameliaObject"),
                   tcltk::tclvalue(getAmelia("outname")), as.numeric(tcltk::tclvalue(getAmelia("outnum"))))
     }
 
@@ -633,7 +633,7 @@ run.amelia <- function() {
                      "normal")
     tcltk::tkentryconfigure(getAmelia("main.menu.output"), 2, state = "normal")
     tcltk::tkconfigure(getAmelia("showLogButton"), state = "normal")
-    amelia.save(getAmelia("ameliaObject"),
+    amelia_save(getAmelia("ameliaObject"),
                 tcltk::tclvalue(getAmelia("outname")), as.numeric(tcltk::tclvalue(getAmelia("outnum"))))
     tcltk::tkgrid(getAmelia("allgood.label"), row = 2, column = 7,
            sticky ="e", padx = 10)
@@ -642,7 +642,7 @@ run.amelia <- function() {
 
 }
 
-amelia.save <- function(out,outname,m)  {
+amelia_save <- function(out,outname,m)  {
   save.type <- as.numeric(tcltk::tclvalue(getAmelia("outtype")))
   if (save.type == 1) {
     write.amelia(out, file.stem = outname, format = "csv",
@@ -2702,7 +2702,7 @@ environment(activateGUI) <- ameliaEnv
 environment(save.session) <- ameliaEnv
 environment(load.session) <- ameliaEnv
 environment(run.amelia) <- ameliaEnv
-environment(amelia.save) <- ameliaEnv
+environment(amelia_save) <- ameliaEnv
 environment(set.out) <- ameliaEnv
 environment(setTS) <- ameliaEnv
 environment(unsetTS) <- ameliaEnv

@@ -292,7 +292,7 @@ overimpute <- function(output, var, draws = 20, subset, legend = TRUE, xlab,
 
   ## The argument list for an amelia output is now
   ## at "output$arguments"
-  prepped <- amelia.prep(x = data, arglist = output$arguments, incheck = FALSE)
+  prepped <- amelia_prep(x = data, arglist = output$arguments, incheck = FALSE)
 
   stacked.var <- match(var, prepped$subset.index[prepped$p.order])
   subset.var <- match(var, prepped$subset.index)
@@ -532,7 +532,7 @@ disperse <- function(output, m = 5, dims = 1, p2s = 0, frontend = FALSE, ...,
   }
 
                                         # prep the data and arguments
-  prepped<-amelia.prep(x=data, arglist=output$arguments)
+  prepped<-amelia_prep(x=data, arglist=output$arguments)
 
   if (p2s) cat("-- Imputation", "1", "--")
   if (frontend) {
@@ -897,7 +897,7 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
     par(mfcol = c(nr, nc))
   }
 
-  prepped <- amelia.prep(x = data, arglist = output$arguments)
+  prepped <- amelia_prep(x = data, arglist = output$arguments)
   if (!is.null(prepped$blanks)) {
     data <- data[-prepped$blanks,]
     unit.rows <- which(csvar %in% cs)
@@ -919,7 +919,7 @@ tscsPlot <- function(output, var, cs, draws = 100, conf = .90,
   if (sum(miss) > 0) {
     for (i in 1:draws) {
       currtheta <- output$theta[,,ceiling(i/drawsperimp)]
-      imps[,i] <- amelia.impute(x = cross.sec, thetareal = currtheta,
+      imps[,i] <- amelia_impute(x = cross.sec, thetareal = currtheta,
                                 bounds = prepped$bounds,
                                 priors = prepped$priors,
                                 max.resample = output$arguments$max.resample)[,stacked.var]

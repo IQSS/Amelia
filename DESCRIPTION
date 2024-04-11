@@ -1,6 +1,6 @@
 Package: Amelia
 Version: 1.8.2
-Date: 2024-03-04
+Date: 2024-04-10
 Title: A Program for Missing Data
 Authors@R: c(
     person("James", "Honaker", email = "james@hona.kr", role = c("aut")),

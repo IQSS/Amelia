@@ -676,7 +676,7 @@ combine.output <- function(...) {
 }
 
 
-amelia.prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
+amelia_prep <- function(x,m=5,p2s=1,frontend=FALSE,idvars=NULL,logs=NULL,
                         ts=NULL,cs=NULL,empri=NULL,
                         tolerance=0.0001,polytime=NULL,splinetime=NULL,startvals=0,lags=NULL,
                         leads=NULL,intercs=FALSE,sqrts=NULL,
