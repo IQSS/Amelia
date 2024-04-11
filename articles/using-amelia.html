@@ -79,7 +79,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Using Amelia</h1>
             
-            <h4 data-toc-skip class="date">2024-04-10</h4>
+            <h4 data-toc-skip class="date">2024-04-11</h4>
       
       
       <div class="hidden name"><code>using-amelia.Rmd</code></div>
@@ -154,7 +154,7 @@ model of <span class="citation">Milner and Kubota (<a href="#ref-MilKub05">2005<
 <pre><code><span><span class="co">## Loading required package: Rcpp</span></span></code></pre>
 <pre><code><span><span class="co">## ## </span></span>
 <span><span class="co">## ## Amelia II: Multiple Imputation</span></span>
-<span><span class="co">## ## (Version 1.8.2, built: 2024-03-04)</span></span>
+<span><span class="co">## ## (Version 1.8.2, built: 2024-04-10)</span></span>
 <span><span class="co">## ## Copyright (C) 2005-2024 James Honaker, Gary King and Matthew Blackwell</span></span>
 <span><span class="co">## ## Refer to http://gking.harvard.edu/amelia/ for more information</span></span>
 <span><span class="co">## ##</span></span></code></pre>
@@ -1300,11 +1300,11 @@ the <code><a href="../reference/mi.combine.html">mi.combine()</a></code> functio
 <span><span class="co">## <span style="color: #949494;"># ℹ 1 more variable: conf.high &lt;dbl&gt;</span></span></span></code></pre>
 <p>The combination of the results depends on the <a href="https://broom.tidymodels.org" class="external-link">broom</a> package and results can be
 combined if a <code>tidy()</code> method exists for the estimation
-function passed to <code><a href="https://rdrr.io/r/base/with.html" class="external-link">with()</a></code>. Other packages such as <a href="https://zeligproject.org" class="external-link">Zelig</a> can also combine imputed data
-sets across a number of statistical models. Furthermore, users can
-easily export their imputations using the <code><a href="../reference/write.amelia.html">write.amelia()</a></code>
-function as described in @ref(sec_saving) and use statistical packages
-other than R for the analysis model.</p>
+function passed to <code><a href="https://rdrr.io/r/base/with.html" class="external-link">with()</a></code>. Other packages such as <a href="https://docs.zeligproject.org/index.html" class="external-link">Zelig</a> can also
+combine imputed data sets across a number of statistical models.
+Furthermore, users can easily export their imputations using the
+<code><a href="../reference/write.amelia.html">write.amelia()</a></code> function as described in @ref(sec_saving)
+and use statistical packages other than R for the analysis model.</p>
 <p>In addition to the resources available in R, users can draw on Stata
 to implement their analysis models. As of version 11, Stata has built-in
 handling of multiply imputed datasets. In order to utilize this
