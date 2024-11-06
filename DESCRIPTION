@@ -5,7 +5,7 @@ Title: A Program for Missing Data
 Authors@R: c(
     person("James", "Honaker", email = "james@hona.kr", role = c("aut")),
     person("Gary", "King", email = "king@harvard.edu", role = c("aut")),
-    person("Matthew", "Blackwell", email = "mblackwell@gov.harvard.edu",
+    person("Matthew", "Blackwell", email = "mblackwell@gmail.com",
            role = c("aut", "cre"), comment = c(ORCID = "0000-0002-3689-9527"))
     )
 Depends:
@@ -48,6 +48,6 @@ Suggests:
   knitr
 VignetteBuilder:
   knitr
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Encoding: UTF-8
 LazyData: true

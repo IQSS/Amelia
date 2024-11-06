@@ -72,5 +72,5 @@ then the original, unimputed dataset is included at the top of the
 stack, with its imputation number set to 0.
 }
 \seealso{
-\code{\link{write.csv}}, \code{\link{write.table}}, \code{\link{write.dta}}
+\code{\link{write.csv}}, \code{\link{write.table}}, \code{\link{foreign::write.dta}}
 }

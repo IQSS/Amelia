@@ -16,7 +16,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Matthew Blackwell \email{mblackwell@gov.harvard.edu} (\href{https://orcid.org/0000-0002-3689-9527}{ORCID})
+\strong{Maintainer}: Matthew Blackwell \email{mblackwell@gmail.com} (\href{https://orcid.org/0000-0002-3689-9527}{ORCID})
 
 Authors:
 \itemize{
