@@ -508,7 +508,7 @@ out <- mi.combine(imp.models, conf.int = TRUE)
 out
 ```
 
-The combination of the results depends on the [broom](https://broom.tidymodels.org) package and results can be combined if a `tidy()` method exists for the estimation function passed to `with()`. Other packages such as [Zelig](https://docs.zeligproject.org/index.html) can also combine imputed data sets across a number of statistical models. Furthermore, users can easily export their imputations using the `write.amelia()` function as described in \@ref(sec_saving) and use statistical packages other than R for the analysis model.
+The combination of the results depends on the [broom](https://broom.tidymodels.org) package and results can be combined if a `tidy()` method exists for the estimation function passed to `with()`. Users can easily export their imputations using the `write.amelia()` function as described in \@ref(sec_saving) and use statistical packages other than R for the analysis model.
 
 In addition to the resources available in R, users can draw on
 Stata to implement their analysis models. As of version 11,

@@ -47,7 +47,7 @@
 #' then the original, unimputed dataset is included at the top of the
 #' stack, with its imputation number set to 0. 
 #' 
-#' @seealso \code{\link{write.csv}}, \code{\link{write.table}}, \code{\link{foreign::write.dta}}
+#' @seealso \code{\link{write.csv}}, \code{\link{write.table}}, \code{\link[foreign]{write.dta}}
 
 write.amelia <- function(obj, separate = TRUE, file.stem,
                          extension = NULL, format = "csv",

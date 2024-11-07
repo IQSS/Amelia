@@ -8,7 +8,6 @@
 #' @param ... further arguments.
 #'
 #' @seealso \code{\link{amelia}}
-#' @exportS3method
 
 summary.mi <- function(object, ...) {
   m <- length(object)
